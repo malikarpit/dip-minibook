@@ -238,7 +238,6 @@
           </div>
         </div>
       </div>
-      </div>
 
       <!-- In-Page TOC -->
       <div class="chapter-checklist-card" style="margin-bottom:var(--em-space-8);">
@@ -1886,14 +1885,13 @@ $$f_s(x,y) = f(x,y) \cdot s(x,y) = \sum_{m=-\infty}^{\infty} \sum_{n=-\infty}^{\
 
 Applying the 2D Continuous Fourier Transform, multiplication in the spatial domain becomes 2D convolution in the frequency domain:
 
-$$F_s(u,v) = rac{1}{\Delta x \Delta y} \sum_{m=-\infty}^{\infty} \sum_{n=-\infty}^{\infty} F\left(u - rac{m}{\Delta x}, v - rac{n}{\Delta y}
-ight)$$
+$$F_s(u,v) = \frac{1}{\Delta x \Delta y} \sum_{m=-\infty}^{\infty} \sum_{n=-\infty}^{\infty} F\left(u - \frac{m}{\Delta x}, v - \frac{n}{\Delta y}\right)$$
 
-This fundamental equation proves that the spectrum of the sampled image consists of infinite periodic replicas of the original spectrum $F(u,v)$ centered at integer multiples of the spatial sampling frequencies $f_{s,x} = rac{1}{\Delta x}$ and $f_{s,y} = rac{1}{\Delta y}$.</p>
+This fundamental equation proves that the spectrum of the sampled image consists of infinite periodic replicas of the original spectrum $F(u,v)$ centered at integer multiples of the spatial sampling frequencies $f_{s,x} = \frac{1}{\Delta x}$ and $f_{s,y} = \frac{1}{\Delta y}$.</p>
 <h3>The Non-Overlapping Aliasing Condition</h3>
 <p>To prevent spectral copies from overlapping (aliasing), the replicas must be separated by at least twice the maximum spatial bandwidth frequencies $u_{\max}$ and $v_{\max}$:
 
-$$f_{s,x} \ge 2 u_{\max} \qquad 	ext{and} \qquad f_{s,y} \ge 2 v_{\max}$$
+$$f_{s,x} \ge 2 u_{\max} \qquad \text{and} \qquad f_{s,y} \ge 2 v_{\max}$$
 
 If sampling falls below this Nyquist rate, overlapping high-frequency tails wrap into the baseband, irreversibly corrupting low-frequency features with false Moiré fringe artifacts.</p>
     </div>
@@ -1908,9 +1906,9 @@ If sampling falls below this Nyquist rate, overlapping high-frequency tails wrap
     </div>
     <div class="section-body">
       <h3>Problem Statement</h3>
-<p>A medical imaging department acquires digital chest radiographs of size $35 	ext{ cm} 	imes 43 	ext{ cm}$. The optical system resolves up to $5 	ext{ line pairs per millimetre (lp/mm)}$.
+<p>A medical imaging department acquires digital chest radiographs of size $35 \text{ cm} \times 43 \text{ cm}$. The optical system resolves up to $5 \text{ line pairs per millimetre (lp/mm)}$.
 1. Determine the minimum spatial sampling frequency $f_s$ required to prevent spatial aliasing.
-2. Calculate the minimum image dimensions $(M 	imes N)$ in pixels.
+2. Calculate the minimum image dimensions $(M \times N)$ in pixels.
 3. If each pixel is quantized to 12 bits per pixel (4096 gray levels), compute the uncompressed file size in Megabytes (MB).
 4. Explain why 12-bit quantization is preferred over 8-bit quantization in medical radiography.</p>
 <h3>Step-by-Step Solution</h3>
@@ -1920,34 +1918,34 @@ If sampling falls below this Nyquist rate, overlapping high-frequency tails wrap
     <span class="tag-badge tag-exam">10-MARK UNIVERSITY MODEL ANSWER</span>
   </div>
   <p><strong>1. Minimum Spatial Sampling Frequency:</strong><br>
-  Given maximum spatial frequency $f_{\max} = 5 	ext{ lp/mm} = 5 	ext{ cycles/mm}$.<br>
+  Given maximum spatial frequency $f_{\max} = 5 \text{ lp/mm} = 5 \text{ cycles/mm}$.<br>
   By the Nyquist-Shannon Sampling Theorem:
   
-$$f_s \ge 2 f_{\max} = 2 	imes 5 = 10 	ext{ samples/mm (pixels/mm)}$$
+$$f_s \ge 2 f_{\max} = 2 \times 5 = 10 \text{ samples/mm (pixels/mm)}$$
 
-  The maximum allowable sampling interval is $\Delta x = \Delta y = rac{1}{f_s} = 0.1 	ext{ mm} = 100 \ \mu	ext{m}$.</p>
+  The maximum allowable sampling interval is $\Delta x = \Delta y = \frac{1}{f_s} = 0.1 \text{ mm} = 100 \ \mu\text{m}$.</p>
 
   <p><strong>2. Minimum Image Matrix Dimensions:</strong><br>
   
-$$	ext{Width } M = 35 	ext{ cm} 	imes 10 	ext{ mm/cm} 	imes 10 	ext{ pixels/mm} = 3,500 	ext{ pixels}$$
+$$\text{Width } M = 35 \text{ cm} \times 10 \text{ mm/cm} \times 10 \text{ pixels/mm} = 3,500 \text{ pixels}$$
 
   
-$$	ext{Height } N = 43 	ext{ cm} 	imes 10 	ext{ mm/cm} 	imes 10 	ext{ pixels/mm} = 4,300 	ext{ pixels}$$
+$$\text{Height } N = 43 \text{ cm} \times 10 \text{ mm/cm} \times 10 \text{ pixels/mm} = 4,300 \text{ pixels}$$
 
   
-$$	ext{Total Pixels } = 3,500 	imes 4,300 = 15,050,000 	ext{ pixels} pprox 15.05 	ext{ Megapixels}$$
+$$\text{Total Pixels } = 3,500 \times 4,300 = 15,050,000 \text{ pixels} \approx 15.05 \text{ Megapixels}$$
 </p>
 
   <p><strong>3. Storage Footprint Calculation:</strong><br>
-  Total bits $b = M 	imes N 	imes k = 15,050,000 	imes 12 = 180,600,000 	ext{ bits}$.<br>
+  Total bits $b = M \times N \times k = 15,050,000 \times 12 = 180,600,000 \text{ bits}$.<br>
   
-$$	ext{Total Bytes} = rac{180,600,000}{8} = 22,575,000 	ext{ bytes}$$
+$$\text{Total Bytes} = \frac{180,600,000}{8} = 22,575,000 \text{ bytes}$$
 
   
-$$	ext{Size in Megabytes (MB)} = rac{22,575,000}{10^6} pprox 22.58 	ext{ MB}$$
+$$\text{Size in Megabytes (MB)} = \frac{22,575,000}{10^6} \approx 22.58 \text{ MB}$$
 
   
-$$	ext{Size in Mebibytes (MiB)} = rac{22,575,000}{1024 	imes 1024} pprox 21.53 	ext{ MiB}$$
+$$\text{Size in Mebibytes (MiB)} = \frac{22,575,000}{1024 \times 1024} \approx 21.53 \text{ MiB}$$
 </p>
 
   <p><strong>4. Medical Rationale for 12-bit Quantization:</strong><br>
@@ -1985,22 +1983,22 @@ $$\mathcal{E}(t, q) = \sum_{k=1}^L \int_{t_{k-1}}^{t_k} (r - q_k)^2 p(r) \, dr$$
   <p><strong>2. Centroid Condition for Reconstruction Levels $q_k$:</strong><br>
   Differentiating $\mathcal{E}$ with respect to $q_k$ and setting the derivative to zero:
   
-$$rac{\partial \mathcal{E}}{\partial q_k} = -2 \int_{t_{k-1}}^{t_k} (r - q_k) p(r) \, dr = 0$$
+$$\frac{\partial \mathcal{E}}{\partial q_k} = -2 \int_{t_{k-1}}^{t_k} (r - q_k) p(r) \, dr = 0$$
 
   
-$$\int_{t_{k-1}}^{t_k} r p(r) \, dr - q_k \int_{t_{k-1}}^{t_k} p(r) \, dr = 0 \implies \mathbf{q_k = rac{\int_{t_{k-1}}^{t_k} r p(r) \, dr}{\int_{t_{k-1}}^{t_k} p(r) \, dr}}$$
+$$\int_{t_{k-1}}^{t_k} r p(r) \, dr - q_k \int_{t_{k-1}}^{t_k} p(r) \, dr = 0 \implies \mathbf{q_k = \frac{\int_{t_{k-1}}^{t_k} r p(r) \, dr}{\int_{t_{k-1}}^{t_k} p(r) \, dr}}$$
 
   <strong>Pedagogical Insight:</strong> Each optimal reconstruction level $q_k$ is the <em>conditional expectation (centroid of probability mass)</em> of input $r$ over the interval $[t_{k-1}, t_k)$.</p>
 
   <p><strong>3. Boundary Condition for Decision Thresholds $t_k$:</strong><br>
   Using Leibniz's Rule for differentiating an integral with variable limits:
   
-$$rac{\partial \mathcal{E}}{\partial t_k} = (t_k - q_k)^2 p(t_k) - (t_k - q_{k+1})^2 p(t_k) = 0$$
+$$\frac{\partial \mathcal{E}}{\partial t_k} = (t_k - q_k)^2 p(t_k) - (t_k - q_{k+1})^2 p(t_k) = 0$$
 
   Assuming $p(t_k) 
 eq 0$:
   
-$$(t_k - q_k)^2 = (t_k - q_{k+1})^2 \implies t_k - q_k = -(t_k - q_{k+1}) \implies \mathbf{t_k = rac{q_k + q_{k+1}}{2}}$$
+$$(t_k - q_k)^2 = (t_k - q_{k+1})^2 \implies t_k - q_k = -(t_k - q_{k+1}) \implies \mathbf{t_k = \frac{q_k + q_{k+1}}{2}}$$
 
   <strong>Pedagogical Insight:</strong> Each optimal transition boundary $t_k$ is located precisely at the <em>arithmetic midpoint</em> between adjacent reconstruction levels $q_k$ and $q_{k+1}$.</p>
 

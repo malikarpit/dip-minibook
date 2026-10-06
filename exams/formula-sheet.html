@@ -225,16 +225,18 @@
       background: var(--em-surface-2);
       border: 1px solid var(--em-border);
       border-radius: var(--em-radius-sm);
-      padding: var(--em-space-3) var(--em-space-4);
+      padding: 10px 14px;
       margin: var(--em-space-2) 0 var(--em-space-3) 0;
       font-size: 1.05rem;
       color: #38BDF8;
       overflow-x: auto;
+      overflow-y: hidden;
       text-align: center;
-      min-height: 52px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      line-height: normal;
+    }
+    .math-display-box .mjx-chtml {
+      margin: 4px auto !important;
+      outline: none;
     }
     .f-desc {
       font-size: 0.85rem;
@@ -566,7 +568,7 @@
           <div class="math-display-box">
             $$s = c \cdot r^\gamma$$
           </div>
-          <div class="f-desc">Controls global tonal curve: $\gamma < 1$ bows upward, brightening dark shadow regions; $\gamma > 1$ bows downward, darkening highlights and increasing high-end contrast. Standard for display calibration ($s = r^{1/2.2}$).</div>
+          <div class="f-desc">Controls global tonal curve: $\gamma \lt 1$ bows upward, brightening dark shadow regions; $\gamma \gt 1$ bows downward, darkening highlights and increasing high-end contrast. Standard for display calibration ($s = r^{1/2.2}$).</div>
           <div class="f-variables"><strong>Variables:</strong> $r, s \in [0, 1]$: normalized intensities; $\gamma$: exponent factor; $c$: constant (typically 1).</div>
         </div>
 
@@ -775,7 +777,7 @@
           <div class="math-display-box">
             $$R = \det(M) - k \, (\text{Tr}(M))^2 = \lambda_1 \lambda_2 - k(\lambda_1 + \lambda_2)^2$$
           </div>
-          <div class="f-desc">Detects 2D corners without explicitly computing eigenvalues of structure tensor $M = \begin{bmatrix} \sum I_x^2 & \sum I_x I_y \\ \sum I_x I_y & \sum I_y^2 \end{bmatrix}$. $R > 0$ defines a corner; $R < 0$ an edge; $|R| \approx 0$ a flat region.</div>
+          <div class="f-desc">Detects 2D corners without explicitly computing eigenvalues of structure tensor $M = \begin{bmatrix} \sum I_x^2 & \sum I_x I_y \\ \sum I_x I_y & \sum I_y^2 \end{bmatrix}$. $R \gt 0$ defines a corner; $R \lt 0$ an edge; $|R| \approx 0$ a flat region.</div>
           <div class="f-variables"><strong>Variables:</strong> $M$: local auto-correlation tensor, $k$: empirical sensitivity parameter ($k \in [0.04, 0.06]$), $\lambda_1, \lambda_2$: principal curvatures.</div>
         </div>
 
@@ -823,7 +825,7 @@
           <div class="math-display-box">
             $$H(X) = -\sum_{i=1}^n p_i \log_2(p_i) \text{ bits/symbol}$$
           </div>
-          <div class="f-desc">Defines the fundamental theoretical lower bound on average code length for lossless entropy coding. By Shannon's Noiseless Coding Theorem, no lossless code can achieve $L_{\text{avg}} < H(X)$.</div>
+          <div class="f-desc">Defines the fundamental theoretical lower bound on average code length for lossless entropy coding. By Shannon's Noiseless Coding Theorem, no lossless code can achieve $L_{\text{avg}} \lt H(X)$.</div>
           <div class="f-variables"><strong>Variables:</strong> $p_i$: probability of occurrence of intensity symbol $r_i$ ($\sum p_i = 1$). For an 8-bit image with equal probabilities, $H = \log_2(256) = 8\text{ bits}$.</div>
         </div>
 

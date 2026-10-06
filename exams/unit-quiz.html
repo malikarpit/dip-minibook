@@ -16,6 +16,19 @@
   <link rel="stylesheet" href="../assets/css/timer.css">
   <link rel="stylesheet" href="../assets/css/chapters.css">
 
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      options: {
+        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
   <style>
     .quiz-container {
       max-width: 920px;
@@ -916,7 +929,7 @@
 
       document.getElementById('q-diff-tag').textContent = q.diff;
       document.getElementById('q-topic').innerHTML = `📌 ${q.topic} (Ch ${q.chapter})`;
-      document.getElementById('q-prompt').textContent = q.q;
+      document.getElementById('q-prompt').innerHTML = q.q;
 
       // Progress bar
       const pct = ((currentQuiz.currentIndex + 1) / total) * 100;
@@ -958,7 +971,7 @@
 
         btn.innerHTML = `
           <span class="opt-letter">${letters[optIdx]}</span>
-          <span>${optText}</span>
+          <span class="opt-text">${optText}</span>
         `;
         optionsList.appendChild(btn);
       });
@@ -979,6 +992,11 @@
       document.getElementById('submit-quiz-btn').style.display = isLast ? 'inline-flex' : 'none';
 
       updatePalette();
+
+      // Typeset MathJax
+      if (window.MathJax && window.MathJax.typesetPromise) {
+        window.MathJax.typesetPromise([document.getElementById('player-card')]).catch(err => console.warn(err));
+      }
     }
 
     function selectAnswer(chosenIdx) {

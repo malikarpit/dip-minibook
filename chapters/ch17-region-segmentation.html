@@ -260,7 +260,6 @@
           </div>
         </div>
       </div>
-      </div>
 
       <!-- In-Page TOC -->
       <div class="chapter-checklist-card" style="margin-bottom:var(--em-space-8);">
@@ -482,25 +481,25 @@ meaningful for the task</code></pre>
 <h3>Intensity difference</h3>
 <p>
 $$
-|f(x,y)-\mu_R|<\tau
+|f(x,y)-\mu_R|\lt \tau
 $$
 </p>
 <h3>Range</h3>
 <p>
 $$
-\max(R)-\min(R)<\tau
+\max(R)-\min(R)\lt \tau
 $$
 </p>
 <h3>Variance</h3>
 <p>
 $$
-\sigma_R^2<\tau
+\sigma_R^2\lt \tau
 $$
 </p>
 <h3>Colour distance</h3>
 <p>
 $$
-\|\mathbf c-\boldsymbol\mu_R\|<\tau
+\|\mathbf c-\boldsymbol\mu_R\|\lt \tau
 $$
 </p>
 <h3>Texture similarity</h3>
@@ -594,7 +593,7 @@ return R</code></pre>
       <p>A simple rule is:</p>
 <p>
 $$
-|f(p)-\mu_R|<\tau
+|f(p)-\mu_R|\lt \tau
 $$
 </p>
 <p>where:</p>
@@ -1098,13 +1097,13 @@ large τ
       <p>A stronger rule can use:</p>
 <p>
 $$
-|f(p)-\mu_R|<\tau
+|f(p)-\mu_R|\lt \tau
 $$
 </p>
 <p>and:</p>
 <p>
 $$
-|\nabla f(p)|<\gamma
+|\nabla f(p)|\lt \gamma
 $$
 </p>
 <p>for growth across relatively smooth areas.</p>
@@ -1180,7 +1179,7 @@ boundary crossing is not too strong</code></pre>
 $$
 P(R)=
 \begin{cases}
-\text{true},&\sigma_R^2<\tau\\
+\text{true},&\sigma_R^2\lt \tau\\
 \text{false},&\sigma_R^2\ge\tau
 \end{cases}
 $$
@@ -1330,7 +1329,7 @@ smaller subdivisions where needed</code></pre>
 <p>For example:</p>
 <p>
 $$
-|\mu_{R_1}-\mu_{R_2}|<\tau
+|\mu_{R_1}-\mu_{R_2}|\lt \tau
 $$
 </p>
 <p>This checks mean similarity.</p>
@@ -1374,7 +1373,7 @@ $$
 <p>Then:</p>
 <p>
 $$
-|100-103|=3<5
+|100-103|=3\lt 5
 $$
 </p>
 <p>so the mean-similarity criterion allows a merge.</p>
@@ -1688,7 +1687,7 @@ $$
 <p>A simple criterion is:</p>
 <p>
 $$
-\|\mathbf c(p)-\boldsymbol\mu_R\|_2<\tau
+\|\mathbf c(p)-\boldsymbol\mu_R\|_2\lt \tau
 $$
 </p>
 <p>where $\boldsymbol\mu_R$ is the region's mean colour vector.</p>
@@ -1745,7 +1744,7 @@ texture descriptor</code></pre>
 <p>Conceptually:</p>
 <p>
 $$
-\|\mathbf z(p)-\boldsymbol\mu_R\|<\tau
+\|\mathbf z(p)-\boldsymbol\mu_R\|\lt \tau
 $$
 </p>
 <p>where $\mathbf z$ is a chosen feature vector.</p>
@@ -2367,7 +2366,7 @@ $$
 <p>
 $$
 \boxed{
-|f(p)-\mu_R|<\tau
+|f(p)-\mu_R|\lt \tau
 }
 $$
 </p>
@@ -2375,7 +2374,7 @@ $$
 <p>
 $$
 \boxed{
-\|\mathbf c(p)-\boldsymbol\mu_R\|_2<\tau
+\|\mathbf c(p)-\boldsymbol\mu_R\|_2\lt \tau
 }
 $$
 </p>
@@ -2450,7 +2449,7 @@ $$
 <p>difference:</p>
 <p>
 $$
-|27-23|=4<5
+|27-23|=4\lt 5
 $$
 </p>
 <p>so it is accepted under the stated criterion.</p>
@@ -2527,7 +2526,7 @@ $$
 <p>then:</p>
 <p>
 $$
-|\mu_1-\mu_2|=3<5
+|\mu_1-\mu_2|=3\lt 5
 $$
 </p>
 <p>so they can merge under the simple mean-similarity predicate.</p>

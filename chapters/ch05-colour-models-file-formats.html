@@ -241,7 +241,6 @@
           </div>
         </div>
       </div>
-      </div>
 
       <!-- In-Page TOC -->
       <div class="chapter-checklist-card" style="margin-bottom:var(--em-space-8);">
@@ -2029,23 +2028,22 @@ HOW TO IMPROVE THE IMAGE</code></pre>
 Given normalized RGB components $r, g, b \in [0, 1]$:
 1. <strong>Intensity Component $I$:</strong>
 
-$$I = rac{R + G + B}{3}$$
+$$I = \frac{R + G + B}{3}$$
 
 2. <strong>Saturation Component $S$:</strong>
 
-$$S = 1 - rac{3}{R + G + B} \min(R, G, B)$$
+$$S = 1 - \frac{3}{R + G + B} \min(R, G, B)$$
 
 3. <strong>Hue Component $H$:</strong>
 
-$$H = egin{cases}
+$$H = \begin{cases}
 	heta & 	ext{if } B \le G \
 360^\circ - 	heta & 	ext{if } B > G
 \end{cases}$$
 
-where the angle $heta$ is derived from vector projection:
+where the angle $\theta$ is derived from vector projection:
 
-$$	heta = rccos\left( rac{rac{1}{2}[(R - G) + (R - B)]}{\sqrt{(R - G)^2 + (R - B)(G - B)}} 
-ight)$$
+$$	heta = \arccos\left( \frac{\frac{1}{2}[(R - G) + (R - B)]}{\sqrt{(R - G)^2 + (R - B)(G - B)}} \right)$$
 </p>
     </div>
   </section>

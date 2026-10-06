@@ -274,7 +274,6 @@
           </div>
         </div>
       </div>
-      </div>
 
       <!-- In-Page TOC -->
       <div class="chapter-checklist-card" style="margin-bottom:var(--em-space-8);">
@@ -837,7 +836,7 @@ $$
 <p>Then use a ratio test:</p>
 <p>
 $$
-\frac{d_1}{d_2}<r
+\frac{d_1}{d_2}\lt r
 $$
 </p>
 <p>to reject ambiguous matches.</p>
@@ -1345,7 +1344,7 @@ corner decision</code></pre>
 $$
 \tau(p,q)=
 \begin{cases}
-1,&I(p)<I(q)\\
+1,&I(p)\lt I(q)\\
 0,&I(p)\ge I(q)
 \end{cases}
 $$
@@ -2023,7 +2022,7 @@ class / detection</code></pre>
       <p>For descriptor matching, a threshold can be applied:</p>
 <p>
 $$
-d<\tau
+d\lt \tau
 $$
 </p>
 <p>But a raw distance threshold is sensitive to:</p>
@@ -2066,7 +2065,7 @@ $$
 <p>A match is an inlier if:</p>
 <p>
 $$
-\|p_i'-T(p_i)\|<\epsilon
+\|p_i'-T(p_i)\|\lt \epsilon
 $$
 </p>
 <p>under the chosen geometric model and error metric.</p>
@@ -2097,7 +2096,7 @@ $$
 <p>Then:</p>
 <p>
 $$
-2.4<3
+2.4\lt 3
 $$
 </p>
 <p>so:</p>
@@ -2584,7 +2583,7 @@ $$
 <p>
 $$
 \boxed{
-d_1/d_2<r
+d_1/d_2\lt r
 }
 $$
 </p>
@@ -2759,7 +2758,7 @@ $$
 <p>Since:</p>
 <p>
 $$
-0.4<0.5
+0.4\lt 0.5
 $$
 </p>
 <p>the match passes.</p>
@@ -3141,9 +3140,9 @@ $$\because R = +284 > 0 \implies \text{Classified as a Distinct Corner Feature}$
       </tr>
       <tr>
         <td><strong>2. Sub-Pixel Localization &amp; Edge Rejection</strong></td>
-        <td>$\hat{x} = -H^{-1} \frac{\partial D}{\partial x}$, Hessian ratio $\frac{\text{Tr}(H)^2}{\det(H)} < \frac{(r+1)^2}{r}$ ($r=10$)</td>
+        <td>$\hat{x} = -H^{-1} \frac{\partial D}{\partial x}$, Hessian ratio $\frac{\text{Tr}(H)^2}{\det(H)} \lt  \frac{(r+1)^2}{r}$ ($r=10$)</td>
         <td><strong>Contrast &amp; Edge Noise Invariance</strong></td>
-        <td>Discards low-contrast keypoints ($|D(\hat{x})| < 0.03$) and unstable 1D edge ridges.</td>
+        <td>Discards low-contrast keypoints ($|D(\hat{x})| \lt  0.03$) and unstable 1D edge ridges.</td>
       </tr>
       <tr>
         <td><strong>3. Orientation Assignment</strong></td>

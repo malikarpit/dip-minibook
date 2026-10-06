@@ -253,7 +253,6 @@
           </div>
         </div>
       </div>
-      </div>
 
       <!-- In-Page TOC -->
       <div class="chapter-checklist-card" style="margin-bottom:var(--em-space-8);">
@@ -2473,7 +2472,7 @@ $$HU = 1000 \times \frac{\mu - \mu_{\text{water}}}{\mu_{\text{water}} - \mu_{\te
     - Dense Cortical Bone: $HU \in [+1000, +3000]$ (radiopaque)<br>
   - <strong>Windowing / Leveling Transformation:</strong> A raw 12-bit or 16-bit CT scan contains 4096+ gray levels, whereas human vision can only distinguish ~64 levels. Windowing maps an interval $[L - W/2, L + W/2]$ linearly to display intensities $[0, 255]$:
     
-$$f_{disp}(x) = \begin{cases} 0 & x < L - W/2 \\ 255 \times \frac{x - (L - W/2)}{W} & L - W/2 \le x \le L + W/2 \\ 255 & x > L + W/2 \end{cases}$$
+$$f_{disp}(x) = \begin{cases} 0 & x \lt  L - W/2 \\ 255 \times \frac{x - (L - W/2)}{W} & L - W/2 \le x \le L + W/2 \\ 255 & x > L + W/2 \end{cases}$$
 
     - <strong>Lung Window ($W = 1500, L = -600$):</strong> Focuses on range $[-1350, +150]$ to clearly resolve low-density alveolar parenchyma and bronchial trees.<br>
     - <strong>Bone Window ($W = 2000, L = +500$):</strong> Focuses on range $[-500, +1500]$ to distinguish cortical fracture lines without saturation.</p>

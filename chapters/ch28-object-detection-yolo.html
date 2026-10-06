@@ -252,7 +252,6 @@
           </div>
         </div>
       </div>
-      </div>
 
       <!-- In-Page TOC -->
       <div class="chapter-checklist-card" style="margin-bottom:var(--em-space-8);">
@@ -2478,7 +2477,7 @@ $$\mathcal{B} = [A (0.92), D (0.88), B (0.85), C (0.78)], \qquad \mathcal{D}_{\t
   - <strong>Step 2: Select candidate with highest confidence:</strong> Select <strong>Box A (0.92)</strong>.
     Add Box A to $\mathcal{D}_{\text{final}} = \{A\}$. Remove A from $\mathcal{B}$.
     Compute IoU between Box A and remaining boxes in $\mathcal{B}$:
-    - $IoU(A, D)$: Box D has $x \in [220, 310]$, Box A has $x \in [50, 150]$. Completely disjoint! $IoU(A, D) = 0.0 < 0.50 \implies$ <strong>Keep Box D</strong>.
+    - $IoU(A, D)$: Box D has $x \in [220, 310]$, Box A has $x \in [50, 150]$. Completely disjoint! $IoU(A, D) = 0.0 \lt  0.50 \implies$ <strong>Keep Box D</strong>.
     - $IoU(A, B) = 0.8056 > 0.50 \implies$ <strong>Suppress Box B!</strong>
     - $IoU(A, C)$: Box C has $W_{\cap} = 150 - 55 = 95, H_{\cap} = 200 - 60 = 140 \implies \text{Area}_{\cap} = 13,300$.
       $\text{Area}(C) = (160 - 55) \times (210 - 60) = 105 \times 150 = 15,750$.

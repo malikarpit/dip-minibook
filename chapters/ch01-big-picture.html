@@ -239,7 +239,6 @@
           </div>
         </div>
       </div>
-      </div>
 
       <!-- In-Page TOC -->
       <div class="chapter-checklist-card" style="margin-bottom:var(--em-space-8);">
@@ -860,13 +859,38 @@ $$
 
 A small set of values gives:
 
-| Input $f$ | Output $255-f$ |
-|---:|---:|
-| 0 | 255 |
-| 50 | 205 |
-| 128 | 127 |
-| 200 | 55 |
-| 255 | 0 |
+<div class="comparison-table-wrap" style="max-width: 420px; margin: var(--em-space-4) 0;">
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th style="text-align:right;">Input $f$</th>
+        <th style="text-align:right;">Output $255-f$</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="text-align:right;">0</td>
+        <td style="text-align:right;">255</td>
+      </tr>
+      <tr>
+        <td style="text-align:right;">50</td>
+        <td style="text-align:right;">205</td>
+      </tr>
+      <tr>
+        <td style="text-align:right;">128</td>
+        <td style="text-align:right;">127</td>
+      </tr>
+      <tr>
+        <td style="text-align:right;">200</td>
+        <td style="text-align:right;">55</td>
+      </tr>
+      <tr>
+        <td style="text-align:right;">255</td>
+        <td style="text-align:right;">0</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
 The transformation reverses the intensity scale.
 

@@ -76,15 +76,15 @@ const DIP_QUIZ_DATA = [
     "chapter": 2,
     "diff": "Hard",
     "topic": "Image Formation",
-    "q": "According to the camera lens irradiance equation ($E \\propto \\cos^4 \u0007lpha$), why does image brightness roll off toward the corners of the sensor plane?",
+    "q": "According to the camera lens irradiance equation ($E \\propto \\cos^4 \\alpha$), why does image brightness roll off toward the corners of the sensor plane?",
     "options": [
       "Lens flare cancels out photons arriving at the peripheral edges",
-      "Light rays at off-axis angle $\u0007lpha$ travel further and strike the sensor at an oblique angle, reducing apparent pupil area",
+      "Light rays at off-axis angle $\\alpha$ travel further and strike the sensor at an oblique angle, reducing apparent pupil area",
       "CMOS photo-sites are physically smaller at the sensor borders",
       "The optical glass absorbs blue wavelengths at non-zero incidence"
     ],
     "ans": 1,
-    "exp": "The $\\cos^4 \u0007lpha$ radiometric law of lens illumination states that image irradiance $E$ drops as $\\cos^4 \u0007lpha$ away from the optical axis due to four geometric factors: inverse-square distance falloff ($\\cos^2 \u0007lpha$), projection of the entrance pupil ($\\cos \u0007lpha$), and projection onto the detector surface ($\\cos \u0007lpha$).",
+    "exp": "The $\\cos^4 \\alpha$ radiometric law of lens illumination states that image irradiance $E$ drops as $\\cos^4 \\alpha$ away from the optical axis due to four geometric factors: inverse-square distance falloff ($\\cos^2 \\alpha$), projection of the entrance pupil ($\\cos \\alpha$), and projection onto the detector surface ($\\cos \\alpha$).",
     "uni": true
   },
   {
@@ -373,7 +373,7 @@ const DIP_QUIZ_DATA = [
       "80 samples/mm"
     ],
     "ans": 2,
-    "exp": "By the Nyquist criterion, the minimum sampling frequency $f_s$ must be at least twice the maximum signal frequency: $f_s \\ge 2 f_{\\max} = 2 \times 20 = 40 \\text{ samples/mm}$.",
+    "exp": "By the Nyquist criterion, the minimum sampling frequency $f_s$ must be at least twice the maximum signal frequency: $f_s \\ge 2 f_{\\max} = 2 \\times 20 = 40 \\text{ samples/mm}$.",
     "uni": true
   },
   {
@@ -577,7 +577,7 @@ const DIP_QUIZ_DATA = [
       "A lowpass frequency attenuator"
     ],
     "ans": 1,
-    "exp": "The Laplacian $\nabla^2 f = \frac{\\partial^2 f}{\\partial x^2} + \frac{\\partial^2 f}{\\partial y^2}$ is a linear, second-order derivative operator. Being an isotropic filter, its response is invariant to the rotation of discontinuities in the image.",
+    "exp": "The Laplacian $\\nabla^2 f = \\frac{\\partial^2 f}{\\partial x^2} + \\frac{\\partial^2 f}{\\partial y^2}$ is a linear, second-order derivative operator. Being an isotropic filter, its response is invariant to the rotation of discontinuities in the image.",
     "uni": true
   },
   {
@@ -628,7 +628,7 @@ const DIP_QUIZ_DATA = [
       "$\\begin{bmatrix} 0 & -1 & 0 \\\\ -1 & 4 & -1 \\\\ 0 & -1 & 0 \\end{bmatrix}$ (Laplacian)"
     ],
     "ans": 1,
-    "exp": "The Sobel operator applies a central difference derivative in the $x$-direction combined with triangular $[1, 2, 1]^T$ smoothing in the $y$-direction to suppress noise: $G_x = \begin{bmatrix} -1 & 0 & 1 \\ -2 & 0 & 2 \\ -1 & 0 & 1 \\end{bmatrix}$.",
+    "exp": "The Sobel operator applies a central difference derivative in the $x$-direction combined with triangular $[1, 2, 1]^T$ smoothing in the $y$-direction to suppress noise: $G_x = \\begin{bmatrix} -1 & 0 & 1 \\\\ -2 & 0 & 2 \\\\ -1 & 0 & 1 \\end{bmatrix}$.",
     "uni": true
   },
   {
@@ -713,7 +713,7 @@ const DIP_QUIZ_DATA = [
       "$H(u, v) = \\log(1 + D(u, v))$"
     ],
     "ans": 0,
-    "exp": "The standard Butterworth LPF formula is $H(u, v) = \frac{1}{1 + [D(u, v) / D_0]^{2n}}$. When $D(u,v) = D_0$, $H(u,v) = 0.5$ (or $1/\\sqrt{2}$ in power), providing a smooth transition controlled by order $n$ without the abrupt step of an ideal filter.",
+    "exp": "The standard Butterworth LPF formula is $H(u, v) = \\frac{1}{1 + [D(u, v) / D_0]^{2n}}$. When $D(u,v) = D_0$, $H(u,v) = 0.5$ (or $1/\\sqrt{2}$ in power), providing a smooth transition controlled by order $n$ without the abrupt step of an ideal filter.",
     "uni": true
   },
   {
@@ -730,7 +730,7 @@ const DIP_QUIZ_DATA = [
       "Salt-and-pepper noise"
     ],
     "ans": 2,
-    "exp": "Rayleigh noise has the PDF $p(z) = \frac{2}{b}(z - a) e^{-(z-a)^2 / b}$ for $z \\ge a$ and $0$ for $z < a$. It exhibits a strict lower bound $a$ with a skewed positive tail and models range imaging modalities like ultrasound, MRI magnitude, and coherent radar speckle.",
+    "exp": "Rayleigh noise has the PDF $p(z) = \\frac{2}{b}(z - a) e^{-(z-a)^2 / b}$ for $z \\ge a$ and $0$ for $z < a$. It exhibits a strict lower bound $a$ with a skewed positive tail and models range imaging modalities like ultrasound, MRI magnitude, and coherent radar speckle.",
     "uni": true
   },
   {
@@ -781,7 +781,7 @@ const DIP_QUIZ_DATA = [
       "The spatial gradient ratio $G_y / G_x$"
     ],
     "ans": 0,
-    "exp": "The Wiener filter transfer function is $\\hat{F}(u,v) = \\left[ \frac{H^*(u,v)}{|H(u,v)|^2 + S_\\eta(u,v)/S_f(u,v)} \right] G(u,v)$. When the noise power is high or signal is low, the ratio $S_\\eta/S_f$ dominates the denominator, gracefully attenuating corrupted frequencies rather than blowing up.",
+    "exp": "The Wiener filter transfer function is $\\hat{F}(u,v) = \\left[ \\frac{H^*(u,v)}{|H(u,v)|^2 + S_\\eta(u,v)/S_f(u,v)} \\right] G(u,v)$. When the noise power is high or signal is low, the ratio $S_\\eta/S_f$ dominates the denominator, gracefully attenuating corrupted frequencies rather than blowing up.",
     "uni": true
   },
   {
@@ -985,7 +985,7 @@ const DIP_QUIZ_DATA = [
       "Extracts internal skeleton lines"
     ],
     "ans": 1,
-    "exp": "Opening ($A \\circ B$) eliminates small bright foreground details, severs thin bridges between objects, and smooths outer object contours without changing the global geometry of large components. Morphological Closing ($A \bullet B$), by contrast, fills small dark holes and connects narrow gaps.",
+    "exp": "Opening ($A \\circ B$) eliminates small bright foreground details, severs thin bridges between objects, and smooths outer object contours without changing the global geometry of large components. Morphological Closing ($A \\bullet B$), by contrast, fills small dark holes and connects narrow gaps.",
     "uni": true
   },
   {
@@ -1053,7 +1053,7 @@ const DIP_QUIZ_DATA = [
       "By computing morphological hit-or-miss transforms"
     ],
     "ans": 1,
-    "exp": "Lindeberg proved that $\\sigma^2 \nabla^2 G$ provides true scale invariance. David Lowe showed that the Difference of Gaussians (DoG) $D(x, y, \\sigma) = (G(x,y,k\\sigma) - G(x,y,\\sigma)) * I(x,y)$ provides a close approximation to $\\sigma^2 \nabla^2 G$ using simple image subtractions across octaves.",
+    "exp": "Lindeberg proved that $\\sigma^2 \\nabla^2 G$ provides true scale invariance. David Lowe showed that the Difference of Gaussians (DoG) $D(x, y, \\sigma) = (G(x,y,k\\sigma) - G(x,y,\\sigma)) * I(x,y)$ provides a close approximation to $\\sigma^2 \\nabla^2 G$ using simple image subtractions across octaves.",
     "uni": true
   },
   {
@@ -1070,7 +1070,7 @@ const DIP_QUIZ_DATA = [
       "32 dimensions: a binary string of pairwise comparisons"
     ],
     "ans": 1,
-    "exp": "The canonical SIFT descriptor samples gradients around the keypoint aligned to its dominant orientation, partitions the $16 \times 16$ window into a $4 \times 4$ grid of cells, and computes an 8-bin gradient orientation histogram in each cell: $4 \times 4 \times 8 = 128$ floating-point dimensions.",
+    "exp": "The canonical SIFT descriptor samples gradients around the keypoint aligned to its dominant orientation, partitions the $16 \\times 16$ window into a $4 \\times 4$ grid of cells, and computes an 8-bin gradient orientation histogram in each cell: $4 \\times 4 \\times 8 = 128$ floating-point dimensions.",
     "uni": true
   },
   {
@@ -1138,7 +1138,7 @@ const DIP_QUIZ_DATA = [
       "$\\text{PSNR} = 100 \\times (1 - \\text{MSE})$"
     ],
     "ans": 0,
-    "exp": "PSNR is defined as $\text{PSNR} = 10 \\log_{10} \\left( \frac{\text{MAX}_I^2}{\text{MSE}} \right) = 20 \\log_{10} \\left( \frac{255}{\\sqrt{\text{MSE}}} \right)$ for 8-bit images where $\text{MAX}_I = 2^8 - 1 = 255$. Typical acceptable lossy compression yields PSNR values between 30 dB and 50 dB.",
+    "exp": "PSNR is defined as $\\text{PSNR} = 10 \\log_{10} \\left( \\frac{\\text{MAX}_I^2}{\\text{MSE}} \\right) = 20 \\log_{10} \\left( \\frac{255}{\\sqrt{\\text{MSE}}} \\right)$ for 8-bit images where $\\text{MAX}_I = 2^8 - 1 = 255$. Typical acceptable lossy compression yields PSNR values between 30 dB and 50 dB.",
     "uni": true
   },
   {
@@ -1155,7 +1155,7 @@ const DIP_QUIZ_DATA = [
       "The dynamic range $2^k - 1$"
     ],
     "ans": 1,
-    "exp": "Shannon's noiseless source coding theorem establishes that the average code word length $L_{\text{avg}} \\ge H(X)$, where entropy $H(X) = -\\sum p_i \\log_2 p_i$ measures the fundamental uncertainty/information content. No lossless coding system can represent the source in fewer average bits than $H(X)$.",
+    "exp": "Shannon's noiseless source coding theorem establishes that the average code word length $L_{\\text{avg}} \\ge H(X)$, where entropy $H(X) = -\\sum p_i \\log_2 p_i$ measures the fundamental uncertainty/information content. No lossless coding system can represent the source in fewer average bits than $H(X)$.",
     "uni": true
   },
   {
@@ -1206,7 +1206,7 @@ const DIP_QUIZ_DATA = [
       "$64 \\times 64$ pixels"
     ],
     "ans": 1,
-    "exp": "Baseline JPEG subdivides each color channel into non-overlapping blocks of $8 \times 8$ pixels. This block size provides an optimal compromise between high energy compaction and low computational complexity.",
+    "exp": "Baseline JPEG subdivides each color channel into non-overlapping blocks of $8 \\times 8$ pixels. This block size provides an optimal compromise between high energy compaction and low computational complexity.",
     "uni": true
   },
   {
@@ -1223,7 +1223,7 @@ const DIP_QUIZ_DATA = [
       "To compute the inverse Fourier transform faster"
     ],
     "ans": 1,
-    "exp": "Because high-frequency coefficients located towards the bottom-right of the $8 \times 8$ matrix are heavily quantized to zero, zig-zag scanning transverses diagonals from top-left (DC and low frequencies) to bottom-right, producing long consecutive runs of zero values terminated by an End-Of-Block (EOB) symbol.",
+    "exp": "Because high-frequency coefficients located towards the bottom-right of the $8 \\times 8$ matrix are heavily quantized to zero, zig-zag scanning transverses diagonals from top-left (DC and low frequencies) to bottom-right, producing long consecutive runs of zero values terminated by an End-Of-Block (EOB) symbol.",
     "uni": true
   },
   {
@@ -1240,7 +1240,7 @@ const DIP_QUIZ_DATA = [
       "It is averaged across all pixels in the entire image"
     ],
     "ans": 1,
-    "exp": "Because average brightness varies smoothly between adjacent $8 \times 8$ blocks, DC coefficients exhibit strong inter-block correlation. JPEG encodes DC coefficients differentially (using Differential Pulse Code Modulation DPCM), recording only the difference $\\Delta \text{DC}$ between consecutive blocks.",
+    "exp": "Because average brightness varies smoothly between adjacent $8 \\times 8$ blocks, DC coefficients exhibit strong inter-block correlation. JPEG encodes DC coefficients differentially (using Differential Pulse Code Modulation DPCM), recording only the difference $\\Delta \\text{DC}$ between consecutive blocks.",
     "uni": true
   },
   {
@@ -1257,7 +1257,7 @@ const DIP_QUIZ_DATA = [
       "Salt-and-pepper noise"
     ],
     "ans": 1,
-    "exp": "Because standard JPEG processes independent $8 \times 8$ blocks, high compression discards inter-block boundary continuity, producing visible square 'blocking artifacts'. JPEG 2000 applies the Discrete Wavelet Transform globally across the entire image without block partitioning, resulting in gradual, soft blurring rather than block seams.",
+    "exp": "Because standard JPEG processes independent $8 \\times 8$ blocks, high compression discards inter-block boundary continuity, producing visible square 'blocking artifacts'. JPEG 2000 applies the Discrete Wavelet Transform globally across the entire image without block partitioning, resulting in gradual, soft blurring rather than block seams.",
     "uni": true
   },
   {
@@ -1325,7 +1325,7 @@ const DIP_QUIZ_DATA = [
       "$36 \\times 36$"
     ],
     "ans": 2,
-    "exp": "Output size formula: $O = \\lfloor (W - K + 2P)/S \rfloor + 1 = \\lfloor (32 - 5 + 2(2))/1 \rfloor + 1 = \\lfloor (32 - 5 + 4)/1 \rfloor + 1 = 31 + 1 = 32$. This configuration preserves dimensions and is known as 'Same' padding.",
+    "exp": "Output size formula: $O = \\lfloor (W - K + 2P)/S \\rfloor + 1 = \\lfloor (32 - 5 + 2(2))/1 \\rfloor + 1 = \\lfloor (32 - 5 + 4)/1 \\rfloor + 1 = 31 + 1 = 32$. This configuration preserves dimensions and is known as 'Same' padding.",
     "uni": true
   },
   {
@@ -1342,7 +1342,7 @@ const DIP_QUIZ_DATA = [
       "1,048,576 parameters"
     ],
     "ans": 2,
-    "exp": "Number of weights = $K_h \times K_w \times C_{\text{in}} \times C_{\text{out}} = 3 \times 3 \times 64 \times 128 = 73,728$. Adding one bias per output filter ($+128$ biases) gives: $73,728 + 128 = 73,856$ trainable parameters.",
+    "exp": "Number of weights = $K_h \\times K_w \\times C_{\\text{in}} \\times C_{\\text{out}} = 3 \\times 3 \\times 64 \\times 128 = 73,728$. Adding one bias per output filter ($+128$ biases) gives: $73,728 + 128 = 73,856$ trainable parameters.",
     "uni": true
   },
   {
@@ -1359,7 +1359,7 @@ const DIP_QUIZ_DATA = [
       "To invert color channels from RGB to BGR"
     ],
     "ans": 1,
-    "exp": "Max pooling ($2 \times 2$ with stride 2) extracts the maximum activation in each non-overlapping quadrant, halving spatial height and width ($H/2, W/2$). This progressively reduces tensor dimensionality, reduces memory footprint, and provides local spatial translation invariance.",
+    "exp": "Max pooling ($2 \\times 2$ with stride 2) extracts the maximum activation in each non-overlapping quadrant, halving spatial height and width ($H/2, W/2$). This progressively reduces tensor dimensionality, reduces memory footprint, and provides local spatial translation invariance.",
     "uni": true
   },
   {
@@ -1376,7 +1376,7 @@ const DIP_QUIZ_DATA = [
       "Completely eliminating fully connected layers"
     ],
     "ans": 1,
-    "exp": "A stack of two $3 \times 3$ conv layers has an effective receptive field of $5 \times 5$; a stack of three has a receptive field of $7 \times 7$. Stacking three $3 \times 3$ layers uses $3 \times (3^2 C^2) = 27 C^2$ parameters versus $7^2 C^2 = 49 C^2$ (a 45% parameter reduction) while incorporating three non-linear ReLU activations instead of one.",
+    "exp": "A stack of two $3 \\times 3$ conv layers has an effective receptive field of $5 \\times 5$; a stack of three has a receptive field of $7 \\times 7$. Stacking three $3 \\times 3$ layers uses $3 \\times (3^2 C^2) = 27 C^2$ parameters versus $7^2 C^2 = 49 C^2$ (a 45% parameter reduction) while incorporating three non-linear ReLU activations instead of one.",
     "uni": true
   },
   {
@@ -1393,7 +1393,7 @@ const DIP_QUIZ_DATA = [
       "By training each layer one at a time with SVMs"
     ],
     "ans": 1,
-    "exp": "In plain deep networks, gradients vanish as they backpropagate through dozens of weight multiplications. ResNet reformulates layers to learn a residual mapping $\\mathcal{F}(x) = \\mathcal{H}(x) - x$. The addition of identity shortcut $x$ ensures that $\frac{\\partial \\mathcal{E}}{\\partial x} = \frac{\\partial \\mathcal{E}}{\\partial \\mathcal{H}} (1 + \frac{\\partial \\mathcal{F}}{\\partial x})$, guaranteeing a clear gradient highway back to early layers.",
+    "exp": "In plain deep networks, gradients vanish as they backpropagate through dozens of weight multiplications. ResNet reformulates layers to learn a residual mapping $\\mathcal{F}(x) = \\mathcal{H}(x) - x$. The addition of identity shortcut $x$ ensures that $\\frac{\\partial \\mathcal{E}}{\\partial x} = \\frac{\\partial \\mathcal{E}}{\\partial \\mathcal{H}} (1 + \\frac{\\partial \\mathcal{F}}{\\partial x})$, guaranteeing a clear gradient highway back to early layers.",
     "uni": true
   },
   {
@@ -1427,7 +1427,7 @@ const DIP_QUIZ_DATA = [
       "$\\text{IoU} = \\text{Area}(A) - \\text{Area}(B)$"
     ],
     "ans": 1,
-    "exp": "IoU (also known as the Jaccard Index) measures overlap accuracy: $\text{IoU} = \frac{\text{Area}(A \\cap B)}{\text{Area}(A \\cup B)}$. A prediction is typically counted as a True Positive (TP) if $\text{IoU} \\ge 0.5$ (or $0.75$ in strict benchmarks).",
+    "exp": "IoU (also known as the Jaccard Index) measures overlap accuracy: $\\text{IoU} = \\frac{\\text{Area}(A \\cap B)}{\\text{Area}(A \\cup B)}$. A prediction is typically counted as a True Positive (TP) if $\\text{IoU} \\ge 0.5$ (or $0.75$ in strict benchmarks).",
     "uni": true
   },
   {
@@ -1478,7 +1478,7 @@ const DIP_QUIZ_DATA = [
       "It runs Canny edge detection before computing loss"
     ],
     "ans": 1,
-    "exp": "A Denoising Autoencoder receives an intentionally corrupted image $\tilde{x} \\sim q(\tilde{x} \\mid x)$ as input. Its reconstruction loss (MSE: $\\|g(f(\tilde{x})) - x\\|^2$) penalizes differences against the pristine, uncorrupted ground-truth image $x$, forcing the network to project corrupted states back onto the manifold of clean images.",
+    "exp": "A Denoising Autoencoder receives an intentionally corrupted image $\\tilde{x} \\sim q(\\tilde{x} \\mid x)$ as input. Its reconstruction loss (MSE: $\\|g(f(\\tilde{x})) - x\\|^2$) penalizes differences against the pristine, uncorrupted ground-truth image $x$, forcing the network to project corrupted states back onto the manifold of clean images.",
     "uni": true
   },
   {
@@ -1495,7 +1495,7 @@ const DIP_QUIZ_DATA = [
       "The Zero Noise Assumption"
     ],
     "ans": 1,
-    "exp": "The brightness constancy assumption states that the illumination of an object point remains constant over a small time increment $\\Delta t$: $I(x+\\Delta x, y+\\Delta y, t+\\Delta t) = I(x, y, t)$. Expanding in a Taylor series yields $I + I_x \\Delta x + I_y \\Delta y + I_t \\Delta t \u0007pprox I$, which simplifies to $I_x u + I_y v + I_t = 0$.",
+    "exp": "The brightness constancy assumption states that the illumination of an object point remains constant over a small time increment $\\Delta t$: $I(x+\\Delta x, y+\\Delta y, t+\\Delta t) = I(x, y, t)$. Expanding in a Taylor series yields $I + I_x \\Delta x + I_y \\Delta y + I_t \\Delta t \\approx I$, which simplifies to $I_x u + I_y v + I_t = 0$.",
     "uni": true
   },
   {
@@ -1529,7 +1529,7 @@ const DIP_QUIZ_DATA = [
       "It averages velocities across the entire 10-minute video"
     ],
     "ans": 1,
-    "exp": "Lucas-Kanade assumes motion $(u, v)$ is identical across an $n \times n$ local window (e.g., $5 \times 5 = 25$ pixels). This gives 25 equations for 2 unknowns: $A \u000bec{v} = -b$. The least-squares solution is $\u000bec{v} = (A^T A)^{-1} A^T (-b)$, which is reliably invertible whenever $A^T A$ (the Harris structure tensor) has two large eigenvalues (i.e. at corners).",
+    "exp": "Lucas-Kanade assumes motion $(u, v)$ is identical across an $n \\times n$ local window (e.g., $5 \\times 5 = 25$ pixels). This gives 25 equations for 2 unknowns: $A \\vec{v} = -b$. The least-squares solution is $\\vec{v} = (A^T A)^{-1} A^T (-b)$, which is reliably invertible whenever $A^T A$ (the Harris structure tensor) has two large eigenvalues (i.e. at corners).",
     "uni": true
   },
   {
@@ -1563,7 +1563,7 @@ const DIP_QUIZ_DATA = [
       "$+1000$ HU; $0$ HU"
     ],
     "ans": 0,
-    "exp": "The Hounsfield scale standardizes radiodensity: $\text{HU} = 1000 \times \frac{\\mu - \\mu_{\text{water}}}{\\mu_{\text{water}} - \\mu_{\text{air}}}$. Air has $\\mu \u0007pprox 0$, yielding $-1000\text{ HU}$; distilled water has $\text{HU} = 0$; soft tissue ranges from $+20$ to $+70\text{ HU}$; and dense cortical bone reaches $+1000\text{ to }+3000\text{ HU}$.",
+    "exp": "The Hounsfield scale standardizes radiodensity: $\\text{HU} = 1000 \\times \\frac{\\mu - \\mu_{\\text{water}}}{\\mu_{\\text{water}} - \\mu_{\\text{air}}}$. Air has $\\mu \\approx 0$, yielding $-1000\\text{ HU}$; distilled water has $\\text{HU} = 0$; soft tissue ranges from $+20$ to $+70\\text{ HU}$; and dense cortical bone reaches $+1000\\text{ to }+3000\\text{ HU}$.",
     "uni": true
   },
   {
@@ -1580,7 +1580,7 @@ const DIP_QUIZ_DATA = [
       "Applying JPEG compression to DICOM files"
     ],
     "ans": 1,
-    "exp": "Because computer screens only display 256 gray levels (8-bit) while CT data spans 4000+ HU, Windowing defines a center Window Level (WL) and Window Width (WW). Any HU value below $\text{WL} - \text{WW}/2$ is displayed as black (0), and above as white (255), focusing the full visual dynamic range onto target clinical tissues.",
+    "exp": "Because computer screens only display 256 gray levels (8-bit) while CT data spans 4000+ HU, Windowing defines a center Window Level (WL) and Window Width (WW). Any HU value below $\\text{WL} - \\text{WW}/2$ is displayed as black (0), and above as white (255), focusing the full visual dynamic range onto target clinical tissues.",
     "uni": true
   },
   {
@@ -1597,7 +1597,7 @@ const DIP_QUIZ_DATA = [
       "Laplacian Transform; reconstructed via Otsu thresholding"
     ],
     "ans": 1,
-    "exp": "The Radon Transform $R\\{f\\}(p, \theta) = \\int \\int f(x,y) \\delta(x\\cos\theta + y\\sin\theta - p) dx dy$ projects 2D tissue attenuation along lines into a sinogram. By the Projection-Slice Theorem, the cross-sectional slice is reconstructed using Filtered Backprojection (FBP), which filters radial projection frequencies before backprojecting.",
+    "exp": "The Radon Transform $R\\{f\\}(p, \\theta) = \\int \\int f(x,y) \\delta(x\\cos\\theta + y\\sin\\theta - p) dx dy$ projects 2D tissue attenuation along lines into a sinogram. By the Projection-Slice Theorem, the cross-sectional slice is reconstructed using Filtered Backprojection (FBP), which filters radial projection frequencies before backprojecting.",
     "uni": true
   },
   {
@@ -1648,7 +1648,7 @@ const DIP_QUIZ_DATA = [
       "ReLU limits the output values strictly between 0 and 1"
     ],
     "ans": 1,
-    "exp": "Sigmoids saturate at values near 0 and 1 where their derivative approaches 0 ($\\sigma'(x) \u0007pprox 0$). In multi-layer networks, chain-rule multiplication of these fractional derivatives causes gradients to rapidly vanish. ReLU has a non-saturating derivative of 1 for all positive activations, accelerating gradient descent convergence.",
+    "exp": "Sigmoids saturate at values near 0 and 1 where their derivative approaches 0 ($\\sigma'(x) \\approx 0$). In multi-layer networks, chain-rule multiplication of these fractional derivatives causes gradients to rapidly vanish. ReLU has a non-saturating derivative of 1 for all positive activations, accelerating gradient descent convergence.",
     "uni": true
   },
   {

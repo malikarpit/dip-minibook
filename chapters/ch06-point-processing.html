@@ -246,7 +246,6 @@
           </div>
         </div>
       </div>
-      </div>
 
       <!-- In-Page TOC -->
       <div class="chapter-checklist-card" style="margin-bottom:var(--em-space-8);">
@@ -816,7 +815,7 @@ r\in[0,1]
 $$
 </p>
 <p>and $c=1$:</p>
-<h3>If $0<\gamma<1$</h3>
+<h3>If $0\lt \gamma\lt 1$</h3>
 <p>The curve lies above the identity line:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -1167,7 +1166,7 @@ $$
 $$
 s=
 \begin{cases}
-0,&r<T\\
+0,&r\lt T\\
 255,&r\ge T
 \end{cases}
 $$
@@ -1387,7 +1386,7 @@ $$
 $$
 s=
 \begin{cases}
-0,&r<50\\
+0,&r\lt 50\\
 255,&r\ge50
 \end{cases}
 $$
@@ -1457,7 +1456,7 @@ threshold
 <tbody>
 <tr>
 <td>image too dark</td>
-<td>gamma with $\gamma<1$, suitable scaling</td>
+<td>gamma with $\gamma\lt 1$, suitable scaling</td>
 <td>expand lower intensities</td>
 </tr>
 <tr>
@@ -2170,7 +2169,7 @@ Does it actually improve the task?</code></pre>
 <li>Differentiate point processing from neighbourhood processing.</li>
 <li>Derive the negative transformation for an $L$-level image.</li>
 <li>Apply a log transform to a specified value.</li>
-<li>Explain the effect of $0<\gamma<1$ versus $\gamma>1$.</li>
+<li>Explain the effect of $0\lt \gamma\lt 1$ versus $\gamma>1$.</li>
 <li>Derive and apply a linear contrast-stretch formula.</li>
 <li>Why might clipping be necessary?</li>
 <li>Why is clipping different from rescaling?</li>
@@ -2270,15 +2269,15 @@ $$A = \begin{bmatrix} 50 & 70 & 80 & 60 \\ 100 & 140 & 130 & 90 \\ 110 & 150 & 6
   <p><strong>2. Piecewise Linear Function Formulation:</strong><br>
   
 $$s = T(r) = \begin{cases}
-  \alpha \cdot r = 0 & 0 \le r < 60 \\
+  \alpha \cdot r = 0 & 0 \le r \lt  60 \\
   s_1 + \beta (r - r_1) = 0 + \frac{255 - 0}{140 - 60} (r - 60) = 3.1875 (r - 60) & 60 \le r \le 140 \\
-  s_2 + \gamma (r - r_2) = 255 & 140 < r \le 255
+  s_2 + \gamma (r - r_2) = 255 & 140 \lt  r \le 255
   \end{cases}$$
 
   Here, slope in the active region is $\beta = \frac{255}{80} = 3.1875 > 1$, which stretches contrast dynamically.</p>
 
   <p><strong>3. Matrix Output Calculation:</strong><br>
-  - $r = 50 < 60 \implies s = 0$<br>
+  - $r = 50 \lt  60 \implies s = 0$<br>
   - $r = 60 \implies s = 3.1875(60 - 60) = 0$<br>
   - $r = 65 \implies s = \text{round}(3.1875 \times 5) = \text{round}(15.94) = 16$<br>
   - $r = 70 \implies s = \text{round}(3.1875 \times 10) = 32$<br>

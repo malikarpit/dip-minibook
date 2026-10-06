@@ -51,8 +51,8 @@ def update_chapter_file(ch_key, meta):
         </div>'''
 
     content = re.sub(
-        r'<div class="syllabus-anchor">.*?</div>\s*</div>',
-        new_syllabus_anchor + '\n      </div>',
+        r'<div class="syllabus-anchor">.*?<div class="syllabus-topic-detail">.*?</div>\s*</div>',
+        new_syllabus_anchor,
         content,
         flags=re.DOTALL,
         count=1
