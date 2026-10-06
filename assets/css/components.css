@@ -714,3 +714,269 @@
   line-height: 1.6;
   color: var(--tx-code);
 }
+
+/* ─────────────────────────────────────────────────────────────────────
+   08 · SYLLABUS & UNIT BADGES & FILTERS (DU DSE-3 MAPPING)
+   ───────────────────────────────────────────────────────────────────── */
+.unit-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: var(--em-radius-sm);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  line-height: 1;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.unit-badge-u1 {
+  background: rgba(2, 132, 199, 0.12);
+  color: #0284C7;
+  border-color: rgba(2, 132, 199, 0.35);
+}
+.unit-badge-u2 {
+  background: rgba(13, 148, 136, 0.12);
+  color: #0D9488;
+  border-color: rgba(13, 148, 136, 0.35);
+}
+.unit-badge-u3 {
+  background: rgba(124, 58, 237, 0.12);
+  color: #7C3AED;
+  border-color: rgba(124, 58, 237, 0.35);
+}
+.unit-badge-u4 {
+  background: rgba(225, 29, 72, 0.12);
+  color: #E11D48;
+  border-color: rgba(225, 29, 72, 0.35);
+}
+
+[data-theme="dark"] .unit-badge-u1 {
+  background: rgba(56, 189, 248, 0.16);
+  color: #38BDF8;
+  border-color: rgba(56, 189, 248, 0.40);
+}
+[data-theme="dark"] .unit-badge-u2 {
+  background: rgba(45, 212, 191, 0.16);
+  color: #2DD4BF;
+  border-color: rgba(45, 212, 191, 0.40);
+}
+[data-theme="dark"] .unit-badge-u3 {
+  background: rgba(167, 139, 250, 0.16);
+  color: #A78BFA;
+  border-color: rgba(167, 139, 250, 0.40);
+}
+[data-theme="dark"] .unit-badge-u4 {
+  background: rgba(251, 113, 133, 0.16);
+  color: #FB7185;
+  border-color: rgba(251, 113, 133, 0.40);
+}
+
+.syllabus-topic-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--em-text-secondary);
+  background: var(--em-surface-2);
+  border: 1px solid var(--em-border);
+  border-radius: var(--em-radius-sm);
+  padding: 3px 8px;
+  line-height: 1.35;
+}
+
+/* Enhanced Syllabus Anchor */
+.syllabus-anchor {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 18px;
+  background: var(--em-surface-2);
+  border: 1px solid var(--em-border-strong);
+  border-left: 4px solid var(--em-accent);
+  border-radius: var(--em-radius-md);
+  margin-bottom: var(--em-space-6);
+  font-size: 0.90rem;
+  line-height: 1.55;
+  box-shadow: var(--sh-sm);
+}
+.syllabus-anchor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.syllabus-anchor-header .unit-badge {
+  font-size: 0.72rem;
+}
+.syllabus-topic-name {
+  font-weight: 700;
+  color: var(--em-text);
+  font-size: 0.96rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.syllabus-topic-name span.label {
+  color: var(--em-accent-text);
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: var(--em-surface-3);
+  padding: 2px 6px;
+  border-radius: var(--em-radius-sm);
+}
+.syllabus-topic-detail {
+  font-size: 0.86rem;
+  color: var(--em-text-secondary);
+  line-height: 1.55;
+}
+
+/* Interactive Filter & View Control Bar */
+.syllabus-filter-wrapper {
+  background: var(--em-surface-1);
+  border: 1px solid var(--em-border-strong);
+  border-radius: var(--em-radius-lg);
+  padding: var(--em-space-5);
+  margin-bottom: var(--em-space-8);
+  box-shadow: var(--sh-sm);
+}
+.filter-row-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--em-space-4);
+  margin-bottom: var(--em-space-4);
+  padding-bottom: var(--em-space-4);
+  border-bottom: 1px solid var(--em-border);
+}
+.view-mode-toggle {
+  display: inline-flex;
+  background: var(--em-surface-2);
+  padding: 4px;
+  border-radius: var(--em-radius-md);
+  border: 1px solid var(--em-border);
+  gap: 4px;
+}
+.view-mode-btn {
+  padding: 8px 16px;
+  font-size: 0.86rem;
+  font-weight: 600;
+  border-radius: var(--em-radius-sm);
+  border: none;
+  background: transparent;
+  color: var(--em-text-secondary);
+  cursor: pointer;
+  transition: all var(--em-motion-fast) var(--em-ease);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.view-mode-btn.active {
+  background: var(--em-accent);
+  color: #FFFFFF;
+  box-shadow: var(--sh-sm);
+}
+.search-filter-box {
+  flex: 1;
+  min-width: 260px;
+  position: relative;
+}
+.search-filter-input {
+  width: 100%;
+  padding: 10px 14px 10px 38px;
+  border-radius: var(--em-radius-sm);
+  background: var(--em-surface-2);
+  border: 1px solid var(--em-border);
+  color: var(--em-text);
+  font-size: 0.90rem;
+  outline: none;
+  transition: border-color var(--em-motion-fast) var(--em-ease);
+}
+.search-filter-input:focus {
+  border-color: var(--em-accent);
+  box-shadow: 0 0 0 3px var(--em-accent-soft);
+}
+.search-filter-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--em-text-muted);
+}
+.unit-filter-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.unit-pill-btn {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  border: 1px solid var(--em-border);
+  background: var(--em-surface-2);
+  color: var(--em-text-secondary);
+  cursor: pointer;
+  transition: all var(--em-motion-fast) var(--em-ease);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.unit-pill-btn:hover {
+  background: var(--em-surface-3);
+  color: var(--em-text);
+  border-color: var(--em-border-strong);
+}
+.unit-pill-btn.active {
+  background: var(--em-surface-3);
+  color: var(--em-text);
+  border-color: var(--em-accent);
+  box-shadow: 0 0 0 2px var(--em-accent-soft);
+}
+.unit-pill-btn.active[data-unit="unit-1"] { border-color: #0284C7; color: #0284C7; }
+.unit-pill-btn.active[data-unit="unit-2"] { border-color: #0D9488; color: #0D9488; }
+.unit-pill-btn.active[data-unit="unit-3"] { border-color: #7C3AED; color: #7C3AED; }
+.unit-pill-btn.active[data-unit="unit-4"] { border-color: #E11D48; color: #E11D48; }
+
+[data-theme="dark"] .unit-pill-btn.active[data-unit="unit-1"] { border-color: #38BDF8; color: #38BDF8; }
+[data-theme="dark"] .unit-pill-btn.active[data-unit="unit-2"] { border-color: #2DD4BF; color: #2DD4BF; }
+[data-theme="dark"] .unit-pill-btn.active[data-unit="unit-3"] { border-color: #A78BFA; color: #A78BFA; }
+[data-theme="dark"] .unit-pill-btn.active[data-unit="unit-4"] { border-color: #FB7185; color: #FB7185; }
+
+/* Chapter cards item styling */
+.part-chapter-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--em-border);
+}
+.part-chapter-item:last-child {
+  border-bottom: none;
+}
+.part-chapter-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.part-chapter-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+

@@ -438,10 +438,10 @@ CHAPTERS_META = [
     },
     # ── PART IV: COMPRESSING IMAGES ──────────────────────────────────
     {
-        'id': 'DIP-U4-C21',
+        'id': 'DIP-U3-C21',
         'file': 'DIP_Ch21_Image_Compression_Fundamentals.md',
         'chapter_num': 21,
-        'unit_name': 'Unit IV', 'part_num': 'Part IV',
+        'unit_name': 'Unit III', 'part_num': 'Part IV',
         'part_id': 'part-iv',
         'part_name': 'Compressing Images',
         'title': 'Image Compression Fundamentals',
@@ -459,10 +459,10 @@ CHAPTERS_META = [
         'next_label': 'Next: Ch 22 — Lossless Coding (RLE & Huffman) →'
     },
     {
-        'id': 'DIP-U4-C22',
+        'id': 'DIP-U3-C22',
         'file': 'DIP_Ch22_Entropy_RLE_and_Huffman_Coding.md',
         'chapter_num': 22,
-        'unit_name': 'Unit IV', 'part_num': 'Part IV',
+        'unit_name': 'Unit III', 'part_num': 'Part IV',
         'part_id': 'part-iv',
         'part_name': 'Compressing Images',
         'title': 'Entropy, Run-Length Encoding & Huffman Coding',
@@ -480,10 +480,10 @@ CHAPTERS_META = [
         'next_label': 'Next: Ch 23 — Transform Coding & DCT →'
     },
     {
-        'id': 'DIP-U4-C23',
+        'id': 'DIP-U3-C23',
         'file': 'DIP_Ch23_Transform_Coding_and_DCT.md',
         'chapter_num': 23,
-        'unit_name': 'Unit IV', 'part_num': 'Part IV',
+        'unit_name': 'Unit III', 'part_num': 'Part IV',
         'part_id': 'part-iv',
         'part_name': 'Compressing Images',
         'title': 'Transform Coding & Discrete Cosine Transform',
@@ -501,10 +501,10 @@ CHAPTERS_META = [
         'next_label': 'Next: Ch 24 — JPEG Compression End to End →'
     },
     {
-        'id': 'DIP-U4-C24',
+        'id': 'DIP-U3-C24',
         'file': 'DIP_Ch24_JPEG_Compression_End_to_End.md',
         'chapter_num': 24,
-        'unit_name': 'Unit IV', 'part_num': 'Part IV',
+        'unit_name': 'Unit III', 'part_num': 'Part IV',
         'part_id': 'part-iv',
         'part_name': 'Compressing Images',
         'title': 'JPEG Compression End to End',
@@ -1089,6 +1089,7 @@ def build_chapter(md_path, meta):
       <!-- Chapter Hero -->
       <div class="chapter-hero">
         <div class="hero-meta">
+          <span class="unit-badge {'unit-badge-u1' if meta['unit_name'] == 'Unit I' else 'unit-badge-u2' if meta['unit_name'] == 'Unit II' else 'unit-badge-u3' if meta['unit_name'] == 'Unit III' else 'unit-badge-u4'}">🎓 {meta['unit_name']}</span>
           <span class="part-badge {meta['part_id']}">{meta['part_name']}</span>
           <span class="chapter-number">CHAPTER {meta['chapter_num']:02d}</span>
           <span class="reading-time">⏱️ {meta['read_time']}</span>
@@ -1100,7 +1101,10 @@ def build_chapter(md_path, meta):
         </p>
 
         <div class="syllabus-anchor">
-          <span class="syllabus-anchor-label">DU Syllabus</span>
+          <div class="syllabus-anchor-header">
+            <span class="syllabus-anchor-label">🎓 DU DSE-3 Syllabus Alignment</span>
+            <span class="unit-badge {'unit-badge-u1' if meta['unit_name'] == 'Unit I' else 'unit-badge-u2' if meta['unit_name'] == 'Unit II' else 'unit-badge-u3' if meta['unit_name'] == 'Unit III' else 'unit-badge-u4'}">{meta['unit_name']}</span>
+          </div>
           <span>{meta['uni_syllabus_text']}</span>
         </div>
       </div>

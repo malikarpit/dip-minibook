@@ -356,7 +356,158 @@
         </div>
       </div>
 
-      <!-- Part I Checklist -->
+            <!-- Syllabus & Order Filter Control Hub for Dashboard -->
+      <div class="syllabus-filter-wrapper">
+        <div class="filter-row-top">
+          <div>
+            <div style="font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--em-accent-text); margin-bottom: 6px;">Curriculum Arrangement</div>
+            <div class="view-mode-toggle" id="view-mode-toggle">
+              <button class="view-mode-btn active" id="btn-view-syllabus" data-mode="syllabus">
+                <span>📋</span> University Syllabus Order (4 Units)
+              </button>
+              <button class="view-mode-btn" id="btn-view-parts" data-mode="parts">
+                <span>📚</span> Book Architecture (5 Parts)
+              </button>
+            </div>
+          </div>
+          <div class="unit-filter-pills" id="unit-filter-pills">
+            <span style="font-size: 0.76rem; font-weight: 700; color: var(--em-text-muted); margin-right: 4px;">FILTER:</span>
+            <button class="unit-pill-btn active" data-unit="all">All Units (31)</button>
+            <button class="unit-pill-btn" data-unit="unit-1">Unit I (5)</button>
+            <button class="unit-pill-btn" data-unit="unit-2">Unit II (9)</button>
+            <button class="unit-pill-btn" data-unit="unit-3">Unit III (10)</button>
+            <button class="unit-pill-btn" data-unit="unit-4">Unit IV (7)</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Syllabus View Container -->
+      <div id="view-syllabus-container">
+      <!-- Unit I Checklist -->
+      <div class="chapter-checklist-card unit-check-card" data-unit="unit-1" style="margin-bottom: var(--em-space-6);">
+        <div class="checklist-title">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="unit-badge unit-badge-u1">🎓 Unit I</span>
+            <span>Introduction to Digital Image Processing</span>
+          </div>
+          <span class="tag-badge tag-core" id="badge-unit-1-status">5 Chapters Ready</span>
+        </div>
+        <div style="padding: 10px 18px; font-size: 0.84rem; color: var(--em-text-secondary); background: var(--em-surface-2); border-bottom: 1px solid var(--em-border);">
+          <strong>Syllabus Scope:</strong> Introduction to Digital Image Processing: Fundamentals of Image Processing, Image Formation, Sampling, and Quantization, Types of Images: Grayscale, RGB, Multispectral, Image Representation: Pixels, Bit Depth, and Resolution, Color Models: RGB, HSV, CMY, YUV, File Formats: BMP, JPEG, PNG, TIFF.
+        </div>
+        <div class="table-wrap">
+          <table class="checklist-table">
+            <thead>
+              <tr>
+                <th style="width: 70px;">Chapter</th>
+                <th style="min-width: 220px;">Chapter Title</th>
+                <th style="min-width: 260px;">Syllabus Topic Alignment</th>
+                <th style="width: 120px;">Progress</th>
+                <th style="width: 95px;">Status</th>
+                <th style="width: 80px;">Action</th>
+              </tr>
+            </thead>
+            <tbody id="unit-1-table-body">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <!-- Unit II Checklist -->
+      <div class="chapter-checklist-card unit-check-card" data-unit="unit-2" style="margin-bottom: var(--em-space-6);">
+        <div class="checklist-title">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="unit-badge unit-badge-u2">🎓 Unit II</span>
+            <span>Image Enhancement and Restoration</span>
+          </div>
+          <span class="tag-badge tag-core" id="badge-unit-2-status">9 Chapters Ready</span>
+        </div>
+        <div style="padding: 10px 18px; font-size: 0.84rem; color: var(--em-text-secondary); background: var(--em-surface-2); border-bottom: 1px solid var(--em-border);">
+          <strong>Syllabus Scope:</strong> Image Enhancement and Restoration: Spatial Domain Techniques, Histogram Equalization, Spatial Filtering: Smoothing, Sharpening, Edge Detection, Frequency Domain Techniques, Fourier Transform and Its Applications, Frequency Filters: Low-Pass, High-Pass, Band-Pass, Noise Reduction and Image Restoration Techniques.
+        </div>
+        <div class="table-wrap">
+          <table class="checklist-table">
+            <thead>
+              <tr>
+                <th style="width: 70px;">Chapter</th>
+                <th style="min-width: 220px;">Chapter Title</th>
+                <th style="min-width: 260px;">Syllabus Topic Alignment</th>
+                <th style="width: 120px;">Progress</th>
+                <th style="width: 95px;">Status</th>
+                <th style="width: 80px;">Action</th>
+              </tr>
+            </thead>
+            <tbody id="unit-2-table-body">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <!-- Unit III Checklist -->
+      <div class="chapter-checklist-card unit-check-card" data-unit="unit-3" style="margin-bottom: var(--em-space-6);">
+        <div class="checklist-title">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="unit-badge unit-badge-u3">🎓 Unit III</span>
+            <span>Image Analysis and Compression</span>
+          </div>
+          <span class="tag-badge tag-core" id="badge-unit-3-status">10 Chapters Ready</span>
+        </div>
+        <div style="padding: 10px 18px; font-size: 0.84rem; color: var(--em-text-secondary); background: var(--em-surface-2); border-bottom: 1px solid var(--em-border);">
+          <strong>Syllabus Scope:</strong> Image Analysis and Compression: Image Segmentation, Thresholding (Global, Adaptive), Region-Based Segmentation, Morphological Operations: Erosion, Dilation, Opening, Closing, Image Features and Descriptors, SIFT, SURF, HOG, Image Compression, Lossless vs. Lossy Compression, JPEG Compression Steps and Implementation.
+        </div>
+        <div class="table-wrap">
+          <table class="checklist-table">
+            <thead>
+              <tr>
+                <th style="width: 70px;">Chapter</th>
+                <th style="min-width: 220px;">Chapter Title</th>
+                <th style="min-width: 260px;">Syllabus Topic Alignment</th>
+                <th style="width: 120px;">Progress</th>
+                <th style="width: 95px;">Status</th>
+                <th style="width: 80px;">Action</th>
+              </tr>
+            </thead>
+            <tbody id="unit-3-table-body">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <!-- Unit IV Checklist -->
+      <div class="chapter-checklist-card unit-check-card" data-unit="unit-4" style="margin-bottom: var(--em-space-6);">
+        <div class="checklist-title">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="unit-badge unit-badge-u4">🎓 Unit IV</span>
+            <span>Advanced Topics in Digital Image Processing</span>
+          </div>
+          <span class="tag-badge tag-core" id="badge-unit-4-status">7 Chapters Ready</span>
+        </div>
+        <div style="padding: 10px 18px; font-size: 0.84rem; color: var(--em-text-secondary); background: var(--em-surface-2); border-bottom: 1px solid var(--em-border);">
+          <strong>Syllabus Scope:</strong> Advanced Topics in Digital Image Processing: Image Classification and Object Detection, Introduction to Convolutional Neural Networks (CNNs), Pretrained Models (VGG, ResNet, YOLO), Image Denoising using Autoencoders, Applications in Healthcare and Surveillance, Introduction to Video Processing and Motion Analysis.
+        </div>
+        <div class="table-wrap">
+          <table class="checklist-table">
+            <thead>
+              <tr>
+                <th style="width: 70px;">Chapter</th>
+                <th style="min-width: 220px;">Chapter Title</th>
+                <th style="min-width: 260px;">Syllabus Topic Alignment</th>
+                <th style="width: 120px;">Progress</th>
+                <th style="width: 95px;">Status</th>
+                <th style="width: 80px;">Action</th>
+              </tr>
+            </thead>
+            <tbody id="unit-4-table-body">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+      </div>
+
+      <!-- Parts View Container -->
+      <div id="view-parts-container" style="display: none;">
+      <!-- Part I: The Image Checklist -->
       <div class="chapter-checklist-card" style="margin-bottom: var(--em-space-6);">
         <div class="checklist-title">
           <span>Part I: The Image — Chapter Completion Tracker</span>
@@ -366,11 +517,12 @@
           <table class="checklist-table">
             <thead>
               <tr>
-                <th style="width: 80px;">Chapter</th>
-                <th>Title</th>
-                <th style="width: 130px;">Progress</th>
-                <th style="width: 100px;">Status</th>
-                <th style="width: 90px;">Action</th>
+                <th style="width: 70px;">Chapter</th>
+                <th style="min-width: 220px;">Title</th>
+                <th style="min-width: 260px;">Syllabus Topic</th>
+                <th style="width: 120px;">Progress</th>
+                <th style="width: 95px;">Status</th>
+                <th style="width: 80px;">Action</th>
               </tr>
             </thead>
             <tbody id="part1-table-body">
@@ -379,8 +531,7 @@
           </table>
         </div>
       </div>
-
-      <!-- Part II Checklist -->
+      <!-- Part II: Improving the Image Checklist -->
       <div class="chapter-checklist-card" style="margin-bottom: var(--em-space-6);">
         <div class="checklist-title">
           <span>Part II: Improving the Image — Chapter Completion Tracker</span>
@@ -390,11 +541,12 @@
           <table class="checklist-table">
             <thead>
               <tr>
-                <th style="width: 80px;">Chapter</th>
-                <th>Title</th>
-                <th style="width: 130px;">Progress</th>
-                <th style="width: 100px;">Status</th>
-                <th style="width: 90px;">Action</th>
+                <th style="width: 70px;">Chapter</th>
+                <th style="min-width: 220px;">Title</th>
+                <th style="min-width: 260px;">Syllabus Topic</th>
+                <th style="width: 120px;">Progress</th>
+                <th style="width: 95px;">Status</th>
+                <th style="width: 80px;">Action</th>
               </tr>
             </thead>
             <tbody id="part2-table-body">
@@ -403,8 +555,7 @@
           </table>
         </div>
       </div>
-
-      <!-- Part III Checklist -->
+      <!-- Part III: Understanding Content Checklist -->
       <div class="chapter-checklist-card" style="margin-bottom: var(--em-space-6);">
         <div class="checklist-title">
           <span>Part III: Understanding Content — Chapter Completion Tracker</span>
@@ -414,11 +565,12 @@
           <table class="checklist-table">
             <thead>
               <tr>
-                <th style="width: 80px;">Chapter</th>
-                <th>Title</th>
-                <th style="width: 130px;">Progress</th>
-                <th style="width: 100px;">Status</th>
-                <th style="width: 90px;">Action</th>
+                <th style="width: 70px;">Chapter</th>
+                <th style="min-width: 220px;">Title</th>
+                <th style="min-width: 260px;">Syllabus Topic</th>
+                <th style="width: 120px;">Progress</th>
+                <th style="width: 95px;">Status</th>
+                <th style="width: 80px;">Action</th>
               </tr>
             </thead>
             <tbody id="part3-table-body">
@@ -427,8 +579,7 @@
           </table>
         </div>
       </div>
-
-      <!-- Part IV Checklist -->
+      <!-- Part IV: Compressing Images Checklist -->
       <div class="chapter-checklist-card" style="margin-bottom: var(--em-space-6);">
         <div class="checklist-title">
           <span>Part IV: Compressing Images — Chapter Completion Tracker</span>
@@ -438,11 +589,12 @@
           <table class="checklist-table">
             <thead>
               <tr>
-                <th style="width: 80px;">Chapter</th>
-                <th>Title</th>
-                <th style="width: 130px;">Progress</th>
-                <th style="width: 100px;">Status</th>
-                <th style="width: 90px;">Action</th>
+                <th style="width: 70px;">Chapter</th>
+                <th style="min-width: 220px;">Title</th>
+                <th style="min-width: 260px;">Syllabus Topic</th>
+                <th style="width: 120px;">Progress</th>
+                <th style="width: 95px;">Status</th>
+                <th style="width: 80px;">Action</th>
               </tr>
             </thead>
             <tbody id="part4-table-body">
@@ -451,9 +603,8 @@
           </table>
         </div>
       </div>
-
-      <!-- Part V Checklist -->
-      <div class="chapter-checklist-card">
+      <!-- Part V: Intelligent Vision Checklist -->
+      <div class="chapter-checklist-card" style="margin-bottom: var(--em-space-6);">
         <div class="checklist-title">
           <span>Part V: Intelligent Vision — Chapter Completion Tracker</span>
           <span class="tag-badge tag-core" id="badge-part5-status">7 Chapters Ready</span>
@@ -462,11 +613,12 @@
           <table class="checklist-table">
             <thead>
               <tr>
-                <th style="width: 80px;">Chapter</th>
-                <th>Title</th>
-                <th style="width: 130px;">Progress</th>
-                <th style="width: 100px;">Status</th>
-                <th style="width: 90px;">Action</th>
+                <th style="width: 70px;">Chapter</th>
+                <th style="min-width: 220px;">Title</th>
+                <th style="min-width: 260px;">Syllabus Topic</th>
+                <th style="width: 120px;">Progress</th>
+                <th style="width: 95px;">Status</th>
+                <th style="width: 80px;">Action</th>
               </tr>
             </thead>
             <tbody id="part5-table-body">
@@ -474,6 +626,7 @@
             </tbody>
           </table>
         </div>
+      </div>
       </div>
 
       <!-- Data Export / Import Actions -->
@@ -496,51 +649,16 @@
   <script src="assets/js/core.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const CHAPTERS_PART1 = [
-        { id: 'ch01', num: '01', title: 'The Big Picture: What is an Image?', file: 'chapters/ch01-big-picture.html' },
-        { id: 'ch02', num: '02', title: 'Image Formation & Physical Acquisition', file: 'chapters/ch02-image-formation.html' },
-        { id: 'ch03', num: '03', title: 'Spatial Sampling & Quantization', file: 'chapters/ch03-sampling-quantization.html' },
-        { id: 'ch04', num: '04', title: 'Pixels, Matrices, Tensors & Resolution', file: 'chapters/ch04-image-representation.html' },
-        { id: 'ch05', num: '05', title: 'Colour Models & File Formats', file: 'chapters/ch05-colour-models-file-formats.html' }
-      ];
+      const CHAPTERS_ALL = [{'id': 'ch01', 'num': 1, 'num_str': '01', 'file': 'chapters/ch01-big-picture.html', 'title': 'The Big Picture: What is an Image?', 'short_title': 'The Big Picture', 'unit_id': 'unit-1', 'unit_num': 'Unit I', 'unit_title': 'Introduction to Digital Image Processing', 'part_id': 'part-i', 'part_name': 'Part I — The Image', 'topic_title': 'Fundamentals of Image Processing', 'syllabus_mention': 'Fundamentals of Image Processing: Definition of DIP, steps in digital image processing, components of an image processing system, visual perception, electromagnetic spectrum imaging.', 'syllabus_order': 1}, {'id': 'ch02', 'num': 2, 'num_str': '02', 'file': 'chapters/ch02-image-formation.html', 'title': 'Image Formation & Physical Acquisition', 'short_title': 'Formation & Acquisition', 'unit_id': 'unit-1', 'unit_num': 'Unit I', 'unit_title': 'Introduction to Digital Image Processing', 'part_id': 'part-i', 'part_name': 'Part I — The Image', 'topic_title': 'Image Formation', 'syllabus_mention': 'Image Formation: Physical basis of illumination & reflectance f(x,y)=i(x,y)r(x,y), camera geometry, thin lens formula, single sensor, sensor strip, and 2D focal plane arrays.', 'syllabus_order': 2}, {'id': 'ch03', 'num': 3, 'num_str': '03', 'file': 'chapters/ch03-sampling-quantization.html', 'title': 'Spatial Sampling & Quantization', 'short_title': 'Sampling & Quantization', 'unit_id': 'unit-1', 'unit_num': 'Unit I', 'unit_title': 'Introduction to Digital Image Processing', 'part_id': 'part-i', 'part_name': 'Part I — The Image', 'topic_title': 'Sampling, and Quantization', 'syllabus_mention': 'Sampling, and Quantization: 2D sampling lattice, Nyquist-Shannon sampling theorem, spatial aliasing, uniform and non-uniform quantization, bit depth k, levels L=2^k.', 'syllabus_order': 3}, {'id': 'ch04', 'num': 4, 'num_str': '04', 'file': 'chapters/ch04-image-representation.html', 'title': 'Pixels, Matrices, Tensors & Resolution', 'short_title': 'Pixels, Matrices & Resolution', 'unit_id': 'unit-1', 'unit_num': 'Unit I', 'unit_title': 'Introduction to Digital Image Processing', 'part_id': 'part-i', 'part_name': 'Part I — The Image', 'topic_title': 'Types of Images & Image Representation: Pixels, Bit Depth, and Resolution', 'syllabus_mention': 'Types of Images: Grayscale, RGB, Multispectral; Image Representation: Pixels, Bit Depth, and Resolution, 4/8/m-connectivity, adjacency, distance metrics (Euclidean, D4, D8).', 'syllabus_order': 4}, {'id': 'ch05', 'num': 5, 'num_str': '05', 'file': 'chapters/ch05-colour-models-file-formats.html', 'title': 'Colour Models & Image File Formats', 'short_title': 'Colour Models & Formats', 'unit_id': 'unit-1', 'unit_num': 'Unit I', 'unit_title': 'Introduction to Digital Image Processing', 'part_id': 'part-i', 'part_name': 'Part I — The Image', 'topic_title': 'Color Models: RGB, HSV, CMY, YUV & File Formats: BMP, JPEG, PNG, TIFF', 'syllabus_mention': 'Color Models: RGB, HSV, CMY, YUV; File Formats: BMP, JPEG, PNG, TIFF, CIE chromaticity, chroma subsampling (4:4:4, 4:2:2, 4:2:0), and container headers.', 'syllabus_order': 5}, {'id': 'ch06', 'num': 6, 'num_str': '06', 'file': 'chapters/ch06-point-processing.html', 'title': 'Point Processing & Intensity Transformations', 'short_title': 'Point Processing & Intensity', 'unit_id': 'unit-2', 'unit_num': 'Unit II', 'unit_title': 'Image Enhancement and Restoration', 'part_id': 'part-ii', 'part_name': 'Part II — Improving the Image', 'topic_title': 'Spatial Domain Techniques', 'syllabus_mention': 'Spatial Domain Techniques: Basic gray-level transformations (image negative, log transform, power-law gamma transformations), contrast stretching, bit-plane slicing.', 'syllabus_order': 6}, {'id': 'ch07', 'num': 7, 'num_str': '07', 'file': 'chapters/ch07-histograms-equalization.html', 'title': 'Histograms & Contrast Enhancement', 'short_title': 'Histograms & Equalization', 'unit_id': 'unit-2', 'unit_num': 'Unit II', 'unit_title': 'Image Enhancement and Restoration', 'part_id': 'part-ii', 'part_name': 'Part II — Improving the Image', 'topic_title': 'Histogram Equalization', 'syllabus_mention': 'Histogram Equalization: Histogram definition, normalized histogram, discrete histogram equalization derivation, histogram specification/matching, local processing, CLAHE.', 'syllabus_order': 7}, {'id': 'ch08', 'num': 8, 'num_str': '08', 'file': 'chapters/ch08-spatial-filtering.html', 'title': 'Spatial Filtering & Convolution', 'short_title': 'Spatial Filtering & Convolution', 'unit_id': 'unit-2', 'unit_num': 'Unit II', 'unit_title': 'Image Enhancement and Restoration', 'part_id': 'part-ii', 'part_name': 'Part II — Improving the Image', 'topic_title': 'Spatial Filtering: Mechanics & Convolution', 'syllabus_mention': 'Spatial Filtering: Mechanics of 2D linear spatial filtering, correlation vs convolution, boundary padding (zero, clamp, reflection, wrap), separable 2D convolution.', 'syllabus_order': 8}, {'id': 'ch09', 'num': 9, 'num_str': '09', 'file': 'chapters/ch09-smoothing-noise-reduction.html', 'title': 'Smoothing & Noise Reduction', 'short_title': 'Smoothing & Noise Reduction', 'unit_id': 'unit-2', 'unit_num': 'Unit II', 'unit_title': 'Image Enhancement and Restoration', 'part_id': 'part-ii', 'part_name': 'Part II — Improving the Image', 'topic_title': 'Spatial Filtering: Smoothing', 'syllabus_mention': 'Spatial Filtering: Smoothing: Box filters, weighted average, Gaussian filter derivation and parameter sigma selection, non-linear median filtering, noise reduction, bilateral smoothing.', 'syllabus_order': 9}, {'id': 'ch10', 'num': 10, 'num_str': '10', 'file': 'chapters/ch10-sharpening-edge-detection.html', 'title': 'Sharpening & Edge Detection', 'short_title': 'Sharpening & Edge Detection', 'unit_id': 'unit-2', 'unit_num': 'Unit II', 'unit_title': 'Image Enhancement and Restoration', 'part_id': 'part-ii', 'part_name': 'Part II — Improving the Image', 'topic_title': 'Spatial Filtering: Sharpening, Edge Detection', 'syllabus_mention': 'Spatial Filtering: Sharpening, Edge Detection: First derivatives (Roberts, Prewitt, Sobel), second derivative (Laplacian), unsharp masking, highboost, LoG, Canny edge detector.', 'syllabus_order': 10}, {'id': 'ch11', 'num': 11, 'num_str': '11', 'file': 'chapters/ch11-geometric-transforms.html', 'title': 'Geometric Transformations & Interpolation', 'short_title': 'Geometric Transforms', 'unit_id': 'unit-2', 'unit_num': 'Unit II', 'unit_title': 'Image Enhancement and Restoration', 'part_id': 'part-ii', 'part_name': 'Part II — Improving the Image', 'topic_title': 'Spatial Enhancement: Geometric Transformations & Interpolation', 'syllabus_mention': 'Spatial Domain Techniques (Geometric): Forward vs inverse mapping, affine coordinate matrices in homogeneous coordinates, nearest-neighbor, bilinear, and bicubic interpolation.', 'syllabus_order': 11}, {'id': 'ch12', 'num': 12, 'num_str': '12', 'file': 'chapters/ch12-fourier-transform.html', 'title': '2D Fourier Transform & Frequency Domain', 'short_title': 'Fourier Transform & Frequency', 'unit_id': 'unit-2', 'unit_num': 'Unit II', 'unit_title': 'Image Enhancement and Restoration', 'part_id': 'part-ii', 'part_name': 'Part II — Improving the Image', 'topic_title': 'Frequency Domain Techniques, Fourier Transform and Its Applications', 'syllabus_mention': 'Frequency Domain Techniques, Fourier Transform and Its Applications: 1D and 2D Discrete Fourier Transform (DFT), Fourier magnitude & phase spectrum, centering via (-1)^(x+y), 2D Convolution Theorem, FFT.', 'syllabus_order': 12}, {'id': 'ch13', 'num': 13, 'num_str': '13', 'file': 'chapters/ch13-frequency-filtering.html', 'title': 'Frequency-Domain Filtering', 'short_title': 'Frequency-Domain Filtering', 'unit_id': 'unit-2', 'unit_num': 'Unit II', 'unit_title': 'Image Enhancement and Restoration', 'part_id': 'part-ii', 'part_name': 'Part II — Improving the Image', 'topic_title': 'Frequency Filters: Low-Pass, High-Pass, Band-Pass', 'syllabus_mention': 'Frequency Filters: Low-Pass, High-Pass, Band-Pass: Ideal, Butterworth, Gaussian lowpass (ILPF, BLPF, GLPF) and highpass (IHPF, BHPF, GHPF) filters, ringing artifacts, notch filters.', 'syllabus_order': 13}, {'id': 'ch14', 'num': 14, 'num_str': '14', 'file': 'chapters/ch14-image-restoration.html', 'title': 'Image Restoration & Deblurring', 'short_title': 'Restoration & Deblurring', 'unit_id': 'unit-2', 'unit_num': 'Unit II', 'unit_title': 'Image Enhancement and Restoration', 'part_id': 'part-ii', 'part_name': 'Part II — Improving the Image', 'topic_title': 'Noise Reduction and Image Restoration Techniques', 'syllabus_mention': 'Noise Reduction and Image Restoration Techniques: Image degradation model g=f*h+n, noise probability distributions, inverse filtering noise catastrophe, Wiener (MMSE) filtering, constrained least squares.', 'syllabus_order': 14}, {'id': 'ch15', 'num': 15, 'num_str': '15', 'file': 'chapters/ch15-segmentation-fundamentals.html', 'title': 'Image Segmentation Fundamentals & Edge Linking', 'short_title': 'Segmentation Fundamentals', 'unit_id': 'unit-3', 'unit_num': 'Unit III', 'unit_title': 'Image Analysis and Compression', 'part_id': 'part-iii', 'part_name': 'Part III — Understanding Content', 'topic_title': 'Image Segmentation', 'syllabus_mention': 'Image Segmentation: Detection of discontinuities, point, line, and edge detection, local edge linking, global Hough transform (rho = x*cos(theta) + y*sin(theta)).', 'syllabus_order': 15}, {'id': 'ch16', 'num': 16, 'num_str': '16', 'file': 'chapters/ch16-thresholding-otsu.html', 'title': "Thresholding & Otsu's Method", 'short_title': 'Thresholding & Otsu', 'unit_id': 'unit-3', 'unit_num': 'Unit III', 'unit_title': 'Image Analysis and Compression', 'part_id': 'part-iii', 'part_name': 'Part III — Understanding Content', 'topic_title': 'Thresholding (Global, Adaptive)', 'syllabus_mention': 'Thresholding (Global, Adaptive): Role of illumination in thresholding, basic global thresholding, Otsu’s optimum between-class variance maximization, dual thresholding, local adaptive thresholding.', 'syllabus_order': 16}, {'id': 'ch17', 'num': 17, 'num_str': '17', 'file': 'chapters/ch17-region-segmentation.html', 'title': 'Region-Based Segmentation', 'short_title': 'Region Segmentation', 'unit_id': 'unit-3', 'unit_num': 'Unit III', 'unit_title': 'Image Analysis and Compression', 'part_id': 'part-iii', 'part_name': 'Part III — Understanding Content', 'topic_title': 'Region-Based Segmentation', 'syllabus_mention': 'Region-Based Segmentation: Region growing based on seeds and similarity predicates, quadtree hierarchical region splitting and merging, watershed transform using distance transforms and markers.', 'syllabus_order': 17}, {'id': 'ch18', 'num': 18, 'num_str': '18', 'file': 'chapters/ch18-mathematical-morphology.html', 'title': 'Mathematical Morphology', 'short_title': 'Mathematical Morphology', 'unit_id': 'unit-3', 'unit_num': 'Unit III', 'unit_title': 'Image Analysis and Compression', 'part_id': 'part-iii', 'part_name': 'Part III — Understanding Content', 'topic_title': 'Morphological Operations: Erosion, Dilation, Opening, Closing', 'syllabus_mention': 'Morphological Operations: Erosion, Dilation, Opening, Closing: Structuring elements, hit-or-miss transform, boundary extraction, hole filling, connected components, thinning, morphological gradient.', 'syllabus_order': 18}, {'id': 'ch19', 'num': 19, 'num_str': '19', 'file': 'chapters/ch19-features-descriptors.html', 'title': 'Image Features & Descriptors', 'short_title': 'Features & Descriptors', 'unit_id': 'unit-3', 'unit_num': 'Unit III', 'unit_title': 'Image Analysis and Compression', 'part_id': 'part-iii', 'part_name': 'Part III — Understanding Content', 'topic_title': 'Image Features and Descriptors', 'syllabus_mention': 'Image Features and Descriptors: Boundary representations, Freeman chain codes, shape numbers, Fourier descriptors, regional compactness, Euler number, GLCM texture analysis, Hu’s 7 invariant moments.', 'syllabus_order': 19}, {'id': 'ch20', 'num': 20, 'num_str': '20', 'file': 'chapters/ch20-sift-surf-orb-hog.html', 'title': 'Local Feature Detectors (SIFT, SURF, ORB & HOG)', 'short_title': 'SIFT, SURF, ORB & HOG', 'unit_id': 'unit-3', 'unit_num': 'Unit III', 'unit_title': 'Image Analysis and Compression', 'part_id': 'part-iii', 'part_name': 'Part III — Understanding Content', 'topic_title': 'SIFT, SURF, HOG', 'syllabus_mention': 'SIFT, SURF, HOG: Scale-space Difference of Gaussians (DoG), keypoint localization, SIFT 128-D descriptor, SURF integral box filters, FAST/ORB binary descriptors, Histogram of Oriented Gradients (HOG).', 'syllabus_order': 20}, {'id': 'ch21', 'num': 21, 'num_str': '21', 'file': 'chapters/ch21-compression-entropy.html', 'title': 'Image Compression Fundamentals', 'short_title': 'Compression & Entropy', 'unit_id': 'unit-3', 'unit_num': 'Unit III', 'unit_title': 'Image Analysis and Compression', 'part_id': 'part-iv', 'part_name': 'Part IV — Compressing Images', 'topic_title': 'Image Compression', 'syllabus_mention': 'Image Compression: Coding redundancy, spatial / interpixel redundancy, psychovisual redundancy, compression ratio, Shannon information entropy, noiseless coding theorem, fidelity criteria (MSE, PSNR).', 'syllabus_order': 21}, {'id': 'ch22', 'num': 22, 'num_str': '22', 'file': 'chapters/ch22-lossless-coding.html', 'title': 'Entropy, Run-Length Encoding & Huffman Coding', 'short_title': 'Lossless: RLE & Huffman', 'unit_id': 'unit-3', 'unit_num': 'Unit III', 'unit_title': 'Image Analysis and Compression', 'part_id': 'part-iv', 'part_name': 'Part IV — Compressing Images', 'topic_title': 'Lossless vs. Lossy Compression', 'syllabus_mention': 'Lossless vs. Lossy Compression: Run-Length Encoding (RLE) for binary and grayscale, bit-plane compression, Huffman optimal prefix-free code trees, average codeword length, coding efficiency, LZW dictionary coding.', 'syllabus_order': 22}, {'id': 'ch23', 'num': 23, 'num_str': '23', 'file': 'chapters/ch23-lossy-dct-jpeg.html', 'title': 'Transform Coding & Discrete Cosine Transform', 'short_title': 'Lossy: DCT & JPEG', 'unit_id': 'unit-3', 'unit_num': 'Unit III', 'unit_title': 'Image Analysis and Compression', 'part_id': 'part-iv', 'part_name': 'Part IV — Compressing Images', 'topic_title': 'JPEG Compression Steps and Implementation (Transform & DCT)', 'syllabus_mention': 'JPEG Compression Steps and Implementation: 2D Discrete Cosine Transform (DCT-II), energy compaction, sub-image 8x8 block decomposition, psychoacoustic quantization matrices, zigzag scan ordering.', 'syllabus_order': 23}, {'id': 'ch24', 'num': 24, 'num_str': '24', 'file': 'chapters/ch24-wavelets-jpeg2000.html', 'title': 'JPEG Compression End to End & JPEG 2000', 'short_title': 'Wavelets & JPEG 2000', 'unit_id': 'unit-3', 'unit_num': 'Unit III', 'unit_title': 'Image Analysis and Compression', 'part_id': 'part-iv', 'part_name': 'Part IV — Compressing Images', 'topic_title': 'JPEG Compression Steps and Implementation (Pipeline & Standards)', 'syllabus_mention': 'JPEG Compression Steps and Implementation: End-to-end baseline sequential JPEG pipeline, DC DPCM differential coding, AC zero-run Huffman coding, JPEG 2000 Discrete Wavelet Transform (DWT) comparison.', 'syllabus_order': 24}, {'id': 'ch25', 'num': 25, 'num_str': '25', 'file': 'chapters/ch25-image-classification.html', 'title': 'Image Classification Foundations', 'short_title': 'Image Classification', 'unit_id': 'unit-4', 'unit_num': 'Unit IV', 'unit_title': 'Advanced Topics in Digital Image Processing', 'part_id': 'part-v', 'part_name': 'Part V — Intelligent Vision', 'topic_title': 'Image Classification and Object Detection (Part 1: Classification)', 'syllabus_mention': 'Image Classification and Object Detection: Feature space decision boundaries, minimum distance classifier, k-Nearest Neighbors (k-NN), linear classifier formulation (Wx + b), Softmax cross-entropy loss.', 'syllabus_order': 25}, {'id': 'ch26', 'num': 26, 'num_str': '26', 'file': 'chapters/ch26-cnns-image-processing.html', 'title': 'Convolutional Neural Networks for Image Processing', 'short_title': 'CNNs for Vision', 'unit_id': 'unit-4', 'unit_num': 'Unit IV', 'unit_title': 'Advanced Topics in Digital Image Processing', 'part_id': 'part-v', 'part_name': 'Part V — Intelligent Vision', 'topic_title': 'Introduction to Convolutional Neural Networks (CNNs)', 'syllabus_mention': 'Introduction to Convolutional Neural Networks (CNNs): Connection between spatial domain filtering and CNNs, 2D convolution layers, parameter sharing, receptive fields, stride & padding, ReLU, pooling layers.', 'syllabus_order': 26}, {'id': 'ch27', 'num': 27, 'num_str': '27', 'file': 'chapters/ch27-modern-vision-architectures.html', 'title': 'Modern Vision Architectures: VGG & ResNet', 'short_title': 'VGG & ResNet', 'unit_id': 'unit-4', 'unit_num': 'Unit IV', 'unit_title': 'Advanced Topics in Digital Image Processing', 'part_id': 'part-v', 'part_name': 'Part V — Intelligent Vision', 'topic_title': 'Pretrained Models (VGG, ResNet)', 'syllabus_mention': 'Pretrained Models (VGG, ResNet): VGGNet 3x3 filter factorization, vanishing gradient problem, ResNet residual learning framework, identity skip connections (H(x) = F(x) + x), transfer learning.', 'syllabus_order': 27}, {'id': 'ch28', 'num': 28, 'num_str': '28', 'file': 'chapters/ch28-object-detection-yolo.html', 'title': 'Object Detection & YOLO', 'short_title': 'Object Detection: YOLO', 'unit_id': 'unit-4', 'unit_num': 'Unit IV', 'unit_title': 'Advanced Topics in Digital Image Processing', 'part_id': 'part-v', 'part_name': 'Part V — Intelligent Vision', 'topic_title': 'Pretrained Models (YOLO) & Object Detection', 'syllabus_mention': 'Image Classification and Object Detection & Pretrained Models (YOLO): Localization vs detection, bounding box representation [x,y,w,h], IoU, Non-Maximum Suppression (NMS), YOLO unified grid regression.', 'syllabus_order': 28}, {'id': 'ch29', 'num': 29, 'num_str': '29', 'file': 'chapters/ch29-image-denoising-autoencoders.html', 'title': 'Image Denoising with Autoencoders', 'short_title': 'Autoencoders Denoising', 'unit_id': 'unit-4', 'unit_num': 'Unit IV', 'unit_title': 'Advanced Topics in Digital Image Processing', 'part_id': 'part-v', 'part_name': 'Part V — Intelligent Vision', 'topic_title': 'Image Denoising using Autoencoders', 'syllabus_mention': 'Image Denoising using Autoencoders: Unsupervised visual representation, encoder-decoder bottleneck, Convolutional Autoencoder (CAE), transpose convolutions, reconstruction loss, spatial filtering comparison.', 'syllabus_order': 29}, {'id': 'ch31', 'num': 31, 'num_str': '31', 'file': 'chapters/ch31-dip-applications-engineering.html', 'title': 'DIP Applications, Engineering Context & Responsible Use', 'short_title': 'Applications & Ethics', 'unit_id': 'unit-4', 'unit_num': 'Unit IV', 'unit_title': 'Advanced Topics in Digital Image Processing', 'part_id': 'part-v', 'part_name': 'Part V — Intelligent Vision', 'topic_title': 'Applications in Healthcare and Surveillance', 'syllabus_mention': 'Applications in Healthcare and Surveillance: Medical imaging (CT Hounsfield units, MRI artifact removal, automated tumor segmentation), surveillance monitoring, biometrics, ethics & responsible vision AI.', 'syllabus_order': 30}, {'id': 'ch30', 'num': 30, 'num_str': '30', 'file': 'chapters/ch30-video-motion-analysis.html', 'title': 'Video Processing & Motion Analysis', 'short_title': 'Video & Motion Analysis', 'unit_id': 'unit-4', 'unit_num': 'Unit IV', 'unit_title': 'Advanced Topics in Digital Image Processing', 'part_id': 'part-v', 'part_name': 'Part V — Intelligent Vision', 'topic_title': 'Introduction to Video Processing and Motion Analysis', 'syllabus_mention': 'Introduction to Video Processing and Motion Analysis: Video as 3D spatiotemporal volume I(x,y,t), frame differencing, background subtraction (MOG2), optical flow constraint equation, Lucas-Kanade tracking.', 'syllabus_order': 31}];
+      
+      const btnViewSyllabus = document.getElementById('btn-view-syllabus');
+      const btnViewParts = document.getElementById('btn-view-parts');
+      const syllabusContainer = document.getElementById('view-syllabus-container');
+      const partsContainer = document.getElementById('view-parts-container');
+      const unitPills = document.querySelectorAll('.unit-pill-btn');
 
-      const CHAPTERS_PART2 = [
-        { id: 'ch06', num: '06', title: 'Point Processing & Intensity Transformations', file: 'chapters/ch06-point-processing.html' },
-        { id: 'ch07', num: '07', title: 'Histograms & Contrast Enhancement', file: 'chapters/ch07-histograms-equalization.html' },
-        { id: 'ch08', num: '08', title: 'Spatial Filtering & Convolution', file: 'chapters/ch08-spatial-filtering.html' },
-        { id: 'ch09', num: '09', title: 'Smoothing & Noise Reduction', file: 'chapters/ch09-smoothing-noise-reduction.html' },
-        { id: 'ch10', num: '10', title: 'Sharpening & Edge Detection', file: 'chapters/ch10-sharpening-edge-detection.html' },
-        { id: 'ch11', num: '11', title: 'Geometric Transformations & Interpolation', file: 'chapters/ch11-geometric-transforms.html' },
-        { id: 'ch12', num: '12', title: '2D Fourier Transform & Frequency Domain', file: 'chapters/ch12-fourier-transform.html' },
-        { id: 'ch13', num: '13', title: 'Frequency-Domain Filtering', file: 'chapters/ch13-frequency-filtering.html' },
-        { id: 'ch14', num: '14', title: 'Image Restoration & Deblurring', file: 'chapters/ch14-image-restoration.html' }
-      ];
-
-      const CHAPTERS_PART3 = [
-        { id: 'ch15', num: '15', title: 'Image Segmentation Fundamentals & Edge Linking', file: 'chapters/ch15-segmentation-fundamentals.html' },
-        { id: 'ch16', num: '16', title: 'Thresholding & Otsu\'s Method', file: 'chapters/ch16-thresholding-otsu.html' },
-        { id: 'ch17', num: '17', title: 'Region-Based Segmentation', file: 'chapters/ch17-region-segmentation.html' },
-        { id: 'ch18', num: '18', title: 'Mathematical Morphology', file: 'chapters/ch18-mathematical-morphology.html' },
-        { id: 'ch19', num: '19', title: 'Image Features & Descriptors', file: 'chapters/ch19-features-descriptors.html' },
-        { id: 'ch20', num: '20', title: 'Local Feature Detectors (SIFT, SURF, ORB & HOG)', file: 'chapters/ch20-sift-surf-orb-hog.html' }
-      ];
-
-      const CHAPTERS_PART4 = [
-        { id: 'ch21', num: '21', title: 'Compression Fundamentals & Information Entropy', file: 'chapters/ch21-compression-entropy.html' },
-        { id: 'ch22', num: '22', title: 'Lossless Coding: Run-Length & Huffman Coding', file: 'chapters/ch22-lossless-coding.html' },
-        { id: 'ch23', num: '23', title: 'Lossy Compression: DCT & JPEG Architecture', file: 'chapters/ch23-lossy-dct-jpeg.html' },
-        { id: 'ch24', num: '24', title: 'Wavelet Compression & JPEG 2000', file: 'chapters/ch24-wavelets-jpeg2000.html' }
-      ];
-
-      const CHAPTERS_PART5 = [
-        { id: 'ch25', num: '25', title: 'Image Classification Foundations', file: 'chapters/ch25-image-classification.html' },
-        { id: 'ch26', num: '26', title: 'Convolutional Neural Networks for Image Processing', file: 'chapters/ch26-cnns-image-processing.html' },
-        { id: 'ch27', num: '27', title: 'Modern Vision Architectures: VGG & ResNet', file: 'chapters/ch27-modern-vision-architectures.html' },
-        { id: 'ch28', num: '28', title: 'Object Detection & YOLO', file: 'chapters/ch28-object-detection-yolo.html' },
-        { id: 'ch29', num: '29', title: 'Image Denoising with Autoencoders', file: 'chapters/ch29-image-denoising-autoencoders.html' },
-        { id: 'ch30', num: '30', title: 'Video Processing & Motion Analysis', file: 'chapters/ch30-video-motion-analysis.html' },
-        { id: 'ch31', num: '31', title: 'DIP Applications, Engineering Context & Responsible Use', file: 'chapters/ch31-dip-applications-engineering.html' }
-      ];
+      let currentMode = localStorage.getItem('dip_curriculum_view') || 'syllabus';
+      let currentUnit = 'all';
 
       function renderTable(chapters, tbodyId) {
         const tbody = document.getElementById(tbodyId);
@@ -556,10 +674,18 @@
           const isDone = pct >= 90;
           if (isDone) readCount++;
 
+          const uCls = ch.unit_id === 'unit-1' ? 'unit-badge-u1' : ch.unit_id === 'unit-2' ? 'unit-badge-u2' : ch.unit_id === 'unit-3' ? 'unit-badge-u3' : 'unit-badge-u4';
+
           const tr = document.createElement('tr');
           tr.innerHTML = `
-            <td><strong style="font-family: var(--font-mono); color: var(--em-accent-text);">C${ch.num}</strong></td>
-            <td><strong style="color: var(--em-text);">${ch.title}</strong></td>
+            <td><strong style="font-family: var(--font-mono); color: var(--em-accent-text);">C${ch.num_str}</strong></td>
+            <td>
+              <strong style="color: var(--em-text); display:block;">${ch.title}</strong>
+              <span class="unit-badge ${uCls}" style="font-size:0.68rem; padding:1px 6px; margin-top:3px;">${ch.unit_num}</span>
+            </td>
+            <td>
+              <span class="syllabus-topic-pill" style="font-size:0.75rem;">🎓 ${ch.topic_title}</span>
+            </td>
             <td>
               <div style="background: var(--em-surface-2); border-radius: 4px; height: 8px; width: 100%; overflow: hidden;">
                 <div style="background: var(--em-accent); height: 100%; width: ${pct}%;"></div>
@@ -580,13 +706,32 @@
       }
 
       function renderDashboard() {
-        const r1 = renderTable(CHAPTERS_PART1, 'part1-table-body');
-        const r2 = renderTable(CHAPTERS_PART2, 'part2-table-body');
-        const r3 = renderTable(CHAPTERS_PART3, 'part3-table-body');
-        const r4 = renderTable(CHAPTERS_PART4, 'part4-table-body');
-        const r5 = renderTable(CHAPTERS_PART5, 'part5-table-body');
+        // Syllabus tables
+        const u1Chapters = ['ch01', 'ch02', 'ch03', 'ch04', 'ch05'].map(k => CHAPTERS_ALL.find(c => c.id === k));
+        const u2Chapters = ['ch06', 'ch07', 'ch08', 'ch09', 'ch10', 'ch11', 'ch12', 'ch13', 'ch14'].map(k => CHAPTERS_ALL.find(c => c.id === k));
+        const u3Chapters = ['ch15', 'ch16', 'ch17', 'ch18', 'ch19', 'ch20', 'ch21', 'ch22', 'ch23', 'ch24'].map(k => CHAPTERS_ALL.find(c => c.id === k));
+        // Unit IV in exact syllabus order: 25, 26, 27, 28, 29, 31, 30
+        const u4Chapters = ['ch25', 'ch26', 'ch27', 'ch28', 'ch29', 'ch31', 'ch30'].map(k => CHAPTERS_ALL.find(c => c.id === k));
 
-        const totalChapters = CHAPTERS_PART1.length + CHAPTERS_PART2.length + CHAPTERS_PART3.length + CHAPTERS_PART4.length + CHAPTERS_PART5.length;
+        renderTable(u1Chapters, 'unit-1-table-body');
+        renderTable(u2Chapters, 'unit-2-table-body');
+        renderTable(u3Chapters, 'unit-3-table-body');
+        renderTable(u4Chapters, 'unit-4-table-body');
+
+        // Parts tables
+        const p1Chapters = CHAPTERS_ALL.filter(c => c.part_id === 'part-i');
+        const p2Chapters = CHAPTERS_ALL.filter(c => c.part_id === 'part-ii');
+        const p3Chapters = CHAPTERS_ALL.filter(c => c.part_id === 'part-iii');
+        const p4Chapters = CHAPTERS_ALL.filter(c => c.part_id === 'part-iv');
+        const p5Chapters = CHAPTERS_ALL.filter(c => c.part_id === 'part-v');
+
+        const r1 = renderTable(p1Chapters, 'part1-table-body');
+        const r2 = renderTable(p2Chapters, 'part2-table-body');
+        const r3 = renderTable(p3Chapters, 'part3-table-body');
+        const r4 = renderTable(p4Chapters, 'part4-table-body');
+        const r5 = renderTable(p5Chapters, 'part5-table-body');
+
+        const totalChapters = CHAPTERS_ALL.length;
         const totalRead = r1.read + r2.read + r3.read + r4.read + r5.read;
         const totalPct = Math.round((r1.pctSum + r2.pctSum + r3.pctSum + r4.pctSum + r5.pctSum) / totalChapters);
 
@@ -594,40 +739,84 @@
         document.getElementById('stat-overall-pct').innerText = `${totalPct}%`;
       }
 
+      function setViewMode(mode) {
+        currentMode = mode;
+        localStorage.setItem('dip_curriculum_view', mode);
+        if (mode === 'syllabus') {
+          btnViewSyllabus.classList.add('active');
+          btnViewParts.classList.remove('active');
+          syllabusContainer.style.display = 'block';
+          partsContainer.style.display = 'none';
+        } else {
+          btnViewParts.classList.add('active');
+          btnViewSyllabus.classList.remove('active');
+          partsContainer.style.display = 'block';
+          syllabusContainer.style.display = 'none';
+        }
+        filterUnit();
+      }
+
+      function filterUnit() {
+        const cards = document.querySelectorAll('.unit-check-card');
+        cards.forEach(card => {
+          const u = card.getAttribute('data-unit');
+          if (currentUnit === 'all' || u === currentUnit) {
+            card.style.display = 'block';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      }
+
+      btnViewSyllabus.addEventListener('click', () => setViewMode('syllabus'));
+      btnViewParts.addEventListener('click', () => setViewMode('parts'));
+
+      unitPills.forEach(pill => {
+        pill.addEventListener('click', () => {
+          unitPills.forEach(p => p.classList.remove('active'));
+          pill.classList.add('active');
+          currentUnit = pill.getAttribute('data-unit');
+          filterUnit();
+        });
+      });
+
       renderDashboard();
+      setViewMode(currentMode);
 
       // Export / Import
       document.getElementById('btn-export-data').addEventListener('click', () => {
-        const json = StateManager.exportData();
-        const blob = new Blob([json], { type: 'application/json' });
+        const data = StateManager.exportState();
+        const blob = new Blob([data], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `dip-minibook-backup-${new Date().toISOString().slice(0, 10)}.json`;
+        a.download = 'dip-minibook-study-backup.json';
         a.click();
         URL.revokeObjectURL(url);
       });
 
-      const fileInput = document.getElementById('file-import');
-      document.getElementById('btn-import-data').addEventListener('click', () => fileInput.click());
-      fileInput.addEventListener('change', (e) => {
+      document.getElementById('btn-import-data').addEventListener('click', () => {
+        document.getElementById('file-import').click();
+      });
+
+      document.getElementById('file-import').addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (!file) return;
         const reader = new FileReader();
-        reader.onload = (event) => {
-          if (StateManager.importData(event.target.result)) {
-            alert('Study progress successfully restored!');
-            renderDashboard();
+        reader.onload = (evt) => {
+          if (StateManager.importState(evt.target.result)) {
+            alert('Study progress imported successfully!');
+            location.reload();
           } else {
-            alert('Invalid backup file.');
+            alert('Failed to parse backup JSON.');
           }
         };
         reader.readAsText(file);
       });
 
       document.getElementById('btn-reset-data').addEventListener('click', () => {
-        if (confirm('Are you sure you want to reset all reading progress? This cannot be undone.')) {
-          localStorage.removeItem('dip-minibook-state');
+        if (confirm('Are you sure you want to reset all reading progress? This action cannot be undone.')) {
+          localStorage.clear();
           location.reload();
         }
       });

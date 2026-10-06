@@ -477,14 +477,404 @@
       </div>
 
       <!-- Curriculum Overview -->
+            <!-- Curriculum Overview -->
       <div class="section-header">
         <span class="section-num">MAP</span>
         <h2>Curriculum Explorer &amp; Master Syllabus Map</h2>
       </div>
 
-      <div class="parts-grid">
-        <!-- Part I -->
-        <div class="part-card part-i" id="part-1">
+      <!-- Syllabus & Order Filter Control Hub -->
+      <div class="syllabus-filter-wrapper">
+        <div class="filter-row-top">
+          <div>
+            <div style="font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--em-accent-text); margin-bottom: 6px;">Curriculum Arrangement</div>
+            <div class="view-mode-toggle" id="view-mode-toggle">
+              <button class="view-mode-btn active" id="btn-view-syllabus" data-mode="syllabus" title="Arrange chapters in the exact 4-Unit sequence of the university syllabus">
+                <span>📋</span> University Syllabus Order (4 Units)
+              </button>
+              <button class="view-mode-btn" id="btn-view-parts" data-mode="parts" title="Arrange chapters by book parts (Chapters 01 to 31)">
+                <span>📚</span> Book Architecture (5 Parts)
+              </button>
+            </div>
+          </div>
+
+          <div class="search-filter-box">
+            <span class="search-filter-icon">🔍</span>
+            <input type="text" id="topic-search-input" class="search-filter-input" placeholder="Search syllabus topics (e.g. Otsu, SIFT, JPEG, Autoencoders, CNNs, YUV)..." autocomplete="off">
+          </div>
+        </div>
+
+        <div class="filter-row-bottom">
+          <div class="unit-filter-pills" id="unit-filter-pills">
+            <span style="font-size: 0.76rem; font-weight: 700; color: var(--em-text-muted); margin-right: 4px;">FILTER BY UNIT:</span>
+            <button class="unit-pill-btn active" data-unit="all">All Units (31 Chapters)</button>
+            <button class="unit-pill-btn" data-unit="unit-1">Unit I: Introduction (5)</button>
+            <button class="unit-pill-btn" data-unit="unit-2">Unit II: Enhancement &amp; Restoration (9)</button>
+            <button class="unit-pill-btn" data-unit="unit-3">Unit III: Analysis &amp; Compression (10)</button>
+            <button class="unit-pill-btn" data-unit="unit-4">Unit IV: Advanced Topics (7)</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1. SYLLABUS ORDER CONTAINER (Default: Arranged in exact 4-Unit Syllabus Order) -->
+      <div id="view-syllabus-container" class="parts-grid">
+        <!-- Unit I -->
+        <div class="part-card part-i unit-card-item" id="unit-1" data-unit="unit-1">
+          <div>
+            <div class="part-card-header">
+              <span class="unit-badge unit-badge-u1">🎓 Unit I · Syllabus Order</span>
+              <span class="tag-badge tag-core">5 Chapters</span>
+            </div>
+            <h3 class="part-card-title">Unit I — Introduction to Digital Image Processing</h3>
+            <p class="part-card-desc">
+              <strong>Syllabus Scope:</strong> Introduction to Digital Image Processing: Fundamentals of Image Processing, Image Formation, Sampling, and Quantization, Types of Images: Grayscale, RGB, Multispectral, Image Representation: Pixels, Bit Depth, and Resolution, Color Models: RGB, HSV, CMY, YUV, File Formats: BMP, JPEG, PNG, TIFF.
+            </p>
+            <ul class="part-chapters-list">
+              <li class="part-chapter-item" data-chapter="ch01" data-unit="unit-1" data-search="01 the big picture: what is an image? fundamentals of image processing unit i">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch01-big-picture.html"><strong>01.</strong> The Big Picture: What is an Image?</a>
+                  <span class="ch-tag">CORE · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="syllabus-topic-pill">🎓 Topic: Fundamentals of Image Processing</span>
+                </div>
+              </li>
+              <li class="part-chapter-item" data-chapter="ch02" data-unit="unit-1" data-search="02 image formation & physical acquisition image formation unit i">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch02-image-formation.html"><strong>02.</strong> Image Formation & Physical Acquisition</a>
+                  <span class="ch-tag">MATH · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="syllabus-topic-pill">🎓 Topic: Image Formation</span>
+                </div>
+              </li>
+              <li class="part-chapter-item" data-chapter="ch03" data-unit="unit-1" data-search="03 spatial sampling & quantization sampling, and quantization unit i">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch03-sampling-quantization.html"><strong>03.</strong> Spatial Sampling & Quantization</a>
+                  <span class="ch-tag">MATH · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="syllabus-topic-pill">🎓 Topic: Sampling, and Quantization</span>
+                </div>
+              </li>
+              <li class="part-chapter-item" data-chapter="ch04" data-unit="unit-1" data-search="04 pixels, matrices, tensors & resolution types of images & image representation: pixels, bit depth, and resolution unit i">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch04-image-representation.html"><strong>04.</strong> Pixels, Matrices, Tensors & Resolution</a>
+                  <span class="ch-tag">ALGO · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="syllabus-topic-pill">🎓 Topic: Types of Images & Image Representation: Pixels, Bit Depth, and Resolution</span>
+                </div>
+              </li>
+              <li class="part-chapter-item" data-chapter="ch05" data-unit="unit-1" data-search="05 colour models & image file formats color models: rgb, hsv, cmy, yuv & file formats: bmp, jpeg, png, tiff unit i">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch05-colour-models-file-formats.html"><strong>05.</strong> Colour Models & Image File Formats</a>
+                  <span class="ch-tag">LAB · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="syllabus-topic-pill">🎓 Topic: Color Models: RGB, HSV, CMY, YUV & File Formats: BMP, JPEG, PNG, TIFF</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <a href="chapters/ch01-big-picture.html" class="portal-btn portal-btn-secondary" style="width: 100%; justify-content: center;">
+            Start Unit I →
+          </a>
+        </div>
+        <!-- Unit II -->
+        <div class="part-card part-ii unit-card-item" id="unit-2" data-unit="unit-2">
+          <div>
+            <div class="part-card-header">
+              <span class="unit-badge unit-badge-u2">🎓 Unit II · Syllabus Order</span>
+              <span class="tag-badge tag-core">9 Chapters</span>
+            </div>
+            <h3 class="part-card-title">Unit II — Image Enhancement and Restoration</h3>
+            <p class="part-card-desc">
+              <strong>Syllabus Scope:</strong> Image Enhancement and Restoration: Spatial Domain Techniques, Histogram Equalization, Spatial Filtering: Smoothing, Sharpening, Edge Detection, Frequency Domain Techniques, Fourier Transform and Its Applications, Frequency Filters: Low-Pass, High-Pass, Band-Pass, Noise Reduction and Image Restoration Techniques.
+            </p>
+            <ul class="part-chapters-list">
+              <li class="part-chapter-item" data-chapter="ch06" data-unit="unit-2" data-search="06 point processing & intensity transformations spatial domain techniques unit ii">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch06-point-processing.html"><strong>06.</strong> Point Processing & Intensity Transformations</a>
+                  <span class="ch-tag">CORE · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="syllabus-topic-pill">🎓 Topic: Spatial Domain Techniques</span>
+                </div>
+              </li>
+              <li class="part-chapter-item" data-chapter="ch07" data-unit="unit-2" data-search="07 histograms & contrast enhancement histogram equalization unit ii">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch07-histograms-equalization.html"><strong>07.</strong> Histograms & Contrast Enhancement</a>
+                  <span class="ch-tag">MATH · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="syllabus-topic-pill">🎓 Topic: Histogram Equalization</span>
+                </div>
+              </li>
+              <li class="part-chapter-item" data-chapter="ch08" data-unit="unit-2" data-search="08 spatial filtering & convolution spatial filtering: mechanics & convolution unit ii">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch08-spatial-filtering.html"><strong>08.</strong> Spatial Filtering & Convolution</a>
+                  <span class="ch-tag">ALGO · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="syllabus-topic-pill">🎓 Topic: Spatial Filtering: Mechanics & Convolution</span>
+                </div>
+              </li>
+              <li class="part-chapter-item" data-chapter="ch09" data-unit="unit-2" data-search="09 smoothing & noise reduction spatial filtering: smoothing unit ii">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch09-smoothing-noise-reduction.html"><strong>09.</strong> Smoothing & Noise Reduction</a>
+                  <span class="ch-tag">MATH · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="syllabus-topic-pill">🎓 Topic: Spatial Filtering: Smoothing</span>
+                </div>
+              </li>
+              <li class="part-chapter-item" data-chapter="ch10" data-unit="unit-2" data-search="10 sharpening & edge detection spatial filtering: sharpening, edge detection unit ii">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch10-sharpening-edge-detection.html"><strong>10.</strong> Sharpening & Edge Detection</a>
+                  <span class="ch-tag">MATH · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="syllabus-topic-pill">🎓 Topic: Spatial Filtering: Sharpening, Edge Detection</span>
+                </div>
+              </li>
+              <li class="part-chapter-item" data-chapter="ch11" data-unit="unit-2" data-search="11 geometric transformations & interpolation spatial enhancement: geometric transformations & interpolation unit ii">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch11-geometric-transforms.html"><strong>11.</strong> Geometric Transformations & Interpolation</a>
+                  <span class="ch-tag">ALGO · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="syllabus-topic-pill">🎓 Topic: Spatial Enhancement: Geometric Transformations & Interpolation</span>
+                </div>
+              </li>
+              <li class="part-chapter-item" data-chapter="ch12" data-unit="unit-2" data-search="12 2d fourier transform & frequency domain frequency domain techniques, fourier transform and its applications unit ii">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch12-fourier-transform.html"><strong>12.</strong> 2D Fourier Transform & Frequency Domain</a>
+                  <span class="ch-tag">CORE · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="syllabus-topic-pill">🎓 Topic: Frequency Domain Techniques, Fourier Transform and Its Applications</span>
+                </div>
+              </li>
+              <li class="part-chapter-item" data-chapter="ch13" data-unit="unit-2" data-search="13 frequency-domain filtering frequency filters: low-pass, high-pass, band-pass unit ii">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch13-frequency-filtering.html"><strong>13.</strong> Frequency-Domain Filtering</a>
+                  <span class="ch-tag">MATH · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="syllabus-topic-pill">🎓 Topic: Frequency Filters: Low-Pass, High-Pass, Band-Pass</span>
+                </div>
+              </li>
+              <li class="part-chapter-item" data-chapter="ch14" data-unit="unit-2" data-search="14 image restoration & deblurring noise reduction and image restoration techniques unit ii">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch14-image-restoration.html"><strong>14.</strong> Image Restoration & Deblurring</a>
+                  <span class="ch-tag">MATH · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="syllabus-topic-pill">🎓 Topic: Noise Reduction and Image Restoration Techniques</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <a href="chapters/ch06-point-processing.html" class="portal-btn portal-btn-secondary" style="width: 100%; justify-content: center;">
+            Start Unit II →
+          </a>
+        </div>
+        <!-- Unit III -->
+        <div class="part-card part-iii unit-card-item" id="unit-3" data-unit="unit-3">
+          <div>
+            <div class="part-card-header">
+              <span class="unit-badge unit-badge-u3">🎓 Unit III · Syllabus Order</span>
+              <span class="tag-badge tag-core">10 Chapters</span>
+            </div>
+            <h3 class="part-card-title">Unit III — Image Analysis and Compression</h3>
+            <p class="part-card-desc">
+              <strong>Syllabus Scope:</strong> Image Analysis and Compression: Image Segmentation, Thresholding (Global, Adaptive), Region-Based Segmentation, Morphological Operations: Erosion, Dilation, Opening, Closing, Image Features and Descriptors, SIFT, SURF, HOG, Image Compression, Lossless vs. Lossy Compression, JPEG Compression Steps and Implementation.
+            </p>
+            <ul class="part-chapters-list">
+              <li class="part-chapter-item" data-chapter="ch15" data-unit="unit-3" data-search="15 image segmentation fundamentals & edge linking image segmentation unit iii">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch15-segmentation-fundamentals.html"><strong>15.</strong> Image Segmentation Fundamentals & Edge Linking</a>
+                  <span class="ch-tag">CORE · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="syllabus-topic-pill">🎓 Topic: Image Segmentation</span>
+                </div>
+              </li>
+              <li class="part-chapter-item" data-chapter="ch16" data-unit="unit-3" data-search="16 thresholding & otsu's method thresholding (global, adaptive) unit iii">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch16-thresholding-otsu.html"><strong>16.</strong> Thresholding & Otsu's Method</a>
+                  <span class="ch-tag">MATH · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="syllabus-topic-pill">🎓 Topic: Thresholding (Global, Adaptive)</span>
+                </div>
+              </li>
+              <li class="part-chapter-item" data-chapter="ch17" data-unit="unit-3" data-search="17 region-based segmentation region-based segmentation unit iii">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch17-region-segmentation.html"><strong>17.</strong> Region-Based Segmentation</a>
+                  <span class="ch-tag">ALGO · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="syllabus-topic-pill">🎓 Topic: Region-Based Segmentation</span>
+                </div>
+              </li>
+              <li class="part-chapter-item" data-chapter="ch18" data-unit="unit-3" data-search="18 mathematical morphology morphological operations: erosion, dilation, opening, closing unit iii">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch18-mathematical-morphology.html"><strong>18.</strong> Mathematical Morphology</a>
+                  <span class="ch-tag">MATH · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="syllabus-topic-pill">🎓 Topic: Morphological Operations: Erosion, Dilation, Opening, Closing</span>
+                </div>
+              </li>
+              <li class="part-chapter-item" data-chapter="ch19" data-unit="unit-3" data-search="19 image features & descriptors image features and descriptors unit iii">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch19-features-descriptors.html"><strong>19.</strong> Image Features & Descriptors</a>
+                  <span class="ch-tag">MATH · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="syllabus-topic-pill">🎓 Topic: Image Features and Descriptors</span>
+                </div>
+              </li>
+              <li class="part-chapter-item" data-chapter="ch20" data-unit="unit-3" data-search="20 local feature detectors (sift, surf, orb & hog) sift, surf, hog unit iii">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch20-sift-surf-orb-hog.html"><strong>20.</strong> Local Feature Detectors (SIFT, SURF, ORB & HOG)</a>
+                  <span class="ch-tag">CORE · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="syllabus-topic-pill">🎓 Topic: SIFT, SURF, HOG</span>
+                </div>
+              </li>
+              <li class="part-chapter-item" data-chapter="ch21" data-unit="unit-3" data-search="21 image compression fundamentals image compression unit iii">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch21-compression-entropy.html"><strong>21.</strong> Image Compression Fundamentals</a>
+                  <span class="ch-tag">MATH · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="syllabus-topic-pill">🎓 Topic: Image Compression</span>
+                </div>
+              </li>
+              <li class="part-chapter-item" data-chapter="ch22" data-unit="unit-3" data-search="22 entropy, run-length encoding & huffman coding lossless vs. lossy compression unit iii">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch22-lossless-coding.html"><strong>22.</strong> Entropy, Run-Length Encoding & Huffman Coding</a>
+                  <span class="ch-tag">ALGO · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="syllabus-topic-pill">🎓 Topic: Lossless vs. Lossy Compression</span>
+                </div>
+              </li>
+              <li class="part-chapter-item" data-chapter="ch23" data-unit="unit-3" data-search="23 transform coding & discrete cosine transform jpeg compression steps and implementation (transform & dct) unit iii">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch23-lossy-dct-jpeg.html"><strong>23.</strong> Transform Coding & Discrete Cosine Transform</a>
+                  <span class="ch-tag">CORE · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="syllabus-topic-pill">🎓 Topic: JPEG Compression Steps and Implementation (Transform & DCT)</span>
+                </div>
+              </li>
+              <li class="part-chapter-item" data-chapter="ch24" data-unit="unit-3" data-search="24 jpeg compression end to end & jpeg 2000 jpeg compression steps and implementation (pipeline & standards) unit iii">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch24-wavelets-jpeg2000.html"><strong>24.</strong> JPEG Compression End to End & JPEG 2000</a>
+                  <span class="ch-tag">MATH · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="syllabus-topic-pill">🎓 Topic: JPEG Compression Steps and Implementation (Pipeline & Standards)</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <a href="chapters/ch15-segmentation-fundamentals.html" class="portal-btn portal-btn-secondary" style="width: 100%; justify-content: center;">
+            Start Unit III →
+          </a>
+        </div>
+        <!-- Unit IV -->
+        <div class="part-card part-iv unit-card-item" id="unit-4" data-unit="unit-4">
+          <div>
+            <div class="part-card-header">
+              <span class="unit-badge unit-badge-u4">🎓 Unit IV · Syllabus Order</span>
+              <span class="tag-badge tag-core">7 Chapters</span>
+            </div>
+            <h3 class="part-card-title">Unit IV — Advanced Topics in Digital Image Processing</h3>
+            <p class="part-card-desc">
+              <strong>Syllabus Scope:</strong> Advanced Topics in Digital Image Processing: Image Classification and Object Detection, Introduction to Convolutional Neural Networks (CNNs), Pretrained Models (VGG, ResNet, YOLO), Image Denoising using Autoencoders, Applications in Healthcare and Surveillance, Introduction to Video Processing and Motion Analysis.
+            </p>
+            <ul class="part-chapters-list">
+              <li class="part-chapter-item" data-chapter="ch25" data-unit="unit-4" data-search="25 image classification foundations image classification and object detection (part 1: classification) unit iv">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch25-image-classification.html"><strong>25.</strong> Image Classification Foundations</a>
+                  <span class="ch-tag">MATH · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="syllabus-topic-pill">🎓 Topic: Image Classification and Object Detection (Part 1: Classification)</span>
+                </div>
+              </li>
+              <li class="part-chapter-item" data-chapter="ch26" data-unit="unit-4" data-search="26 convolutional neural networks for image processing introduction to convolutional neural networks (cnns) unit iv">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch26-cnns-image-processing.html"><strong>26.</strong> Convolutional Neural Networks for Image Processing</a>
+                  <span class="ch-tag">CORE · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="syllabus-topic-pill">🎓 Topic: Introduction to Convolutional Neural Networks (CNNs)</span>
+                </div>
+              </li>
+              <li class="part-chapter-item" data-chapter="ch27" data-unit="unit-4" data-search="27 modern vision architectures: vgg & resnet pretrained models (vgg, resnet) unit iv">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch27-modern-vision-architectures.html"><strong>27.</strong> Modern Vision Architectures: VGG & ResNet</a>
+                  <span class="ch-tag">ALGO · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="syllabus-topic-pill">🎓 Topic: Pretrained Models (VGG, ResNet)</span>
+                </div>
+              </li>
+              <li class="part-chapter-item" data-chapter="ch28" data-unit="unit-4" data-search="28 object detection & yolo pretrained models (yolo) & object detection unit iv">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch28-object-detection-yolo.html"><strong>28.</strong> Object Detection & YOLO</a>
+                  <span class="ch-tag">ALGO · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="syllabus-topic-pill">🎓 Topic: Pretrained Models (YOLO) & Object Detection</span>
+                </div>
+              </li>
+              <li class="part-chapter-item" data-chapter="ch29" data-unit="unit-4" data-search="29 image denoising with autoencoders image denoising using autoencoders unit iv">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch29-image-denoising-autoencoders.html"><strong>29.</strong> Image Denoising with Autoencoders</a>
+                  <span class="ch-tag">MATH · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="syllabus-topic-pill">🎓 Topic: Image Denoising using Autoencoders</span>
+                </div>
+              </li>
+              <li class="part-chapter-item" data-chapter="ch31" data-unit="unit-4" data-search="31 dip applications, engineering context & responsible use applications in healthcare and surveillance unit iv">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch31-dip-applications-engineering.html"><strong>31.</strong> DIP Applications, Engineering Context & Responsible Use</a>
+                  <span class="ch-tag">CORE · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="syllabus-topic-pill">🎓 Topic: Applications in Healthcare and Surveillance</span>
+                </div>
+              </li>
+              <li class="part-chapter-item" data-chapter="ch30" data-unit="unit-4" data-search="30 video processing & motion analysis introduction to video processing and motion analysis unit iv">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch30-video-motion-analysis.html"><strong>30.</strong> Video Processing & Motion Analysis</a>
+                  <span class="ch-tag">LAB · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="syllabus-topic-pill">🎓 Topic: Introduction to Video Processing and Motion Analysis</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <a href="chapters/ch25-image-classification.html" class="portal-btn portal-btn-secondary" style="width: 100%; justify-content: center;">
+            Start Unit IV →
+          </a>
+        </div>
+      </div>
+
+      <!-- 2. BOOK PARTS CONTAINER (Toggleable: Arranged by 5 Book Parts) -->
+      <div id="view-parts-container" class="parts-grid" style="display: none;">
+        <!-- Part I — The Image -->
+        <div class="part-card part-i part-card-item" id="part-1">
           <div>
             <div class="part-card-header">
               <span class="part-badge">Part I · Active</span>
@@ -495,25 +885,55 @@
               Foundational photon physics, illumination-reflectance models, 2D sampling lattice, Shannon-Nyquist theorems, amplitude quantization, and spatial coordinate conventions.
             </p>
             <ul class="part-chapters-list">
-              <li class="part-chapter-item">
-                <a href="chapters/ch01-big-picture.html">01. The Big Picture</a>
-                <span class="ch-tag">CORE · READY</span>
+              <li class="part-chapter-item" data-chapter="ch01" data-unit="unit-1" data-search="01 the big picture: what is an image? fundamentals of image processing unit i">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch01-big-picture.html"><strong>01.</strong> The Big Picture: What is an Image?</a>
+                  <span class="ch-tag">CORE · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="unit-badge unit-badge-u1" style="font-size:0.68rem; padding:1px 6px;">Unit I</span>
+                  <span class="syllabus-topic-pill" style="font-size:0.72rem;">🎓 Fundamentals of Image Processing</span>
+                </div>
               </li>
-              <li class="part-chapter-item">
-                <a href="chapters/ch02-image-formation.html">02. Formation &amp; Acquisition</a>
-                <span class="ch-tag">MATH · READY</span>
+              <li class="part-chapter-item" data-chapter="ch02" data-unit="unit-1" data-search="02 image formation & physical acquisition image formation unit i">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch02-image-formation.html"><strong>02.</strong> Image Formation & Physical Acquisition</a>
+                  <span class="ch-tag">MATH · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="unit-badge unit-badge-u1" style="font-size:0.68rem; padding:1px 6px;">Unit I</span>
+                  <span class="syllabus-topic-pill" style="font-size:0.72rem;">🎓 Image Formation</span>
+                </div>
               </li>
-              <li class="part-chapter-item">
-                <a href="chapters/ch03-sampling-quantization.html">03. Sampling &amp; Quantization</a>
-                <span class="ch-tag">MATH · READY</span>
+              <li class="part-chapter-item" data-chapter="ch03" data-unit="unit-1" data-search="03 spatial sampling & quantization sampling, and quantization unit i">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch03-sampling-quantization.html"><strong>03.</strong> Spatial Sampling & Quantization</a>
+                  <span class="ch-tag">MATH · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="unit-badge unit-badge-u1" style="font-size:0.68rem; padding:1px 6px;">Unit I</span>
+                  <span class="syllabus-topic-pill" style="font-size:0.72rem;">🎓 Sampling, and Quantization</span>
+                </div>
               </li>
-              <li class="part-chapter-item">
-                <a href="chapters/ch04-image-representation.html">04. Pixels, Matrices &amp; Resolution</a>
-                <span class="ch-tag">ALGO · READY</span>
+              <li class="part-chapter-item" data-chapter="ch04" data-unit="unit-1" data-search="04 pixels, matrices, tensors & resolution types of images & image representation: pixels, bit depth, and resolution unit i">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch04-image-representation.html"><strong>04.</strong> Pixels, Matrices, Tensors & Resolution</a>
+                  <span class="ch-tag">ALGO · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="unit-badge unit-badge-u1" style="font-size:0.68rem; padding:1px 6px;">Unit I</span>
+                  <span class="syllabus-topic-pill" style="font-size:0.72rem;">🎓 Types of Images & Image Representation: Pixels, Bit Depth, and Resolution</span>
+                </div>
               </li>
-              <li class="part-chapter-item">
-                <a href="chapters/ch05-colour-models-file-formats.html">05. Colour Models &amp; Formats</a>
-                <span class="ch-tag">LAB · READY</span>
+              <li class="part-chapter-item" data-chapter="ch05" data-unit="unit-1" data-search="05 colour models & image file formats color models: rgb, hsv, cmy, yuv & file formats: bmp, jpeg, png, tiff unit i">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch05-colour-models-file-formats.html"><strong>05.</strong> Colour Models & Image File Formats</a>
+                  <span class="ch-tag">LAB · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="unit-badge unit-badge-u1" style="font-size:0.68rem; padding:1px 6px;">Unit I</span>
+                  <span class="syllabus-topic-pill" style="font-size:0.72rem;">🎓 Color Models: RGB, HSV, CMY, YUV & File Formats: BMP, JPEG, PNG, TIFF</span>
+                </div>
               </li>
             </ul>
           </div>
@@ -521,9 +941,8 @@
             Explore Part I →
           </a>
         </div>
-
-        <!-- Part II -->
-        <div class="part-card part-ii" id="part-2">
+        <!-- Part II — Improving the Image -->
+        <div class="part-card part-ii part-card-item" id="part-2">
           <div>
             <div class="part-card-header">
               <span class="part-badge">Part II · Active</span>
@@ -534,41 +953,95 @@
               Point transformations, histogram equalization, spatial convolution, linear/nonlinear smoothing, Laplacian/Sobel edge detection, 2D Fourier transforms, and restoration deblurring.
             </p>
             <ul class="part-chapters-list">
-              <li class="part-chapter-item">
-                <a href="chapters/ch06-point-processing.html">06. Point Processing &amp; Intensity</a>
-                <span class="ch-tag">CORE · READY</span>
+              <li class="part-chapter-item" data-chapter="ch06" data-unit="unit-2" data-search="06 point processing & intensity transformations spatial domain techniques unit ii">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch06-point-processing.html"><strong>06.</strong> Point Processing & Intensity Transformations</a>
+                  <span class="ch-tag">CORE · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="unit-badge unit-badge-u2" style="font-size:0.68rem; padding:1px 6px;">Unit II</span>
+                  <span class="syllabus-topic-pill" style="font-size:0.72rem;">🎓 Spatial Domain Techniques</span>
+                </div>
               </li>
-              <li class="part-chapter-item">
-                <a href="chapters/ch07-histograms-equalization.html">07. Histograms &amp; Equalization</a>
-                <span class="ch-tag">MATH · READY</span>
+              <li class="part-chapter-item" data-chapter="ch07" data-unit="unit-2" data-search="07 histograms & contrast enhancement histogram equalization unit ii">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch07-histograms-equalization.html"><strong>07.</strong> Histograms & Contrast Enhancement</a>
+                  <span class="ch-tag">MATH · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="unit-badge unit-badge-u2" style="font-size:0.68rem; padding:1px 6px;">Unit II</span>
+                  <span class="syllabus-topic-pill" style="font-size:0.72rem;">🎓 Histogram Equalization</span>
+                </div>
               </li>
-              <li class="part-chapter-item">
-                <a href="chapters/ch08-spatial-filtering.html">08. Spatial Filtering &amp; Convolution</a>
-                <span class="ch-tag">ALGO · READY</span>
+              <li class="part-chapter-item" data-chapter="ch08" data-unit="unit-2" data-search="08 spatial filtering & convolution spatial filtering: mechanics & convolution unit ii">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch08-spatial-filtering.html"><strong>08.</strong> Spatial Filtering & Convolution</a>
+                  <span class="ch-tag">ALGO · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="unit-badge unit-badge-u2" style="font-size:0.68rem; padding:1px 6px;">Unit II</span>
+                  <span class="syllabus-topic-pill" style="font-size:0.72rem;">🎓 Spatial Filtering: Mechanics & Convolution</span>
+                </div>
               </li>
-              <li class="part-chapter-item">
-                <a href="chapters/ch09-smoothing-noise-reduction.html">09. Smoothing &amp; Noise Reduction</a>
-                <span class="ch-tag">MATH · READY</span>
+              <li class="part-chapter-item" data-chapter="ch09" data-unit="unit-2" data-search="09 smoothing & noise reduction spatial filtering: smoothing unit ii">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch09-smoothing-noise-reduction.html"><strong>09.</strong> Smoothing & Noise Reduction</a>
+                  <span class="ch-tag">MATH · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="unit-badge unit-badge-u2" style="font-size:0.68rem; padding:1px 6px;">Unit II</span>
+                  <span class="syllabus-topic-pill" style="font-size:0.72rem;">🎓 Spatial Filtering: Smoothing</span>
+                </div>
               </li>
-              <li class="part-chapter-item">
-                <a href="chapters/ch10-sharpening-edge-detection.html">10. Sharpening &amp; Edge Detection</a>
-                <span class="ch-tag">MATH · READY</span>
+              <li class="part-chapter-item" data-chapter="ch10" data-unit="unit-2" data-search="10 sharpening & edge detection spatial filtering: sharpening, edge detection unit ii">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch10-sharpening-edge-detection.html"><strong>10.</strong> Sharpening & Edge Detection</a>
+                  <span class="ch-tag">MATH · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="unit-badge unit-badge-u2" style="font-size:0.68rem; padding:1px 6px;">Unit II</span>
+                  <span class="syllabus-topic-pill" style="font-size:0.72rem;">🎓 Spatial Filtering: Sharpening, Edge Detection</span>
+                </div>
               </li>
-              <li class="part-chapter-item">
-                <a href="chapters/ch11-geometric-transforms.html">11. Geometric Transforms &amp; Interpolation</a>
-                <span class="ch-tag">ALGO · READY</span>
+              <li class="part-chapter-item" data-chapter="ch11" data-unit="unit-2" data-search="11 geometric transformations & interpolation spatial enhancement: geometric transformations & interpolation unit ii">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch11-geometric-transforms.html"><strong>11.</strong> Geometric Transformations & Interpolation</a>
+                  <span class="ch-tag">ALGO · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="unit-badge unit-badge-u2" style="font-size:0.68rem; padding:1px 6px;">Unit II</span>
+                  <span class="syllabus-topic-pill" style="font-size:0.72rem;">🎓 Spatial Enhancement: Geometric Transformations & Interpolation</span>
+                </div>
               </li>
-              <li class="part-chapter-item">
-                <a href="chapters/ch12-fourier-transform.html">12. 2D Fourier Transform &amp; Frequency</a>
-                <span class="ch-tag">CORE · READY</span>
+              <li class="part-chapter-item" data-chapter="ch12" data-unit="unit-2" data-search="12 2d fourier transform & frequency domain frequency domain techniques, fourier transform and its applications unit ii">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch12-fourier-transform.html"><strong>12.</strong> 2D Fourier Transform & Frequency Domain</a>
+                  <span class="ch-tag">CORE · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="unit-badge unit-badge-u2" style="font-size:0.68rem; padding:1px 6px;">Unit II</span>
+                  <span class="syllabus-topic-pill" style="font-size:0.72rem;">🎓 Frequency Domain Techniques, Fourier Transform and Its Applications</span>
+                </div>
               </li>
-              <li class="part-chapter-item">
-                <a href="chapters/ch13-frequency-filtering.html">13. Frequency-Domain Filtering</a>
-                <span class="ch-tag">MATH · READY</span>
+              <li class="part-chapter-item" data-chapter="ch13" data-unit="unit-2" data-search="13 frequency-domain filtering frequency filters: low-pass, high-pass, band-pass unit ii">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch13-frequency-filtering.html"><strong>13.</strong> Frequency-Domain Filtering</a>
+                  <span class="ch-tag">MATH · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="unit-badge unit-badge-u2" style="font-size:0.68rem; padding:1px 6px;">Unit II</span>
+                  <span class="syllabus-topic-pill" style="font-size:0.72rem;">🎓 Frequency Filters: Low-Pass, High-Pass, Band-Pass</span>
+                </div>
               </li>
-              <li class="part-chapter-item">
-                <a href="chapters/ch14-image-restoration.html">14. Restoration &amp; Deblurring</a>
-                <span class="ch-tag">MATH · READY</span>
+              <li class="part-chapter-item" data-chapter="ch14" data-unit="unit-2" data-search="14 image restoration & deblurring noise reduction and image restoration techniques unit ii">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch14-image-restoration.html"><strong>14.</strong> Image Restoration & Deblurring</a>
+                  <span class="ch-tag">MATH · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="unit-badge unit-badge-u2" style="font-size:0.68rem; padding:1px 6px;">Unit II</span>
+                  <span class="syllabus-topic-pill" style="font-size:0.72rem;">🎓 Noise Reduction and Image Restoration Techniques</span>
+                </div>
               </li>
             </ul>
           </div>
@@ -576,9 +1049,8 @@
             Explore Part II →
           </a>
         </div>
-
-        <!-- Part III -->
-        <div class="part-card part-iii" id="part-3">
+        <!-- Part III — Understanding Image Content -->
+        <div class="part-card part-iii part-card-item" id="part-3">
           <div>
             <div class="part-card-header">
               <span class="part-badge">Part III · Active</span>
@@ -589,29 +1061,65 @@
               Segmentation fundamentals, Otsu global thresholding, split-and-merge region growing, binary morphology (erosion/dilation), texture descriptors, and SIFT/SURF/HOG detectors.
             </p>
             <ul class="part-chapters-list">
-              <li class="part-chapter-item">
-                <a href="chapters/ch15-segmentation-fundamentals.html">15. Segmentation Fundamentals</a>
-                <span class="ch-tag">CORE · READY</span>
+              <li class="part-chapter-item" data-chapter="ch15" data-unit="unit-3" data-search="15 image segmentation fundamentals & edge linking image segmentation unit iii">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch15-segmentation-fundamentals.html"><strong>15.</strong> Image Segmentation Fundamentals & Edge Linking</a>
+                  <span class="ch-tag">CORE · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="unit-badge unit-badge-u3" style="font-size:0.68rem; padding:1px 6px;">Unit III</span>
+                  <span class="syllabus-topic-pill" style="font-size:0.72rem;">🎓 Image Segmentation</span>
+                </div>
               </li>
-              <li class="part-chapter-item">
-                <a href="chapters/ch16-thresholding-otsu.html">16. Thresholding &amp; Otsu Method</a>
-                <span class="ch-tag">MATH · READY</span>
+              <li class="part-chapter-item" data-chapter="ch16" data-unit="unit-3" data-search="16 thresholding & otsu's method thresholding (global, adaptive) unit iii">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch16-thresholding-otsu.html"><strong>16.</strong> Thresholding & Otsu's Method</a>
+                  <span class="ch-tag">MATH · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="unit-badge unit-badge-u3" style="font-size:0.68rem; padding:1px 6px;">Unit III</span>
+                  <span class="syllabus-topic-pill" style="font-size:0.72rem;">🎓 Thresholding (Global, Adaptive)</span>
+                </div>
               </li>
-              <li class="part-chapter-item">
-                <a href="chapters/ch17-region-segmentation.html">17. Region-Based Segmentation</a>
-                <span class="ch-tag">ALGO · READY</span>
+              <li class="part-chapter-item" data-chapter="ch17" data-unit="unit-3" data-search="17 region-based segmentation region-based segmentation unit iii">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch17-region-segmentation.html"><strong>17.</strong> Region-Based Segmentation</a>
+                  <span class="ch-tag">ALGO · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="unit-badge unit-badge-u3" style="font-size:0.68rem; padding:1px 6px;">Unit III</span>
+                  <span class="syllabus-topic-pill" style="font-size:0.72rem;">🎓 Region-Based Segmentation</span>
+                </div>
               </li>
-              <li class="part-chapter-item">
-                <a href="chapters/ch18-mathematical-morphology.html">18. Mathematical Morphology</a>
-                <span class="ch-tag">MATH · READY</span>
+              <li class="part-chapter-item" data-chapter="ch18" data-unit="unit-3" data-search="18 mathematical morphology morphological operations: erosion, dilation, opening, closing unit iii">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch18-mathematical-morphology.html"><strong>18.</strong> Mathematical Morphology</a>
+                  <span class="ch-tag">MATH · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="unit-badge unit-badge-u3" style="font-size:0.68rem; padding:1px 6px;">Unit III</span>
+                  <span class="syllabus-topic-pill" style="font-size:0.72rem;">🎓 Morphological Operations: Erosion, Dilation, Opening, Closing</span>
+                </div>
               </li>
-              <li class="part-chapter-item">
-                <a href="chapters/ch19-features-descriptors.html">19. Image Features &amp; Descriptors</a>
-                <span class="ch-tag">MATH · READY</span>
+              <li class="part-chapter-item" data-chapter="ch19" data-unit="unit-3" data-search="19 image features & descriptors image features and descriptors unit iii">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch19-features-descriptors.html"><strong>19.</strong> Image Features & Descriptors</a>
+                  <span class="ch-tag">MATH · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="unit-badge unit-badge-u3" style="font-size:0.68rem; padding:1px 6px;">Unit III</span>
+                  <span class="syllabus-topic-pill" style="font-size:0.72rem;">🎓 Image Features and Descriptors</span>
+                </div>
               </li>
-              <li class="part-chapter-item">
-                <a href="chapters/ch20-sift-surf-orb-hog.html">20. SIFT, SURF, ORB &amp; HOG</a>
-                <span class="ch-tag">CORE · READY</span>
+              <li class="part-chapter-item" data-chapter="ch20" data-unit="unit-3" data-search="20 local feature detectors (sift, surf, orb & hog) sift, surf, hog unit iii">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch20-sift-surf-orb-hog.html"><strong>20.</strong> Local Feature Detectors (SIFT, SURF, ORB & HOG)</a>
+                  <span class="ch-tag">CORE · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="unit-badge unit-badge-u3" style="font-size:0.68rem; padding:1px 6px;">Unit III</span>
+                  <span class="syllabus-topic-pill" style="font-size:0.72rem;">🎓 SIFT, SURF, HOG</span>
+                </div>
               </li>
             </ul>
           </div>
@@ -619,9 +1127,8 @@
             Explore Part III →
           </a>
         </div>
-
-        <!-- Part IV -->
-        <div class="part-card part-iv" id="part-4">
+        <!-- Part IV — Compressing Images -->
+        <div class="part-card part-iv part-card-item" id="part-4">
           <div>
             <div class="part-card-header">
               <span class="part-badge">Part IV · Active</span>
@@ -632,21 +1139,45 @@
               Information entropy, Run-Length Encoding, Huffman variable-length coding, Discrete Cosine Transform (DCT), JPEG pipeline quantization, and multiresolution wavelet compression.
             </p>
             <ul class="part-chapters-list">
-              <li class="part-chapter-item">
-                <a href="chapters/ch21-compression-entropy.html">21. Compression Fundamentals &amp; Entropy</a>
-                <span class="ch-tag">MATH · READY</span>
+              <li class="part-chapter-item" data-chapter="ch21" data-unit="unit-3" data-search="21 image compression fundamentals image compression unit iii">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch21-compression-entropy.html"><strong>21.</strong> Image Compression Fundamentals</a>
+                  <span class="ch-tag">MATH · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="unit-badge unit-badge-u3" style="font-size:0.68rem; padding:1px 6px;">Unit III</span>
+                  <span class="syllabus-topic-pill" style="font-size:0.72rem;">🎓 Image Compression</span>
+                </div>
               </li>
-              <li class="part-chapter-item">
-                <a href="chapters/ch22-lossless-coding.html">22. Lossless Coding: RLE &amp; Huffman</a>
-                <span class="ch-tag">ALGO · READY</span>
+              <li class="part-chapter-item" data-chapter="ch22" data-unit="unit-3" data-search="22 entropy, run-length encoding & huffman coding lossless vs. lossy compression unit iii">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch22-lossless-coding.html"><strong>22.</strong> Entropy, Run-Length Encoding & Huffman Coding</a>
+                  <span class="ch-tag">ALGO · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="unit-badge unit-badge-u3" style="font-size:0.68rem; padding:1px 6px;">Unit III</span>
+                  <span class="syllabus-topic-pill" style="font-size:0.72rem;">🎓 Lossless vs. Lossy Compression</span>
+                </div>
               </li>
-              <li class="part-chapter-item">
-                <a href="chapters/ch23-lossy-dct-jpeg.html">23. Lossy Compression: DCT &amp; JPEG</a>
-                <span class="ch-tag">CORE · READY</span>
+              <li class="part-chapter-item" data-chapter="ch23" data-unit="unit-3" data-search="23 transform coding & discrete cosine transform jpeg compression steps and implementation (transform & dct) unit iii">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch23-lossy-dct-jpeg.html"><strong>23.</strong> Transform Coding & Discrete Cosine Transform</a>
+                  <span class="ch-tag">CORE · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="unit-badge unit-badge-u3" style="font-size:0.68rem; padding:1px 6px;">Unit III</span>
+                  <span class="syllabus-topic-pill" style="font-size:0.72rem;">🎓 JPEG Compression Steps and Implementation (Transform & DCT)</span>
+                </div>
               </li>
-              <li class="part-chapter-item">
-                <a href="chapters/ch24-wavelets-jpeg2000.html">24. Wavelets &amp; JPEG 2000</a>
-                <span class="ch-tag">MATH · READY</span>
+              <li class="part-chapter-item" data-chapter="ch24" data-unit="unit-3" data-search="24 jpeg compression end to end & jpeg 2000 jpeg compression steps and implementation (pipeline & standards) unit iii">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch24-wavelets-jpeg2000.html"><strong>24.</strong> JPEG Compression End to End & JPEG 2000</a>
+                  <span class="ch-tag">MATH · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="unit-badge unit-badge-u3" style="font-size:0.68rem; padding:1px 6px;">Unit III</span>
+                  <span class="syllabus-topic-pill" style="font-size:0.72rem;">🎓 JPEG Compression Steps and Implementation (Pipeline & Standards)</span>
+                </div>
               </li>
             </ul>
           </div>
@@ -654,9 +1185,8 @@
             Explore Part IV →
           </a>
         </div>
-
-        <!-- Part V -->
-        <div class="part-card part-v" id="part-5">
+        <!-- Part V — Intelligent Vision -->
+        <div class="part-card part-v part-card-item" id="part-5">
           <div>
             <div class="part-card-header">
               <span class="part-badge">Part V · Active</span>
@@ -667,33 +1197,75 @@
               Classical image classification, convolutional neural networks (CNNs), VGG/ResNet deep architectures, YOLO real-time object detection, denoising autoencoders, video optical flow, and responsible AI.
             </p>
             <ul class="part-chapters-list">
-              <li class="part-chapter-item">
-                <a href="chapters/ch25-image-classification.html">25. Image Classification Foundations</a>
-                <span class="ch-tag">MATH · READY</span>
+              <li class="part-chapter-item" data-chapter="ch25" data-unit="unit-4" data-search="25 image classification foundations image classification and object detection (part 1: classification) unit iv">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch25-image-classification.html"><strong>25.</strong> Image Classification Foundations</a>
+                  <span class="ch-tag">MATH · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="unit-badge unit-badge-u4" style="font-size:0.68rem; padding:1px 6px;">Unit IV</span>
+                  <span class="syllabus-topic-pill" style="font-size:0.72rem;">🎓 Image Classification and Object Detection (Part 1: Classification)</span>
+                </div>
               </li>
-              <li class="part-chapter-item">
-                <a href="chapters/ch26-cnns-image-processing.html">26. CNNs for Image Processing</a>
-                <span class="ch-tag">CORE · READY</span>
+              <li class="part-chapter-item" data-chapter="ch26" data-unit="unit-4" data-search="26 convolutional neural networks for image processing introduction to convolutional neural networks (cnns) unit iv">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch26-cnns-image-processing.html"><strong>26.</strong> Convolutional Neural Networks for Image Processing</a>
+                  <span class="ch-tag">CORE · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="unit-badge unit-badge-u4" style="font-size:0.68rem; padding:1px 6px;">Unit IV</span>
+                  <span class="syllabus-topic-pill" style="font-size:0.72rem;">🎓 Introduction to Convolutional Neural Networks (CNNs)</span>
+                </div>
               </li>
-              <li class="part-chapter-item">
-                <a href="chapters/ch27-modern-vision-architectures.html">27. Modern Vision Architectures (VGG &amp; ResNet)</a>
-                <span class="ch-tag">CORE · READY</span>
+              <li class="part-chapter-item" data-chapter="ch27" data-unit="unit-4" data-search="27 modern vision architectures: vgg & resnet pretrained models (vgg, resnet) unit iv">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch27-modern-vision-architectures.html"><strong>27.</strong> Modern Vision Architectures: VGG & ResNet</a>
+                  <span class="ch-tag">ALGO · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="unit-badge unit-badge-u4" style="font-size:0.68rem; padding:1px 6px;">Unit IV</span>
+                  <span class="syllabus-topic-pill" style="font-size:0.72rem;">🎓 Pretrained Models (VGG, ResNet)</span>
+                </div>
               </li>
-              <li class="part-chapter-item">
-                <a href="chapters/ch28-object-detection-yolo.html">28. Object Detection &amp; YOLO</a>
-                <span class="ch-tag">ALGO · READY</span>
+              <li class="part-chapter-item" data-chapter="ch28" data-unit="unit-4" data-search="28 object detection & yolo pretrained models (yolo) & object detection unit iv">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch28-object-detection-yolo.html"><strong>28.</strong> Object Detection & YOLO</a>
+                  <span class="ch-tag">ALGO · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="unit-badge unit-badge-u4" style="font-size:0.68rem; padding:1px 6px;">Unit IV</span>
+                  <span class="syllabus-topic-pill" style="font-size:0.72rem;">🎓 Pretrained Models (YOLO) & Object Detection</span>
+                </div>
               </li>
-              <li class="part-chapter-item">
-                <a href="chapters/ch29-image-denoising-autoencoders.html">29. Image Denoising with Autoencoders</a>
-                <span class="ch-tag">MATH · READY</span>
+              <li class="part-chapter-item" data-chapter="ch29" data-unit="unit-4" data-search="29 image denoising with autoencoders image denoising using autoencoders unit iv">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch29-image-denoising-autoencoders.html"><strong>29.</strong> Image Denoising with Autoencoders</a>
+                  <span class="ch-tag">MATH · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="unit-badge unit-badge-u4" style="font-size:0.68rem; padding:1px 6px;">Unit IV</span>
+                  <span class="syllabus-topic-pill" style="font-size:0.72rem;">🎓 Image Denoising using Autoencoders</span>
+                </div>
               </li>
-              <li class="part-chapter-item">
-                <a href="chapters/ch30-video-motion-analysis.html">30. Video Processing &amp; Motion Analysis</a>
-                <span class="ch-tag">LAB · READY</span>
+              <li class="part-chapter-item" data-chapter="ch30" data-unit="unit-4" data-search="30 video processing & motion analysis introduction to video processing and motion analysis unit iv">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch30-video-motion-analysis.html"><strong>30.</strong> Video Processing & Motion Analysis</a>
+                  <span class="ch-tag">LAB · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="unit-badge unit-badge-u4" style="font-size:0.68rem; padding:1px 6px;">Unit IV</span>
+                  <span class="syllabus-topic-pill" style="font-size:0.72rem;">🎓 Introduction to Video Processing and Motion Analysis</span>
+                </div>
               </li>
-              <li class="part-chapter-item">
-                <a href="chapters/ch31-dip-applications-engineering.html">31. DIP Applications, Engineering &amp; Ethics</a>
-                <span class="ch-tag">CORE · READY</span>
+              <li class="part-chapter-item" data-chapter="ch31" data-unit="unit-4" data-search="31 dip applications, engineering context & responsible use applications in healthcare and surveillance unit iv">
+                <div class="part-chapter-top">
+                  <a href="chapters/ch31-dip-applications-engineering.html"><strong>31.</strong> DIP Applications, Engineering Context & Responsible Use</a>
+                  <span class="ch-tag">CORE · READY</span>
+                </div>
+                <div class="part-chapter-bottom">
+                  <span class="unit-badge unit-badge-u4" style="font-size:0.68rem; padding:1px 6px;">Unit IV</span>
+                  <span class="syllabus-topic-pill" style="font-size:0.72rem;">🎓 Applications in Healthcare and Surveillance</span>
+                </div>
               </li>
             </ul>
           </div>
@@ -708,5 +1280,100 @@
   <script src="assets/js/state.js"></script>
   <script src="assets/js/core.js"></script>
   <script src="assets/js/tts.js"></script>
+  <script>
+    // Dual-View and Syllabus Unit Filter Engine
+    document.addEventListener('DOMContentLoaded', () => {
+      const btnViewSyllabus = document.getElementById('btn-view-syllabus');
+      const btnViewParts = document.getElementById('btn-view-parts');
+      const syllabusContainer = document.getElementById('view-syllabus-container');
+      const partsContainer = document.getElementById('view-parts-container');
+      const unitPills = document.querySelectorAll('.unit-pill-btn');
+      const searchInput = document.getElementById('topic-search-input');
+
+      let currentMode = localStorage.getItem('dip_curriculum_view') || 'syllabus';
+      let currentUnitFilter = 'all';
+      let searchQuery = '';
+
+      function setViewMode(mode) {
+        currentMode = mode;
+        localStorage.setItem('dip_curriculum_view', mode);
+        if (mode === 'syllabus') {
+          btnViewSyllabus.classList.add('active');
+          btnViewParts.classList.remove('active');
+          syllabusContainer.style.display = 'grid';
+          partsContainer.style.display = 'none';
+        } else {
+          btnViewParts.classList.add('active');
+          btnViewSyllabus.classList.remove('active');
+          partsContainer.style.display = 'grid';
+          syllabusContainer.style.display = 'none';
+        }
+        applyFilters();
+      }
+
+      function applyFilters() {
+        const activeContainer = currentMode === 'syllabus' ? syllabusContainer : partsContainer;
+        const allCards = activeContainer.querySelectorAll('.part-card');
+
+        allCards.forEach(card => {
+          const cardUnit = card.getAttribute('data-unit');
+          const chapterItems = card.querySelectorAll('.part-chapter-item');
+          let visibleChaptersInCard = 0;
+
+          chapterItems.forEach(item => {
+            const itemUnit = item.getAttribute('data-unit');
+            const searchData = item.getAttribute('data-search') || '';
+            const matchesUnit = (currentUnitFilter === 'all') || (itemUnit === currentUnitFilter);
+            const matchesQuery = (!searchQuery) || searchData.includes(searchQuery);
+
+            if (matchesUnit && matchesQuery) {
+              item.style.display = 'flex';
+              visibleChaptersInCard++;
+            } else {
+              item.style.display = 'none';
+            }
+          });
+
+          // In syllabus mode, card matches unit directly
+          if (currentMode === 'syllabus') {
+            if ((currentUnitFilter === 'all' || cardUnit === currentUnitFilter) && visibleChaptersInCard > 0) {
+              card.style.display = 'flex';
+            } else {
+              card.style.display = 'none';
+            }
+          } else {
+            // In parts mode, hide card if 0 visible chapters
+            if (visibleChaptersInCard > 0) {
+              card.style.display = 'flex';
+            } else {
+              card.style.display = 'none';
+            }
+          }
+        });
+      }
+
+      btnViewSyllabus.addEventListener('click', () => setViewMode('syllabus'));
+      btnViewParts.addEventListener('click', () => setViewMode('parts'));
+
+      unitPills.forEach(pill => {
+        pill.addEventListener('click', () => {
+          unitPills.forEach(p => p.classList.remove('active'));
+          pill.classList.add('active');
+          currentUnitFilter = pill.getAttribute('data-unit');
+          applyFilters();
+        });
+      });
+
+      if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+          searchQuery = e.target.value.toLowerCase().trim();
+          applyFilters();
+        });
+      }
+
+      // Initialize
+      setViewMode(currentMode);
+    });
+  </script>
 </body>
 </html>
