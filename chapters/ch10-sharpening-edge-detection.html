@@ -1,0 +1,2518 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Arpit">
+  <meta name="description" content="Chapter 10: Sharpening &amp; Edge Detection — Digital Image Processing MiniBook. First Derivatives (Roberts, Prewitt, Sobel), Second Derivative (Laplacian Operator), Unsharp Masking &amp; Highboost Filtering, LoG, and Canny Edge Detection Pipeline">
+  <title>C10: Sharpening &amp; Edge Detection | DIP MiniBook 📷 Arpit</title>
+
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <link rel="stylesheet" href="../assets/css/chapters.css">
+  <link rel="stylesheet" href="../assets/css/animations.css">
+  <link rel="stylesheet" href="../assets/css/timer.css">
+
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body data-chapter-id="ch10-sharpening-edge-detection">
+  <div id="progress-bar"></div>
+
+  <!-- Header -->
+  <header id="main-header">
+    <div class="header-left">
+      <button id="sidebar-toggle" class="icon-btn" aria-label="Toggle navigation drawer" title="Toggle Sidebar (S)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <a href="../index.html" class="brand-logo">
+        <div class="brand-icon">DIP</div>
+        <div class="brand-text">
+          <span class="main">Digital Image Processing</span>
+          <span class="sub">DU DSE-3 Engineering MiniBook</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="header-chapter-title">C10: Sharpening &amp; Edge Detection</div>
+
+    <div class="header-right">
+      <button id="reading-mode-btn" class="icon-btn" aria-label="Toggle reading focus mode" title="Focus Mode (F)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+          <line x1="8" y1="21" x2="16" y2="21"></line>
+          <line x1="12" y1="17" x2="12" y2="21"></line>
+        </svg>
+      </button>
+      <button id="tts-toggle" class="icon-btn" aria-label="Audio Reader" title="Audio Reader">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+        </svg>
+      </button>
+      <button id="theme-toggle" class="icon-btn" aria-label="Cycle theme" title="Theme (T)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="12" cy="12" r="4.5"></circle>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Sidebar Overlay -->
+  <div id="sidebar-overlay"></div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" aria-expanded="true">
+    <div class="sidebar-nav">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">General</div>
+        <a href="../index.html" class="sidebar-link">
+          <span class="link-icon">🏛️</span>
+          <span>Subject Portal</span>
+        </a>
+        <a href="../progress.html" class="sidebar-link">
+          <span class="link-icon">📊</span>
+          <span>Study Dashboard</span>
+        </a>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Current Chapter Sections</div>
+        <a href="#s-10-1" class="sidebar-link"><span class="link-icon">📌</span><span>10.1 Why Sharpening and Edge Detection Belong Together</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-10-2" class="sidebar-link"><span class="link-icon">📌</span><span>10.2 What Is an Edge?</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-10-3" class="sidebar-link"><span class="link-icon">📌</span><span>10.3 Step, Ramp and Roof Edges</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-10-4" class="sidebar-link"><span class="link-icon">📌</span><span>10.4 First Derivative</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-10-5" class="sidebar-link"><span class="link-icon">📌</span><span>10.5 Second Derivative</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-10-6" class="sidebar-link"><span class="link-icon">📌</span><span>10.6 Image Gradient</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-10-7" class="sidebar-link"><span class="link-icon">📌</span><span>10.7 What Does Gradient Direction Mean?</span> </a>
+      <a href="#s-10-8" class="sidebar-link"><span class="link-icon">📌</span><span>10.8 Simple Finite Differences</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-10-9" class="sidebar-link"><span class="link-icon">📌</span><span>10.9 Roberts Cross Operator</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-10-10" class="sidebar-link"><span class="link-icon">📌</span><span>10.10 Prewitt Operator</span> </a>
+      <a href="#s-10-11" class="sidebar-link"><span class="link-icon">📌</span><span>10.11 Sobel Operator</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-10-12" class="sidebar-link"><span class="link-icon">📌</span><span>10.12 Worked Sobel Example</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-10-13" class="sidebar-link"><span class="link-icon">📌</span><span>10.13 Gradient Magnitude Scaling</span> </a>
+      <a href="#s-10-14" class="sidebar-link"><span class="link-icon">📌</span><span>10.14 Edge Map vs Gradient Image</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-10-15" class="sidebar-link"><span class="link-icon">📌</span><span>10.15 Thresholding the Gradient</span> </a>
+      <a href="#s-10-16" class="sidebar-link"><span class="link-icon">📌</span><span>10.16 Low vs High Edge Threshold</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-10-17" class="sidebar-link"><span class="link-icon">📌</span><span>10.17 Why Smoothing Often Comes First</span> </a>
+      <a href="#s-10-18" class="sidebar-link"><span class="link-icon">📌</span><span>10.18 Canny Edge Detector</span> </a>
+      <a href="#s-10-19" class="sidebar-link"><span class="link-icon">📌</span><span>10.19 Non-Maximum Suppression</span> </a>
+      <a href="#s-10-20" class="sidebar-link"><span class="link-icon">📌</span><span>10.20 Double Threshold</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-10-21" class="sidebar-link"><span class="link-icon">📌</span><span>10.21 Hysteresis</span> </a>
+      <a href="#s-10-22" class="sidebar-link"><span class="link-icon">📌</span><span>10.22 Canny vs Sobel</span> </a>
+      <a href="#s-10-23" class="sidebar-link"><span class="link-icon">📌</span><span>10.23 Second-Derivative Edge Detection</span> </a>
+      <a href="#s-10-24" class="sidebar-link"><span class="link-icon">📌</span><span>10.24 Zero-Crossing Idea</span> </a>
+      <a href="#s-10-25" class="sidebar-link"><span class="link-icon">📌</span><span>10.25 Laplacian of Gaussian</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-10-26" class="sidebar-link"><span class="link-icon">📌</span><span>10.26 Sharpening and High Frequencies</span> </a>
+      <a href="#s-10-27" class="sidebar-link"><span class="link-icon">📌</span><span>10.27 Unsharp Masking</span> </a>
+      <a href="#s-10-28" class="sidebar-link"><span class="link-icon">📌</span><span>10.28 Worked Unsharp Example</span> </a>
+      <a href="#s-10-29" class="sidebar-link"><span class="link-icon">📌</span><span>10.29 Over-Sharpening</span> </a>
+      <a href="#s-10-30" class="sidebar-link"><span class="link-icon">📌</span><span>10.30 High-Boost Filtering</span> </a>
+      <a href="#s-10-31" class="sidebar-link"><span class="link-icon">📌</span><span>10.31 Laplacian Sharpening</span> </a>
+      <a href="#s-10-32" class="sidebar-link"><span class="link-icon">📌</span><span>10.32 Worked Laplacian-Sharpening Example</span> </a>
+      <a href="#s-10-33" class="sidebar-link"><span class="link-icon">📌</span><span>10.33 Why the Example Matters</span> </a>
+      <a href="#s-10-34" class="sidebar-link"><span class="link-icon">📌</span><span>10.34 Edge Detection Pipeline</span> </a>
+      <a href="#s-10-35" class="sidebar-link"><span class="link-icon">📌</span><span>10.35 Edge Detection Does Not Mean Object Detection</span> </a>
+      <a href="#s-10-36" class="sidebar-link"><span class="link-icon">📌</span><span>10.36 Edges vs Texture</span> </a>
+      <a href="#s-10-37" class="sidebar-link"><span class="link-icon">📌</span><span>10.37 Edge Connectivity</span> </a>
+      <a href="#s-10-38" class="sidebar-link"><span class="link-icon">📌</span><span>10.38 Multi-Scale Edge Detection</span> </a>
+      <a href="#s-10-39" class="sidebar-link"><span class="link-icon">📌</span><span>10.39 Orientation Information</span> </a>
+      <a href="#s-10-40" class="sidebar-link"><span class="link-icon">📌</span><span>10.40 Feature Descriptors Bridge</span> </a>
+      <a href="#s-10-41" class="sidebar-link"><span class="link-icon">📌</span><span>10.41 Video Bridge</span> </a>
+      <a href="#s-10-42" class="sidebar-link"><span class="link-icon">📌</span><span>10.42 Colour Edge Detection</span> </a>
+      <a href="#s-10-43" class="sidebar-link"><span class="link-icon">📌</span><span>10.43 Edge Evaluation</span> </a>
+      <a href="#s-10-44" class="sidebar-link"><span class="link-icon">📌</span><span>10.44 Sharpening Evaluation</span> </a>
+      <a href="#s-10-45" class="sidebar-link"><span class="link-icon">📌</span><span>10.45 Implementation Safety Checklist</span> </a>
+      <a href="#s-10-46" class="sidebar-link"><span class="link-icon">📌</span><span>10.46 Common Traps</span> </a>
+      <a href="#s-10-47" class="sidebar-link"><span class="link-icon">📌</span><span>10.47 Exam Formula Sheet</span> </a>
+      <a href="#s-10-48" class="sidebar-link"><span class="link-icon">📌</span><span>10.48 Exam-Style Problem — Sobel</span> </a>
+      <a href="#s-10-49" class="sidebar-link"><span class="link-icon">📌</span><span>10.49 Exam-Style Problem — Sharpening</span> </a>
+      <a href="#s-10-50" class="sidebar-link"><span class="link-icon">📌</span><span>10.50 Exam-Style Problem — Laplacian</span> </a>
+      <a href="#s-10-51" class="sidebar-link"><span class="link-icon">📌</span><span>10.51 Cross-Book Bridges</span> </a>
+      <a href="#s-10-52" class="sidebar-link"><span class="link-icon">📌</span><span>10.52 Quick Recall</span> </a>
+      <a href="#s-10-53" class="sidebar-link"><span class="link-icon">📌</span><span>10.53 Chapter Checkpoint</span> </a>
+      <a href="#s-10-54" class="sidebar-link"><span class="link-icon">📌</span><span>10.54 Unit II Progress</span> </a>
+      <a href="#s-10-55" class="sidebar-link"><span class="link-icon">📌</span><span>10.55 Mathematical Derivation: 2D Laplacian Operator &amp; Image Sharpening</span> </a>
+      </div>
+
+      
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-i">Part I — The Image</div>
+      <a href="ch01-big-picture.html" class="sidebar-link"><span class="link-icon">01</span><span>The Big Picture</span></a>
+      <a href="ch02-image-formation.html" class="sidebar-link"><span class="link-icon">02</span><span>Formation & Acquisition</span></a>
+      <a href="ch03-sampling-quantization.html" class="sidebar-link"><span class="link-icon">03</span><span>Sampling & Quantization</span></a>
+      <a href="ch04-image-representation.html" class="sidebar-link"><span class="link-icon">04</span><span>Pixels, Matrices & Resolution</span></a>
+      <a href="ch05-colour-models-file-formats.html" class="sidebar-link"><span class="link-icon">05</span><span>Colour Models & Formats</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-ii">Part II — Improving the Image</div>
+      <a href="ch06-point-processing.html" class="sidebar-link"><span class="link-icon">06</span><span>Point Processing & Intensity</span></a>
+      <a href="ch07-histograms-equalization.html" class="sidebar-link"><span class="link-icon">07</span><span>Histograms & Equalization</span></a>
+      <a href="ch08-spatial-filtering.html" class="sidebar-link"><span class="link-icon">08</span><span>Spatial Filtering & Convolution</span></a>
+      <a href="ch09-smoothing-noise-reduction.html" class="sidebar-link"><span class="link-icon">09</span><span>Smoothing & Noise Reduction</span></a>
+      <a href="ch10-sharpening-edge-detection.html" class="sidebar-link active"><span class="link-icon">10</span><span>Sharpening & Edge Detection</span></a>
+      <a href="ch11-geometric-transforms.html" class="sidebar-link"><span class="link-icon">11</span><span>Geometric Transforms</span></a>
+      <a href="ch12-fourier-transform.html" class="sidebar-link"><span class="link-icon">12</span><span>Fourier Transform & Frequency</span></a>
+      <a href="ch13-frequency-filtering.html" class="sidebar-link"><span class="link-icon">13</span><span>Frequency-Domain Filtering</span></a>
+      <a href="ch14-image-restoration.html" class="sidebar-link"><span class="link-icon">14</span><span>Restoration & Deblurring</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-iii">Part III — Understanding Content</div>
+      <a href="ch15-segmentation-fundamentals.html" class="sidebar-link"><span class="link-icon">15</span><span>Segmentation Fundamentals</span></a>
+      <a href="ch16-thresholding-otsu.html" class="sidebar-link"><span class="link-icon">16</span><span>Thresholding & Otsu Method</span></a>
+      <a href="ch17-region-segmentation.html" class="sidebar-link"><span class="link-icon">17</span><span>Region-Based Segmentation</span></a>
+      <a href="ch18-mathematical-morphology.html" class="sidebar-link"><span class="link-icon">18</span><span>Mathematical Morphology</span></a>
+      <a href="ch19-features-descriptors.html" class="sidebar-link"><span class="link-icon">19</span><span>Image Features & Descriptors</span></a>
+      <a href="ch20-sift-surf-orb-hog.html" class="sidebar-link"><span class="link-icon">20</span><span>SIFT, SURF, ORB & HOG</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-iv">Part IV — Compressing Images</div>
+      <a href="ch21-compression-entropy.html" class="sidebar-link"><span class="link-icon">21</span><span>Compression & Entropy</span></a>
+      <a href="ch22-lossless-coding.html" class="sidebar-link"><span class="link-icon">22</span><span>Lossless: RLE & Huffman</span></a>
+      <a href="ch23-lossy-dct-jpeg.html" class="sidebar-link"><span class="link-icon">23</span><span>Lossy: DCT & JPEG</span></a>
+      <a href="ch24-wavelets-jpeg2000.html" class="sidebar-link"><span class="link-icon">24</span><span>Wavelets & JPEG 2000</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-v">Part V — Intelligent Vision</div>
+      <a href="ch25-image-classification.html" class="sidebar-link"><span class="link-icon">25</span><span>Image Classification</span></a>
+      <a href="ch26-cnns-image-processing.html" class="sidebar-link"><span class="link-icon">26</span><span>CNNs for Image Processing</span></a>
+      <a href="ch27-modern-vision-architectures.html" class="sidebar-link"><span class="link-icon">27</span><span>Modern Vision Architectures</span></a>
+      <a href="ch28-object-detection-yolo.html" class="sidebar-link"><span class="link-icon">28</span><span>Object Detection: YOLO</span></a>
+      <a href="ch29-image-denoising-autoencoders.html" class="sidebar-link"><span class="link-icon">29</span><span>Image Denoising Autoencoders</span></a>
+      <a href="ch30-video-motion-analysis.html" class="sidebar-link"><span class="link-icon">30</span><span>Video & Motion Analysis</span></a>
+      <a href="ch31-dip-applications-engineering.html" class="sidebar-link"><span class="link-icon">31</span><span>DIP Applications & Ethics</span></a>
+    </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-brand-mark">
+        <div class="mark">DU</div>
+        <div>
+          <strong>DSE-3 MiniBook</strong>
+          <div>University of Delhi</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mandatory Shell Wrapper -->
+  <div id="main-content">
+    <main class="chapter-content">
+      <!-- Chapter Hero -->
+      <div class="chapter-hero">
+        <div class="hero-meta">
+          <span class="part-badge part-ii">Improving the Image</span>
+          <span class="chapter-number">CHAPTER 10</span>
+          <span class="reading-time">⏱️ ~55 min read</span>
+          <span class="tag-badge tag-core">Highest Yield (10-mark guarantee)</span>
+        </div>
+        <h1 class="chapter-title">Sharpening &amp; Edge Detection</h1>
+        <p class="chapter-subtitle">
+          First Derivatives (Roberts, Prewitt, Sobel), Second Derivative (Laplacian Operator), Unsharp Masking &amp; Highboost Filtering, LoG, and Canny Edge Detection Pipeline
+        </p>
+
+        <div class="syllabus-anchor">
+          <span class="syllabus-anchor-label">DU Syllabus</span>
+          <span><strong>Sharpening Spatial Filters & Edge Detection:</strong> First-order derivative filters, gradient vector magnitude and angle, Roberts, Prewitt, Sobel operators, second-order derivative Laplacian operator, Laplacian image sharpening, unsharp masking and highboost filtering, Laplacian of Gaussian (LoG), zero-crossing detection, and the complete 5-stage Canny edge detector.</span>
+        </div>
+      </div>
+
+      <!-- In-Page TOC -->
+      <div class="chapter-checklist-card" style="margin-bottom:var(--em-space-8);">
+        <div class="checklist-title">
+          <span>Table of Contents &amp; Visual Section Map</span>
+          <span class="tag-badge tag-math">55 Deep Sections</span>
+        </div>
+        <ul class="part-chapters-list">
+          <li class="part-chapter-item"><a href="#s-10-1"><strong>10.1</strong> Why Sharpening and Edge Detection Belong Together</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-10-2"><strong>10.2</strong> What Is an Edge?</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-10-3"><strong>10.3</strong> Step, Ramp and Roof Edges</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-10-4"><strong>10.4</strong> First Derivative</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-10-5"><strong>10.5</strong> Second Derivative</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-10-6"><strong>10.6</strong> Image Gradient</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-10-7"><strong>10.7</strong> What Does Gradient Direction Mean?</a> </li>
+      <li class="part-chapter-item"><a href="#s-10-8"><strong>10.8</strong> Simple Finite Differences</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-10-9"><strong>10.9</strong> Roberts Cross Operator</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-10-10"><strong>10.10</strong> Prewitt Operator</a> </li>
+      <li class="part-chapter-item"><a href="#s-10-11"><strong>10.11</strong> Sobel Operator</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-10-12"><strong>10.12</strong> Worked Sobel Example</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-10-13"><strong>10.13</strong> Gradient Magnitude Scaling</a> </li>
+      <li class="part-chapter-item"><a href="#s-10-14"><strong>10.14</strong> Edge Map vs Gradient Image</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-10-15"><strong>10.15</strong> Thresholding the Gradient</a> </li>
+      <li class="part-chapter-item"><a href="#s-10-16"><strong>10.16</strong> Low vs High Edge Threshold</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-10-17"><strong>10.17</strong> Why Smoothing Often Comes First</a> </li>
+      <li class="part-chapter-item"><a href="#s-10-18"><strong>10.18</strong> Canny Edge Detector</a> </li>
+      <li class="part-chapter-item"><a href="#s-10-19"><strong>10.19</strong> Non-Maximum Suppression</a> </li>
+      <li class="part-chapter-item"><a href="#s-10-20"><strong>10.20</strong> Double Threshold</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-10-21"><strong>10.21</strong> Hysteresis</a> </li>
+      <li class="part-chapter-item"><a href="#s-10-22"><strong>10.22</strong> Canny vs Sobel</a> </li>
+      <li class="part-chapter-item"><a href="#s-10-23"><strong>10.23</strong> Second-Derivative Edge Detection</a> </li>
+      <li class="part-chapter-item"><a href="#s-10-24"><strong>10.24</strong> Zero-Crossing Idea</a> </li>
+      <li class="part-chapter-item"><a href="#s-10-25"><strong>10.25</strong> Laplacian of Gaussian</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-10-26"><strong>10.26</strong> Sharpening and High Frequencies</a> </li>
+      <li class="part-chapter-item"><a href="#s-10-27"><strong>10.27</strong> Unsharp Masking</a> </li>
+      <li class="part-chapter-item"><a href="#s-10-28"><strong>10.28</strong> Worked Unsharp Example</a> </li>
+      <li class="part-chapter-item"><a href="#s-10-29"><strong>10.29</strong> Over-Sharpening</a> </li>
+      <li class="part-chapter-item"><a href="#s-10-30"><strong>10.30</strong> High-Boost Filtering</a> </li>
+      <li class="part-chapter-item"><a href="#s-10-31"><strong>10.31</strong> Laplacian Sharpening</a> </li>
+      <li class="part-chapter-item"><a href="#s-10-32"><strong>10.32</strong> Worked Laplacian-Sharpening Example</a> </li>
+      <li class="part-chapter-item"><a href="#s-10-33"><strong>10.33</strong> Why the Example Matters</a> </li>
+      <li class="part-chapter-item"><a href="#s-10-34"><strong>10.34</strong> Edge Detection Pipeline</a> </li>
+      <li class="part-chapter-item"><a href="#s-10-35"><strong>10.35</strong> Edge Detection Does Not Mean Object Detection</a> </li>
+      <li class="part-chapter-item"><a href="#s-10-36"><strong>10.36</strong> Edges vs Texture</a> </li>
+      <li class="part-chapter-item"><a href="#s-10-37"><strong>10.37</strong> Edge Connectivity</a> </li>
+      <li class="part-chapter-item"><a href="#s-10-38"><strong>10.38</strong> Multi-Scale Edge Detection</a> </li>
+      <li class="part-chapter-item"><a href="#s-10-39"><strong>10.39</strong> Orientation Information</a> </li>
+      <li class="part-chapter-item"><a href="#s-10-40"><strong>10.40</strong> Feature Descriptors Bridge</a> </li>
+      <li class="part-chapter-item"><a href="#s-10-41"><strong>10.41</strong> Video Bridge</a> </li>
+      <li class="part-chapter-item"><a href="#s-10-42"><strong>10.42</strong> Colour Edge Detection</a> </li>
+      <li class="part-chapter-item"><a href="#s-10-43"><strong>10.43</strong> Edge Evaluation</a> </li>
+      <li class="part-chapter-item"><a href="#s-10-44"><strong>10.44</strong> Sharpening Evaluation</a> </li>
+      <li class="part-chapter-item"><a href="#s-10-45"><strong>10.45</strong> Implementation Safety Checklist</a> </li>
+      <li class="part-chapter-item"><a href="#s-10-46"><strong>10.46</strong> Common Traps</a> </li>
+      <li class="part-chapter-item"><a href="#s-10-47"><strong>10.47</strong> Exam Formula Sheet</a> </li>
+      <li class="part-chapter-item"><a href="#s-10-48"><strong>10.48</strong> Exam-Style Problem — Sobel</a> </li>
+      <li class="part-chapter-item"><a href="#s-10-49"><strong>10.49</strong> Exam-Style Problem — Sharpening</a> </li>
+      <li class="part-chapter-item"><a href="#s-10-50"><strong>10.50</strong> Exam-Style Problem — Laplacian</a> </li>
+      <li class="part-chapter-item"><a href="#s-10-51"><strong>10.51</strong> Cross-Book Bridges</a> </li>
+      <li class="part-chapter-item"><a href="#s-10-52"><strong>10.52</strong> Quick Recall</a> </li>
+      <li class="part-chapter-item"><a href="#s-10-53"><strong>10.53</strong> Chapter Checkpoint</a> </li>
+      <li class="part-chapter-item"><a href="#s-10-54"><strong>10.54</strong> Unit II Progress</a> </li>
+      <li class="part-chapter-item"><a href="#s-10-55"><strong>10.55</strong> Mathematical Derivation: 2D Laplacian Operator &amp; Image Sharpening</a> </li>
+        </ul>
+      </div>
+
+      <div class="concept-hook" style="margin-bottom:var(--em-space-8);"><h1>Chapter 10 — Sharpening and Edge Detection</h1>
+<blockquote>
+<p><strong>Chapter thesis</strong><br />
+Edges are locations of strong spatial change. Sharpening emphasizes such changes to improve apparent detail, while edge detection converts derivative evidence into an explicit representation of boundaries. Both tasks are powerful—and both are highly sensitive to noise.</p>
+</blockquote>
+<p><strong>Part II — Improving the Image</strong><br />
+<strong>Syllabus anchor:</strong> Unit II includes sharpening and edge detection; the practical sequence also includes frequency filtering later in the same unit. fileciteturn4file0L36-L40</p>
+<hr /></div>
+
+      <!-- All Numbered Sections -->
+      
+  <!-- SECTION 10.1: Why Sharpening and Edge Detection Belong Together -->
+  <section id="s-10-1" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.1</span>
+      <h2>Why Sharpening and Edge Detection Belong Together</h2>
+      <button class="bookmark-btn" data-id="s-10-1" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>C09 reduced unwanted variation.</p>
+<p>Now consider:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>smooth region
+→ little local change
+
+object boundary
+→ strong local change</code></pre>
+</div></p>
+<p>Differentiation exposes that change.</p>
+<p>Therefore:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image
+ ↓
+optional denoising
+ ↓
+derivative
+ ↓
+edge evidence</code></pre>
+</div></p>
+<p>Sharpening uses related high-frequency information differently:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image
+ ↓
+estimate detail
+ ↓
+add detail back
+ ↓
+sharper appearance</code></pre>
+</div></p>
+<p>So:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>EDGE DETECTION
+→ represent boundaries
+
+SHARPENING
+→ enhance detail/boundary appearance</code></pre>
+</div></p>
+<p>They are related but are not the same operation.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 10.2: What Is an Edge? -->
+  <section id="s-10-2" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.2</span>
+      <h2>What Is an Edge?</h2>
+      <button class="bookmark-btn" data-id="s-10-2" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>An edge is a local region where image intensity changes substantially over a relatively small spatial distance.</p>
+<p>Idealized 1-D example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>100 100 100 200 200 200
+          ↑
+        transition</code></pre>
+</div></p>
+<p>A derivative response becomes large near the transition.</p>
+<p>Real edges may be:</p>
+<ul>
+<li>noisy,</li>
+<li>blurred,</li>
+<li>gradual,</li>
+<li>textured,</li>
+<li>multiple pixels wide.</li>
+</ul>
+<p>Therefore an edge is better understood as a structural intensity transition than as one specific pixel.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 10.3: Step, Ramp and Roof Edges -->
+  <section id="s-10-3" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.3</span>
+      <h2>Step, Ramp and Roof Edges</h2>
+      <button class="bookmark-btn" data-id="s-10-3" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <blockquote>
+<p><strong>DEEP DIVE</strong></p>
+</blockquote>
+<h3>Step edge</h3>
+<p>Abrupt transition:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>████████|░░░░░░</code></pre>
+</div></p>
+<h3>Ramp edge</h3>
+<p>Gradual transition:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>███████▓▒░░░░░░</code></pre>
+</div></p>
+<h3>Roof/ridge structure</h3>
+<p>Intensity rises and then falls:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>░░▒▓██▓▒░░</code></pre>
+</div></p>
+<p>These idealized models help explain why derivatives respond differently to boundaries and thin structures.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 10.4: First Derivative -->
+  <section id="s-10-4" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.4</span>
+      <h2>First Derivative</h2>
+      <button class="bookmark-btn" data-id="s-10-4" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For a 1-D signal $f(x)$:</p>
+<p>
+$$
+\frac{df}{dx}
+$$
+</p>
+<p>measures the rate of intensity change.</p>
+<p>Interpretation:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>flat area
+→ derivative ≈ 0
+
+strong transition
+→ large derivative magnitude</code></pre>
+</div></p>
+<p>This is the foundation of gradient-based edge detection.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 10.5: Second Derivative -->
+  <section id="s-10-5" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.5</span>
+      <h2>Second Derivative</h2>
+      <button class="bookmark-btn" data-id="s-10-5" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The second derivative is:</p>
+<p>
+$$
+\frac{d^2f}{dx^2}
+$$
+</p>
+<p>It is sensitive to changes in the first derivative.</p>
+<p>It is useful for:</p>
+<ul>
+<li>fine detail,</li>
+<li>sharpening,</li>
+<li>locating zero crossings in some edge methods.</li>
+</ul>
+<p>The Laplacian extends this idea to two dimensions.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 10.6: Image Gradient -->
+  <section id="s-10-6" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.6</span>
+      <h2>Image Gradient</h2>
+      <button class="bookmark-btn" data-id="s-10-6" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For a 2-D image:</p>
+<p>
+$$
+\nabla f=
+\begin{bmatrix}
+\frac{\partial f}{\partial x}\\
+\frac{\partial f}{\partial y}
+\end{bmatrix}
+$$
+</p>
+<p>Define:</p>
+<p>
+$$
+G_x=\frac{\partial f}{\partial x}
+$$
+</p>
+<p>
+$$
+G_y=\frac{\partial f}{\partial y}
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+|\nabla f|
+=
+\sqrt{G_x^2+G_y^2}
+$$
+</p>
+<p>and:</p>
+<p>
+$$
+\theta=
+\operatorname{atan2}(G_y,G_x)
+$$
+</p>
+<p>These equations form the mathematical core of many edge detectors.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 10.7: What Does Gradient Direction Mean? -->
+  <section id="s-10-7" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.7</span>
+      <h2>What Does Gradient Direction Mean?</h2>
+      <button class="bookmark-btn" data-id="s-10-7" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The gradient points toward the direction of maximum local increase in intensity.</p>
+<p>The visual edge is approximately perpendicular to the gradient direction for an ideal local boundary.</p>
+<p>Example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>dark | bright
+      →
+ gradient direction
+
+edge:
+────────────</code></pre>
+</div></p>
+<p>The edge orientation and gradient direction are therefore related by approximately:</p>
+<p>
+$$
+90^\circ
+$$
+</p>
+<p>under the idealized model.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 10.8: Simple Finite Differences -->
+  <section id="s-10-8" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.8</span>
+      <h2>Simple Finite Differences</h2>
+      <button class="bookmark-btn" data-id="s-10-8" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A basic horizontal derivative can be approximated by:</p>
+<p>
+$$
+G_x(i,j)=f(i,j+1)-f(i,j)
+$$
+</p>
+<p>Similarly:</p>
+<p>
+$$
+G_y(i,j)=f(i+1,j)-f(i,j)
+$$
+</p>
+<p>These are simple forward differences.</p>
+<p>Central differences use values on both sides:</p>
+<p>
+$$
+G_x(i,j)
+\approx
+\frac{
+f(i,j+1)-f(i,j-1)
+}{2}
+$$
+</p>
+<p>This can provide a more symmetric approximation.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 10.9: Roberts Cross Operator -->
+  <section id="s-10-9" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.9</span>
+      <h2>Roberts Cross Operator</h2>
+      <button class="bookmark-btn" data-id="s-10-9" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A simple 2×2 derivative-based operator uses diagonal differences.</p>
+<p>One common convention is:</p>
+<p>
+$$
+R_x=
+\begin{bmatrix}
+1&0\\
+0&-1
+\end{bmatrix}
+$$
+</p>
+<p>
+$$
+R_y=
+\begin{bmatrix}
+0&1\\
+-1&0
+\end{bmatrix}
+$$
+</p>
+<p>Sign conventions vary.</p>
+<p>Roberts is computationally simple but uses a very small neighbourhood and can be sensitive to noise.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 10.10: Prewitt Operator -->
+  <section id="s-10-10" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.10</span>
+      <h2>Prewitt Operator</h2>
+      <button class="bookmark-btn" data-id="s-10-10" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A common Prewitt pair is:</p>
+<p>
+$$
+P_x=
+\begin{bmatrix}
+-1&0&1\\
+-1&0&1\\
+-1&0&1
+\end{bmatrix}
+$$
+</p>
+<p>
+$$
+P_y=
+\begin{bmatrix}
+-1&-1&-1\\
+0&0&0\\
+1&1&1
+\end{bmatrix}
+$$
+</p>
+<p>These estimate directional gradients while providing some local averaging.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 10.11: Sobel Operator -->
+  <section id="s-10-11" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.11</span>
+      <h2>Sobel Operator</h2>
+      <button class="bookmark-btn" data-id="s-10-11" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A common Sobel pair is:</p>
+<p>
+$$
+S_x=
+\begin{bmatrix}
+-1&0&1\\
+-2&0&2\\
+-1&0&1
+\end{bmatrix}
+$$
+</p>
+<p>
+$$
+S_y=
+\begin{bmatrix}
+-1&-2&-1\\
+0&0&0\\
+1&2&1
+\end{bmatrix}
+$$
+</p>
+<p>Compared with Prewitt, Sobel gives stronger weight to the central row/column.</p>
+<p>This provides additional smoothing while computing the directional derivative.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 10.12: Worked Sobel Example -->
+  <section id="s-10-12" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.12</span>
+      <h2>Worked Sobel Example</h2>
+      <button class="bookmark-btn" data-id="s-10-12" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Consider:</p>
+<p>
+$$
+I=
+\begin{bmatrix}
+10&10&100\\
+10&10&100\\
+10&10&100
+\end{bmatrix}
+$$
+</p>
+<p>For the centre:</p>
+<h3>$S_x$</h3>
+<p>
+$$
+(-1)(10)+(0)(10)+(1)(100)
+$$
+</p>
+<p>
+$$
++(-2)(10)+(0)(10)+(2)(100)
+$$
+</p>
+<p>
+$$
++(-1)(10)+(0)(10)+(1)(100)
+$$
+</p>
+<p>
+$$
+=-10+100-20+200-10+100
+$$
+</p>
+<p>
+$$
+=360
+$$
+</p>
+<h3>$S_y$</h3>
+<p>Because the image is constant vertically:</p>
+<p>
+$$
+S_y=0
+$$
+</p>
+<p>Therefore:</p>
+<p>
+$$
+|\nabla f|
+=
+\sqrt{360^2+0^2}
+=
+360
+$$
+</p>
+<p>There is a strong left-to-right transition.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 10.13: Gradient Magnitude Scaling -->
+  <section id="s-10-13" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.13</span>
+      <h2>Gradient Magnitude Scaling</h2>
+      <button class="bookmark-btn" data-id="s-10-13" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Derivative responses can exceed the image storage range.</p>
+<p>For the previous example:</p>
+<p>
+$$
+G=360
+$$
+</p>
+<p>This cannot be directly represented by ordinary 8-bit intensity without scaling or clipping.</p>
+<p>A visualization pipeline might:</p>
+<p>
+$$
+G_{\text{norm}}
+=
+255\frac{G-G_{\min}}
+{G_{\max}-G_{\min}}
+$$
+</p>
+<p>when appropriate.</p>
+<p>For true quantitative processing, preserve the original response in a suitable signed/floating representation rather than replacing it permanently with a display-scaled image.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 10.14: Edge Map vs Gradient Image -->
+  <section id="s-10-14" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.14</span>
+      <h2>Edge Map vs Gradient Image</h2>
+      <button class="bookmark-btn" data-id="s-10-14" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A gradient-magnitude image is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>continuous-valued edge evidence</code></pre>
+</div></p>
+<p>An edge map is often:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>binary or thin boundary representation</code></pre>
+</div></p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>gradient magnitude
+→ threshold / post-process
+→ edge map</code></pre>
+</div></p>
+<p>Therefore:</p>
+<blockquote>
+<p>Sobel output and an edge map are not necessarily the same thing.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 10.15: Thresholding the Gradient -->
+  <section id="s-10-15" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.15</span>
+      <h2>Thresholding the Gradient</h2>
+      <button class="bookmark-btn" data-id="s-10-15" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Let:</p>
+<p>
+$$
+G(x,y)=|\nabla f(x,y)|
+$$
+</p>
+<p>Define:</p>
+<p>
+$$
+E(x,y)=
+\begin{cases}
+1,&G(x,y)\ge T\\
+0,&G(x,y)<T
+\end{cases}
+$$
+</p>
+<p>This converts gradient evidence into a binary edge decision.</p>
+<p>The threshold $T$ determines sensitivity.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 10.16: Low vs High Edge Threshold -->
+  <section id="s-10-16" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.16</span>
+      <h2>Low vs High Edge Threshold</h2>
+      <button class="bookmark-btn" data-id="s-10-16" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Too low</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>many true edges
++
+many noise responses</code></pre>
+</div></p>
+<h3>Too high</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>noise suppressed
++
+weak real edges lost</code></pre>
+</div></p>
+<p>Therefore threshold selection is a detection tradeoff.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 10.17: Why Smoothing Often Comes First -->
+  <section id="s-10-17" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.17</span>
+      <h2>Why Smoothing Often Comes First</h2>
+      <button class="bookmark-btn" data-id="s-10-17" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>From C09:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>noise
+→ high-frequency variation</code></pre>
+</div></p>
+<p>From this chapter:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>derivative
+→ emphasizes local variation</code></pre>
+</div></p>
+<p>Therefore:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>noise
+  ↓
+derivative
+  ↓
+false strong responses</code></pre>
+</div></p>
+<p>A common strategy is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image
+ ↓
+Gaussian smoothing
+ ↓
+gradient
+ ↓
+edge detection</code></pre>
+</div></p>
+<p>The smoothing scale controls the smallest structures that remain strongly detectable.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 10.18: Canny Edge Detector -->
+  <section id="s-10-18" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.18</span>
+      <h2>Canny Edge Detector</h2>
+      <button class="bookmark-btn" data-id="s-10-18" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <blockquote>
+<p><strong>EXTENSION</strong></p>
+</blockquote>
+<p>Canny is a multi-stage edge detector designed around goals such as:</p>
+<ul>
+<li>good detection,</li>
+<li>good localization,</li>
+<li>limited multiple responses to a single edge.</li>
+</ul>
+<p>A simplified pipeline is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image
+ ↓
+Gaussian smoothing
+ ↓
+gradient computation
+ ↓
+gradient magnitude + direction
+ ↓
+non-maximum suppression
+ ↓
+double threshold
+ ↓
+edge tracking by hysteresis
+ ↓
+final edge map</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 10.19: Non-Maximum Suppression -->
+  <section id="s-10-19" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.19</span>
+      <h2>Non-Maximum Suppression</h2>
+      <button class="bookmark-btn" data-id="s-10-19" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Gradient responses often form thick bands around edges.</p>
+<p>Non-maximum suppression keeps a response only if it is locally maximal along the gradient direction.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>THICK RESPONSE
+
+████
+████
+████
+ ↓
+NMS
+ ↓
+THIN RESPONSE
+
+  █
+  █
+  █</code></pre>
+</div></p>
+<p>This is a key reason Canny edges are often thinner than raw Sobel thresholding.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 10.20: Double Threshold -->
+  <section id="s-10-20" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.20</span>
+      <h2>Double Threshold</h2>
+      <button class="bookmark-btn" data-id="s-10-20" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Canny commonly uses:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>high threshold
+low threshold</code></pre>
+</div></p>
+<p>Pixels are classified conceptually as:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>strong
+weak
+non-edge</code></pre>
+</div></p>
+<p>Strong responses are accepted.</p>
+<p>Weak responses may be kept if they are connected to strong edge evidence.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 10.21: Hysteresis -->
+  <section id="s-10-21" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.21</span>
+      <h2>Hysteresis</h2>
+      <button class="bookmark-btn" data-id="s-10-21" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Hysteresis prevents isolated weak responses from automatically becoming edges.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>strong edge
+   │
+weak ── weak ── weak
+   │
+connected chain
+   ↓
+keep
+
+isolated weak response
+   ↓
+discard</code></pre>
+</div></p>
+<p>This is more robust than applying one threshold independently to every pixel.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 10.22: Canny vs Sobel -->
+  <section id="s-10-22" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.22</span>
+      <h2>Canny vs Sobel</h2>
+      <button class="bookmark-btn" data-id="s-10-22" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Property</th>
+<th>Sobel</th>
+<th>Canny</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>output</td>
+<td>gradient response</td>
+<td>refined edge map</td>
+</tr>
+<tr>
+<td>smoothing</td>
+<td>built into kernel</td>
+<td>explicit Gaussian stage</td>
+</tr>
+<tr>
+<td>thresholding</td>
+<td>usually separate</td>
+<td>integrated multi-stage process</td>
+</tr>
+<tr>
+<td>thinning</td>
+<td>no</td>
+<td>non-maximum suppression</td>
+</tr>
+<tr>
+<td>weak-edge linking</td>
+<td>no</td>
+<td>hysteresis</td>
+</tr>
+<tr>
+<td>complexity</td>
+<td>lower</td>
+<td>higher</td>
+</tr>
+</tbody>
+</table></div>
+<p>Sobel is excellent for learning and simple gradient estimation.</p>
+<p>Canny is a more complete classical edge-detection pipeline.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 10.23: Second-Derivative Edge Detection -->
+  <section id="s-10-23" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.23</span>
+      <h2>Second-Derivative Edge Detection</h2>
+      <button class="bookmark-btn" data-id="s-10-23" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The Laplacian is:</p>
+<p>
+$$
+\nabla^2f
+=
+\frac{\partial^2 f}{\partial x^2}
++
+\frac{\partial^2 f}{\partial y^2}
+$$
+</p>
+<p>A common discrete kernel is:</p>
+<p>
+$$
+H=
+\begin{bmatrix}
+0&1&0\\
+1&-4&1\\
+0&1&0
+\end{bmatrix}
+$$
+</p>
+<p>A sign-reversed form is equally possible with a consistent interpretation.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 10.24: Zero-Crossing Idea -->
+  <section id="s-10-24" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.24</span>
+      <h2>Zero-Crossing Idea</h2>
+      <button class="bookmark-btn" data-id="s-10-24" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Second derivatives can change sign around transitions.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>positive response
+     ↓
+     0
+     ↓
+negative response</code></pre>
+</div></p>
+<p>The zero crossing can provide an edge candidate.</p>
+<p>Because second derivatives are highly noise-sensitive, smoothing is commonly paired with this approach.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 10.25: Laplacian of Gaussian -->
+  <section id="s-10-25" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.25</span>
+      <h2>Laplacian of Gaussian</h2>
+      <button class="bookmark-btn" data-id="s-10-25" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A combined approach is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Gaussian smoothing
++
+Laplacian</code></pre>
+</div></p>
+<p>This produces the Laplacian of Gaussian (LoG) concept.</p>
+<p>A further related detector is the Difference of Gaussians (DoG), which approximates a band-pass/LoG-like response under suitable conditions.</p>
+<p>These are extensions beyond the minimum syllabus requirement.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 10.26: Sharpening and High Frequencies -->
+  <section id="s-10-26" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.26</span>
+      <h2>Sharpening and High Frequencies</h2>
+      <button class="bookmark-btn" data-id="s-10-26" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Edges and fine detail correspond to rapid spatial variation.</p>
+<p>Therefore sharpening often increases high-frequency content.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>original
+ ↓
+estimate low-frequency component
+ ↓
+detail = original − low-frequency
+ ↓
+add selected detail</code></pre>
+</div></p>
+<p>This is the same structure introduced in C08, now analyzed as a sharpening strategy.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 10.27: Unsharp Masking -->
+  <section id="s-10-27" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.27</span>
+      <h2>Unsharp Masking</h2>
+      <button class="bookmark-btn" data-id="s-10-27" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Let:</p>
+<p>
+$$
+f_{\text{blur}}=LP\{f\}
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+m=f-f_{\text{blur}}
+$$
+</p>
+<p>and:</p>
+<p>
+$$
+g=f+k\,m
+$$
+</p>
+<p>where:</p>
+<p>
+$$
+k>0
+$$
+</p>
+<p>controls strength.</p>
+<p>Equivalent form:</p>
+<p>
+$$
+g=(1+k)f-kf_{\text{blur}}
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 10.28: Worked Unsharp Example -->
+  <section id="s-10-28" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.28</span>
+      <h2>Worked Unsharp Example</h2>
+      <button class="bookmark-btn" data-id="s-10-28" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p>
+$$
+f=150
+$$
+</p>
+<p>and:</p>
+<p>
+$$
+f_{\text{blur}}=120
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+m=150-120=30
+$$
+</p>
+<p>For:</p>
+<p>
+$$
+k=0.5
+$$
+</p>
+<p>we get:</p>
+<p>
+$$
+g=150+0.5(30)
+$$
+</p>
+<p>
+$$
+=165
+$$
+</p>
+<p>The detail difference has been partially added back.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 10.29: Over-Sharpening -->
+  <section id="s-10-29" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.29</span>
+      <h2>Over-Sharpening</h2>
+      <button class="bookmark-btn" data-id="s-10-29" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Excessive sharpening can cause:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>haloing
+ringing
+noise amplification
+unnatural edges
+clipping</code></pre>
+</div></p>
+<p>Therefore sharpening strength should be controlled.</p>
+<p>A common failure pipeline is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>noisy image
+→ strong sharpening
+→ amplified noise
+→ even more sharpening
+→ unstable appearance</code></pre>
+</div></p>
+<p>Denoising and sharpening often need to be coordinated.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 10.30: High-Boost Filtering -->
+  <section id="s-10-30" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.30</span>
+      <h2>High-Boost Filtering</h2>
+      <button class="bookmark-btn" data-id="s-10-30" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A high-boost form is:</p>
+<p>
+$$
+g=Af-f_{\text{blur}}
+$$
+</p>
+<p>where:</p>
+<p>
+$$
+A>1
+$$
+</p>
+<p>If:</p>
+<p>
+$$
+A=1+k
+$$
+</p>
+<p>it connects naturally to unsharp masking.</p>
+<p>High-boost enhancement can retain more of the original while still emphasizing high-frequency detail.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 10.31: Laplacian Sharpening -->
+  <section id="s-10-31" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.31</span>
+      <h2>Laplacian Sharpening</h2>
+      <button class="bookmark-btn" data-id="s-10-31" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Depending on sign convention:</p>
+<p>
+$$
+g=f-\nabla^2f
+$$
+</p>
+<p>or:</p>
+<p>
+$$
+g=f+\nabla^2f
+$$
+</p>
+<p>can be used.</p>
+<p>The sign must match the selected Laplacian kernel.</p>
+<p>This produces a detail-enhancement operation based on second-order derivatives.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 10.32: Worked Laplacian-Sharpening Example -->
+  <section id="s-10-32" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.32</span>
+      <h2>Worked Laplacian-Sharpening Example</h2>
+      <button class="bookmark-btn" data-id="s-10-32" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Use:</p>
+<p>
+$$
+P=
+\begin{bmatrix}
+100&100&100\\
+100&150&100\\
+100&100&100
+\end{bmatrix}
+$$
+</p>
+<p>with:</p>
+<p>
+$$
+H=
+\begin{bmatrix}
+0&1&0\\
+1&-4&1\\
+0&1&0
+\end{bmatrix}
+$$
+</p>
+<p>Laplacian response at the centre:</p>
+<p>
+$$
+100+100-4(150)+100+100
+$$
+</p>
+<p>
+$$
+=400-600
+$$
+</p>
+<p>
+$$
+=-200
+$$
+</p>
+<p>If using:</p>
+<p>
+$$
+g=f-\nabla^2 f
+$$
+</p>
+<p>then:</p>
+<p>
+$$
+g=150-(-200)
+$$
+</p>
+<p>
+$$
+\boxed{350}
+$$
+</p>
+<p>This exceeds the 8-bit display range.</p>
+<p>So a real implementation must decide how to handle the result rather than blindly storing 350 in uint8.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 10.33: Why the Example Matters -->
+  <section id="s-10-33" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.33</span>
+      <h2>Why the Example Matters</h2>
+      <button class="bookmark-btn" data-id="s-10-33" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The calculation demonstrates three concepts simultaneously:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>1. second derivative detects local structure
+2. sharpening can create values outside original range
+3. output representation is part of the algorithm</code></pre>
+</div></p>
+<p>This connects directly to C04's datatype/range concepts.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 10.34: Edge Detection Pipeline -->
+  <section id="s-10-34" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.34</span>
+      <h2>Edge Detection Pipeline</h2>
+      <button class="bookmark-btn" data-id="s-10-34" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A disciplined edge workflow:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>RAW / INPUT IMAGE
+       ↓
+inspect datatype/range
+       ↓
+grayscale or suitable representation
+       ↓
+optional denoising
+       ↓
+gradient or second derivative
+       ↓
+magnitude / zero-crossing
+       ↓
+thresholding
+       ↓
+post-processing
+       ↓
+EDGE MAP</code></pre>
+</div></p>
+<p>For Canny:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image
+ ↓
+Gaussian
+ ↓
+gradient
+ ↓
+NMS
+ ↓
+double threshold
+ ↓
+hysteresis
+ ↓
+edges</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 10.35: Edge Detection Does Not Mean Object Detection -->
+  <section id="s-10-35" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.35</span>
+      <h2>Edge Detection Does Not Mean Object Detection</h2>
+      <button class="bookmark-btn" data-id="s-10-35" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>An edge map shows likely boundaries.</p>
+<p>It does not automatically identify:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>car
+person
+tree
+building</code></pre>
+</div></p>
+<p>Object detection requires higher-level reasoning.</p>
+<p>The progression is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>edges
+→ contours/features
+→ regions
+→ objects/classes</code></pre>
+</div></p>
+<p>This becomes important in Part III and Part V.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 10.36: Edges vs Texture -->
+  <section id="s-10-36" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.36</span>
+      <h2>Edges vs Texture</h2>
+      <button class="bookmark-btn" data-id="s-10-36" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Texture can contain many rapid local changes.</p>
+<p>A derivative-based detector may therefore produce responses inside a textured region.</p>
+<p>So:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>strong gradient
+≠ necessarily object boundary</code></pre>
+</div></p>
+<p>Context and higher-level processing are required to distinguish structural boundaries from texture.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 10.37: Edge Connectivity -->
+  <section id="s-10-37" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.37</span>
+      <h2>Edge Connectivity</h2>
+      <button class="bookmark-btn" data-id="s-10-37" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A useful edge map is not just a set of independent bright pixels.</p>
+<p>Real boundaries tend to form connected structures.</p>
+<p>Post-processing can include:</p>
+<ul>
+<li>linking,</li>
+<li>morphological operations,</li>
+<li>contour extraction,</li>
+<li>connected components.</li>
+</ul>
+<p>These connect this chapter to segmentation and morphology.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 10.38: Multi-Scale Edge Detection -->
+  <section id="s-10-38" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.38</span>
+      <h2>Multi-Scale Edge Detection</h2>
+      <button class="bookmark-btn" data-id="s-10-38" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <blockquote>
+<p><strong>EXTENSION</strong></p>
+</blockquote>
+<p>An edge's visibility depends on scale.</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>small Gaussian σ
+→ detects finer structures
+→ more noise sensitivity
+
+large Gaussian σ
+→ suppresses fine structures
+→ emphasizes broader boundaries</code></pre>
+</div></p>
+<p>Therefore:</p>
+<blockquote>
+<p>“Is there an edge?” can be an incomplete question.</p>
+</blockquote>
+<p>A better question is:</p>
+<blockquote>
+<p>“At what spatial scale is this boundary meaningful?”</p>
+</blockquote>
+<p>This is a major idea in modern computer vision.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 10.39: Orientation Information -->
+  <section id="s-10-39" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.39</span>
+      <h2>Orientation Information</h2>
+      <button class="bookmark-btn" data-id="s-10-39" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Gradient-based operators provide directional information.</p>
+<p>For:</p>
+<p>
+$$
+G_x,G_y
+$$
+</p>
+<p>orientation:</p>
+<p>
+$$
+\theta=\operatorname{atan2}(G_y,G_x)
+$$
+</p>
+<p>This can support:</p>
+<ul>
+<li>contour analysis,</li>
+<li>feature descriptors,</li>
+<li>texture analysis,</li>
+<li>local shape reasoning.</li>
+</ul>
+<p>This prepares the ground for HOG and related descriptors in C19–C20.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 10.40: Feature Descriptors Bridge -->
+  <section id="s-10-40" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.40</span>
+      <h2>Feature Descriptors Bridge</h2>
+      <button class="bookmark-btn" data-id="s-10-40" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>HOG, introduced later, uses gradient orientation information across cells.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>edge detection
+→ local gradient
+→ orientation
+→ aggregate orientations
+→ descriptor</code></pre>
+</div></p>
+<p>Thus edge detection is not an isolated topic.</p>
+<p>It is one of the mathematical foundations of classical feature engineering.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 10.41: Video Bridge -->
+  <section id="s-10-41" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.41</span>
+      <h2>Video Bridge</h2>
+      <button class="bookmark-btn" data-id="s-10-41" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>In video, edges can also help identify moving structures, but motion requires temporal comparison.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>frame t
++
+frame t+1
+→
+temporal change</code></pre>
+</div></p>
+<p>This becomes C30.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 10.42: Colour Edge Detection -->
+  <section id="s-10-42" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.42</span>
+      <h2>Colour Edge Detection</h2>
+      <button class="bookmark-btn" data-id="s-10-42" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A colour image has multiple channels.</p>
+<p>A simplistic approach is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>convert RGB → grayscale
+→ detect edges</code></pre>
+</div></p>
+<p>This is often useful but can discard chromatic transitions that have little grayscale contrast.</p>
+<p>A more advanced approach can compute gradients across colour vectors or use a suitable colour representation.</p>
+<blockquote>
+<p><strong>Extension:</strong> The “best edge” depends on whether the task cares about luminance boundaries, chromatic boundaries, or both.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 10.43: Edge Evaluation -->
+  <section id="s-10-43" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.43</span>
+      <h2>Edge Evaluation</h2>
+      <button class="bookmark-btn" data-id="s-10-43" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>When a reference edge map is available, evaluate:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>true positives
+false positives
+false negatives</code></pre>
+</div></p>
+<p>From these we can derive measures such as:</p>
+<p>
+$$
+\text{precision}
+=
+\frac{TP}{TP+FP}
+$$
+</p>
+<p>
+$$
+\text{recall}
+=
+\frac{TP}{TP+FN}
+$$
+</p>
+<p>The suitable evaluation protocol should account for localization tolerance and application context.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 10.44: Sharpening Evaluation -->
+  <section id="s-10-44" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.44</span>
+      <h2>Sharpening Evaluation</h2>
+      <button class="bookmark-btn" data-id="s-10-44" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For sharpening, useful checks include:</p>
+<h3>Visual</h3>
+<ul>
+<li>improved apparent detail?</li>
+<li>halos?</li>
+<li>ringing?</li>
+<li>noise amplification?</li>
+</ul>
+<h3>Numerical/reference-based</h3>
+<ul>
+<li>MSE/PSNR,</li>
+<li>edge contrast,</li>
+<li>gradient statistics.</li>
+</ul>
+<h3>Task-based</h3>
+<ul>
+<li>better OCR?</li>
+<li>better segmentation?</li>
+<li>better feature matching?</li>
+</ul>
+<p>Again:</p>
+<blockquote>
+<p>A higher edge strength is not automatically a better image.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 10.45: Implementation Safety Checklist -->
+  <section id="s-10-45" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.45</span>
+      <h2>Implementation Safety Checklist</h2>
+      <button class="bookmark-btn" data-id="s-10-45" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Before applying an edge or sharpening operator:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>1. inspect image dtype
+2. inspect value range
+3. choose working datatype
+4. choose padding
+5. apply filter
+6. inspect signed response
+7. compute magnitude or sharpening result
+8. normalize only for display if needed
+9. preserve original quantitative result</code></pre>
+</div></p>
+<p>This prevents many common bugs.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 10.46: Common Traps -->
+  <section id="s-10-46" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.46</span>
+      <h2>Common Traps</h2>
+      <button class="bookmark-btn" data-id="s-10-46" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h2>Trap 1 — “Edges are always one-pixel-wide.”</h2>
+<p>False.</p>
+<p>Real edges can be blurred or spread over multiple pixels.</p>
+<h2>Trap 2 — “Sobel produces a binary edge image.”</h2>
+<p>False.</p>
+<p>It produces derivative responses; thresholding is an additional step.</p>
+<h2>Trap 3 — “Gradient direction equals edge direction.”</h2>
+<p>False.</p>
+<p>Gradient direction is approximately perpendicular to the local edge orientation.</p>
+<h2>Trap 4 — “Second derivative is always better than first derivative.”</h2>
+<p>False.</p>
+<p>It is sensitive to noise and has different localization/response properties.</p>
+<h2>Trap 5 — “Sharpening creates missing information.”</h2>
+<p>False.</p>
+<p>It enhances existing spatial variation; it does not reconstruct genuinely missing detail.</p>
+<h2>Trap 6 — “More sharpening means more detail.”</h2>
+<p>Not necessarily.</p>
+<p>It can mainly amplify noise and produce artifacts.</p>
+<h2>Trap 7 — “A strong gradient always means an object boundary.”</h2>
+<p>False.</p>
+<p>Texture, noise and illumination changes can also produce strong gradients.</p>
+<h2>Trap 8 — “Gradient magnitude can always be stored as uint8.”</h2>
+<p>False.</p>
+<p>Derivative outputs can be signed and exceed 255.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 10.47: Exam Formula Sheet -->
+  <section id="s-10-47" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.47</span>
+      <h2>Exam Formula Sheet</h2>
+      <button class="bookmark-btn" data-id="s-10-47" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Gradient</h3>
+<p>
+$$
+\boxed{
+\nabla f=
+\begin{bmatrix}
+f_x\\
+f_y
+\end{bmatrix}
+}
+$$
+</p>
+<h3>Magnitude</h3>
+<p>
+$$
+\boxed{
+|\nabla f|=
+\sqrt{f_x^2+f_y^2}
+}
+$$
+</p>
+<h3>Direction</h3>
+<p>
+$$
+\boxed{
+\theta=\operatorname{atan2}(f_y,f_x)
+}
+$$
+</p>
+<h3>Laplacian</h3>
+<p>
+$$
+\boxed{
+\nabla^2f=f_{xx}+f_{yy}
+}
+$$
+</p>
+<h3>Unsharp mask</h3>
+<p>
+$$
+\boxed{
+m=f-f_{\text{blur}}
+}
+$$
+</p>
+<p>
+$$
+\boxed{
+g=f+km
+}
+$$
+</p>
+<h3>High-boost</h3>
+<p>
+$$
+\boxed{
+g=Af-f_{\text{blur}},\quad A>1
+}
+$$
+</p>
+<h3>Binary gradient threshold</h3>
+<p>
+$$
+\boxed{
+E=
+\begin{cases}
+1,&|\nabla f|\ge T\\
+0,&|\nabla f|<T
+\end{cases}
+}
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 10.48: Exam-Style Problem — Sobel -->
+  <section id="s-10-48" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.48</span>
+      <h2>Exam-Style Problem — Sobel</h2>
+      <button class="bookmark-btn" data-id="s-10-48" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Given:</p>
+<p>
+$$
+G_x=12,\qquad G_y=5
+$$
+</p>
+<p>Calculate gradient magnitude.</p>
+<p>
+$$
+G=
+\sqrt{12^2+5^2}
+$$
+</p>
+<p>
+$$
+=
+\sqrt{144+25}
+$$
+</p>
+<p>
+$$
+=
+\sqrt{169}
+$$
+</p>
+<p>
+$$
+\boxed{13}
+$$
+</p>
+<p>Direction:</p>
+<p>
+$$
+\theta=
+\operatorname{atan2}(5,12)
+\approx22.62^\circ
+$$
+</p>
+<p>The local edge orientation is approximately:</p>
+<p>
+$$
+22.62^\circ+90^\circ
+=
+112.62^\circ
+$$
+</p>
+<p>under the ideal perpendicular relationship.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 10.49: Exam-Style Problem — Sharpening -->
+  <section id="s-10-49" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.49</span>
+      <h2>Exam-Style Problem — Sharpening</h2>
+      <button class="bookmark-btn" data-id="s-10-49" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>At a pixel:</p>
+<p>
+$$
+f=100
+$$
+</p>
+<p>and:</p>
+<p>
+$$
+f_{\text{blur}}=90
+$$
+</p>
+<p>For:</p>
+<p>
+$$
+k=2
+$$
+</p>
+<p>detail mask:</p>
+<p>
+$$
+m=100-90=10
+$$
+</p>
+<p>output:</p>
+<p>
+$$
+g=100+2(10)
+$$
+</p>
+<p>
+$$
+\boxed{120}
+$$
+</p>
+<p>Interpretation:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>local detail
+→ amplified by factor controlled by k</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 10.50: Exam-Style Problem — Laplacian -->
+  <section id="s-10-50" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.50</span>
+      <h2>Exam-Style Problem — Laplacian</h2>
+      <button class="bookmark-btn" data-id="s-10-50" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Given:</p>
+<p>
+$$
+f=120,\qquad \nabla^2 f=-30
+$$
+</p>
+<p>and sharpening rule:</p>
+<p>
+$$
+g=f-\nabla^2f
+$$
+</p>
+<p>then:</p>
+<p>
+$$
+g=120-(-30)
+$$
+</p>
+<p>
+$$
+\boxed{150}
+$$
+</p>
+<p>The sign convention must always match the chosen Laplacian definition.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 10.51: Cross-Book Bridges -->
+  <section id="s-10-51" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.51</span>
+      <h2>Cross-Book Bridges</h2>
+      <button class="bookmark-btn" data-id="s-10-51" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <blockquote>
+<p><strong>C09 BRIDGE</strong><br />
+Denoising controls the noise amplification problem that naturally appears in derivative-based edge detection.</p>
+<p><strong>C08 BRIDGE</strong><br />
+Kernel convolution, padding, signed responses and filtering geometry originate in the general spatial-filter chapter.</p>
+<p><strong>C15–C20 BRIDGE</strong><br />
+Edge maps become useful inputs for segmentation, morphology and feature extraction.</p>
+<p><strong>C19–C20 BRIDGE</strong><br />
+Gradient direction is foundational for HOG and classical local-feature reasoning.</p>
+<p><strong>C30 BRIDGE</strong><br />
+Spatial edges become temporal/motion evidence when frames are compared.</p>
+<p><strong>LAB BRIDGE</strong><br />
+Implement Sobel/Prewitt/Roberts, gradient magnitude, thresholding, Laplacian sharpening and a Canny-style pipeline.</p>
+<p><strong>PRACTICE BRIDGE</strong><br />
+Work derivative calculations, orientation reasoning, sharpening calculations and edge-threshold tradeoffs.</p>
+<p><strong>EXAM BRIDGE</strong><br />
+Be able to derive gradient magnitude, write Sobel/Prewitt/Laplacian kernels, explain edge orientation, unsharp masking, and the Canny pipeline.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 10.52: Quick Recall -->
+  <section id="s-10-52" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.52</span>
+      <h2>Quick Recall</h2>
+      <button class="bookmark-btn" data-id="s-10-52" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>EDGE
+→ rapid spatial change
+
+GRADIENT
+→ first derivative
+
+LAPLACIAN
+→ second derivative
+
+SOBEL / PREWITT / ROBERTS
+→ gradient approximations
+
+CANNY
+→ multi-stage refined edge detection
+
+UNSHARP
+→ original + detail
+
+HIGH-BOOST
+→ stronger detail emphasis</code></pre>
+</div></p>
+<p>Core rule:</p>
+<blockquote>
+<p><strong>Denoise before differentiation when noise would otherwise dominate the derivative response.</strong></p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 10.53: Chapter Checkpoint -->
+  <section id="s-10-53" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.53</span>
+      <h2>Chapter Checkpoint</h2>
+      <button class="bookmark-btn" data-id="s-10-53" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <ol>
+<li>Define an image edge.</li>
+<li>Explain step and ramp edges.</li>
+<li>Define the first derivative and its edge-detection role.</li>
+<li>Define the image gradient.</li>
+<li>Derive gradient magnitude and direction.</li>
+<li>Why is edge orientation approximately perpendicular to gradient direction?</li>
+<li>Compare Roberts, Prewitt and Sobel.</li>
+<li>Calculate a Sobel/gradient response for a small matrix.</li>
+<li>Why can derivative filters amplify noise?</li>
+<li>Explain why smoothing is often applied before edge detection.</li>
+<li>What is the Laplacian?</li>
+<li>Explain zero-crossing edge detection.</li>
+<li>Define unsharp masking.</li>
+<li>Compare unsharp and high-boost filtering.</li>
+<li>What is non-maximum suppression?</li>
+<li>Explain Canny's double-threshold and hysteresis idea.</li>
+<li>Why does an edge map not equal object detection?</li>
+<li>Why can aggressive sharpening introduce halos or ringing?</li>
+<li>Why should derivative responses remain signed/floating until interpretation?</li>
+<li>How can gradient orientation contribute to feature descriptors?</li>
+</ol>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 10.54: Unit II Progress -->
+  <section id="s-10-54" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.54</span>
+      <h2>Unit II Progress</h2>
+      <button class="bookmark-btn" data-id="s-10-54" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>At this point the spatial-domain core has become:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>C06
+INTENSITY TRANSFORMATIONS
+        ↓
+C07
+HISTOGRAMS
+        ↓
+C08
+SPATIAL FILTERS + CONVOLUTION
+        ↓
+C09
+NOISE + SMOOTHING
+        ↓
+C10
+SHARPENING + EDGES</code></pre>
+</div></p>
+<p>The remaining Unit II progression is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>C11
+GEOMETRIC TRANSFORMATIONS
+        ↓
+C12
+FOURIER TRANSFORM
+        ↓
+C13
+FREQUENCY-DOMAIN FILTERING
+        ↓
+C14
+RESTORATION + DEBLURRING</code></pre>
+</div></p>
+<p>The conceptual progression is now:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>intensity
+→ distribution
+→ neighbourhood
+→ noise
+→ derivatives
+→ geometry
+→ frequency
+→ degradation model</code></pre>
+</div></p>
+<p>That is the central computational structure of the classical Digital Image Processing pipeline.</p>
+    </div>
+  </section>
+
+  <!-- SECTION 10.55: Mathematical Derivation: 2D Laplacian Operator &amp; Image Sharpening -->
+  <section id="s-10-55" class="section-block">
+    <div class="section-header">
+      <span class="section-num">10.55</span>
+      <h2>Mathematical Derivation: 2D Laplacian Operator &amp; Image Sharpening</h2>
+      <button class="bookmark-btn" data-id="s-10-55" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Derivation from Second-Order Finite Differences</h3>
+<p>The continuous Laplacian of an image function $f(x,y)$ is the divergence of the gradient vector:
+
+$$\nabla^2 f = \frac{\partial^2 f}{\partial x^2} + \frac{\partial^2 f}{\partial y^2}$$
+
+Using central finite difference approximations for second derivatives:
+
+$$\frac{\partial^2 f}{\partial x^2} \approx f(x+1, y) - 2f(x, y) + f(x-1, y)$$
+
+
+$$\frac{\partial^2 f}{\partial y^2} \approx f(x, y+1) - 2f(x, y) + f(x, y-1)$$
+
+Summing both orthogonal components yields the 4-neighbor discrete Laplacian:
+
+$$\nabla^2 f(x, y) = f(x+1, y) + f(x-1, y) + f(x, y+1) + f(x, y-1) - 4f(x, y)$$
+</p>
+<p>In convolution matrix notation:
+
+$$\nabla_4^2 = \begin{bmatrix} 0 & 1 & 0 \\ 1 & -4 & 1 \\ 0 & 1 & 0 \end{bmatrix}$$
+
+Extending this derivation to include the 4 diagonal neighbors produces the isotropic 8-neighbor Laplacian:
+
+$$\nabla_8^2 = \begin{bmatrix} 1 & 1 & 1 \\ 1 & -8 & 1 \\ 1 & 1 & 1 \end{bmatrix}$$
+</p>
+<h3>Image Sharpening via Laplacian</h3>
+<p>Because the Laplacian has a negative center coefficient ($-4$ or $-8$), subtracting the Laplacian from the original image enhances high-frequency edge transitions:
+
+$$g(x, y) = f(x, y) - \nabla^2 f(x, y)$$
+
+Substituting the 4-neighbor kernel:
+
+$$g(x, y) = f(x, y) - [f(x+1,y) + f(x-1,y) + f(x,y+1) + f(x,y-1) - 4f(x,y)]$$
+
+
+$$g(x, y) = 5f(x, y) - f(x+1,y) - f(x-1,y) - f(x,y+1) - f(x,y-1)$$
+
+This yields the composite sharpening kernel:
+
+$$K_{sharp} = \begin{bmatrix} 0 & -1 & 0 \\ -1 & 5 & -1 \\ 0 & -1 & 0 \end{bmatrix}$$
+
+Notice that the sum of coefficients equals $5 - 4(1) = 1$, which preserves the average DC brightness in uniform regions while boosting edge discontinuities.</p>
+    </div>
+  </section>
+
+      <!-- Chapter End Package -->
+      <section class="chapter-end-package">
+        <div class="chapter-nav-grid">
+          <a href="ch09-smoothing-noise-reduction.html" class="chapter-nav-card">
+            <div class="chapter-nav-dir">← Previous</div>
+            <div class="chapter-nav-title">← Ch 9 — Smoothing & Noise Reduction</div>
+          </a>
+          <a href="ch11-geometric-transforms.html" class="chapter-nav-card next">
+            <div class="chapter-nav-dir">Next →</div>
+            <div class="chapter-nav-title">Next: Ch 11 — Geometric Transformations & Interpolation →</div>
+          </a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- FLOATING TTS PANEL (SAFE MANUAL MODE ONLY) -->
+  <div id="tts-panel" style="position:fixed; bottom:20px; right:20px; background:var(--em-surface-1); border:1px solid var(--em-border); border-radius:var(--em-radius-md); padding:12px 16px; box-shadow:var(--sh-lg); z-index:var(--z-float); display:none; gap:10px; align-items:center;">
+    <button class="icon-btn" id="tts-play" title="Play / Pause" style="background:var(--em-accent); color:#fff; border-radius:50%; width:36px; height:36px;">▶</button>
+    <button class="icon-btn" id="tts-stop" title="Stop">⏹</button>
+    <div style="font-size:0.75rem; color:var(--em-text-muted);">
+      <span id="tts-status">Ready</span> · <span id="tts-rate-label">1.0x</span>
+    </div>
+  </div>
+
+  <script src="../assets/js/state.js"></script>
+  <script src="../assets/js/core.js"></script>
+  <script src="../assets/js/tts.js"></script>
+  <script src="../assets/js/glossary.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: document.documentElement.getAttribute('data-theme') === 'light' ? 'default' : 'dark'
+      });
+    });
+  </script>
+</body>
+</html>

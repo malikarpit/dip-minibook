@@ -1,0 +1,2797 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Arpit">
+  <meta name="description" content="Chapter 18: Mathematical Morphology — Digital Image Processing MiniBook. Set Theoretic Foundations, Structuring Elements, Erosion ($A \ominus B$), Dilation ($A \oplus B$), Opening ($A \circ B$), Closing ($A \bullet B$), Hit-or-Miss, Boundary Extraction, and Grayscale Top-Hat">
+  <title>C18: Mathematical Morphology | DIP MiniBook 📷 Arpit</title>
+
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <link rel="stylesheet" href="../assets/css/chapters.css">
+  <link rel="stylesheet" href="../assets/css/animations.css">
+  <link rel="stylesheet" href="../assets/css/timer.css">
+
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body data-chapter-id="ch18-mathematical-morphology">
+  <div id="progress-bar"></div>
+
+  <!-- Header -->
+  <header id="main-header">
+    <div class="header-left">
+      <button id="sidebar-toggle" class="icon-btn" aria-label="Toggle navigation drawer" title="Toggle Sidebar (S)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <a href="../index.html" class="brand-logo">
+        <div class="brand-icon">DIP</div>
+        <div class="brand-text">
+          <span class="main">Digital Image Processing</span>
+          <span class="sub">DU DSE-3 Engineering MiniBook</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="header-chapter-title">C18: Mathematical Morphology</div>
+
+    <div class="header-right">
+      <button id="reading-mode-btn" class="icon-btn" aria-label="Toggle reading focus mode" title="Focus Mode (F)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+          <line x1="8" y1="21" x2="16" y2="21"></line>
+          <line x1="12" y1="17" x2="12" y2="21"></line>
+        </svg>
+      </button>
+      <button id="tts-toggle" class="icon-btn" aria-label="Audio Reader" title="Audio Reader">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+        </svg>
+      </button>
+      <button id="theme-toggle" class="icon-btn" aria-label="Cycle theme" title="Theme (T)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="12" cy="12" r="4.5"></circle>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Sidebar Overlay -->
+  <div id="sidebar-overlay"></div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" aria-expanded="true">
+    <div class="sidebar-nav">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">General</div>
+        <a href="../index.html" class="sidebar-link">
+          <span class="link-icon">🏛️</span>
+          <span>Subject Portal</span>
+        </a>
+        <a href="../progress.html" class="sidebar-link">
+          <span class="link-icon">📊</span>
+          <span>Study Dashboard</span>
+        </a>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Current Chapter Sections</div>
+        <a href="#s-18-1" class="sidebar-link"><span class="link-icon">📌</span><span>18.1 Why Morphology?</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-18-2" class="sidebar-link"><span class="link-icon">📌</span><span>18.2 What Is Mathematical Morphology?</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-18-3" class="sidebar-link"><span class="link-icon">📌</span><span>18.3 Binary Image as a Set</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-18-4" class="sidebar-link"><span class="link-icon">📌</span><span>18.4 Structuring Element</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-18-5" class="sidebar-link"><span class="link-icon">📌</span><span>18.5 Why the Structuring Element Matters</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-18-6" class="sidebar-link"><span class="link-icon">📌</span><span>18.6 Dilation — Intuition</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-18-7" class="sidebar-link"><span class="link-icon">📌</span><span>18.7 Binary Dilation Definition</span> </a>
+      <a href="#s-18-8" class="sidebar-link"><span class="link-icon">📌</span><span>18.8 Pixel-Rule Intuition for Dilation</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-18-9" class="sidebar-link"><span class="link-icon">📌</span><span>18.9 Worked Dilation Example</span> </a>
+      <a href="#s-18-10" class="sidebar-link"><span class="link-icon">📌</span><span>18.10 Erosion — Intuition</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-18-11" class="sidebar-link"><span class="link-icon">📌</span><span>18.11 Binary Erosion Definition</span> </a>
+      <a href="#s-18-12" class="sidebar-link"><span class="link-icon">📌</span><span>18.12 Worked Erosion Example</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-18-13" class="sidebar-link"><span class="link-icon">📌</span><span>18.13 Dilation vs Erosion</span> </a>
+      <a href="#s-18-14" class="sidebar-link"><span class="link-icon">📌</span><span>18.14 Opening</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-18-15" class="sidebar-link"><span class="link-icon">📌</span><span>18.15 Why Opening Removes Small Objects</span> </a>
+      <a href="#s-18-16" class="sidebar-link"><span class="link-icon">📌</span><span>18.16 Worked Opening Example</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-18-17" class="sidebar-link"><span class="link-icon">📌</span><span>18.17 Closing</span> </a>
+      <a href="#s-18-18" class="sidebar-link"><span class="link-icon">📌</span><span>18.18 Why Closing Fills Small Holes</span> </a>
+      <a href="#s-18-19" class="sidebar-link"><span class="link-icon">📌</span><span>18.19 Opening vs Closing</span> </a>
+      <a href="#s-18-20" class="sidebar-link"><span class="link-icon">📌</span><span>18.20 Morphological Idempotence</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-18-21" class="sidebar-link"><span class="link-icon">📌</span><span>18.21 Increasing Property</span> </a>
+      <a href="#s-18-22" class="sidebar-link"><span class="link-icon">📌</span><span>18.22 Translation Invariance</span> </a>
+      <a href="#s-18-23" class="sidebar-link"><span class="link-icon">📌</span><span>18.23 Morphological Boundary Extraction</span> </a>
+      <a href="#s-18-24" class="sidebar-link"><span class="link-icon">📌</span><span>18.24 Worked Boundary Example</span> </a>
+      <a href="#s-18-25" class="sidebar-link"><span class="link-icon">📌</span><span>18.25 Morphological Gradient</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-18-26" class="sidebar-link"><span class="link-icon">📌</span><span>18.26 Hit-or-Miss Transform</span> </a>
+      <a href="#s-18-27" class="sidebar-link"><span class="link-icon">📌</span><span>18.27 Thinning and Skeletonization</span> </a>
+      <a href="#s-18-28" class="sidebar-link"><span class="link-icon">📌</span><span>18.28 Grayscale Morphology</span> </a>
+      <a href="#s-18-29" class="sidebar-link"><span class="link-icon">📌</span><span>18.29 Morphological Opening on Grayscale</span> </a>
+      <a href="#s-18-30" class="sidebar-link"><span class="link-icon">📌</span><span>18.30 Morphological Top-Hat</span> </a>
+      <a href="#s-18-31" class="sidebar-link"><span class="link-icon">📌</span><span>18.31 Black-Hat</span> </a>
+      <a href="#s-18-32" class="sidebar-link"><span class="link-icon">📌</span><span>18.32 Worked Top-Hat Idea</span> </a>
+      <a href="#s-18-33" class="sidebar-link"><span class="link-icon">📌</span><span>18.33 Structuring Element Size as a Scale Parameter</span> </a>
+      <a href="#s-18-34" class="sidebar-link"><span class="link-icon">📌</span><span>18.34 Shape Matters, Not Just Size</span> </a>
+      <a href="#s-18-35" class="sidebar-link"><span class="link-icon">📌</span><span>18.35 Morphology for Mask Cleanup</span> </a>
+      <a href="#s-18-36" class="sidebar-link"><span class="link-icon">📌</span><span>18.36 Worked Cleanup Scenario</span> </a>
+      <a href="#s-18-37" class="sidebar-link"><span class="link-icon">📌</span><span>18.37 Morphology and Connectivity</span> </a>
+      <a href="#s-18-38" class="sidebar-link"><span class="link-icon">📌</span><span>18.38 Example — Bridge Breaking</span> </a>
+      <a href="#s-18-39" class="sidebar-link"><span class="link-icon">📌</span><span>18.39 Example — Gap Closing</span> </a>
+      <a href="#s-18-40" class="sidebar-link"><span class="link-icon">📌</span><span>18.40 Morphological Noise Removal vs Statistical Denoising</span> </a>
+      <a href="#s-18-41" class="sidebar-link"><span class="link-icon">📌</span><span>18.41 Morphology and Edge Detection</span> </a>
+      <a href="#s-18-42" class="sidebar-link"><span class="link-icon">📌</span><span>18.42 Morphology and Connected Components</span> </a>
+      <a href="#s-18-43" class="sidebar-link"><span class="link-icon">📌</span><span>18.43 Morphological Distance Intuition</span> </a>
+      <a href="#s-18-44" class="sidebar-link"><span class="link-icon">📌</span><span>18.44 Distance Transform</span> </a>
+      <a href="#s-18-45" class="sidebar-link"><span class="link-icon">📌</span><span>18.45 Morphological Reconstruction</span> </a>
+      <a href="#s-18-46" class="sidebar-link"><span class="link-icon">📌</span><span>18.46 Why Reconstruction Is Useful</span> </a>
+      <a href="#s-18-47" class="sidebar-link"><span class="link-icon">📌</span><span>18.47 Practical Experiment Design</span> </a>
+      <a href="#s-18-48" class="sidebar-link"><span class="link-icon">📌</span><span>18.48 Boundary Conditions</span> </a>
+      <a href="#s-18-49" class="sidebar-link"><span class="link-icon">📌</span><span>18.49 Binary vs Grayscale Morphology</span> </a>
+      <a href="#s-18-50" class="sidebar-link"><span class="link-icon">📌</span><span>18.50 Common Traps</span> </a>
+      <a href="#s-18-51" class="sidebar-link"><span class="link-icon">📌</span><span>18.51 Exam Formula Sheet</span> </a>
+      <a href="#s-18-52" class="sidebar-link"><span class="link-icon">📌</span><span>18.52 Exam-Style Problem — Opening</span> </a>
+      <a href="#s-18-53" class="sidebar-link"><span class="link-icon">📌</span><span>18.53 Exam-Style Problem — Closing</span> </a>
+      <a href="#s-18-54" class="sidebar-link"><span class="link-icon">📌</span><span>18.54 Exam-Style Problem — Boundary</span> </a>
+      <a href="#s-18-55" class="sidebar-link"><span class="link-icon">📌</span><span>18.55 Engineering Insight — Morphology Is a Shape Prior</span> </a>
+      <a href="#s-18-56" class="sidebar-link"><span class="link-icon">📌</span><span>18.56 Practical Example — OCR Cleanup</span> </a>
+      <a href="#s-18-57" class="sidebar-link"><span class="link-icon">📌</span><span>18.57 Practical Example — Industrial Components</span> </a>
+      <a href="#s-18-58" class="sidebar-link"><span class="link-icon">📌</span><span>18.58 Morphology and Object Scale</span> </a>
+      <a href="#s-18-59" class="sidebar-link"><span class="link-icon">📌</span><span>18.59 Morphology Evaluation</span> </a>
+      <a href="#s-18-60" class="sidebar-link"><span class="link-icon">📌</span><span>18.60 Common Engineering Failure</span> </a>
+      <a href="#s-18-61" class="sidebar-link"><span class="link-icon">📌</span><span>18.61 Cross-Book Bridges</span> </a>
+      <a href="#s-18-62" class="sidebar-link"><span class="link-icon">📌</span><span>18.62 Quick Recall</span> </a>
+      <a href="#s-18-63" class="sidebar-link"><span class="link-icon">📌</span><span>18.63 Chapter Checkpoint</span> </a>
+      <a href="#s-18-64" class="sidebar-link"><span class="link-icon">📌</span><span>18.64 Part III Progress</span> </a>
+      <a href="#s-18-65" class="sidebar-link"><span class="link-icon">📌</span><span>18.65 Worked Example — 10-Mark University Model Answer: Fundamental Binary Morphology</span> </a>
+      <a href="#s-18-66" class="sidebar-link"><span class="link-icon">📌</span><span>18.66 Grayscale Morphology &amp; The Top-Hat Transform</span> </a>
+      </div>
+
+      
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-i">Part I — The Image</div>
+      <a href="ch01-big-picture.html" class="sidebar-link"><span class="link-icon">01</span><span>The Big Picture</span></a>
+      <a href="ch02-image-formation.html" class="sidebar-link"><span class="link-icon">02</span><span>Formation & Acquisition</span></a>
+      <a href="ch03-sampling-quantization.html" class="sidebar-link"><span class="link-icon">03</span><span>Sampling & Quantization</span></a>
+      <a href="ch04-image-representation.html" class="sidebar-link"><span class="link-icon">04</span><span>Pixels, Matrices & Resolution</span></a>
+      <a href="ch05-colour-models-file-formats.html" class="sidebar-link"><span class="link-icon">05</span><span>Colour Models & Formats</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-ii">Part II — Improving the Image</div>
+      <a href="ch06-point-processing.html" class="sidebar-link"><span class="link-icon">06</span><span>Point Processing & Intensity</span></a>
+      <a href="ch07-histograms-equalization.html" class="sidebar-link"><span class="link-icon">07</span><span>Histograms & Equalization</span></a>
+      <a href="ch08-spatial-filtering.html" class="sidebar-link"><span class="link-icon">08</span><span>Spatial Filtering & Convolution</span></a>
+      <a href="ch09-smoothing-noise-reduction.html" class="sidebar-link"><span class="link-icon">09</span><span>Smoothing & Noise Reduction</span></a>
+      <a href="ch10-sharpening-edge-detection.html" class="sidebar-link"><span class="link-icon">10</span><span>Sharpening & Edge Detection</span></a>
+      <a href="ch11-geometric-transforms.html" class="sidebar-link"><span class="link-icon">11</span><span>Geometric Transforms</span></a>
+      <a href="ch12-fourier-transform.html" class="sidebar-link"><span class="link-icon">12</span><span>Fourier Transform & Frequency</span></a>
+      <a href="ch13-frequency-filtering.html" class="sidebar-link"><span class="link-icon">13</span><span>Frequency-Domain Filtering</span></a>
+      <a href="ch14-image-restoration.html" class="sidebar-link"><span class="link-icon">14</span><span>Restoration & Deblurring</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-iii">Part III — Understanding Content</div>
+      <a href="ch15-segmentation-fundamentals.html" class="sidebar-link"><span class="link-icon">15</span><span>Segmentation Fundamentals</span></a>
+      <a href="ch16-thresholding-otsu.html" class="sidebar-link"><span class="link-icon">16</span><span>Thresholding & Otsu Method</span></a>
+      <a href="ch17-region-segmentation.html" class="sidebar-link"><span class="link-icon">17</span><span>Region-Based Segmentation</span></a>
+      <a href="ch18-mathematical-morphology.html" class="sidebar-link active"><span class="link-icon">18</span><span>Mathematical Morphology</span></a>
+      <a href="ch19-features-descriptors.html" class="sidebar-link"><span class="link-icon">19</span><span>Image Features & Descriptors</span></a>
+      <a href="ch20-sift-surf-orb-hog.html" class="sidebar-link"><span class="link-icon">20</span><span>SIFT, SURF, ORB & HOG</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-iv">Part IV — Compressing Images</div>
+      <a href="ch21-compression-entropy.html" class="sidebar-link"><span class="link-icon">21</span><span>Compression & Entropy</span></a>
+      <a href="ch22-lossless-coding.html" class="sidebar-link"><span class="link-icon">22</span><span>Lossless: RLE & Huffman</span></a>
+      <a href="ch23-lossy-dct-jpeg.html" class="sidebar-link"><span class="link-icon">23</span><span>Lossy: DCT & JPEG</span></a>
+      <a href="ch24-wavelets-jpeg2000.html" class="sidebar-link"><span class="link-icon">24</span><span>Wavelets & JPEG 2000</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-v">Part V — Intelligent Vision</div>
+      <a href="ch25-image-classification.html" class="sidebar-link"><span class="link-icon">25</span><span>Image Classification</span></a>
+      <a href="ch26-cnns-image-processing.html" class="sidebar-link"><span class="link-icon">26</span><span>CNNs for Image Processing</span></a>
+      <a href="ch27-modern-vision-architectures.html" class="sidebar-link"><span class="link-icon">27</span><span>Modern Vision Architectures</span></a>
+      <a href="ch28-object-detection-yolo.html" class="sidebar-link"><span class="link-icon">28</span><span>Object Detection: YOLO</span></a>
+      <a href="ch29-image-denoising-autoencoders.html" class="sidebar-link"><span class="link-icon">29</span><span>Image Denoising Autoencoders</span></a>
+      <a href="ch30-video-motion-analysis.html" class="sidebar-link"><span class="link-icon">30</span><span>Video & Motion Analysis</span></a>
+      <a href="ch31-dip-applications-engineering.html" class="sidebar-link"><span class="link-icon">31</span><span>DIP Applications & Ethics</span></a>
+    </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-brand-mark">
+        <div class="mark">DU</div>
+        <div>
+          <strong>DSE-3 MiniBook</strong>
+          <div>University of Delhi</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mandatory Shell Wrapper -->
+  <div id="main-content">
+    <main class="chapter-content">
+      <!-- Chapter Hero -->
+      <div class="chapter-hero">
+        <div class="hero-meta">
+          <span class="part-badge part-iii">Understanding Content</span>
+          <span class="chapter-number">CHAPTER 18</span>
+          <span class="reading-time">⏱️ ~55 min read</span>
+          <span class="tag-badge tag-core">Highest Yield (10-mark guarantee)</span>
+        </div>
+        <h1 class="chapter-title">Mathematical Morphology</h1>
+        <p class="chapter-subtitle">
+          Set Theoretic Foundations, Structuring Elements, Erosion ($A \ominus B$), Dilation ($A \oplus B$), Opening ($A \circ B$), Closing ($A \bullet B$), Hit-or-Miss, Boundary Extraction, and Grayscale Top-Hat
+        </p>
+
+        <div class="syllabus-anchor">
+          <span class="syllabus-anchor-label">DU Syllabus</span>
+          <span><strong>Morphological Image Processing:</strong> Preliminaries (set theory, reflection, translation), structuring elements, erosion, dilation, duality between erosion and dilation, opening, closing, hit-or-miss transform, morphological algorithms (boundary extraction, hole filling, connected component extraction, convex hull, thinning, skeletons), and grayscale morphology (opening, closing, morphological gradient, top-hat and bottom-hat transforms).</span>
+        </div>
+      </div>
+
+      <!-- In-Page TOC -->
+      <div class="chapter-checklist-card" style="margin-bottom:var(--em-space-8);">
+        <div class="checklist-title">
+          <span>Table of Contents &amp; Visual Section Map</span>
+          <span class="tag-badge tag-math">66 Deep Sections</span>
+        </div>
+        <ul class="part-chapters-list">
+          <li class="part-chapter-item"><a href="#s-18-1"><strong>18.1</strong> Why Morphology?</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-18-2"><strong>18.2</strong> What Is Mathematical Morphology?</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-18-3"><strong>18.3</strong> Binary Image as a Set</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-18-4"><strong>18.4</strong> Structuring Element</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-18-5"><strong>18.5</strong> Why the Structuring Element Matters</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-18-6"><strong>18.6</strong> Dilation — Intuition</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-18-7"><strong>18.7</strong> Binary Dilation Definition</a> </li>
+      <li class="part-chapter-item"><a href="#s-18-8"><strong>18.8</strong> Pixel-Rule Intuition for Dilation</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-18-9"><strong>18.9</strong> Worked Dilation Example</a> </li>
+      <li class="part-chapter-item"><a href="#s-18-10"><strong>18.10</strong> Erosion — Intuition</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-18-11"><strong>18.11</strong> Binary Erosion Definition</a> </li>
+      <li class="part-chapter-item"><a href="#s-18-12"><strong>18.12</strong> Worked Erosion Example</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-18-13"><strong>18.13</strong> Dilation vs Erosion</a> </li>
+      <li class="part-chapter-item"><a href="#s-18-14"><strong>18.14</strong> Opening</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-18-15"><strong>18.15</strong> Why Opening Removes Small Objects</a> </li>
+      <li class="part-chapter-item"><a href="#s-18-16"><strong>18.16</strong> Worked Opening Example</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-18-17"><strong>18.17</strong> Closing</a> </li>
+      <li class="part-chapter-item"><a href="#s-18-18"><strong>18.18</strong> Why Closing Fills Small Holes</a> </li>
+      <li class="part-chapter-item"><a href="#s-18-19"><strong>18.19</strong> Opening vs Closing</a> </li>
+      <li class="part-chapter-item"><a href="#s-18-20"><strong>18.20</strong> Morphological Idempotence</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-18-21"><strong>18.21</strong> Increasing Property</a> </li>
+      <li class="part-chapter-item"><a href="#s-18-22"><strong>18.22</strong> Translation Invariance</a> </li>
+      <li class="part-chapter-item"><a href="#s-18-23"><strong>18.23</strong> Morphological Boundary Extraction</a> </li>
+      <li class="part-chapter-item"><a href="#s-18-24"><strong>18.24</strong> Worked Boundary Example</a> </li>
+      <li class="part-chapter-item"><a href="#s-18-25"><strong>18.25</strong> Morphological Gradient</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-18-26"><strong>18.26</strong> Hit-or-Miss Transform</a> </li>
+      <li class="part-chapter-item"><a href="#s-18-27"><strong>18.27</strong> Thinning and Skeletonization</a> </li>
+      <li class="part-chapter-item"><a href="#s-18-28"><strong>18.28</strong> Grayscale Morphology</a> </li>
+      <li class="part-chapter-item"><a href="#s-18-29"><strong>18.29</strong> Morphological Opening on Grayscale</a> </li>
+      <li class="part-chapter-item"><a href="#s-18-30"><strong>18.30</strong> Morphological Top-Hat</a> </li>
+      <li class="part-chapter-item"><a href="#s-18-31"><strong>18.31</strong> Black-Hat</a> </li>
+      <li class="part-chapter-item"><a href="#s-18-32"><strong>18.32</strong> Worked Top-Hat Idea</a> </li>
+      <li class="part-chapter-item"><a href="#s-18-33"><strong>18.33</strong> Structuring Element Size as a Scale Parameter</a> </li>
+      <li class="part-chapter-item"><a href="#s-18-34"><strong>18.34</strong> Shape Matters, Not Just Size</a> </li>
+      <li class="part-chapter-item"><a href="#s-18-35"><strong>18.35</strong> Morphology for Mask Cleanup</a> </li>
+      <li class="part-chapter-item"><a href="#s-18-36"><strong>18.36</strong> Worked Cleanup Scenario</a> </li>
+      <li class="part-chapter-item"><a href="#s-18-37"><strong>18.37</strong> Morphology and Connectivity</a> </li>
+      <li class="part-chapter-item"><a href="#s-18-38"><strong>18.38</strong> Example — Bridge Breaking</a> </li>
+      <li class="part-chapter-item"><a href="#s-18-39"><strong>18.39</strong> Example — Gap Closing</a> </li>
+      <li class="part-chapter-item"><a href="#s-18-40"><strong>18.40</strong> Morphological Noise Removal vs Statistical Denoising</a> </li>
+      <li class="part-chapter-item"><a href="#s-18-41"><strong>18.41</strong> Morphology and Edge Detection</a> </li>
+      <li class="part-chapter-item"><a href="#s-18-42"><strong>18.42</strong> Morphology and Connected Components</a> </li>
+      <li class="part-chapter-item"><a href="#s-18-43"><strong>18.43</strong> Morphological Distance Intuition</a> </li>
+      <li class="part-chapter-item"><a href="#s-18-44"><strong>18.44</strong> Distance Transform</a> </li>
+      <li class="part-chapter-item"><a href="#s-18-45"><strong>18.45</strong> Morphological Reconstruction</a> </li>
+      <li class="part-chapter-item"><a href="#s-18-46"><strong>18.46</strong> Why Reconstruction Is Useful</a> </li>
+      <li class="part-chapter-item"><a href="#s-18-47"><strong>18.47</strong> Practical Experiment Design</a> </li>
+      <li class="part-chapter-item"><a href="#s-18-48"><strong>18.48</strong> Boundary Conditions</a> </li>
+      <li class="part-chapter-item"><a href="#s-18-49"><strong>18.49</strong> Binary vs Grayscale Morphology</a> </li>
+      <li class="part-chapter-item"><a href="#s-18-50"><strong>18.50</strong> Common Traps</a> </li>
+      <li class="part-chapter-item"><a href="#s-18-51"><strong>18.51</strong> Exam Formula Sheet</a> </li>
+      <li class="part-chapter-item"><a href="#s-18-52"><strong>18.52</strong> Exam-Style Problem — Opening</a> </li>
+      <li class="part-chapter-item"><a href="#s-18-53"><strong>18.53</strong> Exam-Style Problem — Closing</a> </li>
+      <li class="part-chapter-item"><a href="#s-18-54"><strong>18.54</strong> Exam-Style Problem — Boundary</a> </li>
+      <li class="part-chapter-item"><a href="#s-18-55"><strong>18.55</strong> Engineering Insight — Morphology Is a Shape Prior</a> </li>
+      <li class="part-chapter-item"><a href="#s-18-56"><strong>18.56</strong> Practical Example — OCR Cleanup</a> </li>
+      <li class="part-chapter-item"><a href="#s-18-57"><strong>18.57</strong> Practical Example — Industrial Components</a> </li>
+      <li class="part-chapter-item"><a href="#s-18-58"><strong>18.58</strong> Morphology and Object Scale</a> </li>
+      <li class="part-chapter-item"><a href="#s-18-59"><strong>18.59</strong> Morphology Evaluation</a> </li>
+      <li class="part-chapter-item"><a href="#s-18-60"><strong>18.60</strong> Common Engineering Failure</a> </li>
+      <li class="part-chapter-item"><a href="#s-18-61"><strong>18.61</strong> Cross-Book Bridges</a> </li>
+      <li class="part-chapter-item"><a href="#s-18-62"><strong>18.62</strong> Quick Recall</a> </li>
+      <li class="part-chapter-item"><a href="#s-18-63"><strong>18.63</strong> Chapter Checkpoint</a> </li>
+      <li class="part-chapter-item"><a href="#s-18-64"><strong>18.64</strong> Part III Progress</a> </li>
+      <li class="part-chapter-item"><a href="#s-18-65"><strong>18.65</strong> Worked Example — 10-Mark University Model Answer: Fundamental Binary Morphology</a> </li>
+      <li class="part-chapter-item"><a href="#s-18-66"><strong>18.66</strong> Grayscale Morphology &amp; The Top-Hat Transform</a> </li>
+        </ul>
+      </div>
+
+      <div class="concept-hook" style="margin-bottom:var(--em-space-8);"><h1>Chapter 18 — Mathematical Morphology</h1>
+<blockquote>
+<p><strong>Chapter thesis</strong><br />
+Morphology treats image regions as geometric structures. Instead of primarily asking what intensity a pixel has, it asks how foreground and background relate to a chosen <strong>structuring element</strong>. Erosion, dilation, opening and closing can remove, connect, expand, shrink and characterize shapes in a controllable way.</p>
+</blockquote>
+<p><strong>Part III — Understanding Image Content</strong><br />
+<strong>Syllabus anchor:</strong> Unit III explicitly includes mathematical morphology after segmentation and region-based methods. fileciteturn4file0L41-L45</p>
+<hr /></div>
+
+      <!-- All Numbered Sections -->
+      
+  <!-- SECTION 18.1: Why Morphology? -->
+  <section id="s-18-1" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.1</span>
+      <h2>Why Morphology?</h2>
+      <button class="bookmark-btn" data-id="s-18-1" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A segmentation mask can be technically correct but messy:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>█████████
+███ ███ █
+█████████
+   •</code></pre>
+</div></p>
+<p>Problems may include:</p>
+<ul>
+<li>tiny noise,</li>
+<li>holes,</li>
+<li>disconnected fragments,</li>
+<li>unwanted protrusions,</li>
+<li>broken structures.</li>
+</ul>
+<p>Morphology provides shape-aware operations.</p>
+<p>The key change is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>INTENSITY
+→
+BINARY / REGION STRUCTURE
+→
+GEOMETRIC TRANSFORMATION</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.2: What Is Mathematical Morphology? -->
+  <section id="s-18-2" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.2</span>
+      <h2>What Is Mathematical Morphology?</h2>
+      <button class="bookmark-btn" data-id="s-18-2" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Mathematical morphology is a framework for analyzing and modifying structures in images using set-theoretic and geometric operations.</p>
+<p>For binary images:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>foreground
+→ set of image coordinates</code></pre>
+</div></p>
+<p>A structuring element probes that set.</p>
+<p>For grayscale images, analogous operations are defined using intensity extrema.</p>
+<p>This chapter first develops the binary case because it makes the concepts easiest to see.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.3: Binary Image as a Set -->
+  <section id="s-18-3" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.3</span>
+      <h2>Binary Image as a Set</h2>
+      <button class="bookmark-btn" data-id="s-18-3" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Let:</p>
+<p>
+$$
+A
+$$
+</p>
+<p>be the set of foreground pixel coordinates.</p>
+<p>For example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>0 1 1
+0 1 0
+1 1 0</code></pre>
+</div></p>
+<p>corresponds to:</p>
+<p>
+$$
+A=
+\{
+(1,2),(1,3),
+(2,2),
+(3,1),(3,2)
+\}
+$$
+</p>
+<p>assuming the stated coordinate convention.</p>
+<p>Morphological operations transform this set.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.4: Structuring Element -->
+  <section id="s-18-4" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.4</span>
+      <h2>Structuring Element</h2>
+      <button class="bookmark-btn" data-id="s-18-4" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A <strong>structuring element (SE)</strong> is a small geometric pattern used to probe the image.</p>
+<p>Example:</p>
+<p>
+$$
+B=
+\begin{bmatrix}
+0&1&0\\
+1&1&1\\
+0&1&0
+\end{bmatrix}
+$$
+</p>
+<p>This is a cross-shaped structuring element.</p>
+<p>Another common SE:</p>
+<p>
+$$
+B=
+\begin{bmatrix}
+1&1&1\\
+1&1&1\\
+1&1&1
+\end{bmatrix}
+$$
+</p>
+<p>The SE's:</p>
+<ul>
+<li>shape,</li>
+<li>size,</li>
+<li>origin/anchor</li>
+</ul>
+<p>affect the result.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.5: Why the Structuring Element Matters -->
+  <section id="s-18-5" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.5</span>
+      <h2>Why the Structuring Element Matters</h2>
+      <button class="bookmark-btn" data-id="s-18-5" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Think of the SE as a small geometric probe.</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>SE shape
+  ↓
+what local structure counts as fitting?</code></pre>
+</div></p>
+<p>A:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>line SE</code></pre>
+</div></p>
+<p>can emphasize line-like structures.</p>
+<p>A:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>disk SE</code></pre>
+</div></p>
+<p>can be more natural for rounded structures.</p>
+<p>A:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>square SE</code></pre>
+</div></p>
+<p>treats horizontal/vertical neighbourhoods symmetrically in a grid-oriented way.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.6: Dilation — Intuition -->
+  <section id="s-18-6" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.6</span>
+      <h2>Dilation — Intuition</h2>
+      <button class="bookmark-btn" data-id="s-18-6" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><strong>Dilation expands the foreground according to the structuring element.</strong></p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>input
+
+   ██
+   ██
+
+dilation
+
+  ████
+  ████
+  ████</code></pre>
+</div></p>
+<p>Dilation can:</p>
+<ul>
+<li>enlarge objects,</li>
+<li>connect nearby components,</li>
+<li>fill small gaps,</li>
+<li>strengthen thin structures.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.7: Binary Dilation Definition -->
+  <section id="s-18-7" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.7</span>
+      <h2>Binary Dilation Definition</h2>
+      <button class="bookmark-btn" data-id="s-18-7" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For sets:</p>
+<p>
+$$
+A\oplus B
+$$
+</p>
+<p>is the dilation of $A$ by $B$.</p>
+<p>A set-theoretic interpretation is:</p>
+<p>
+$$
+A\oplus B
+=
+\{z\mid
+(B)_z\cap A\ne\varnothing
+\}
+$$
+</p>
+<p>under the standard reflected/translated structuring-element convention.</p>
+<p>Equivalent textbook forms may differ in how reflection and origin are defined.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.8: Pixel-Rule Intuition for Dilation -->
+  <section id="s-18-8" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.8</span>
+      <h2>Pixel-Rule Intuition for Dilation</h2>
+      <button class="bookmark-btn" data-id="s-18-8" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For a binary SE:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>if any required SE foreground
+overlaps foreground
+→ output can become foreground</code></pre>
+</div></p>
+<p>This is a useful implementation intuition, but the exact rule depends on the SE definition.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.9: Worked Dilation Example -->
+  <section id="s-18-9" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.9</span>
+      <h2>Worked Dilation Example</h2>
+      <button class="bookmark-btn" data-id="s-18-9" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Input:</p>
+<p>
+$$
+A=
+\begin{bmatrix}
+0&0&0\\
+0&1&0\\
+0&0&0
+\end{bmatrix}
+$$
+</p>
+<p>Use:</p>
+<p>
+$$
+B=
+\begin{bmatrix}
+0&1&0\\
+1&1&1\\
+0&1&0
+\end{bmatrix}
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+A\oplus B
+=
+\begin{bmatrix}
+0&1&0\\
+1&1&1\\
+0&1&0
+\end{bmatrix}
+$$
+</p>
+<p>A single foreground point expands into the SE shape.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.10: Erosion — Intuition -->
+  <section id="s-18-10" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.10</span>
+      <h2>Erosion — Intuition</h2>
+      <button class="bookmark-btn" data-id="s-18-10" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><strong>Erosion shrinks the foreground.</strong></p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>large object
+██████
+██████
+██████
+
+erosion
+  ██
+  ██</code></pre>
+</div></p>
+<p>Erosion can:</p>
+<ul>
+<li>remove small components,</li>
+<li>break narrow connections,</li>
+<li>shrink object boundaries,</li>
+<li>eliminate structures too small for the SE.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.11: Binary Erosion Definition -->
+  <section id="s-18-11" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.11</span>
+      <h2>Binary Erosion Definition</h2>
+      <button class="bookmark-btn" data-id="s-18-11" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The erosion:</p>
+<p>
+$$
+A\ominus B
+$$
+</p>
+<p>can be defined as:</p>
+<p>
+$$
+A\ominus B
+=
+\{z\mid
+(B)_z\subseteq A
+\}
+$$
+</p>
+<p>under the standard convention.</p>
+<p>Interpretation:</p>
+<blockquote>
+<p>Keep a location only if the translated structuring element fits entirely inside the foreground.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.12: Worked Erosion Example -->
+  <section id="s-18-12" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.12</span>
+      <h2>Worked Erosion Example</h2>
+      <button class="bookmark-btn" data-id="s-18-12" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Consider:</p>
+<p>
+$$
+A=
+\begin{bmatrix}
+1&1&1\\
+1&1&1\\
+1&1&1
+\end{bmatrix}
+$$
+</p>
+<p>with:</p>
+<p>
+$$
+B=
+\begin{bmatrix}
+1&1&1\\
+1&1&1\\
+1&1&1
+\end{bmatrix}
+$$
+</p>
+<p>Using a centred SE and valid binary erosion, only the centre location can support the full 3×3 SE.</p>
+<p>So the conceptual result is:</p>
+<p>
+$$
+\begin{bmatrix}
+0&0&0\\
+0&1&0\\
+0&0&0
+\end{bmatrix}
+$$
+</p>
+<p>Boundary convention can change the full output canvas representation, so the example focuses on the morphological support relationship.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.13: Dilation vs Erosion -->
+  <section id="s-18-13" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.13</span>
+      <h2>Dilation vs Erosion</h2>
+      <button class="bookmark-btn" data-id="s-18-13" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Operation</th>
+<th>Main effect</th>
+<th>Typical use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>dilation</td>
+<td>expand foreground</td>
+<td>connect gaps, strengthen structures</td>
+</tr>
+<tr>
+<td>erosion</td>
+<td>shrink foreground</td>
+<td>remove small structures, break thin links</td>
+</tr>
+</tbody>
+</table></div>
+<p>Memory:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>DILATION
+→ grow
+
+EROSION
+→ shrink</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.14: Opening -->
+  <section id="s-18-14" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.14</span>
+      <h2>Opening</h2>
+      <button class="bookmark-btn" data-id="s-18-14" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Opening is:</p>
+<p>
+$$
+A\circ B
+=
+(A\ominus B)\oplus B
+$$
+</p>
+<p>So:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>erosion
+→ dilation</code></pre>
+</div></p>
+<p>Opening tends to:</p>
+<ul>
+<li>remove small foreground objects,</li>
+<li>remove thin protrusions,</li>
+<li>smooth boundaries,</li>
+<li>preserve larger structures that can survive erosion.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.15: Why Opening Removes Small Objects -->
+  <section id="s-18-15" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.15</span>
+      <h2>Why Opening Removes Small Objects</h2>
+      <button class="bookmark-btn" data-id="s-18-15" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>large object       tiny dot
+
+██████████          •
+██████████</code></pre>
+</div></p>
+<p>Erosion can eliminate the tiny dot.</p>
+<p>The later dilation cannot recreate it because it has already disappeared.</p>
+<p>The large object can survive and then regrow approximately.</p>
+<p>Therefore:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>opening
+→ remove small foreground details</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.16: Worked Opening Example -->
+  <section id="s-18-16" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.16</span>
+      <h2>Worked Opening Example</h2>
+      <button class="bookmark-btn" data-id="s-18-16" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose a binary mask contains:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>large square
++
+one isolated single pixel</code></pre>
+</div></p>
+<p>Using an SE larger than the isolated pixel:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>erosion
+→ isolated pixel disappears
+
+dilation
+→ large square regrows
+→ isolated pixel stays absent</code></pre>
+</div></p>
+<p>The final output is cleaner.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.17: Closing -->
+  <section id="s-18-17" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.17</span>
+      <h2>Closing</h2>
+      <button class="bookmark-btn" data-id="s-18-17" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Closing is:</p>
+<p>
+$$
+A\bullet B
+=
+(A\oplus B)\ominus B
+$$
+</p>
+<p>So:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>dilation
+→ erosion</code></pre>
+</div></p>
+<p>Closing tends to:</p>
+<ul>
+<li>fill small holes,</li>
+<li>close narrow gaps,</li>
+<li>connect nearby components,</li>
+<li>smooth boundaries.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.18: Why Closing Fills Small Holes -->
+  <section id="s-18-18" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.18</span>
+      <h2>Why Closing Fills Small Holes</h2>
+      <button class="bookmark-btn" data-id="s-18-18" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>object with tiny hole
+
+███████
+██   ██
+██   ██
+███████</code></pre>
+</div></p>
+<p>Dilation expands the surrounding foreground and can cover the hole.</p>
+<p>The later erosion returns the main object toward its original size while preserving the filled structure when the hole is small enough for the SE.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.19: Opening vs Closing -->
+  <section id="s-18-19" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.19</span>
+      <h2>Opening vs Closing</h2>
+      <button class="bookmark-btn" data-id="s-18-19" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Operation</th>
+<th>Sequence</th>
+<th>Typical effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>opening</td>
+<td>erosion → dilation</td>
+<td>remove small foreground structures</td>
+</tr>
+<tr>
+<td>closing</td>
+<td>dilation → erosion</td>
+<td>fill small holes / close gaps</td>
+</tr>
+</tbody>
+</table></div>
+<p>Memory:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>OPENING
+→ open/remove small protrusions
+
+CLOSING
+→ close gaps/holes</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.20: Morphological Idempotence -->
+  <section id="s-18-20" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.20</span>
+      <h2>Morphological Idempotence</h2>
+      <button class="bookmark-btn" data-id="s-18-20" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A powerful property:</p>
+<p>
+$$
+(A\circ B)\circ B=A\circ B
+$$
+</p>
+<p>for standard binary opening.</p>
+<p>Similarly:</p>
+<p>
+$$
+(A\bullet B)\bullet B=A\bullet B
+$$
+</p>
+<p>for closing.</p>
+<p>This means:</p>
+<blockquote>
+<p>Applying the same opening twice does not continue changing the image after the first completed opening, under the standard morphological definition.</p>
+</blockquote>
+<p>This is a useful mathematical property and an excellent exam concept.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.21: Increasing Property -->
+  <section id="s-18-21" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.21</span>
+      <h2>Increasing Property</h2>
+      <button class="bookmark-btn" data-id="s-18-21" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For suitable sets:</p>
+<p>
+$$
+A\subseteq C
+$$
+</p>
+<p>implies:</p>
+<p>
+$$
+A\oplus B\subseteq C\oplus B
+$$
+</p>
+<p>and similarly for erosion/opening/closing under the corresponding standard morphology properties.</p>
+<p>The intuition is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>larger input set
+→ does not produce a smaller corresponding dilation</code></pre>
+</div></p>
+<p>This illustrates that morphology respects set inclusion.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.22: Translation Invariance -->
+  <section id="s-18-22" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.22</span>
+      <h2>Translation Invariance</h2>
+      <button class="bookmark-btn" data-id="s-18-22" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Standard morphological dilation/erosion are translation invariant in the sense that translating the input translates the output correspondingly, given consistent coordinate conventions and no special boundary artefacts.</p>
+<p>This makes morphology naturally geometric.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.23: Morphological Boundary Extraction -->
+  <section id="s-18-23" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.23</span>
+      <h2>Morphological Boundary Extraction</h2>
+      <button class="bookmark-btn" data-id="s-18-23" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A boundary can be obtained from:</p>
+<p>
+$$
+\beta(A)=A-(A\ominus B)
+$$
+</p>
+<p>where subtraction indicates set difference for binary morphology.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>object
+ ↓
+erode
+ ↓
+remove eroded interior
+ ↓
+boundary</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.24: Worked Boundary Example -->
+  <section id="s-18-24" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.24</span>
+      <h2>Worked Boundary Example</h2>
+      <button class="bookmark-btn" data-id="s-18-24" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>object:
+
+111
+111
+111</code></pre>
+</div></p>
+<p>Eroding with a 3×3 SE gives:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>000
+010
+000</code></pre>
+</div></p>
+<p>Subtracting:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>111   000
+111 - 010
+111   000</code></pre>
+</div></p>
+<p>gives:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>111
+101
+111</code></pre>
+</div></p>
+<p>which represents an outer boundary-like ring under this simple discrete setup.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.25: Morphological Gradient -->
+  <section id="s-18-25" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.25</span>
+      <h2>Morphological Gradient</h2>
+      <button class="bookmark-btn" data-id="s-18-25" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A common morphological gradient is:</p>
+<p>
+$$
+G_m=(A\oplus B)-(A\ominus B)
+$$
+</p>
+<p>This highlights transition regions around objects.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>dilate
+  ↓
+expanded object
+  -
+eroded object
+  ↓
+boundary band</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.26: Hit-or-Miss Transform -->
+  <section id="s-18-26" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.26</span>
+      <h2>Hit-or-Miss Transform</h2>
+      <button class="bookmark-btn" data-id="s-18-26" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <blockquote>
+<p><strong>EXTENSION</strong></p>
+</blockquote>
+<p>The hit-or-miss transform detects specific binary configurations.</p>
+<p>It uses:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>foreground pattern
++
+background pattern</code></pre>
+</div></p>
+<p>to identify a desired local shape.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>target pattern
+     ↓
+scan image
+     ↓
+location matches</code></pre>
+</div></p>
+<p>It is useful for shape detection.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.27: Thinning and Skeletonization -->
+  <section id="s-18-27" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.27</span>
+      <h2>Thinning and Skeletonization</h2>
+      <button class="bookmark-btn" data-id="s-18-27" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <blockquote>
+<p><strong>EXTENSION</strong></p>
+</blockquote>
+<p>Morphological thinning reduces a shape toward a skeletal representation while preserving important topology under suitable algorithms.</p>
+<p>Skeletonization can represent:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>thick object
+→ medial/structural line</code></pre>
+</div></p>
+<p>Applications include:</p>
+<ul>
+<li>character analysis,</li>
+<li>road/network extraction,</li>
+<li>shape analysis.</li>
+</ul>
+<p>Exact algorithms have their own topology-preservation rules.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.28: Grayscale Morphology -->
+  <section id="s-18-28" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.28</span>
+      <h2>Grayscale Morphology</h2>
+      <button class="bookmark-btn" data-id="s-18-28" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Morphology is not limited to binary masks.</p>
+<p>For a grayscale image $f$ and flat structuring element $B$:</p>
+<h3>Grayscale dilation</h3>
+<p>Conceptually:</p>
+<p>
+$$
+(f\oplus B)(x)
+=
+\max_{b\in B} f(x-b)
+$$
+</p>
+<h3>Grayscale erosion</h3>
+<p>
+$$
+(f\ominus B)(x)
+=
+\min_{b\in B} f(x+b)
+$$
+</p>
+<p>Exact indexing/sign convention depends on the chosen morphological definition.</p>
+<p>The key idea is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>dilation
+→ local maximum-like operation
+
+erosion
+→ local minimum-like operation</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.29: Morphological Opening on Grayscale -->
+  <section id="s-18-29" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.29</span>
+      <h2>Morphological Opening on Grayscale</h2>
+      <button class="bookmark-btn" data-id="s-18-29" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>
+$$
+f\circ B=
+(f\ominus B)\oplus B
+$$
+</p>
+<p>It can suppress bright structures smaller than the SE.</p>
+<p>Conversely, closing can suppress/fill dark structures of suitable size.</p>
+<p>This provides a powerful scale-based interpretation.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.30: Morphological Top-Hat -->
+  <section id="s-18-30" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.30</span>
+      <h2>Morphological Top-Hat</h2>
+      <button class="bookmark-btn" data-id="s-18-30" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>White top-hat:</p>
+<p>
+$$
+T_W=f-(f\circ B)
+$$
+</p>
+<p>It emphasizes bright structures that are smaller than the structuring element's effective scale.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image
+-
+opened background-like version
+→
+bright details</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.31: Black-Hat -->
+  <section id="s-18-31" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.31</span>
+      <h2>Black-Hat</h2>
+      <button class="bookmark-btn" data-id="s-18-31" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Black-hat:</p>
+<p>
+$$
+T_B=(f\bullet B)-f
+$$
+</p>
+<p>It emphasizes dark structures relative to a locally closed background.</p>
+<p>These operations are useful for tasks such as:</p>
+<ul>
+<li>uneven illumination correction,</li>
+<li>text extraction,</li>
+<li>small-feature enhancement.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.32: Worked Top-Hat Idea -->
+  <section id="s-18-32" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.32</span>
+      <h2>Worked Top-Hat Idea</h2>
+      <button class="bookmark-btn" data-id="s-18-32" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Imagine:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>smooth background
++
+small bright dots</code></pre>
+</div></p>
+<p>Opening removes many small bright structures.</p>
+<p>Then:</p>
+<p>
+$$
+f-(f\circ B)
+$$
+</p>
+<p>leaves those bright structures emphasized.</p>
+<p>Thus white top-hat acts like a morphology-based small-bright-feature detector.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.33: Structuring Element Size as a Scale Parameter -->
+  <section id="s-18-33" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.33</span>
+      <h2>Structuring Element Size as a Scale Parameter</h2>
+      <button class="bookmark-btn" data-id="s-18-33" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>This is one of the most important morphology ideas.</p>
+<p>Suppose target object width is:</p>
+<p>
+$$
+3\text{ pixels}
+$$
+</p>
+<p>and the SE is:</p>
+<p>
+$$
+11\times11
+$$
+</p>
+<p>A morphology operation may treat the 3-pixel object as small relative to the chosen scale.</p>
+<p>Change the SE to:</p>
+<p>
+$$
+3\times3
+$$
+</p>
+<p>and the same object may survive.</p>
+<p>Therefore morphology is inherently scale-sensitive.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.34: Shape Matters, Not Just Size -->
+  <section id="s-18-34" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.34</span>
+      <h2>Shape Matters, Not Just Size</h2>
+      <button class="bookmark-btn" data-id="s-18-34" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A horizontal line SE behaves differently from a disk or square.</p>
+<p>For example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>horizontal SE
+→ favours horizontal structures
+
+vertical SE
+→ favours vertical structures</code></pre>
+</div></p>
+<p>Thus:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>SE size
++
+SE shape
++
+SE orientation</code></pre>
+</div></p>
+<p>define the morphological prior.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.35: Morphology for Mask Cleanup -->
+  <section id="s-18-35" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.35</span>
+      <h2>Morphology for Mask Cleanup</h2>
+      <button class="bookmark-btn" data-id="s-18-35" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A common segmentation pipeline is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>threshold
+ ↓
+opening
+ ↓
+remove small foreground noise
+ ↓
+closing
+ ↓
+fill small gaps
+ ↓
+connected components</code></pre>
+</div></p>
+<p>The order matters.</p>
+<p>Changing:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>opening → closing</code></pre>
+</div></p>
+<p>to:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>closing → opening</code></pre>
+</div></p>
+<p>can produce different results.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.36: Worked Cleanup Scenario -->
+  <section id="s-18-36" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.36</span>
+      <h2>Worked Cleanup Scenario</h2>
+      <button class="bookmark-btn" data-id="s-18-36" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose a thresholded object has:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>small isolated foreground dots
++
+small holes</code></pre>
+</div></p>
+<p>A reasonable experiment might be:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>opening
+→ suppress isolated dots
+
+closing
+→ fill small holes</code></pre>
+</div></p>
+<p>But the exact kernel should be chosen based on object scale.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.37: Morphology and Connectivity -->
+  <section id="s-18-37" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.37</span>
+      <h2>Morphology and Connectivity</h2>
+      <button class="bookmark-btn" data-id="s-18-37" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Morphological operations can alter connectivity.</p>
+<h3>Dilation</h3>
+<p>Can connect nearby components.</p>
+<h3>Erosion</h3>
+<p>Can break thin connections.</p>
+<p>This is why morphology can change connected-component counts.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.38: Example — Bridge Breaking -->
+  <section id="s-18-38" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.38</span>
+      <h2>Example — Bridge Breaking</h2>
+      <button class="bookmark-btn" data-id="s-18-38" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Consider:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>██████
+   ██
+██████</code></pre>
+</div></p>
+<p>A narrow one-pixel bridge connects two larger areas.</p>
+<p>An erosion with a suitable SE may break the bridge:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>█████
+
+█████</code></pre>
+</div></p>
+<p>This can be useful when separate objects are connected by a thin artifact.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.39: Example — Gap Closing -->
+  <section id="s-18-39" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.39</span>
+      <h2>Example — Gap Closing</h2>
+      <button class="bookmark-btn" data-id="s-18-39" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Consider:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>████ ████</code></pre>
+</div></p>
+<p>A suitable dilation followed by erosion can close a small gap.</p>
+<p>This is especially useful for:</p>
+<ul>
+<li>broken character strokes,</li>
+<li>incomplete boundaries,</li>
+<li>segmented line structures.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.40: Morphological Noise Removal vs Statistical Denoising -->
+  <section id="s-18-40" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.40</span>
+      <h2>Morphological Noise Removal vs Statistical Denoising</h2>
+      <button class="bookmark-btn" data-id="s-18-40" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>C09 used filters based on numeric neighbourhood statistics.</p>
+<p>Morphology uses geometric structure.</p>
+<h3>Statistical</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>mean / median / Gaussian
+→ value relationships</code></pre>
+</div></p>
+<h3>Morphological</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>erosion / dilation
+→ set/shape relationships</code></pre>
+</div></p>
+<p>This distinction helps choose the right tool.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.41: Morphology and Edge Detection -->
+  <section id="s-18-41" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.41</span>
+      <h2>Morphology and Edge Detection</h2>
+      <button class="bookmark-btn" data-id="s-18-41" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Morphological boundaries can provide object contours.</p>
+<p>Gradient-based edges:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>intensity derivatives</code></pre>
+</div></p>
+<p>Morphological boundaries:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>shape/set difference</code></pre>
+</div></p>
+<p>They can be combined.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.42: Morphology and Connected Components -->
+  <section id="s-18-42" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.42</span>
+      <h2>Morphology and Connected Components</h2>
+      <button class="bookmark-btn" data-id="s-18-42" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A practical mask-processing chain:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>segmentation
+ ↓
+morphology
+ ↓
+connected components
+ ↓
+region measurements</code></pre>
+</div></p>
+<p>Morphology improves the topology before measurements are extracted.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.43: Morphological Distance Intuition -->
+  <section id="s-18-43" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.43</span>
+      <h2>Morphological Distance Intuition</h2>
+      <button class="bookmark-btn" data-id="s-18-43" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Repeated erosion can remove outer layers.</p>
+<p>The number of erosions required to eliminate a region provides information about its scale.</p>
+<p>This connects morphology to:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>shape thickness
++
+distance-like measures</code></pre>
+</div></p>
+<p>Advanced algorithms use this idea for skeletons and distance transforms.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.44: Distance Transform -->
+  <section id="s-18-44" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.44</span>
+      <h2>Distance Transform</h2>
+      <button class="bookmark-btn" data-id="s-18-44" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <blockquote>
+<p><strong>EXTENSION</strong></p>
+</blockquote>
+<p>A distance transform assigns each foreground pixel a distance to the nearest background pixel under a chosen metric.</p>
+<p>For example:</p>
+<p>
+$$
+D(p)=\min_{q\in\text{background}}d(p,q)
+$$
+</p>
+<p>A large value indicates a pixel deep inside the object.</p>
+<p>This can support:</p>
+<ul>
+<li>skeletonization,</li>
+<li>object-centre detection,</li>
+<li>separation of touching objects.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.45: Morphological Reconstruction -->
+  <section id="s-18-45" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.45</span>
+      <h2>Morphological Reconstruction</h2>
+      <button class="bookmark-btn" data-id="s-18-45" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <blockquote>
+<p><strong>EXTENSION</strong></p>
+</blockquote>
+<p>Morphological reconstruction uses a <strong>marker</strong> image constrained by a <strong>mask</strong> image.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>marker
+ +
+mask constraint
+ ↓
+connected reconstruction</code></pre>
+</div></p>
+<p>It can preserve large connected structures while removing unwanted components more selectively than simple opening.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.46: Why Reconstruction Is Useful -->
+  <section id="s-18-46" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.46</span>
+      <h2>Why Reconstruction Is Useful</h2>
+      <button class="bookmark-btn" data-id="s-18-46" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Simple opening removes structures according to the SE.</p>
+<p>Reconstruction can instead preserve the connectivity of selected marker regions.</p>
+<p>This is powerful for:</p>
+<ul>
+<li>extracting connected objects,</li>
+<li>removing small components without distorting surviving shapes,</li>
+<li>advanced segmentation cleanup.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.47: Practical Experiment Design -->
+  <section id="s-18-47" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.47</span>
+      <h2>Practical Experiment Design</h2>
+      <button class="bookmark-btn" data-id="s-18-47" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For a binary mask, compare:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>original
+opening with 3×3
+opening with 5×5
+closing with 3×3
+closing with 5×5
+opening + closing
+closing + opening</code></pre>
+</div></p>
+<p>Record:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>foreground area
+component count
+hole count
+IoU/Dice
+visual shape changes</code></pre>
+</div></p>
+<p>This exposes the meaning of structuring-element scale.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.48: Boundary Conditions -->
+  <section id="s-18-48" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.48</span>
+      <h2>Boundary Conditions</h2>
+      <button class="bookmark-btn" data-id="s-18-48" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Morphological operators also need border behaviour.</p>
+<p>Pixels outside the image may be treated according to library-specific rules.</p>
+<p>Therefore:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>same SE
++
+different border policy
+→
+possibly different result</code></pre>
+</div></p>
+<p>Reproducibility requires recording the implementation convention.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.49: Binary vs Grayscale Morphology -->
+  <section id="s-18-49" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.49</span>
+      <h2>Binary vs Grayscale Morphology</h2>
+      <button class="bookmark-btn" data-id="s-18-49" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Property</th>
+<th>Binary</th>
+<th>Grayscale</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>basic data</td>
+<td>sets / 0–1</td>
+<td>intensity values</td>
+</tr>
+<tr>
+<td>dilation</td>
+<td>set expansion</td>
+<td>local max-like operation</td>
+</tr>
+<tr>
+<td>erosion</td>
+<td>set shrinking</td>
+<td>local min-like operation</td>
+</tr>
+<tr>
+<td>opening/closing</td>
+<td>shape filtering</td>
+<td>intensity-structure filtering</td>
+</tr>
+<tr>
+<td>common task</td>
+<td>mask cleanup</td>
+<td>feature/background manipulation</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.50: Common Traps -->
+  <section id="s-18-50" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.50</span>
+      <h2>Common Traps</h2>
+      <button class="bookmark-btn" data-id="s-18-50" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h2>Trap 1 — “Dilation always makes objects look bigger in every possible sense.”</h2>
+<p>Usually it expands foreground support, but the exact result depends on SE shape and boundary convention.</p>
+<h2>Trap 2 — “Erosion just deletes noise.”</h2>
+<p>It can also shrink objects and break useful connections.</p>
+<h2>Trap 3 — “Opening = dilation then erosion.”</h2>
+<p>False.</p>
+<p>Standard opening is:</p>
+<p>
+$$
+erosion\rightarrow dilation
+$$
+</p>
+<h2>Trap 4 — “Closing = erosion then dilation.”</h2>
+<p>False.</p>
+<p>Standard closing is:</p>
+<p>
+$$
+dilation\rightarrow erosion
+$$
+</p>
+<h2>Trap 5 — “Bigger SE is always better.”</h2>
+<p>False.</p>
+<p>It can eliminate genuine structures.</p>
+<h2>Trap 6 — “Morphology is only for binary images.”</h2>
+<p>False.</p>
+<p>Grayscale morphology is important.</p>
+<h2>Trap 7 — “Morphology cannot change connectivity.”</h2>
+<p>False.</p>
+<p>Dilation and erosion can connect or disconnect regions.</p>
+<h2>Trap 8 — “Top-hat is just a brighter image.”</h2>
+<p>False.</p>
+<p>It isolates structures relative to a morphological opening/closing.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.51: Exam Formula Sheet -->
+  <section id="s-18-51" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.51</span>
+      <h2>Exam Formula Sheet</h2>
+      <button class="bookmark-btn" data-id="s-18-51" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Dilation</h3>
+<p>
+$$
+\boxed{
+A\oplus B
+}
+$$
+</p>
+<h3>Erosion</h3>
+<p>
+$$
+\boxed{
+A\ominus B
+}
+$$
+</p>
+<h3>Opening</h3>
+<p>
+$$
+\boxed{
+A\circ B=(A\ominus B)\oplus B
+}
+$$
+</p>
+<h3>Closing</h3>
+<p>
+$$
+\boxed{
+A\bullet B=(A\oplus B)\ominus B
+}
+$$
+</p>
+<h3>Boundary extraction</h3>
+<p>
+$$
+\boxed{
+\beta(A)=A-(A\ominus B)
+}
+$$
+</p>
+<h3>Morphological gradient</h3>
+<p>
+$$
+\boxed{
+G_m=(A\oplus B)-(A\ominus B)
+}
+$$
+</p>
+<h3>White top-hat</h3>
+<p>
+$$
+\boxed{
+T_W=f-(f\circ B)
+}
+$$
+</p>
+<h3>Black-hat</h3>
+<p>
+$$
+\boxed{
+T_B=(f\bullet B)-f
+}
+$$
+</p>
+<h3>Grayscale dilation, conceptual flat-SE form</h3>
+<p>
+$$
+\boxed{
+(f\oplus B)(x)=\max_{b\in B}f(x-b)
+}
+$$
+</p>
+<h3>Grayscale erosion, conceptual flat-SE form</h3>
+<p>
+$$
+\boxed{
+(f\ominus B)(x)=\min_{b\in B}f(x+b)
+}
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.52: Exam-Style Problem — Opening -->
+  <section id="s-18-52" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.52</span>
+      <h2>Exam-Style Problem — Opening</h2>
+      <button class="bookmark-btn" data-id="s-18-52" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>State the sequence for opening.</p>
+<p>Answer:</p>
+<p>
+$$
+\boxed{
+A\circ B=(A\ominus B)\oplus B
+}
+$$
+</p>
+<p>Therefore:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>erosion
+→ dilation</code></pre>
+</div></p>
+<p>Primary purpose:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>remove small foreground structures
++
+smooth certain boundary protrusions</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.53: Exam-Style Problem — Closing -->
+  <section id="s-18-53" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.53</span>
+      <h2>Exam-Style Problem — Closing</h2>
+      <button class="bookmark-btn" data-id="s-18-53" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>State the sequence for closing.</p>
+<p>
+$$
+\boxed{
+A\bullet B=(A\oplus B)\ominus B
+}
+$$
+</p>
+<p>Therefore:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>dilation
+→ erosion</code></pre>
+</div></p>
+<p>Primary purpose:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>close small gaps
++
+fill small holes</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.54: Exam-Style Problem — Boundary -->
+  <section id="s-18-54" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.54</span>
+      <h2>Exam-Style Problem — Boundary</h2>
+      <button class="bookmark-btn" data-id="s-18-54" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Given:</p>
+<p>
+$$
+A=
+\begin{bmatrix}
+1&1&1\\
+1&1&1\\
+1&1&1
+\end{bmatrix}
+$$
+</p>
+<p>and erosion result:</p>
+<p>
+$$
+A\ominus B=
+\begin{bmatrix}
+0&0&0\\
+0&1&0\\
+0&0&0
+\end{bmatrix}
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+A-(A\ominus B)
+$$
+</p>
+<p>gives:</p>
+<p>
+$$
+\boxed{
+\begin{bmatrix}
+1&1&1\\
+1&0&1\\
+1&1&1
+\end{bmatrix}
+}
+$$
+</p>
+<p>This extracts a boundary-like structure under the example convention.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.55: Engineering Insight — Morphology Is a Shape Prior -->
+  <section id="s-18-55" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.55</span>
+      <h2>Engineering Insight — Morphology Is a Shape Prior</h2>
+      <button class="bookmark-btn" data-id="s-18-55" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A structuring element encodes an assumption:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>what local shape matters?</code></pre>
+</div></p>
+<p>Therefore selecting:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>3×3 square</code></pre>
+</div></p>
+<p>versus:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>horizontal line</code></pre>
+</div></p>
+<p>is not just a parameter change.</p>
+<p>It is a change in the geometric prior.</p>
+<p>This is one reason morphology is so effective in engineered vision systems where object geometry is known.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.56: Practical Example — OCR Cleanup -->
+  <section id="s-18-56" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.56</span>
+      <h2>Practical Example — OCR Cleanup</h2>
+      <button class="bookmark-btn" data-id="s-18-56" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A document may produce:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>broken strokes
+small black noise
+tiny holes</code></pre>
+</div></p>
+<p>A morphology pipeline can be:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>grayscale
+ ↓
+threshold
+ ↓
+opening / closing
+ ↓
+connected components
+ ↓
+OCR</code></pre>
+</div></p>
+<p>The exact order and SE depend on:</p>
+<ul>
+<li>font thickness,</li>
+<li>scan resolution,</li>
+<li>noise scale.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.57: Practical Example — Industrial Components -->
+  <section id="s-18-57" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.57</span>
+      <h2>Practical Example — Industrial Components</h2>
+      <button class="bookmark-btn" data-id="s-18-57" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose a binary segmentation produces:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>components
++
+small gaps
++
+small isolated specks</code></pre>
+</div></p>
+<p>Morphology can:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>remove specks
+connect intended pieces
+fill holes</code></pre>
+</div></p>
+<p>Then:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>connected components
+→ area filtering
+→ measurement</code></pre>
+</div></p>
+<p>This creates a classical industrial inspection pipeline.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.58: Morphology and Object Scale -->
+  <section id="s-18-58" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.58</span>
+      <h2>Morphology and Object Scale</h2>
+      <button class="bookmark-btn" data-id="s-18-58" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose the smallest valid object diameter is:</p>
+<p>
+$$
+d=8
+$$
+</p>
+<p>pixels.</p>
+<p>A 15×15 opening may remove that object.</p>
+<p>Therefore:</p>
+<blockquote>
+<p>Morphological scale should be chosen from the geometry of meaningful objects, not merely from the amount of visible noise.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.59: Morphology Evaluation -->
+  <section id="s-18-59" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.59</span>
+      <h2>Morphology Evaluation</h2>
+      <button class="bookmark-btn" data-id="s-18-59" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For ground-truth masks, compare:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>before morphology
+vs
+after morphology
+vs
+ground truth</code></pre>
+</div></p>
+<p>Do not assume that a prettier mask is automatically more accurate.</p>
+<p>Measure:</p>
+<p>
+$$
+IoU,\quad Dice
+$$
+</p>
+<p>and inspect:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>small objects
+boundaries
+holes
+connectivity</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.60: Common Engineering Failure -->
+  <section id="s-18-60" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.60</span>
+      <h2>Common Engineering Failure</h2>
+      <button class="bookmark-btn" data-id="s-18-60" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A user notices tiny noise and selects:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>large opening</code></pre>
+</div></p>
+<p>The noise disappears—but so do:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>small valid objects</code></pre>
+</div></p>
+<p>This is the morphology version of over-smoothing.</p>
+<p>The cure is the same engineering principle:</p>
+<blockquote>
+<p>Define what information must survive before choosing the filter scale.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.61: Cross-Book Bridges -->
+  <section id="s-18-61" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.61</span>
+      <h2>Cross-Book Bridges</h2>
+      <button class="bookmark-btn" data-id="s-18-61" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <blockquote>
+<p><strong>C16 BRIDGE</strong><br />
+Thresholding produces masks that frequently need morphological cleanup.</p>
+<p><strong>C17 BRIDGE</strong><br />
+Region-based segmentation creates connected regions; morphology refines their geometry.</p>
+<p><strong>C10 BRIDGE</strong><br />
+Morphological boundaries provide an alternative/complementary form of edge evidence.</p>
+<p><strong>C19–C20 BRIDGE</strong><br />
+Clean masks enable reliable shape and region feature extraction.</p>
+<p><strong>C21+ BRIDGE</strong><br />
+Morphology can preprocess regions before compression-independent feature analysis.</p>
+<p><strong>LAB BRIDGE</strong><br />
+Compare erosion, dilation, opening and closing using multiple SE shapes/sizes.</p>
+<p><strong>PRACTICE BRIDGE</strong><br />
+Trace binary morphology by hand, identify operation sequences and reason about connectivity/shape effects.</p>
+<p><strong>EXAM BRIDGE</strong><br />
+Know set definitions, erosion/dilation, opening/closing, boundary extraction and top-hat/black-hat concepts.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.62: Quick Recall -->
+  <section id="s-18-62" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.62</span>
+      <h2>Quick Recall</h2>
+      <button class="bookmark-btn" data-id="s-18-62" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>EROSION
+→ shrink
+
+DILATION
+→ grow
+
+OPENING
+→ erosion → dilation
+→ remove small foreground structures
+
+CLOSING
+→ dilation → erosion
+→ close gaps / holes
+
+BOUNDARY
+→ A − erosion(A)
+
+TOP-HAT
+→ bright small structures
+
+BLACK-HAT
+→ dark small structures</code></pre>
+</div></p>
+<p>Core rule:</p>
+<blockquote>
+<p><strong>The structuring element defines the geometric scale and shape that morphology considers important.</strong></p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.63: Chapter Checkpoint -->
+  <section id="s-18-63" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.63</span>
+      <h2>Chapter Checkpoint</h2>
+      <button class="bookmark-btn" data-id="s-18-63" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <ol>
+<li>Define mathematical morphology.</li>
+<li>What is a structuring element?</li>
+<li>Explain binary morphology as set operations.</li>
+<li>Define dilation.</li>
+<li>Define erosion.</li>
+<li>Compare dilation and erosion.</li>
+<li>Define opening and give its sequence.</li>
+<li>Define closing and give its sequence.</li>
+<li>Explain why opening removes small foreground components.</li>
+<li>Explain why closing fills small holes.</li>
+<li>Define morphological boundary extraction.</li>
+<li>Define morphological gradient.</li>
+<li>What are top-hat and black-hat transforms?</li>
+<li>Explain the effect of structuring-element size.</li>
+<li>Explain the effect of structuring-element shape.</li>
+<li>How can morphology change connectivity?</li>
+<li>Compare binary and grayscale morphology.</li>
+<li>What is morphological reconstruction?</li>
+<li>How can morphology support OCR or industrial inspection?</li>
+<li>Design a morphology pipeline for a noisy segmentation mask.</li>
+</ol>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 18.64: Part III Progress -->
+  <section id="s-18-64" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.64</span>
+      <h2>Part III Progress</h2>
+      <button class="bookmark-btn" data-id="s-18-64" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The classical segmentation chain is now:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>C15
+SEGMENTATION FUNDAMENTALS
+      ↓
+C16
+THRESHOLDING
+      ↓
+C17
+REGION-BASED SEGMENTATION
+      ↓
+C18
+MATHEMATICAL MORPHOLOGY</code></pre>
+</div></p>
+<p>Next:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>C19
+IMAGE FEATURES AND DESCRIPTORS
+      ↓
+C20
+SIFT / SURF / ORB / HOG</code></pre>
+</div></p>
+<p>The conceptual transition is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>pixels
+→ labels
+→ connected regions
+→ shapes
+→ measurable features
+→ robust descriptors</code></pre>
+</div></p>
+<p>That is the bridge from classical image processing into classical computer vision.</p>
+    </div>
+  </section>
+
+  <!-- SECTION 18.65: Worked Example — 10-Mark University Model Answer: Fundamental Binary Morphology -->
+  <section id="s-18-65" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.65</span>
+      <h2>Worked Example — 10-Mark University Model Answer: Fundamental Binary Morphology</h2>
+      <button class="bookmark-btn" data-id="s-18-65" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Problem Statement</h3>
+<p>A $6 \times 6$ binary image $A$ contains a solid foreground object with a single 1-pixel background hole and an isolated noise spur.
+Let structuring element $B$ be a $3 \times 3$ cross structuring element centered at $(0,0)$:
+
+$$B = \begin{bmatrix} 0 & 1 & 0 \\ 1 & 1 & 1 \\ 0 & 1 & 0 \end{bmatrix}$$
+
+1. Define the mathematical operations of Binary Erosion ($A \ominus B$) and Binary Dilation ($A \oplus B$).
+2. Formulate Binary Opening ($A \circ B$) and Binary Closing ($A \bullet B$) and state their geometric filtering properties.
+3. Express the formula for Morphological Boundary Extraction $\beta(A)$ and explain why erosion is preferred over dilation for boundary extraction.</p>
+<h3>Step-by-Step Mathematical Solution</h3>
+<div class="worked-example">
+  <div class="worked-example-header">
+    <span class="worked-example-title">Numerical Examination Trace</span>
+    <span class="tag-badge tag-exam">10-MARK UNIVERSITY MODEL ANSWER</span>
+  </div>
+  <p><strong>1. Fundamental Definitions:</strong><br>
+  - <strong>Binary Erosion ($A \ominus B$):</strong> The set of all translation points $z$ such that $B$, translated by $z$, is completely contained inside $A$:
+  
+$$A \ominus B = \{z \mid (B)_z \subseteq A\}$$
+
+  Erosion shrinks the object boundaries by peeling away an outer layer of pixels. Any foreground feature smaller than the structuring element is eradicated.</p>
+
+  <p>- <strong>Binary Dilation ($A \oplus B$):</strong> The set of all translation points $z$ such that the reflected structuring element $\hat{B}$, translated by $z$, overlaps with $A$ by at least one pixel:
+  
+$$A \oplus B = \{z \mid (\hat{B})_z \cap A \ne \emptyset\}$$
+
+  Dilation expands foreground boundaries, bridging narrow gaps and filling small concave notches.</p>
+
+  <p><strong>2. Compound Operators & Geometric Role:</strong><br>
+  - <strong>Opening ($A \circ B$):</strong> Erosion followed by dilation with the same structuring element:
+  
+$$A \circ B = (A \ominus B) \oplus B$$
+
+  <em>Geometric Effect:</em> Eliminates thin foreground protrusions, severs narrow isthmuses connecting two larger bodies, and removes isolated noise spurs without significantly altering the global area of the primary object.</p>
+
+  <p>- <strong>Closing ($A \bullet B$):</strong> Dilation followed by erosion with the same structuring element:
+  
+$$A \bullet B = (A \oplus B) \ominus B$$
+
+  <em>Geometric Effect:</em> Fuses narrow breaks and thin cracks, bridges small gaps between nearby segments, and fills small interior background holes without altering the macroscopic contour.</p>
+
+  <p><strong>3. Morphological Boundary Extraction:</strong><br>
+  The internal boundary $\beta(A)$ of set $A$ is obtained by subtracting the eroded set $A \ominus B$ from the original set $A$:
+  
+$$\beta(A) = A - (A \ominus B) = A \cap (A \ominus B)^c$$
+
+  <em>Rationale:</em> Because erosion removes exactly the outermost perimeter layer of pixels where the structuring element fails to fit entirely inside $A$, subtracting the eroded core leaves precisely the 1-pixel-thick boundary contour.</p>
+</div>
+    </div>
+  </section>
+
+  <!-- SECTION 18.66: Grayscale Morphology &amp; The Top-Hat Transform -->
+  <section id="s-18-66" class="section-block">
+    <div class="section-header">
+      <span class="section-num">18.66</span>
+      <h2>Grayscale Morphology &amp; The Top-Hat Transform</h2>
+      <button class="bookmark-btn" data-id="s-18-66" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Mathematical Definitions of Grayscale Morphology</h3>
+<p>Let $f(x, y)$ be the input grayscale image and $b(x, y)$ be a flat structuring element defined on support domain $D_b$:
+- <strong>Grayscale Erosion:</strong> $[f \ominus b](x, y) = \min_{(s, t) \in D_b} \{ f(x + s, y + t) \}$
+- <strong>Grayscale Dilation:</strong> $[f \oplus b](x, y) = \max_{(s, t) \in D_b} \{ f(x - s, y - t) \}$
+- <strong>Grayscale Opening:</strong> $f \circ b = (f \ominus b) \oplus b$ (removes bright features smaller than $b$)
+- <strong>Grayscale Closing:</strong> $f \bullet b = (f \oplus b) \ominus b$ (suppresses dark features smaller than $b$)</p>
+<h3>Top-Hat and Bottom-Hat Transforms for Non-Uniform Illumination</h3>
+<p>In document scanning and biomedical microscopy, uneven illumination produces severe low-frequency background shading variations that defeat global thresholding.
+The <strong>Top-Hat Transform</strong> extracts bright objects on a non-uniform dark background:
+
+$$h_{top}(x, y) = f(x, y) - [f \circ b](x, y)$$
+
+Because the morphological opening $f \circ b$ estimates the smoothly varying illumination background by removing all small sharp foreground text features, subtracting the opening leaves pristine, background-free foreground objects with a perfectly uniform zero-level reference.</p>
+    </div>
+  </section>
+
+      <!-- Chapter End Package -->
+      <section class="chapter-end-package">
+        <div class="chapter-nav-grid">
+          <a href="ch17-region-segmentation.html" class="chapter-nav-card">
+            <div class="chapter-nav-dir">← Previous</div>
+            <div class="chapter-nav-title">← Ch 17 — Region-Based Segmentation</div>
+          </a>
+          <a href="ch19-features-descriptors.html" class="chapter-nav-card next">
+            <div class="chapter-nav-dir">Next →</div>
+            <div class="chapter-nav-title">Next: Ch 19 — Image Features & Descriptors →</div>
+          </a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- FLOATING TTS PANEL (SAFE MANUAL MODE ONLY) -->
+  <div id="tts-panel" style="position:fixed; bottom:20px; right:20px; background:var(--em-surface-1); border:1px solid var(--em-border); border-radius:var(--em-radius-md); padding:12px 16px; box-shadow:var(--sh-lg); z-index:var(--z-float); display:none; gap:10px; align-items:center;">
+    <button class="icon-btn" id="tts-play" title="Play / Pause" style="background:var(--em-accent); color:#fff; border-radius:50%; width:36px; height:36px;">▶</button>
+    <button class="icon-btn" id="tts-stop" title="Stop">⏹</button>
+    <div style="font-size:0.75rem; color:var(--em-text-muted);">
+      <span id="tts-status">Ready</span> · <span id="tts-rate-label">1.0x</span>
+    </div>
+  </div>
+
+  <script src="../assets/js/state.js"></script>
+  <script src="../assets/js/core.js"></script>
+  <script src="../assets/js/tts.js"></script>
+  <script src="../assets/js/glossary.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: document.documentElement.getAttribute('data-theme') === 'light' ? 'default' : 'dark'
+      });
+    });
+  </script>
+</body>
+</html>

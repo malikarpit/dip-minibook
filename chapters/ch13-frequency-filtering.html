@@ -1,0 +1,3071 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Arpit">
+  <meta name="description" content="Chapter 13: Frequency-Domain Filtering — Digital Image Processing MiniBook. Filtering Pipeline, Lowpass Filters (Ideal ILPF, Butterworth BLPF, Gaussian GLPF), Gibbs Ringing Phenomena, Highpass Filtering, High-Frequency Emphasis, and Notch Filters">
+  <title>C13: Frequency-Domain Filtering | DIP MiniBook 📷 Arpit</title>
+
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <link rel="stylesheet" href="../assets/css/chapters.css">
+  <link rel="stylesheet" href="../assets/css/animations.css">
+  <link rel="stylesheet" href="../assets/css/timer.css">
+
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body data-chapter-id="ch13-frequency-filtering">
+  <div id="progress-bar"></div>
+
+  <!-- Header -->
+  <header id="main-header">
+    <div class="header-left">
+      <button id="sidebar-toggle" class="icon-btn" aria-label="Toggle navigation drawer" title="Toggle Sidebar (S)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <a href="../index.html" class="brand-logo">
+        <div class="brand-icon">DIP</div>
+        <div class="brand-text">
+          <span class="main">Digital Image Processing</span>
+          <span class="sub">DU DSE-3 Engineering MiniBook</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="header-chapter-title">C13: Frequency-Domain Filtering</div>
+
+    <div class="header-right">
+      <button id="reading-mode-btn" class="icon-btn" aria-label="Toggle reading focus mode" title="Focus Mode (F)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+          <line x1="8" y1="21" x2="16" y2="21"></line>
+          <line x1="12" y1="17" x2="12" y2="21"></line>
+        </svg>
+      </button>
+      <button id="tts-toggle" class="icon-btn" aria-label="Audio Reader" title="Audio Reader">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+        </svg>
+      </button>
+      <button id="theme-toggle" class="icon-btn" aria-label="Cycle theme" title="Theme (T)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="12" cy="12" r="4.5"></circle>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Sidebar Overlay -->
+  <div id="sidebar-overlay"></div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" aria-expanded="true">
+    <div class="sidebar-nav">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">General</div>
+        <a href="../index.html" class="sidebar-link">
+          <span class="link-icon">🏛️</span>
+          <span>Subject Portal</span>
+        </a>
+        <a href="../progress.html" class="sidebar-link">
+          <span class="link-icon">📊</span>
+          <span>Study Dashboard</span>
+        </a>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Current Chapter Sections</div>
+        <a href="#s-13-1" class="sidebar-link"><span class="link-icon">📌</span><span>13.1 From Fourier Analysis to Filtering</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-13-2" class="sidebar-link"><span class="link-icon">📌</span><span>13.2 What Is a Frequency-Domain Filter?</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-13-3" class="sidebar-link"><span class="link-icon">📌</span><span>13.3 Transfer Function</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-13-4" class="sidebar-link"><span class="link-icon">📌</span><span>13.4 Frequency Coordinates and the Origin</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-13-5" class="sidebar-link"><span class="link-icon">📌</span><span>13.5 Why Distance from the Origin Matters</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-13-6" class="sidebar-link"><span class="link-icon">📌</span><span>13.6 Ideal Low-Pass Filter</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-13-7" class="sidebar-link"><span class="link-icon">📌</span><span>13.7 What an Ideal Low-Pass Does</span> </a>
+      <a href="#s-13-8" class="sidebar-link"><span class="link-icon">📌</span><span>13.8 Ringing from Sharp Frequency Cutoffs</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-13-9" class="sidebar-link"><span class="link-icon">📌</span><span>13.9 Butterworth Low-Pass Filter</span> </a>
+      <a href="#s-13-10" class="sidebar-link"><span class="link-icon">📌</span><span>13.10 Effect of Butterworth Order</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-13-11" class="sidebar-link"><span class="link-icon">📌</span><span>13.11 Gaussian Low-Pass Filter</span> </a>
+      <a href="#s-13-12" class="sidebar-link"><span class="link-icon">📌</span><span>13.12 Ideal vs Butterworth vs Gaussian</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-13-13" class="sidebar-link"><span class="link-icon">📌</span><span>13.13 Worked Gaussian Filter Example</span> </a>
+      <a href="#s-13-14" class="sidebar-link"><span class="link-icon">📌</span><span>13.14 High-Pass Filtering</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-13-15" class="sidebar-link"><span class="link-icon">📌</span><span>13.15 Ideal High-Pass Filter</span> </a>
+      <a href="#s-13-16" class="sidebar-link"><span class="link-icon">📌</span><span>13.16 Butterworth High-Pass</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-13-17" class="sidebar-link"><span class="link-icon">📌</span><span>13.17 Gaussian High-Pass</span> </a>
+      <a href="#s-13-18" class="sidebar-link"><span class="link-icon">📌</span><span>13.18 Why High-Pass Filtering Looks Like Edge Enhancement</span> </a>
+      <a href="#s-13-19" class="sidebar-link"><span class="link-icon">📌</span><span>13.19 High-Pass Output Is Not Automatically a Sharpened Image</span> </a>
+      <a href="#s-13-20" class="sidebar-link"><span class="link-icon">📌</span><span>13.20 High-Frequency Emphasis</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-13-21" class="sidebar-link"><span class="link-icon">📌</span><span>13.21 Band-Pass Filtering</span> </a>
+      <a href="#s-13-22" class="sidebar-link"><span class="link-icon">📌</span><span>13.22 Why Band-Pass Filters Matter</span> </a>
+      <a href="#s-13-23" class="sidebar-link"><span class="link-icon">📌</span><span>13.23 Band-Reject / Band-Stop</span> </a>
+      <a href="#s-13-24" class="sidebar-link"><span class="link-icon">📌</span><span>13.24 Notch Filtering</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-13-25" class="sidebar-link"><span class="link-icon">📌</span><span>13.25 Why Periodic Noise Is a Good Notch-Filter Problem</span> </a>
+      <a href="#s-13-26" class="sidebar-link"><span class="link-icon">📌</span><span>13.26 Notch Reject Concept</span> </a>
+      <a href="#s-13-27" class="sidebar-link"><span class="link-icon">📌</span><span>13.27 Worked Notch Concept</span> </a>
+      <a href="#s-13-28" class="sidebar-link"><span class="link-icon">📌</span><span>13.28 Low-Pass Cutoff Selection</span> </a>
+      <a href="#s-13-29" class="sidebar-link"><span class="link-icon">📌</span><span>13.29 Filter Transition Width</span> </a>
+      <a href="#s-13-30" class="sidebar-link"><span class="link-icon">📌</span><span>13.30 Frequency-Domain Filtering Is a Global Operation</span> </a>
+      <a href="#s-13-31" class="sidebar-link"><span class="link-icon">📌</span><span>13.31 Spatial Filter vs Frequency Filter</span> </a>
+      <a href="#s-13-32" class="sidebar-link"><span class="link-icon">📌</span><span>13.32 Convolution Theorem Revisited</span> </a>
+      <a href="#s-13-33" class="sidebar-link"><span class="link-icon">📌</span><span>13.33 Large-Kernel Filtering</span> </a>
+      <a href="#s-13-34" class="sidebar-link"><span class="link-icon">📌</span><span>13.34 FFT-Based Filtering Workflow</span> </a>
+      <a href="#s-13-35" class="sidebar-link"><span class="link-icon">📌</span><span>13.35 Filter Alignment</span> </a>
+      <a href="#s-13-36" class="sidebar-link"><span class="link-icon">📌</span><span>13.36 Why Kernel Shifts Cause Phase Effects</span> </a>
+      <a href="#s-13-37" class="sidebar-link"><span class="link-icon">📌</span><span>13.37 Ideal vs Smooth Filters</span> </a>
+      <a href="#s-13-38" class="sidebar-link"><span class="link-icon">📌</span><span>13.38 Filter Design by Objective</span> </a>
+      <a href="#s-13-39" class="sidebar-link"><span class="link-icon">📌</span><span>13.39 Worked Design Example — Gaussian Blur</span> </a>
+      <a href="#s-13-40" class="sidebar-link"><span class="link-icon">📌</span><span>13.40 Worked Design Example — Butterworth</span> </a>
+      <a href="#s-13-41" class="sidebar-link"><span class="link-icon">📌</span><span>13.41 Comparing the Same Cutoff</span> </a>
+      <a href="#s-13-42" class="sidebar-link"><span class="link-icon">📌</span><span>13.42 Frequency-Domain Sharpening</span> </a>
+      <a href="#s-13-43" class="sidebar-link"><span class="link-icon">📌</span><span>13.43 Relation to Unsharp Masking</span> </a>
+      <a href="#s-13-44" class="sidebar-link"><span class="link-icon">📌</span><span>13.44 Frequency-Domain Noise Reduction</span> </a>
+      <a href="#s-13-45" class="sidebar-link"><span class="link-icon">📌</span><span>13.45 Frequency-Domain Filtering and SNR</span> </a>
+      <a href="#s-13-46" class="sidebar-link"><span class="link-icon">📌</span><span>13.46 Frequency-Domain Filtering for Periodic Noise</span> </a>
+      <a href="#s-13-47" class="sidebar-link"><span class="link-icon">📌</span><span>13.47 Frequency-Domain Filtering and Edges</span> </a>
+      <a href="#s-13-48" class="sidebar-link"><span class="link-icon">📌</span><span>13.48 Boundary Effects</span> </a>
+      <a href="#s-13-49" class="sidebar-link"><span class="link-icon">📌</span><span>13.49 Why Zero Padding Alone Does Not “Fix Everything”</span> </a>
+      <a href="#s-13-50" class="sidebar-link"><span class="link-icon">📌</span><span>13.50 Windowing</span> </a>
+      <a href="#s-13-51" class="sidebar-link"><span class="link-icon">📌</span><span>13.51 Ringing vs Blurring</span> </a>
+      <a href="#s-13-52" class="sidebar-link"><span class="link-icon">📌</span><span>13.52 Practical Image Example — Removing Periodic Stripe Noise</span> </a>
+      <a href="#s-13-53" class="sidebar-link"><span class="link-icon">📌</span><span>13.53 Practical Image Example — Frequency Sharpening</span> </a>
+      <a href="#s-13-54" class="sidebar-link"><span class="link-icon">📌</span><span>13.54 Frequency Filter Parameter Log</span> </a>
+      <a href="#s-13-55" class="sidebar-link"><span class="link-icon">📌</span><span>13.55 Implementation Safety</span> </a>
+      <a href="#s-13-56" class="sidebar-link"><span class="link-icon">📌</span><span>13.56 A Common Implementation Bug</span> </a>
+      <a href="#s-13-57" class="sidebar-link"><span class="link-icon">📌</span><span>13.57 Another Common Bug — Filtering the Log Magnitude</span> </a>
+      <a href="#s-13-58" class="sidebar-link"><span class="link-icon">📌</span><span>13.58 Output Range Handling</span> </a>
+      <a href="#s-13-59" class="sidebar-link"><span class="link-icon">📌</span><span>13.59 Frequency-Domain Debugging Checklist</span> </a>
+      <a href="#s-13-60" class="sidebar-link"><span class="link-icon">📌</span><span>13.60 Common Traps</span> </a>
+      <a href="#s-13-61" class="sidebar-link"><span class="link-icon">📌</span><span>13.61 Exam Formula Sheet</span> </a>
+      <a href="#s-13-62" class="sidebar-link"><span class="link-icon">📌</span><span>13.62 Exam-Style Problem — Ideal LPF</span> </a>
+      <a href="#s-13-63" class="sidebar-link"><span class="link-icon">📌</span><span>13.63 Exam-Style Problem — Butterworth LPF</span> </a>
+      <a href="#s-13-64" class="sidebar-link"><span class="link-icon">📌</span><span>13.64 Exam-Style Problem — Gaussian LPF</span> </a>
+      <a href="#s-13-65" class="sidebar-link"><span class="link-icon">📌</span><span>13.65 Exam-Style Problem — High-Pass Complement</span> </a>
+      <a href="#s-13-66" class="sidebar-link"><span class="link-icon">📌</span><span>13.66 Engineering Insight — Filter Design Is a Task Problem</span> </a>
+      <a href="#s-13-67" class="sidebar-link"><span class="link-icon">📌</span><span>13.67 Cross-Book Bridges</span> </a>
+      <a href="#s-13-68" class="sidebar-link"><span class="link-icon">📌</span><span>13.68 Quick Recall</span> </a>
+      <a href="#s-13-69" class="sidebar-link"><span class="link-icon">📌</span><span>13.69 Chapter Checkpoint</span> </a>
+      <a href="#s-13-70" class="sidebar-link"><span class="link-icon">📌</span><span>13.70 Unit II Final Chapter Preview</span> </a>
+      <a href="#s-13-71" class="sidebar-link"><span class="link-icon">📌</span><span>13.71 Comparative Analysis: Ideal, Butterworth, and Gaussian Lowpass Filters</span> </a>
+      </div>
+
+      
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-i">Part I — The Image</div>
+      <a href="ch01-big-picture.html" class="sidebar-link"><span class="link-icon">01</span><span>The Big Picture</span></a>
+      <a href="ch02-image-formation.html" class="sidebar-link"><span class="link-icon">02</span><span>Formation & Acquisition</span></a>
+      <a href="ch03-sampling-quantization.html" class="sidebar-link"><span class="link-icon">03</span><span>Sampling & Quantization</span></a>
+      <a href="ch04-image-representation.html" class="sidebar-link"><span class="link-icon">04</span><span>Pixels, Matrices & Resolution</span></a>
+      <a href="ch05-colour-models-file-formats.html" class="sidebar-link"><span class="link-icon">05</span><span>Colour Models & Formats</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-ii">Part II — Improving the Image</div>
+      <a href="ch06-point-processing.html" class="sidebar-link"><span class="link-icon">06</span><span>Point Processing & Intensity</span></a>
+      <a href="ch07-histograms-equalization.html" class="sidebar-link"><span class="link-icon">07</span><span>Histograms & Equalization</span></a>
+      <a href="ch08-spatial-filtering.html" class="sidebar-link"><span class="link-icon">08</span><span>Spatial Filtering & Convolution</span></a>
+      <a href="ch09-smoothing-noise-reduction.html" class="sidebar-link"><span class="link-icon">09</span><span>Smoothing & Noise Reduction</span></a>
+      <a href="ch10-sharpening-edge-detection.html" class="sidebar-link"><span class="link-icon">10</span><span>Sharpening & Edge Detection</span></a>
+      <a href="ch11-geometric-transforms.html" class="sidebar-link"><span class="link-icon">11</span><span>Geometric Transforms</span></a>
+      <a href="ch12-fourier-transform.html" class="sidebar-link"><span class="link-icon">12</span><span>Fourier Transform & Frequency</span></a>
+      <a href="ch13-frequency-filtering.html" class="sidebar-link active"><span class="link-icon">13</span><span>Frequency-Domain Filtering</span></a>
+      <a href="ch14-image-restoration.html" class="sidebar-link"><span class="link-icon">14</span><span>Restoration & Deblurring</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-iii">Part III — Understanding Content</div>
+      <a href="ch15-segmentation-fundamentals.html" class="sidebar-link"><span class="link-icon">15</span><span>Segmentation Fundamentals</span></a>
+      <a href="ch16-thresholding-otsu.html" class="sidebar-link"><span class="link-icon">16</span><span>Thresholding & Otsu Method</span></a>
+      <a href="ch17-region-segmentation.html" class="sidebar-link"><span class="link-icon">17</span><span>Region-Based Segmentation</span></a>
+      <a href="ch18-mathematical-morphology.html" class="sidebar-link"><span class="link-icon">18</span><span>Mathematical Morphology</span></a>
+      <a href="ch19-features-descriptors.html" class="sidebar-link"><span class="link-icon">19</span><span>Image Features & Descriptors</span></a>
+      <a href="ch20-sift-surf-orb-hog.html" class="sidebar-link"><span class="link-icon">20</span><span>SIFT, SURF, ORB & HOG</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-iv">Part IV — Compressing Images</div>
+      <a href="ch21-compression-entropy.html" class="sidebar-link"><span class="link-icon">21</span><span>Compression & Entropy</span></a>
+      <a href="ch22-lossless-coding.html" class="sidebar-link"><span class="link-icon">22</span><span>Lossless: RLE & Huffman</span></a>
+      <a href="ch23-lossy-dct-jpeg.html" class="sidebar-link"><span class="link-icon">23</span><span>Lossy: DCT & JPEG</span></a>
+      <a href="ch24-wavelets-jpeg2000.html" class="sidebar-link"><span class="link-icon">24</span><span>Wavelets & JPEG 2000</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-v">Part V — Intelligent Vision</div>
+      <a href="ch25-image-classification.html" class="sidebar-link"><span class="link-icon">25</span><span>Image Classification</span></a>
+      <a href="ch26-cnns-image-processing.html" class="sidebar-link"><span class="link-icon">26</span><span>CNNs for Image Processing</span></a>
+      <a href="ch27-modern-vision-architectures.html" class="sidebar-link"><span class="link-icon">27</span><span>Modern Vision Architectures</span></a>
+      <a href="ch28-object-detection-yolo.html" class="sidebar-link"><span class="link-icon">28</span><span>Object Detection: YOLO</span></a>
+      <a href="ch29-image-denoising-autoencoders.html" class="sidebar-link"><span class="link-icon">29</span><span>Image Denoising Autoencoders</span></a>
+      <a href="ch30-video-motion-analysis.html" class="sidebar-link"><span class="link-icon">30</span><span>Video & Motion Analysis</span></a>
+      <a href="ch31-dip-applications-engineering.html" class="sidebar-link"><span class="link-icon">31</span><span>DIP Applications & Ethics</span></a>
+    </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-brand-mark">
+        <div class="mark">DU</div>
+        <div>
+          <strong>DSE-3 MiniBook</strong>
+          <div>University of Delhi</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mandatory Shell Wrapper -->
+  <div id="main-content">
+    <main class="chapter-content">
+      <!-- Chapter Hero -->
+      <div class="chapter-hero">
+        <div class="hero-meta">
+          <span class="part-badge part-ii">Improving the Image</span>
+          <span class="chapter-number">CHAPTER 13</span>
+          <span class="reading-time">⏱️ ~55 min read</span>
+          <span class="tag-badge tag-core">Highest Yield (10-mark guarantee)</span>
+        </div>
+        <h1 class="chapter-title">Frequency-Domain Filtering</h1>
+        <p class="chapter-subtitle">
+          Filtering Pipeline, Lowpass Filters (Ideal ILPF, Butterworth BLPF, Gaussian GLPF), Gibbs Ringing Phenomena, Highpass Filtering, High-Frequency Emphasis, and Notch Filters
+        </p>
+
+        <div class="syllabus-anchor">
+          <span class="syllabus-anchor-label">DU Syllabus</span>
+          <span><strong>Frequency Domain Filtering:</strong> Filtering in frequency domain workflow, zero padding for wraparound error avoidance, Lowpass filtering (Ideal ILPF, Butterworth BLPF, Gaussian GLPF), Gibbs ringing artifact analysis, Highpass filtering (IHPF, BHPF, GHPF), high-boost / high-frequency emphasis filtering, Bandreject, Bandpass, and Notch filters for periodic noise removal.</span>
+        </div>
+      </div>
+
+      <!-- In-Page TOC -->
+      <div class="chapter-checklist-card" style="margin-bottom:var(--em-space-8);">
+        <div class="checklist-title">
+          <span>Table of Contents &amp; Visual Section Map</span>
+          <span class="tag-badge tag-math">71 Deep Sections</span>
+        </div>
+        <ul class="part-chapters-list">
+          <li class="part-chapter-item"><a href="#s-13-1"><strong>13.1</strong> From Fourier Analysis to Filtering</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-13-2"><strong>13.2</strong> What Is a Frequency-Domain Filter?</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-13-3"><strong>13.3</strong> Transfer Function</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-13-4"><strong>13.4</strong> Frequency Coordinates and the Origin</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-13-5"><strong>13.5</strong> Why Distance from the Origin Matters</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-13-6"><strong>13.6</strong> Ideal Low-Pass Filter</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-13-7"><strong>13.7</strong> What an Ideal Low-Pass Does</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-8"><strong>13.8</strong> Ringing from Sharp Frequency Cutoffs</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-13-9"><strong>13.9</strong> Butterworth Low-Pass Filter</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-10"><strong>13.10</strong> Effect of Butterworth Order</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-13-11"><strong>13.11</strong> Gaussian Low-Pass Filter</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-12"><strong>13.12</strong> Ideal vs Butterworth vs Gaussian</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-13-13"><strong>13.13</strong> Worked Gaussian Filter Example</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-14"><strong>13.14</strong> High-Pass Filtering</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-13-15"><strong>13.15</strong> Ideal High-Pass Filter</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-16"><strong>13.16</strong> Butterworth High-Pass</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-13-17"><strong>13.17</strong> Gaussian High-Pass</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-18"><strong>13.18</strong> Why High-Pass Filtering Looks Like Edge Enhancement</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-19"><strong>13.19</strong> High-Pass Output Is Not Automatically a Sharpened Image</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-20"><strong>13.20</strong> High-Frequency Emphasis</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-13-21"><strong>13.21</strong> Band-Pass Filtering</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-22"><strong>13.22</strong> Why Band-Pass Filters Matter</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-23"><strong>13.23</strong> Band-Reject / Band-Stop</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-24"><strong>13.24</strong> Notch Filtering</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-13-25"><strong>13.25</strong> Why Periodic Noise Is a Good Notch-Filter Problem</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-26"><strong>13.26</strong> Notch Reject Concept</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-27"><strong>13.27</strong> Worked Notch Concept</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-28"><strong>13.28</strong> Low-Pass Cutoff Selection</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-29"><strong>13.29</strong> Filter Transition Width</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-30"><strong>13.30</strong> Frequency-Domain Filtering Is a Global Operation</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-31"><strong>13.31</strong> Spatial Filter vs Frequency Filter</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-32"><strong>13.32</strong> Convolution Theorem Revisited</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-33"><strong>13.33</strong> Large-Kernel Filtering</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-34"><strong>13.34</strong> FFT-Based Filtering Workflow</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-35"><strong>13.35</strong> Filter Alignment</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-36"><strong>13.36</strong> Why Kernel Shifts Cause Phase Effects</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-37"><strong>13.37</strong> Ideal vs Smooth Filters</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-38"><strong>13.38</strong> Filter Design by Objective</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-39"><strong>13.39</strong> Worked Design Example — Gaussian Blur</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-40"><strong>13.40</strong> Worked Design Example — Butterworth</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-41"><strong>13.41</strong> Comparing the Same Cutoff</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-42"><strong>13.42</strong> Frequency-Domain Sharpening</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-43"><strong>13.43</strong> Relation to Unsharp Masking</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-44"><strong>13.44</strong> Frequency-Domain Noise Reduction</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-45"><strong>13.45</strong> Frequency-Domain Filtering and SNR</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-46"><strong>13.46</strong> Frequency-Domain Filtering for Periodic Noise</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-47"><strong>13.47</strong> Frequency-Domain Filtering and Edges</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-48"><strong>13.48</strong> Boundary Effects</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-49"><strong>13.49</strong> Why Zero Padding Alone Does Not “Fix Everything”</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-50"><strong>13.50</strong> Windowing</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-51"><strong>13.51</strong> Ringing vs Blurring</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-52"><strong>13.52</strong> Practical Image Example — Removing Periodic Stripe Noise</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-53"><strong>13.53</strong> Practical Image Example — Frequency Sharpening</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-54"><strong>13.54</strong> Frequency Filter Parameter Log</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-55"><strong>13.55</strong> Implementation Safety</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-56"><strong>13.56</strong> A Common Implementation Bug</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-57"><strong>13.57</strong> Another Common Bug — Filtering the Log Magnitude</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-58"><strong>13.58</strong> Output Range Handling</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-59"><strong>13.59</strong> Frequency-Domain Debugging Checklist</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-60"><strong>13.60</strong> Common Traps</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-61"><strong>13.61</strong> Exam Formula Sheet</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-62"><strong>13.62</strong> Exam-Style Problem — Ideal LPF</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-63"><strong>13.63</strong> Exam-Style Problem — Butterworth LPF</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-64"><strong>13.64</strong> Exam-Style Problem — Gaussian LPF</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-65"><strong>13.65</strong> Exam-Style Problem — High-Pass Complement</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-66"><strong>13.66</strong> Engineering Insight — Filter Design Is a Task Problem</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-67"><strong>13.67</strong> Cross-Book Bridges</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-68"><strong>13.68</strong> Quick Recall</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-69"><strong>13.69</strong> Chapter Checkpoint</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-70"><strong>13.70</strong> Unit II Final Chapter Preview</a> </li>
+      <li class="part-chapter-item"><a href="#s-13-71"><strong>13.71</strong> Comparative Analysis: Ideal, Butterworth, and Gaussian Lowpass Filters</a> </li>
+        </ul>
+      </div>
+
+      <div class="concept-hook" style="margin-bottom:var(--em-space-8);"><h1>Chapter 13 — Frequency-Domain Filtering</h1>
+<blockquote>
+<p><strong>Chapter thesis</strong><br />
+Once an image has been represented in the frequency domain, filtering becomes the design and application of a frequency response $H(u,v)$. Low-pass filtering suppresses rapid variation, high-pass filtering emphasizes it, and band/notch designs allow more selective control. The difficult part is not multiplying two arrays—it is choosing a response that improves the task without creating unacceptable spatial artifacts.</p>
+</blockquote>
+<p><strong>Part II — Improving the Image</strong><br />
+<strong>Syllabus anchor:</strong> Unit II explicitly includes Fourier/frequency-domain processing and low-pass, high-pass and band-pass filtering. fileciteturn4file0L36-L40</p>
+<hr /></div>
+
+      <!-- All Numbered Sections -->
+      
+  <!-- SECTION 13.1: From Fourier Analysis to Filtering -->
+  <section id="s-13-1" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.1</span>
+      <h2>From Fourier Analysis to Filtering</h2>
+      <button class="bookmark-btn" data-id="s-13-1" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>C12 answered:</p>
+<blockquote>
+<p>What frequencies are present?</p>
+</blockquote>
+<p>C13 asks:</p>
+<blockquote>
+<p>Which frequencies should remain?</p>
+</blockquote>
+<p>The core equation is:</p>
+<p>
+$$
+G(u,v)=H(u,v)F(u,v)
+$$
+</p>
+<p>where:</p>
+<ul>
+<li>$F(u,v)$ = input spectrum,</li>
+<li>$H(u,v)$ = filter/transfer function,</li>
+<li>$G(u,v)$ = filtered spectrum.</li>
+</ul>
+<p>Then:</p>
+<p>
+$$
+g(x,y)=\mathcal{F}^{-1}\{G(u,v)\}
+$$
+</p>
+<p>So the full operation is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>input image
+     ↓
+DFT / FFT
+     ↓
+frequency spectrum F
+     ↓
+design H(u,v)
+     ↓
+multiply F × H
+     ↓
+inverse DFT / FFT
+     ↓
+output image</code></pre>
+</div></p>
+<p>This is the frequency-domain counterpart of spatial filtering.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.2: What Is a Frequency-Domain Filter? -->
+  <section id="s-13-2" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.2</span>
+      <h2>What Is a Frequency-Domain Filter?</h2>
+      <button class="bookmark-btn" data-id="s-13-2" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A frequency-domain filter assigns a response to each frequency location.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>frequency
+    ↓
+H(u,v)
+    ↓
+how much of that frequency to keep</code></pre>
+</div></p>
+<p>Examples:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>H = 1
+→ preserve
+
+H = 0
+→ reject
+
+0 &lt; H &lt; 1
+→ attenuate</code></pre>
+</div></p>
+<p>A filter therefore does not need to be binary.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.3: Transfer Function -->
+  <section id="s-13-3" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.3</span>
+      <h2>Transfer Function</h2>
+      <button class="bookmark-btn" data-id="s-13-3" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The function:</p>
+<p>
+$$
+H(u,v)
+$$
+</p>
+<p>is called a frequency response or transfer function in this context.</p>
+<p>It describes the filter's gain at each frequency coordinate.</p>
+<p>For a real symmetric low-pass filter:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>centre
+→ high response
+
+farther from centre
+→ lower response</code></pre>
+</div></p>
+<p>For a high-pass filter:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>centre
+→ low response
+
+farther from centre
+→ high response</code></pre>
+</div></p>
+<p>The exact filter shape determines how gradually or sharply the transition occurs.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.4: Frequency Coordinates and the Origin -->
+  <section id="s-13-4" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.4</span>
+      <h2>Frequency Coordinates and the Origin</h2>
+      <button class="bookmark-btn" data-id="s-13-4" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Before frequency centering, the zero-frequency component is at the DFT origin:</p>
+<p>
+$$
+(0,0)
+$$
+</p>
+<p>For visualization and many filter constructions, we shift it to the centre:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>corners / raw indexing
+        ↓
+FFT shift
+        ↓
+DC at centre</code></pre>
+</div></p>
+<p>Let the centered frequency origin be:</p>
+<p>
+$$
+(u_0,v_0)
+$$
+</p>
+<p>Then a radial distance can be defined as:</p>
+<p>
+$$
+D(u,v)
+=
+\sqrt{(u-u_0)^2+(v-v_0)^2}
+$$
+</p>
+<p>This single quantity is used to construct many radially symmetric filters.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.5: Why Distance from the Origin Matters -->
+  <section id="s-13-5" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.5</span>
+      <h2>Why Distance from the Origin Matters</h2>
+      <button class="bookmark-btn" data-id="s-13-5" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For a radially symmetric filter:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>same distance from DC
+→ same response</code></pre>
+</div></p>
+<p>So the filter depends only on:</p>
+<p>
+$$
+D
+$$
+</p>
+<p>rather than independently on $u$ and $v$.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>          high f
+             ↑
+             │
+       ──────┼──────
+             │
+             ↓
+          low f</code></pre>
+</div></p>
+<p>The exact geometry is determined by the frequency coordinate convention.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.6: Ideal Low-Pass Filter -->
+  <section id="s-13-6" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.6</span>
+      <h2>Ideal Low-Pass Filter</h2>
+      <button class="bookmark-btn" data-id="s-13-6" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The simplest low-pass filter is the ideal low-pass.</p>
+<p>
+$$
+H(u,v)=
+\begin{cases}
+1,&D(u,v)\le D_0\\
+0,&D(u,v)>D_0
+\end{cases}
+$$
+</p>
+<p>where $D_0$ is the cutoff frequency.</p>
+<p>Graphically:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>response
+
+1 ─────────┐
+           │
+0          └────────────→ D
+           D0</code></pre>
+</div></p>
+<p>It has a perfectly sharp cutoff.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.7: What an Ideal Low-Pass Does -->
+  <section id="s-13-7" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.7</span>
+      <h2>What an Ideal Low-Pass Does</h2>
+      <button class="bookmark-btn" data-id="s-13-7" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>It preserves:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>low frequencies
+→ broad structures</code></pre>
+</div></p>
+<p>and rejects:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>high frequencies
+→ fine detail / edges / some noise</code></pre>
+</div></p>
+<p>The spatial result tends to be smoother.</p>
+<p>But the perfectly sharp cutoff creates a major problem.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.8: Ringing from Sharp Frequency Cutoffs -->
+  <section id="s-13-8" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.8</span>
+      <h2>Ringing from Sharp Frequency Cutoffs</h2>
+      <button class="bookmark-btn" data-id="s-13-8" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A very abrupt frequency-domain transition corresponds to an extended oscillatory spatial response.</p>
+<p>The result can include:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>edge
+→ overshoot
+→ undershoot
+→ ringing</code></pre>
+</div></p>
+<p>This is a classic spatial artifact.</p>
+<p>The central engineering lesson is:</p>
+<blockquote>
+<p><strong>A sharper frequency cutoff does not necessarily mean a better image.</strong></p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.9: Butterworth Low-Pass Filter -->
+  <section id="s-13-9" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.9</span>
+      <h2>Butterworth Low-Pass Filter</h2>
+      <button class="bookmark-btn" data-id="s-13-9" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A common Butterworth low-pass form is:</p>
+<p>
+$$
+H(u,v)
+=
+\frac{1}
+{1+\left(\frac{D(u,v)}{D_0}\right)^{2n}}
+$$
+</p>
+<p>where:</p>
+<ul>
+<li>$D_0$ = cutoff parameter,</li>
+<li>$n$ = order.</li>
+</ul>
+<p>The response is smoother than the ideal filter.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.10: Effect of Butterworth Order -->
+  <section id="s-13-10" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.10</span>
+      <h2>Effect of Butterworth Order</h2>
+      <button class="bookmark-btn" data-id="s-13-10" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For low order:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>gentler transition</code></pre>
+</div></p>
+<p>For higher order:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>sharper transition</code></pre>
+</div></p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>response
+1 |───────
+  |       \
+  |        \
+  |         \
+
+higher order
+
+1 |────────
+  |        \
+  |         \
+  |          |
+  └────────────→ D
+           D0</code></pre>
+</div></p>
+<p>As the order increases, ringing can become more pronounced because the transition becomes sharper.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.11: Gaussian Low-Pass Filter -->
+  <section id="s-13-11" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.11</span>
+      <h2>Gaussian Low-Pass Filter</h2>
+      <button class="bookmark-btn" data-id="s-13-11" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A common Gaussian low-pass response is:</p>
+<p>
+$$
+H(u,v)
+=
+e^{-\frac{D(u,v)^2}{2D_0^2}}
+$$
+</p>
+<p>This gives a smooth, monotonic response.</p>
+<p>There is no abrupt cutoff.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.12: Ideal vs Butterworth vs Gaussian -->
+  <section id="s-13-12" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.12</span>
+      <h2>Ideal vs Butterworth vs Gaussian</h2>
+      <button class="bookmark-btn" data-id="s-13-12" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Property</th>
+<th>Ideal LPF</th>
+<th>Butterworth LPF</th>
+<th>Gaussian LPF</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cutoff</td>
+<td>abrupt</td>
+<td>smooth but controllable</td>
+<td>very smooth</td>
+</tr>
+<tr>
+<td>parameter</td>
+<td>$D_0$</td>
+<td>$D_0,n$</td>
+<td>$D_0$ or equivalent scale</td>
+</tr>
+<tr>
+<td>ringing tendency</td>
+<td>strongest</td>
+<td>depends on order</td>
+<td>low</td>
+</tr>
+<tr>
+<td>selectivity</td>
+<td>very sharp</td>
+<td>adjustable</td>
+<td>smooth</td>
+</tr>
+<tr>
+<td>spatial appearance</td>
+<td>may show ringing</td>
+<td>compromise</td>
+<td>smooth blur</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.13: Worked Gaussian Filter Example -->
+  <section id="s-13-13" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.13</span>
+      <h2>Worked Gaussian Filter Example</h2>
+      <button class="bookmark-btn" data-id="s-13-13" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p>
+$$
+D_0=10
+$$
+</p>
+<p>and:</p>
+<p>
+$$
+D=5
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+H=e^{-25/(2\cdot100)}
+$$
+</p>
+<p>
+$$
+=e^{-0.125}
+$$
+</p>
+<p>
+$$
+\approx0.882
+$$
+</p>
+<p>So this frequency is attenuated only modestly.</p>
+<p>For:</p>
+<p>
+$$
+D=20
+$$
+</p>
+<p>
+$$
+H=e^{-400/200}
+=e^{-2}
+\approx0.135
+$$
+</p>
+<p>The farther frequency is strongly attenuated.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.14: High-Pass Filtering -->
+  <section id="s-13-14" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.14</span>
+      <h2>High-Pass Filtering</h2>
+      <button class="bookmark-btn" data-id="s-13-14" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A high-pass filter suppresses the low-frequency region and preserves higher frequencies.</p>
+<p>One simple complement is:</p>
+<p>
+$$
+H_{HP}(u,v)=1-H_{LP}(u,v)
+$$
+</p>
+<p>for a matching low-pass filter.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>low frequency
+→ reject
+
+high frequency
+→ keep</code></pre>
+</div></p>
+<p>Spatially, this often emphasizes:</p>
+<ul>
+<li>edges,</li>
+<li>fine detail,</li>
+<li>texture,</li>
+<li>noise.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.15: Ideal High-Pass Filter -->
+  <section id="s-13-15" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.15</span>
+      <h2>Ideal High-Pass Filter</h2>
+      <button class="bookmark-btn" data-id="s-13-15" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>
+$$
+H(u,v)=
+\begin{cases}
+0,&D(u,v)\le D_0\\
+1,&D(u,v)>D_0
+\end{cases}
+$$
+</p>
+<p>This is the complement of the ideal low-pass.</p>
+<p>The same sharp-cutoff issue remains:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>sharp frequency boundary
+→ possible ringing</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.16: Butterworth High-Pass -->
+  <section id="s-13-16" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.16</span>
+      <h2>Butterworth High-Pass</h2>
+      <button class="bookmark-btn" data-id="s-13-16" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A common Butterworth high-pass can be written:</p>
+<p>
+$$
+H(u,v)
+=
+\frac{1}
+{1+\left(\frac{D_0}{D(u,v)}\right)^{2n}}
+$$
+</p>
+<p>for $D(u,v)\ne0$, with the DC point handled appropriately.</p>
+<p>This is mathematically complementary to the corresponding Butterworth low-pass form.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.17: Gaussian High-Pass -->
+  <section id="s-13-17" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.17</span>
+      <h2>Gaussian High-Pass</h2>
+      <button class="bookmark-btn" data-id="s-13-17" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A common Gaussian high-pass is:</p>
+<p>
+$$
+H_{HP}(u,v)
+=
+1-e^{-D^2/(2D_0^2)}
+$$
+</p>
+<p>At:</p>
+<p>
+$$
+D=0
+$$
+</p>
+<p>the response is:</p>
+<p>
+$$
+H_{HP}=0
+$$
+</p>
+<p>and as $D$ increases:</p>
+<p>
+$$
+H_{HP}\rightarrow1
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.18: Why High-Pass Filtering Looks Like Edge Enhancement -->
+  <section id="s-13-18" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.18</span>
+      <h2>Why High-Pass Filtering Looks Like Edge Enhancement</h2>
+      <button class="bookmark-btn" data-id="s-13-18" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>An edge contains rapid spatial change.</p>
+<p>Rapid spatial change corresponds to higher spatial frequencies.</p>
+<p>Therefore:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>high-pass
+→ emphasizes high-frequency content
+→ edges become more prominent</code></pre>
+</div></p>
+<p>However:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>noise
+→ also often contains high-frequency components</code></pre>
+</div></p>
+<p>So high-pass filtering can amplify noise.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.19: High-Pass Output Is Not Automatically a Sharpened Image -->
+  <section id="s-13-19" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.19</span>
+      <h2>High-Pass Output Is Not Automatically a Sharpened Image</h2>
+      <button class="bookmark-btn" data-id="s-13-19" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A pure high-pass filter may produce a detail/edge component centered around zero rather than a visually natural image.</p>
+<p>For example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>high-pass result
+→ dark/bright signed detail</code></pre>
+</div></p>
+<p>To make a sharpened image:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>original + scaled high-pass detail</code></pre>
+</div></p>
+<p>This creates a direct bridge to unsharp masking and high-boost filtering.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.20: High-Frequency Emphasis -->
+  <section id="s-13-20" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.20</span>
+      <h2>High-Frequency Emphasis</h2>
+      <button class="bookmark-btn" data-id="s-13-20" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A general high-frequency emphasis filter can be written conceptually as:</p>
+<p>
+$$
+H_{HFE}(u,v)
+=
+a+bH_{HP}(u,v)
+$$
+</p>
+<p>where parameters determine how much original/low-frequency content remains.</p>
+<p>A related high-boost interpretation is:</p>
+<p>
+$$
+g=Af-f_{\text{blur}}
+$$
+</p>
+<p>This can be expressed in frequency-domain form as a suitable transfer function.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.21: Band-Pass Filtering -->
+  <section id="s-13-21" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.21</span>
+      <h2>Band-Pass Filtering</h2>
+      <button class="bookmark-btn" data-id="s-13-21" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A band-pass filter keeps an interval:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>low frequencies
+→ reject
+
+middle frequencies
+→ keep
+
+high frequencies
+→ reject</code></pre>
+</div></p>
+<p>A simple ideal annular band-pass can be written:</p>
+<p>
+$$
+H(u,v)=
+\begin{cases}
+1,&D_1\le D(u,v)\le D_2\\
+0,&\text{otherwise}
+\end{cases}
+$$
+</p>
+<p>where:</p>
+<p>
+$$
+D_1<D_2
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.22: Why Band-Pass Filters Matter -->
+  <section id="s-13-22" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.22</span>
+      <h2>Why Band-Pass Filters Matter</h2>
+      <button class="bookmark-btn" data-id="s-13-22" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Some structures occur at characteristic spatial scales.</p>
+<p>For example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>very broad illumination
+→ low frequency
+
+medium-scale pattern
+→ middle frequency
+
+fine noise
+→ high frequency</code></pre>
+</div></p>
+<p>A band-pass filter can isolate the middle range.</p>
+<p>This becomes useful for:</p>
+<ul>
+<li>texture analysis,</li>
+<li>feature enhancement,</li>
+<li>scale-specific detection.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.23: Band-Reject / Band-Stop -->
+  <section id="s-13-23" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.23</span>
+      <h2>Band-Reject / Band-Stop</h2>
+      <button class="bookmark-btn" data-id="s-13-23" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The complement of a band-pass can reject a frequency band.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>low
+→ keep
+
+middle
+→ reject
+
+high
+→ keep</code></pre>
+</div></p>
+<p>This is often useful for suppressing narrow-band interference.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.24: Notch Filtering -->
+  <section id="s-13-24" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.24</span>
+      <h2>Notch Filtering</h2>
+      <button class="bookmark-btn" data-id="s-13-24" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <blockquote>
+<p><strong>EXTENSION</strong></p>
+</blockquote>
+<p>A notch filter rejects localized frequency regions rather than a complete circular band.</p>
+<p>This is particularly useful for periodic noise.</p>
+<p>Suppose the spectrum contains two symmetric interference peaks:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>        •
+         \
+          ○ DC
+         /
+        •</code></pre>
+</div></p>
+<p>A pair of notch-reject regions can suppress those specific frequencies.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.25: Why Periodic Noise Is a Good Notch-Filter Problem -->
+  <section id="s-13-25" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.25</span>
+      <h2>Why Periodic Noise Is a Good Notch-Filter Problem</h2>
+      <button class="bookmark-btn" data-id="s-13-25" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>From C12:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>periodic spatial pattern
+→ concentrated spectral energy</code></pre>
+</div></p>
+<p>So:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>periodic noise
+→ spectral peaks
+→ notch filter
+→ inverse transform</code></pre>
+</div></p>
+<p>This can be much more targeted than broad blurring.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.26: Notch Reject Concept -->
+  <section id="s-13-26" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.26</span>
+      <h2>Notch Reject Concept</h2>
+      <button class="bookmark-btn" data-id="s-13-26" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>If desired spectral locations are:</p>
+<p>
+$$
+(u_k,v_k)
+$$
+</p>
+<p>and symmetric counterparts:</p>
+<p>
+$$
+(-u_k,-v_k)
+$$
+</p>
+<p>we can construct local rejection regions around them.</p>
+<p>The exact transfer function can be:</p>
+<ul>
+<li>ideal,</li>
+<li>Butterworth,</li>
+<li>Gaussian-shaped.</li>
+</ul>
+<p>The choice controls transition smoothness and residual artifacts.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.27: Worked Notch Concept -->
+  <section id="s-13-27" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.27</span>
+      <h2>Worked Notch Concept</h2>
+      <button class="bookmark-btn" data-id="s-13-27" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose the Fourier spectrum shows:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>one strong peak at
+(+20,+5)
+
+and the conjugate peak near
+(-20,-5)</code></pre>
+</div></p>
+<p>A notch-reject filter can attenuate those locations while retaining most other frequencies.</p>
+<p>The key is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>targeted rejection
+→ preserve unrelated image frequencies</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.28: Low-Pass Cutoff Selection -->
+  <section id="s-13-28" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.28</span>
+      <h2>Low-Pass Cutoff Selection</h2>
+      <button class="bookmark-btn" data-id="s-13-28" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Choosing:</p>
+<p>
+$$
+D_0
+$$
+</p>
+<p>is a design problem.</p>
+<p>Small cutoff:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>strong smoothing
+→ more detail loss</code></pre>
+</div></p>
+<p>Large cutoff:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>weaker smoothing
+→ more detail retained</code></pre>
+</div></p>
+<p>The best cutoff depends on:</p>
+<ul>
+<li>object scale,</li>
+<li>noise level,</li>
+<li>sampling,</li>
+<li>task objective.</li>
+</ul>
+<p>There is no universal “correct” cutoff.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.29: Filter Transition Width -->
+  <section id="s-13-29" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.29</span>
+      <h2>Filter Transition Width</h2>
+      <button class="bookmark-btn" data-id="s-13-29" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A hard cutoff:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>pass → reject</code></pre>
+</div></p>
+<p>can cause ringing.</p>
+<p>A smooth transition:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>pass → attenuate gradually → reject</code></pre>
+</div></p>
+<p>often reduces ringing at the cost of a less selective frequency response.</p>
+<p>This gives one of the core engineering tradeoffs:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>selectivity
+↔
+spatial artifacts</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.30: Frequency-Domain Filtering Is a Global Operation -->
+  <section id="s-13-30" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.30</span>
+      <h2>Frequency-Domain Filtering Is a Global Operation</h2>
+      <button class="bookmark-btn" data-id="s-13-30" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A spatial kernel is local.</p>
+<p>A frequency-domain filter often modifies the spectrum globally.</p>
+<p>This means one frequency coefficient can represent information distributed across the image.</p>
+<p>Therefore frequency-domain filtering is not naturally local in spatial coordinates.</p>
+<p>This distinction is important when choosing between spatial and frequency approaches.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.31: Spatial Filter vs Frequency Filter -->
+  <section id="s-13-31" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.31</span>
+      <h2>Spatial Filter vs Frequency Filter</h2>
+      <button class="bookmark-btn" data-id="s-13-31" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Spatial domain</th>
+<th>Frequency domain</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>kernel operates locally</td>
+<td>transfer function operates spectrally</td>
+</tr>
+<tr>
+<td>output depends on neighbourhood</td>
+<td>output depends on spectral components</td>
+</tr>
+<tr>
+<td>convolution direct</td>
+<td>multiplication in transform domain</td>
+</tr>
+<tr>
+<td>intuitive spatial structure</td>
+<td>intuitive scale/frequency structure</td>
+</tr>
+<tr>
+<td>often efficient for small kernels</td>
+<td>useful for large/global filters</td>
+</tr>
+</tbody>
+</table></div>
+<p>Under suitable conditions, the two can represent equivalent linear filtering behaviour.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.32: Convolution Theorem Revisited -->
+  <section id="s-13-32" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.32</span>
+      <h2>Convolution Theorem Revisited</h2>
+      <button class="bookmark-btn" data-id="s-13-32" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>If:</p>
+<p>
+$$
+g=f*h
+$$
+</p>
+<p>then:</p>
+<p>
+$$
+G=FH
+$$
+</p>
+<p>under the corresponding transform convention.</p>
+<p>This means frequency-domain filtering is not a completely separate world.</p>
+<p>It is another implementation/analysis view of convolution.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.33: Large-Kernel Filtering -->
+  <section id="s-13-33" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.33</span>
+      <h2>Large-Kernel Filtering</h2>
+      <button class="bookmark-btn" data-id="s-13-33" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose a filter has a huge spatial support.</p>
+<p>Direct convolution can become expensive.</p>
+<p>A frequency-domain approach may be advantageous:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image
+→ FFT
+filter transfer function
+→ multiply
+→ inverse FFT</code></pre>
+</div></p>
+<p>The practical crossover depends on:</p>
+<ul>
+<li>image size,</li>
+<li>kernel size,</li>
+<li>implementation,</li>
+<li>hardware,</li>
+<li>repeated filtering.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.34: FFT-Based Filtering Workflow -->
+  <section id="s-13-34" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.34</span>
+      <h2>FFT-Based Filtering Workflow</h2>
+      <button class="bookmark-btn" data-id="s-13-34" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A typical linear-convolution-oriented workflow:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image f
+   ↓
+pad image
+   ↓
+construct filter h
+   ↓
+pad h to compatible size
+   ↓
+FFT(f)
+FFT(h)
+   ↓
+multiply
+   ↓
+inverse FFT
+   ↓
+crop intended region</code></pre>
+</div></p>
+<p>Padding and alignment must be handled correctly.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.35: Filter Alignment -->
+  <section id="s-13-35" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.35</span>
+      <h2>Filter Alignment</h2>
+      <button class="bookmark-btn" data-id="s-13-35" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The origin of a spatial kernel must correspond correctly to the frequency representation.</p>
+<p>A misplaced kernel can introduce a phase shift.</p>
+<p>Therefore:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>spatial kernel position
+→ affects phase
+→ affects spatial alignment</code></pre>
+</div></p>
+<p>This is a frequent FFT-filtering implementation pitfall.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.36: Why Kernel Shifts Cause Phase Effects -->
+  <section id="s-13-36" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.36</span>
+      <h2>Why Kernel Shifts Cause Phase Effects</h2>
+      <button class="bookmark-btn" data-id="s-13-36" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A spatial translation theorem states that shifting a function in space changes its Fourier phase.</p>
+<p>Therefore an improperly centered kernel may have:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>correct-looking magnitude
++
+wrong phase</code></pre>
+</div></p>
+<p>and produce a shifted or otherwise misaligned spatial result.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.37: Ideal vs Smooth Filters -->
+  <section id="s-13-37" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.37</span>
+      <h2>Ideal vs Smooth Filters</h2>
+      <button class="bookmark-btn" data-id="s-13-37" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Consider a sharp edge.</p>
+<p>An ideal frequency filter can create:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>edge
+→ ringing</code></pre>
+</div></p>
+<p>A Gaussian-type filter:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>edge
+→ smoother transition</code></pre>
+</div></p>
+<p>A Butterworth filter provides a tunable middle ground.</p>
+<p>This is why filter family choice matters.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.38: Filter Design by Objective -->
+  <section id="s-13-38" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.38</span>
+      <h2>Filter Design by Objective</h2>
+      <button class="bookmark-btn" data-id="s-13-38" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Objective</th>
+<th>Candidate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>strong sharp cutoff</td>
+<td>ideal</td>
+</tr>
+<tr>
+<td>tunable transition</td>
+<td>Butterworth</td>
+</tr>
+<tr>
+<td>smooth response / low ringing</td>
+<td>Gaussian</td>
+</tr>
+<tr>
+<td>isolate frequency interval</td>
+<td>band-pass</td>
+</tr>
+<tr>
+<td>suppress narrow periodic interference</td>
+<td>notch</td>
+</tr>
+<tr>
+<td>edge/detail enhancement</td>
+<td>high-pass/high-frequency emphasis</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.39: Worked Design Example — Gaussian Blur -->
+  <section id="s-13-39" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.39</span>
+      <h2>Worked Design Example — Gaussian Blur</h2>
+      <button class="bookmark-btn" data-id="s-13-39" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p>
+$$
+D_0=15
+$$
+</p>
+<p>and two frequency points are:</p>
+<p>
+$$
+D=5,\quad D=30
+$$
+</p>
+<p>Using:</p>
+<p>
+$$
+H=e^{-D^2/(2D_0^2)}
+$$
+</p>
+<p>For $D=5$:</p>
+<p>
+$$
+H=e^{-25/450}
+\approx e^{-0.0556}
+\approx0.946
+$$
+</p>
+<p>For $D=30$:</p>
+<p>
+$$
+H=e^{-900/450}=e^{-2}\approx0.135
+$$
+</p>
+<p>So the lower frequency passes almost unchanged while the higher frequency is strongly attenuated.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.40: Worked Design Example — Butterworth -->
+  <section id="s-13-40" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.40</span>
+      <h2>Worked Design Example — Butterworth</h2>
+      <button class="bookmark-btn" data-id="s-13-40" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Let:</p>
+<p>
+$$
+D_0=10,\qquad n=2
+$$
+</p>
+<p>At:</p>
+<p>
+$$
+D=5
+$$
+</p>
+<p>
+$$
+H=
+\frac{1}
+{1+(5/10)^4}
+$$
+</p>
+<p>
+$$
+=
+\frac{1}{1+0.0625}
+$$
+</p>
+<p>
+$$
+\approx0.941
+$$
+</p>
+<p>At:</p>
+<p>
+$$
+D=20
+$$
+</p>
+<p>
+$$
+H=
+\frac{1}
+{1+(2)^4}
+$$
+</p>
+<p>
+$$
+=
+\frac1{17}
+$$
+</p>
+<p>
+$$
+\approx0.0588
+$$
+</p>
+<p>The filter strongly attenuates the higher frequency.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.41: Comparing the Same Cutoff -->
+  <section id="s-13-41" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.41</span>
+      <h2>Comparing the Same Cutoff</h2>
+      <button class="bookmark-btn" data-id="s-13-41" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Using:</p>
+<p>
+$$
+D_0=10
+$$
+</p>
+<p>different families produce different responses at the same $D$.</p>
+<p>Therefore:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>D0
+does not fully define filter behaviour</code></pre>
+</div></p>
+<p>The family matters.</p>
+<p>For Butterworth, order matters.</p>
+<p>For other designs, other parameters matter.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.42: Frequency-Domain Sharpening -->
+  <section id="s-13-42" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.42</span>
+      <h2>Frequency-Domain Sharpening</h2>
+      <button class="bookmark-btn" data-id="s-13-42" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A high-pass component can be added to the original spectrum.</p>
+<p>Conceptually:</p>
+<p>
+$$
+G=(1+kH_{HP})F
+$$
+</p>
+<p>so:</p>
+<p>
+$$
+g=
+\mathcal{F}^{-1}
+\left\{
+(1+kH_{HP})F
+\right\}
+$$
+</p>
+<p>This produces frequency-selective detail enhancement.</p>
+<p>It can be more controlled than using a crude ideal high-pass.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.43: Relation to Unsharp Masking -->
+  <section id="s-13-43" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.43</span>
+      <h2>Relation to Unsharp Masking</h2>
+      <button class="bookmark-btn" data-id="s-13-43" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p>
+$$
+H_{LP}
+$$
+</p>
+<p>is a low-pass filter.</p>
+<p>Then:</p>
+<p>
+$$
+H_{HP}=1-H_{LP}
+$$
+</p>
+<p>An unsharp/high-boost style filter can therefore be expressed as:</p>
+<p>
+$$
+H_{sharp}
+=
+1+kH_{HP}
+$$
+</p>
+<p>or:</p>
+<p>
+$$
+H_{sharp}
+=
+1+k(1-H_{LP})
+$$
+</p>
+<p>
+$$
+=(1+k)-kH_{LP}
+$$
+</p>
+<p>This mirrors the spatial-domain formula:</p>
+<p>
+$$
+g=(1+k)f-kf_{\text{blur}}
+$$
+</p>
+<p>The duality is now explicit.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.44: Frequency-Domain Noise Reduction -->
+  <section id="s-13-44" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.44</span>
+      <h2>Frequency-Domain Noise Reduction</h2>
+      <button class="bookmark-btn" data-id="s-13-44" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For approximately white high-frequency noise:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>low-pass
+→ can reduce noise</code></pre>
+</div></p>
+<p>But if noise occupies the same frequency range as important detail:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>filter
+→ cannot cleanly separate them</code></pre>
+</div></p>
+<p>This is a fundamental limitation.</p>
+<p>Frequency filtering works best when desired and undesired components are separable enough in the chosen representation.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.45: Frequency-Domain Filtering and SNR -->
+  <section id="s-13-45" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.45</span>
+      <h2>Frequency-Domain Filtering and SNR</h2>
+      <button class="bookmark-btn" data-id="s-13-45" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>If filtering suppresses more noise than useful signal, the effective signal-to-noise ratio can improve.</p>
+<p>But filtering can also:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>reduce noise
++
+reduce signal detail</code></pre>
+</div></p>
+<p>Therefore SNR alone is not always sufficient.</p>
+<p>Task-specific fidelity still matters.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.46: Frequency-Domain Filtering for Periodic Noise -->
+  <section id="s-13-46" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.46</span>
+      <h2>Frequency-Domain Filtering for Periodic Noise</h2>
+      <button class="bookmark-btn" data-id="s-13-46" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A good engineering workflow:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>noisy image
+     ↓
+FFT
+     ↓
+inspect magnitude spectrum
+     ↓
+identify isolated interference peaks
+     ↓
+design notch filter
+     ↓
+multiply
+     ↓
+inverse FFT
+     ↓
+inspect residual noise + ringing</code></pre>
+</div></p>
+<p>This is one of the strongest classical examples of domain selection.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.47: Frequency-Domain Filtering and Edges -->
+  <section id="s-13-47" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.47</span>
+      <h2>Frequency-Domain Filtering and Edges</h2>
+      <button class="bookmark-btn" data-id="s-13-47" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Edges are high-frequency structures.</p>
+<p>Therefore low-pass filtering reduces edge sharpness.</p>
+<p>High-pass filtering emphasizes edge response.</p>
+<p>A well-designed sharpening filter can increase apparent edge contrast without preserving all high frequencies equally.</p>
+<p>This lets us trade:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>sharpness
+↔
+noise/artifacts</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.48: Boundary Effects -->
+  <section id="s-13-48" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.48</span>
+      <h2>Boundary Effects</h2>
+      <button class="bookmark-btn" data-id="s-13-48" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>DFT-based filtering implicitly works with periodic extension of the finite array under the standard interpretation.</p>
+<p>If the image boundaries do not match smoothly, artificial discontinuities can introduce strong spectral components.</p>
+<p>These can produce unexpected filtering artifacts.</p>
+<p>Padding and windowing can sometimes reduce such problems, depending on the task.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.49: Why Zero Padding Alone Does Not “Fix Everything” -->
+  <section id="s-13-49" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.49</span>
+      <h2>Why Zero Padding Alone Does Not “Fix Everything”</h2>
+      <button class="bookmark-btn" data-id="s-13-49" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Zero padding can help with convolution geometry and circular wrap-around.</p>
+<p>But:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>zero padding
+≠
+automatic removal of boundary discontinuities</code></pre>
+</div></p>
+<p>It changes the transform size and spatial support.</p>
+<p>A careful implementation considers:</p>
+<ul>
+<li>padding amount,</li>
+<li>boundary model,</li>
+<li>kernel alignment,</li>
+<li>crop region.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.50: Windowing -->
+  <section id="s-13-50" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.50</span>
+      <h2>Windowing</h2>
+      <button class="bookmark-btn" data-id="s-13-50" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <blockquote>
+<p><strong>EXTENSION</strong></p>
+</blockquote>
+<p>A window function can taper the signal/image near the boundaries before spectral analysis.</p>
+<p>This reduces abrupt discontinuities but also modifies the data.</p>
+<p>Thus:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>less spectral leakage
+↔
+possible amplitude/resolution tradeoff</code></pre>
+</div></p>
+<p>Windowing is more common in spectral analysis than in every standard image-filtering workflow.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.51: Ringing vs Blurring -->
+  <section id="s-13-51" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.51</span>
+      <h2>Ringing vs Blurring</h2>
+      <button class="bookmark-btn" data-id="s-13-51" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>This is a major filter-design tradeoff.</p>
+<h3>Very sharp frequency response</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>good frequency selectivity
++
+more spatial ringing</code></pre>
+</div></p>
+<h3>Very smooth response</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>less ringing
++
+less sharp frequency selectivity
++
+more gradual attenuation</code></pre>
+</div></p>
+<p>There is no free lunch.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.52: Practical Image Example — Removing Periodic Stripe Noise -->
+  <section id="s-13-52" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.52</span>
+      <h2>Practical Image Example — Removing Periodic Stripe Noise</h2>
+      <button class="bookmark-btn" data-id="s-13-52" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>input image
++ periodic vertical stripes</code></pre>
+</div></p>
+<p>Pipeline:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>1. compute FFT
+2. center spectrum
+3. inspect magnitude
+4. find symmetric stripe-frequency peaks
+5. construct notch-reject masks
+6. multiply spectrum by mask
+7. inverse FFT
+8. compare image and spectrum</code></pre>
+</div></p>
+<p>If the notch is too broad:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>noise removed
++
+useful texture removed</code></pre>
+</div></p>
+<p>If too narrow:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>residual periodic noise</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.53: Practical Image Example — Frequency Sharpening -->
+  <section id="s-13-53" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.53</span>
+      <h2>Practical Image Example — Frequency Sharpening</h2>
+      <button class="bookmark-btn" data-id="s-13-53" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Pipeline:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image
+ ↓
+FFT
+ ↓
+Gaussian/BW low-pass
+ ↓
+construct HP = 1 − LP
+ ↓
+Hsharp = 1 + k·HP
+ ↓
+multiply spectrum
+ ↓
+inverse FFT
+ ↓
+clip/visualize carefully</code></pre>
+</div></p>
+<p>Then inspect:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>edges
+texture
+noise
+halos</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.54: Frequency Filter Parameter Log -->
+  <section id="s-13-54" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.54</span>
+      <h2>Frequency Filter Parameter Log</h2>
+      <button class="bookmark-btn" data-id="s-13-54" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A reproducible experiment should record:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>transform size
+centering method
+padding
+filter family
+cutoff
+order
+notch locations
+notch width
+gain
+output scaling</code></pre>
+</div></p>
+<p>Without this information, two “same filter” experiments may produce different outputs.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.55: Implementation Safety -->
+  <section id="s-13-55" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.55</span>
+      <h2>Implementation Safety</h2>
+      <button class="bookmark-btn" data-id="s-13-55" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Keep the spectrum complex:</p>
+<p>
+$$
+F(u,v)\in\mathbb{C}
+$$
+</p>
+<p>Do not discard phase by using only:</p>
+<p>
+$$
+|F|
+$$
+</p>
+<p>for filtering.</p>
+<p>The correct operation is:</p>
+<p>
+$$
+G=HF
+$$
+</p>
+<p>using the complex spectrum.</p>
+<p>Magnitude is primarily for inspection.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.56: A Common Implementation Bug -->
+  <section id="s-13-56" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.56</span>
+      <h2>A Common Implementation Bug</h2>
+      <button class="bookmark-btn" data-id="s-13-56" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Incorrect:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>FFT
+→ take abs()
+→ multiply filter
+→ inverse FFT</code></pre>
+</div></p>
+<p>This throws away phase.</p>
+<p>Correct conceptual path:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>FFT
+→ keep complex F
+→ inspect |F| separately
+→ multiply complex F by H
+→ inverse FFT</code></pre>
+</div></p>
+<p>This distinction is extremely important.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.57: Another Common Bug — Filtering the Log Magnitude -->
+  <section id="s-13-57" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.57</span>
+      <h2>Another Common Bug — Filtering the Log Magnitude</h2>
+      <button class="bookmark-btn" data-id="s-13-57" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The visualization:</p>
+<p>
+$$
+\log(1+|F|)
+$$
+</p>
+<p>is not the spectrum used directly for inverse reconstruction.</p>
+<p>Do not confuse:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>display spectrum</code></pre>
+</div></p>
+<p>with:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>complex transform data</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.58: Output Range Handling -->
+  <section id="s-13-58" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.58</span>
+      <h2>Output Range Handling</h2>
+      <button class="bookmark-btn" data-id="s-13-58" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Inverse filtering can produce:</p>
+<ul>
+<li>small numerical imaginary residuals,</li>
+<li>negative values,</li>
+<li>values greater than the source range.</li>
+</ul>
+<p>A careful pipeline:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>inverse FFT
+ ↓
+take real part when justified
+ ↓
+inspect min/max
+ ↓
+choose normalization/clipping policy
+ ↓
+convert for display/storage</code></pre>
+</div></p>
+<p>Do not silently destroy quantitative output through an inappropriate cast.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.59: Frequency-Domain Debugging Checklist -->
+  <section id="s-13-59" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.59</span>
+      <h2>Frequency-Domain Debugging Checklist</h2>
+      <button class="bookmark-btn" data-id="s-13-59" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>[ ] Is the FFT centered only for display/filter construction?
+[ ] Is the actual complex spectrum retained?
+[ ] Is H aligned with the spectrum?
+[ ] Is padding adequate?
+[ ] Is the filter symmetric when expected?
+[ ] Is the inverse transform normalized correctly?
+[ ] Is the result real within numerical tolerance?
+[ ] Were min/max inspected before uint8 conversion?
+[ ] Was the intended crop applied?</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.60: Common Traps -->
+  <section id="s-13-60" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.60</span>
+      <h2>Common Traps</h2>
+      <button class="bookmark-btn" data-id="s-13-60" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h2>Trap 1 — “Low-pass keeps low pixel values.”</h2>
+<p>False.</p>
+<p>Low-pass concerns low <strong>spatial frequencies</strong>, not low intensity values.</p>
+<h2>Trap 2 — “High-pass means make the image brighter.”</h2>
+<p>False.</p>
+<p>It emphasizes high-frequency variation.</p>
+<h2>Trap 3 — “FFT magnitude is enough for filtering.”</h2>
+<p>False.</p>
+<p>Phase is part of the transform.</p>
+<h2>Trap 4 — “Ideal filters are best because the cutoff is sharp.”</h2>
+<p>Not necessarily.</p>
+<p>Sharp cutoffs can create ringing.</p>
+<h2>Trap 5 — “Band-pass means keep only a certain intensity range.”</h2>
+<p>False.</p>
+<p>It keeps a certain spatial-frequency range.</p>
+<h2>Trap 6 — “Zero padding removes all frequency artifacts.”</h2>
+<p>False.</p>
+<p>It mainly addresses transform size/convolution geometry and changes boundary representation.</p>
+<h2>Trap 7 — “Notch filtering removes all periodic noise automatically.”</h2>
+<p>False.</p>
+<p>The frequency locations and bandwidth must be identified correctly.</p>
+<h2>Trap 8 — “Same cutoff means same filter.”</h2>
+<p>False.</p>
+<p>Filter family and parameters also determine the response.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.61: Exam Formula Sheet -->
+  <section id="s-13-61" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.61</span>
+      <h2>Exam Formula Sheet</h2>
+      <button class="bookmark-btn" data-id="s-13-61" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Frequency-domain filtering</h3>
+<p>
+$$
+\boxed{G(u,v)=H(u,v)F(u,v)}
+$$
+</p>
+<h3>Radial frequency distance</h3>
+<p>
+$$
+\boxed{
+D(u,v)=
+\sqrt{(u-u_0)^2+(v-v_0)^2}
+}
+$$
+</p>
+<h3>Ideal LPF</h3>
+<p>
+$$
+\boxed{
+H=
+\begin{cases}
+1,&D\le D_0\\
+0,&D>D_0
+\end{cases}
+}
+$$
+</p>
+<h3>Butterworth LPF</h3>
+<p>
+$$
+\boxed{
+H=
+\frac1{1+(D/D_0)^{2n}}
+}
+$$
+</p>
+<h3>Gaussian LPF</h3>
+<p>
+$$
+\boxed{
+H=e^{-D^2/(2D_0^2)}
+}
+$$
+</p>
+<h3>Ideal HPF</h3>
+<p>
+$$
+\boxed{
+H=
+\begin{cases}
+0,&D\le D_0\\
+1,&D>D_0
+\end{cases}
+}
+$$
+</p>
+<h3>Gaussian HPF</h3>
+<p>
+$$
+\boxed{
+H_{HP}=1-e^{-D^2/(2D_0^2)}
+}
+$$
+</p>
+<h3>Ideal band-pass</h3>
+<p>
+$$
+\boxed{
+H=
+\begin{cases}
+1,&D_1\le D\le D_2\\
+0,&\text{otherwise}
+\end{cases}
+}
+$$
+</p>
+<h3>High-frequency emphasis</h3>
+<p>
+$$
+\boxed{
+H_{HFE}=1+kH_{HP}
+}
+$$
+</p>
+<p>for one common conceptual form.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.62: Exam-Style Problem — Ideal LPF -->
+  <section id="s-13-62" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.62</span>
+      <h2>Exam-Style Problem — Ideal LPF</h2>
+      <button class="bookmark-btn" data-id="s-13-62" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A frequency point has:</p>
+<p>
+$$
+D=12
+$$
+</p>
+<p>and:</p>
+<p>
+$$
+D_0=10
+$$
+</p>
+<p>For an ideal low-pass:</p>
+<p>
+$$
+D>D_0
+$$
+</p>
+<p>therefore:</p>
+<p>
+$$
+\boxed{H=0}
+$$
+</p>
+<p>The frequency is rejected.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.63: Exam-Style Problem — Butterworth LPF -->
+  <section id="s-13-63" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.63</span>
+      <h2>Exam-Style Problem — Butterworth LPF</h2>
+      <button class="bookmark-btn" data-id="s-13-63" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Given:</p>
+<p>
+$$
+D_0=20,\quad n=2,\quad D=10
+$$
+</p>
+<p>
+$$
+H=
+\frac1{1+(10/20)^4}
+$$
+</p>
+<p>
+$$
+=
+\frac1{1+1/16}
+$$
+</p>
+<p>
+$$
+=
+\frac{16}{17}
+$$
+</p>
+<p>
+$$
+\boxed{H\approx0.9412}
+$$
+</p>
+<p>So roughly 94.1% of the amplitude is retained at that frequency under this transfer-function interpretation.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.64: Exam-Style Problem — Gaussian LPF -->
+  <section id="s-13-64" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.64</span>
+      <h2>Exam-Style Problem — Gaussian LPF</h2>
+      <button class="bookmark-btn" data-id="s-13-64" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Given:</p>
+<p>
+$$
+D_0=10,\quad D=10
+$$
+</p>
+<p>
+$$
+H=e^{-100/200}
+=e^{-0.5}
+$$
+</p>
+<p>
+$$
+\boxed{H\approx0.6065}
+$$
+</p>
+<p>At $D=D_0$, the Gaussian response is about 0.6065 for this parameterization.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.65: Exam-Style Problem — High-Pass Complement -->
+  <section id="s-13-65" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.65</span>
+      <h2>Exam-Style Problem — High-Pass Complement</h2>
+      <button class="bookmark-btn" data-id="s-13-65" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p>
+$$
+H_{LP}=0.8
+$$
+</p>
+<p>Using:</p>
+<p>
+$$
+H_{HP}=1-H_{LP}
+$$
+</p>
+<p>we get:</p>
+<p>
+$$
+H_{HP}=1-0.8
+$$
+</p>
+<p>
+$$
+\boxed{0.2}
+$$
+</p>
+<p>So the high-pass counterpart attenuates this low-frequency location strongly.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.66: Engineering Insight — Filter Design Is a Task Problem -->
+  <section id="s-13-66" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.66</span>
+      <h2>Engineering Insight — Filter Design Is a Task Problem</h2>
+      <button class="bookmark-btn" data-id="s-13-66" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Do not begin with:</p>
+<blockquote>
+<p>“Which filter is famous?”</p>
+</blockquote>
+<p>Begin with:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>What do I want to remove?
+What do I want to preserve?
+Where does that information live in frequency?
+How sharp can the transition be?
+What artifacts can I tolerate?</code></pre>
+</div></p>
+<p>Then choose:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>family
++
+cutoff
++
+transition
++
+gain</code></pre>
+</div></p>
+<p>This is the engineering version of frequency-domain filtering.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.67: Cross-Book Bridges -->
+  <section id="s-13-67" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.67</span>
+      <h2>Cross-Book Bridges</h2>
+      <button class="bookmark-btn" data-id="s-13-67" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <blockquote>
+<p><strong>C08 BRIDGE</strong><br />
+Spatial convolution and frequency multiplication are related through the convolution theorem.</p>
+<p><strong>C09 BRIDGE</strong><br />
+Low-pass filtering provides a frequency-domain view of smoothing and noise reduction.</p>
+<p><strong>C10 BRIDGE</strong><br />
+High-pass filtering and frequency emphasis explain why sharpening enhances edges and can amplify noise.</p>
+<p><strong>C12 BRIDGE</strong><br />
+Fourier representation, magnitude/phase and FFT operations are prerequisites for every filter in this chapter.</p>
+<p><strong>C14 BRIDGE</strong><br />
+Restoration uses the frequency response of the degradation model rather than simply applying a generic filter.</p>
+<p><strong>C21–C24 BRIDGE</strong><br />
+Transform-domain thinking reappears in JPEG/DCT compression, with different mathematical objectives.</p>
+<p><strong>LAB BRIDGE</strong><br />
+Build ideal, Butterworth and Gaussian LPF/HPF experiments and a notch-filter experiment for periodic noise.</p>
+<p><strong>PRACTICE BRIDGE</strong><br />
+Calculate transfer-function values, classify frequencies, choose cutoff/order parameters and diagnose FFT filtering bugs.</p>
+<p><strong>EXAM BRIDGE</strong><br />
+Know ideal/Butterworth/Gaussian LPF and HPF equations, band-pass concepts, notch filtering, convolution theorem and filter-design tradeoffs.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.68: Quick Recall -->
+  <section id="s-13-68" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.68</span>
+      <h2>Quick Recall</h2>
+      <button class="bookmark-btn" data-id="s-13-68" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>F
+→ input spectrum
+
+H
+→ frequency response
+
+G = H·F
+→ filtered spectrum
+
+LOW-PASS
+→ suppress high frequency
+
+HIGH-PASS
+→ suppress low frequency
+
+BAND-PASS
+→ keep middle band
+
+NOTCH
+→ reject selected frequency locations
+
+IDEAL
+→ sharp cutoff
+
+BUTTERWORTH
+→ tunable transition
+
+GAUSSIAN
+→ smooth transition</code></pre>
+</div></p>
+<p>Core rule:</p>
+<blockquote>
+<p><strong>Filter the complex spectrum; use magnitude primarily to inspect it.</strong></p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.69: Chapter Checkpoint -->
+  <section id="s-13-69" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.69</span>
+      <h2>Chapter Checkpoint</h2>
+      <button class="bookmark-btn" data-id="s-13-69" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <ol>
+<li>Define a frequency-domain filter.</li>
+<li>Explain $H(u,v)$.</li>
+<li>Derive radial frequency distance $D(u,v)$.</li>
+<li>Write the ideal low-pass filter.</li>
+<li>Explain ringing in ideal filtering.</li>
+<li>Write the Butterworth low-pass equation.</li>
+<li>Explain the role of filter order $n$.</li>
+<li>Write the Gaussian low-pass equation.</li>
+<li>Compare ideal, Butterworth and Gaussian filters.</li>
+<li>Explain high-pass filtering.</li>
+<li>Derive a high-pass complement from a low-pass filter.</li>
+<li>Define band-pass and band-reject filtering.</li>
+<li>What is a notch filter?</li>
+<li>Why is notch filtering suitable for periodic noise?</li>
+<li>Explain high-frequency emphasis.</li>
+<li>Why is phase required during inverse filtering?</li>
+<li>Why is the displayed log-magnitude spectrum not the data used for inverse reconstruction?</li>
+<li>Explain linear vs circular convolution in FFT-based filtering.</li>
+<li>Why can sharp frequency cutoffs create ringing?</li>
+<li>How should a filter cutoff be selected in an engineering application?</li>
+</ol>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 13.70: Unit II Final Chapter Preview -->
+  <section id="s-13-70" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.70</span>
+      <h2>Unit II Final Chapter Preview</h2>
+      <button class="bookmark-btn" data-id="s-13-70" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The frequency-domain core is now:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>C12
+FOURIER REPRESENTATION
+      ↓
+C13
+FREQUENCY-DOMAIN FILTER DESIGN
+      ↓
+C14
+IMAGE RESTORATION</code></pre>
+</div></p>
+<p>The difference is fundamental:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>ENHANCEMENT
+→ choose a transformation that makes the image more useful
+
+RESTORATION
+→ model the degradation and estimate the underlying image</code></pre>
+</div></p>
+<p>Chapter 14 therefore moves from:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>generic filtering</code></pre>
+</div></p>
+<p>to:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>degradation model
++
+inverse problem
++
+reconstruction</code></pre>
+</div></p>
+    </div>
+  </section>
+
+  <!-- SECTION 13.71: Comparative Analysis: Ideal, Butterworth, and Gaussian Lowpass Filters -->
+  <section id="s-13-71" class="section-block">
+    <div class="section-header">
+      <span class="section-num">13.71</span>
+      <h2>Comparative Analysis: Ideal, Butterworth, and Gaussian Lowpass Filters</h2>
+      <button class="bookmark-btn" data-id="s-13-71" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Mathematical Transfer Functions</h3>
+<p>Let $D(u, v) = \sqrt{(u - P/2)^2 + (v - Q/2)^2}$ represent the Euclidean distance from the centered frequency origin.</p>
+<ol>
+<li>
+<p><strong>Ideal Lowpass Filter (ILPF):</strong>
+   
+$$H(u, v) = \begin{cases} 1 & \text{if } D(u, v) \le D_0 \\ 0 & \text{if } D(u, v) > D_0 \end{cases}$$
+</p>
+</li>
+<li>
+<p><strong>Butterworth Lowpass Filter (BLPF) of order $n$:</strong>
+   
+$$H(u, v) = \frac{1}{1 + \left[ \frac{D(u, v)}{D_0} \right]^{2n}}$$
+</p>
+</li>
+<li>
+<p><strong>Gaussian Lowpass Filter (GLPF):</strong>
+   
+$$H(u, v) = e^{-\frac{D^2(u, v)}{2D_0^2}}$$
+</p>
+</li>
+</ol>
+<div class="table-wrap">
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th>Filter Type</th>
+        <th>Cutoff Transition Profile</th>
+        <th>Spatial Domain Impulse Response $h(x, y)$</th>
+        <th>Ringing Artifacts (Gibbs Phenomenon)</th>
+        <th>Optimal Engineering Application</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Ideal (ILPF)</strong></td>
+        <td>Infinitely sharp step discontinuity at $D_0$.</td>
+        <td>2D Sinc function $\frac{J_1(2\pi D_0 r)}{\pi r}$ with infinite periodic side lobes.</td>
+        <td><strong>Severe:</strong> Concentric ripple waves around all prominent high-contrast edges.</td>
+        <td>Theoretical benchmarking; strictly avoided in practical vision systems.</td>
+      </tr>
+      <tr>
+        <td><strong>Butterworth (BLPF)</strong></td>
+        <td>Smooth transition controlled by filter order $n$. Cutoff at $H(D_0) = 0.5$.</td>
+        <td>Damped oscillations. At $n=1$, zero ringing; at $n \ge 3$, ringing becomes noticeable.</td>
+        <td><strong>Controllable:</strong> Minimal at $n=2$ (the standard compromise order).</td>
+        <td>High-grade contrast filtering where controlled high-frequency attenuation is required.</td>
+      </tr>
+      <tr>
+        <td><strong>Gaussian (GLPF)</strong></td>
+        <td>Infinitely smooth bell curve transition. Cutoff at $H(D_0) = e^{-0.5} \approx 0.607$.</td>
+        <td>Exact 2D Gaussian function (Fourier transform of Gaussian is another Gaussian).</td>
+        <td><strong>Completely Ringing-Free:</strong> Zero side lobes in spatial impulse response.</td>
+        <td>Medical imaging, machine learning preprocessing, and edge-preserving scale space.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+    </div>
+  </section>
+
+      <!-- Chapter End Package -->
+      <section class="chapter-end-package">
+        <div class="chapter-nav-grid">
+          <a href="ch12-fourier-transform.html" class="chapter-nav-card">
+            <div class="chapter-nav-dir">← Previous</div>
+            <div class="chapter-nav-title">← Ch 12 — Fourier Transform</div>
+          </a>
+          <a href="ch14-image-restoration.html" class="chapter-nav-card next">
+            <div class="chapter-nav-dir">Next →</div>
+            <div class="chapter-nav-title">Next: Ch 14 — Image Restoration & Deblurring →</div>
+          </a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- FLOATING TTS PANEL (SAFE MANUAL MODE ONLY) -->
+  <div id="tts-panel" style="position:fixed; bottom:20px; right:20px; background:var(--em-surface-1); border:1px solid var(--em-border); border-radius:var(--em-radius-md); padding:12px 16px; box-shadow:var(--sh-lg); z-index:var(--z-float); display:none; gap:10px; align-items:center;">
+    <button class="icon-btn" id="tts-play" title="Play / Pause" style="background:var(--em-accent); color:#fff; border-radius:50%; width:36px; height:36px;">▶</button>
+    <button class="icon-btn" id="tts-stop" title="Stop">⏹</button>
+    <div style="font-size:0.75rem; color:var(--em-text-muted);">
+      <span id="tts-status">Ready</span> · <span id="tts-rate-label">1.0x</span>
+    </div>
+  </div>
+
+  <script src="../assets/js/state.js"></script>
+  <script src="../assets/js/core.js"></script>
+  <script src="../assets/js/tts.js"></script>
+  <script src="../assets/js/glossary.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: document.documentElement.getAttribute('data-theme') === 'light' ? 'default' : 'dark'
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,2118 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Arpit">
+  <meta name="description" content="Chapter 21: Image Compression Fundamentals — Digital Image Processing MiniBook. Coding, Spatial &amp; Psychovisual Redundancy, Compression Ratios, Shannon Information Entropy, Noiseless Coding Theorem, and Fidelity Metrics (MSE, PSNR)">
+  <title>C21: Image Compression Fundamentals | DIP MiniBook 📷 Arpit</title>
+
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <link rel="stylesheet" href="../assets/css/chapters.css">
+  <link rel="stylesheet" href="../assets/css/animations.css">
+  <link rel="stylesheet" href="../assets/css/timer.css">
+
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body data-chapter-id="ch21-compression-entropy">
+  <div id="progress-bar"></div>
+
+  <!-- Header -->
+  <header id="main-header">
+    <div class="header-left">
+      <button id="sidebar-toggle" class="icon-btn" aria-label="Toggle navigation drawer" title="Toggle Sidebar (S)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <a href="../index.html" class="brand-logo">
+        <div class="brand-icon">DIP</div>
+        <div class="brand-text">
+          <span class="main">Digital Image Processing</span>
+          <span class="sub">DU DSE-3 Engineering MiniBook</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="header-chapter-title">C21: Image Compression Fundamentals</div>
+
+    <div class="header-right">
+      <button id="reading-mode-btn" class="icon-btn" aria-label="Toggle reading focus mode" title="Focus Mode (F)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+          <line x1="8" y1="21" x2="16" y2="21"></line>
+          <line x1="12" y1="17" x2="12" y2="21"></line>
+        </svg>
+      </button>
+      <button id="tts-toggle" class="icon-btn" aria-label="Audio Reader" title="Audio Reader">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+        </svg>
+      </button>
+      <button id="theme-toggle" class="icon-btn" aria-label="Cycle theme" title="Theme (T)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="12" cy="12" r="4.5"></circle>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Sidebar Overlay -->
+  <div id="sidebar-overlay"></div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" aria-expanded="true">
+    <div class="sidebar-nav">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">General</div>
+        <a href="../index.html" class="sidebar-link">
+          <span class="link-icon">🏛️</span>
+          <span>Subject Portal</span>
+        </a>
+        <a href="../progress.html" class="sidebar-link">
+          <span class="link-icon">📊</span>
+          <span>Study Dashboard</span>
+        </a>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Current Chapter Sections</div>
+        <a href="#s-21-1" class="sidebar-link"><span class="link-icon">📌</span><span>21.1 Why This Chapter Exists</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-21-2" class="sidebar-link"><span class="link-icon">📌</span><span>21.2 Learning Contract</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-21-3" class="sidebar-link"><span class="link-icon">📌</span><span>21.3 The Compression Problem</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-21-4" class="sidebar-link"><span class="link-icon">📌</span><span>21.4 Why Images Contain So Much Redundancy</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-21-5" class="sidebar-link"><span class="link-icon">📌</span><span>21.5 Four Useful Redundancy Categories</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-21-6" class="sidebar-link"><span class="link-icon">📌</span><span>21.6 Raw Storage: The Baseline</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-21-7" class="sidebar-link"><span class="link-icon">📌</span><span>21.7 Colour Image Storage</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-21-8" class="sidebar-link"><span class="link-icon">📌</span><span>21.8 Compression Ratio</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-21-9" class="sidebar-link"><span class="link-icon">📌</span><span>21.9 Percentage Size Reduction</span> </a>
+      <a href="#s-21-10" class="sidebar-link"><span class="link-icon">📌</span><span>21.10 Bits Per Pixel</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-21-11" class="sidebar-link"><span class="link-icon">📌</span><span>21.11 Compression Ratio vs Bits Per Pixel</span> </a>
+      <a href="#s-21-12" class="sidebar-link"><span class="link-icon">📌</span><span>21.12 Lossless Compression</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-21-13" class="sidebar-link"><span class="link-icon">📌</span><span>21.13 Lossy Compression</span> </a>
+      <a href="#s-21-14" class="sidebar-link"><span class="link-icon">📌</span><span>21.14 Lossless vs. Lossy — Core Comparison</span> </a>
+      <a href="#s-21-15" class="sidebar-link"><span class="link-icon">📌</span><span>21.15 Why Photographs and Text Graphics Behave Differently</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-21-16" class="sidebar-link"><span class="link-icon">📌</span><span>21.16 Redundancy-to-Compression Map</span> </a>
+      <a href="#s-21-17" class="sidebar-link"><span class="link-icon">📌</span><span>21.17 Generic Compression Pipeline</span> </a>
+      <a href="#s-21-18" class="sidebar-link"><span class="link-icon">📌</span><span>21.18 Where Does Compression Actually Happen?</span> </a>
+      <a href="#s-21-19" class="sidebar-link"><span class="link-icon">📌</span><span>21.19 Rate–Quality Trade-off</span> </a>
+      <a href="#s-21-20" class="sidebar-link"><span class="link-icon">📌</span><span>21.20 Rate–Distortion Thinking</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-21-21" class="sidebar-link"><span class="link-icon">📌</span><span>21.21 Measuring Reconstruction Quality</span> </a>
+      <a href="#s-21-22" class="sidebar-link"><span class="link-icon">📌</span><span>21.22 Worked Numerical Example — Compression Metrics</span> </a>
+      <a href="#s-21-23" class="sidebar-link"><span class="link-icon">📌</span><span>21.23 Why File Size Is Not Determined by Resolution Alone</span> </a>
+      <a href="#s-21-24" class="sidebar-link"><span class="link-icon">📌</span><span>21.24 Lossless Compression and Information Entropy</span> </a>
+      <a href="#s-21-25" class="sidebar-link"><span class="link-icon">📌</span><span>21.25 A Tiny Intuition Example</span> </a>
+      <a href="#s-21-26" class="sidebar-link"><span class="link-icon">📌</span><span>21.26 Compression Does Not Always Help Equally</span> </a>
+      <a href="#s-21-27" class="sidebar-link"><span class="link-icon">📌</span><span>21.27 Lossy Compression Is Not Appropriate Everywhere</span> </a>
+      <a href="#s-21-28" class="sidebar-link"><span class="link-icon">📌</span><span>21.28 Engineering Decision Example</span> </a>
+      <a href="#s-21-29" class="sidebar-link"><span class="link-icon">📌</span><span>21.29 Common Traps</span> </a>
+      <a href="#s-21-30" class="sidebar-link"><span class="link-icon">📌</span><span>21.30 Compression Vocabulary</span> </a>
+      <a href="#s-21-31" class="sidebar-link"><span class="link-icon">📌</span><span>21.31 Compression Decision Matrix</span> </a>
+      <a href="#s-21-32" class="sidebar-link"><span class="link-icon">📌</span><span>21.32 Bridge to C22</span> </a>
+      <a href="#s-21-33" class="sidebar-link"><span class="link-icon">📌</span><span>21.33 Exam Lens</span> </a>
+      <a href="#s-21-34" class="sidebar-link"><span class="link-icon">📌</span><span>21.34 Chapter Checkpoint</span> </a>
+      <a href="#s-21-35" class="sidebar-link"><span class="link-icon">📌</span><span>21.35 One-Page Recall Sheet</span> </a>
+      <a href="#s-21-36" class="sidebar-link"><span class="link-icon">📌</span><span>21.36 Cross-Book Links</span> </a>
+      <a href="#s-21-37" class="sidebar-link"><span class="link-icon">📌</span><span>21.37 Final Chapter Summary</span> </a>
+      <a href="#s-21-38" class="sidebar-link"><span class="link-icon">📌</span><span>21.38 Worked Example — 10-Mark University Model Answer: Shannon Information Entropy &amp; Fidelity Metrics</span> </a>
+      </div>
+
+      
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-i">Part I — The Image</div>
+      <a href="ch01-big-picture.html" class="sidebar-link"><span class="link-icon">01</span><span>The Big Picture</span></a>
+      <a href="ch02-image-formation.html" class="sidebar-link"><span class="link-icon">02</span><span>Formation & Acquisition</span></a>
+      <a href="ch03-sampling-quantization.html" class="sidebar-link"><span class="link-icon">03</span><span>Sampling & Quantization</span></a>
+      <a href="ch04-image-representation.html" class="sidebar-link"><span class="link-icon">04</span><span>Pixels, Matrices & Resolution</span></a>
+      <a href="ch05-colour-models-file-formats.html" class="sidebar-link"><span class="link-icon">05</span><span>Colour Models & Formats</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-ii">Part II — Improving the Image</div>
+      <a href="ch06-point-processing.html" class="sidebar-link"><span class="link-icon">06</span><span>Point Processing & Intensity</span></a>
+      <a href="ch07-histograms-equalization.html" class="sidebar-link"><span class="link-icon">07</span><span>Histograms & Equalization</span></a>
+      <a href="ch08-spatial-filtering.html" class="sidebar-link"><span class="link-icon">08</span><span>Spatial Filtering & Convolution</span></a>
+      <a href="ch09-smoothing-noise-reduction.html" class="sidebar-link"><span class="link-icon">09</span><span>Smoothing & Noise Reduction</span></a>
+      <a href="ch10-sharpening-edge-detection.html" class="sidebar-link"><span class="link-icon">10</span><span>Sharpening & Edge Detection</span></a>
+      <a href="ch11-geometric-transforms.html" class="sidebar-link"><span class="link-icon">11</span><span>Geometric Transforms</span></a>
+      <a href="ch12-fourier-transform.html" class="sidebar-link"><span class="link-icon">12</span><span>Fourier Transform & Frequency</span></a>
+      <a href="ch13-frequency-filtering.html" class="sidebar-link"><span class="link-icon">13</span><span>Frequency-Domain Filtering</span></a>
+      <a href="ch14-image-restoration.html" class="sidebar-link"><span class="link-icon">14</span><span>Restoration & Deblurring</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-iii">Part III — Understanding Content</div>
+      <a href="ch15-segmentation-fundamentals.html" class="sidebar-link"><span class="link-icon">15</span><span>Segmentation Fundamentals</span></a>
+      <a href="ch16-thresholding-otsu.html" class="sidebar-link"><span class="link-icon">16</span><span>Thresholding & Otsu Method</span></a>
+      <a href="ch17-region-segmentation.html" class="sidebar-link"><span class="link-icon">17</span><span>Region-Based Segmentation</span></a>
+      <a href="ch18-mathematical-morphology.html" class="sidebar-link"><span class="link-icon">18</span><span>Mathematical Morphology</span></a>
+      <a href="ch19-features-descriptors.html" class="sidebar-link"><span class="link-icon">19</span><span>Image Features & Descriptors</span></a>
+      <a href="ch20-sift-surf-orb-hog.html" class="sidebar-link"><span class="link-icon">20</span><span>SIFT, SURF, ORB & HOG</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-iv">Part IV — Compressing Images</div>
+      <a href="ch21-compression-entropy.html" class="sidebar-link active"><span class="link-icon">21</span><span>Compression & Entropy</span></a>
+      <a href="ch22-lossless-coding.html" class="sidebar-link"><span class="link-icon">22</span><span>Lossless: RLE & Huffman</span></a>
+      <a href="ch23-lossy-dct-jpeg.html" class="sidebar-link"><span class="link-icon">23</span><span>Lossy: DCT & JPEG</span></a>
+      <a href="ch24-wavelets-jpeg2000.html" class="sidebar-link"><span class="link-icon">24</span><span>Wavelets & JPEG 2000</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-v">Part V — Intelligent Vision</div>
+      <a href="ch25-image-classification.html" class="sidebar-link"><span class="link-icon">25</span><span>Image Classification</span></a>
+      <a href="ch26-cnns-image-processing.html" class="sidebar-link"><span class="link-icon">26</span><span>CNNs for Image Processing</span></a>
+      <a href="ch27-modern-vision-architectures.html" class="sidebar-link"><span class="link-icon">27</span><span>Modern Vision Architectures</span></a>
+      <a href="ch28-object-detection-yolo.html" class="sidebar-link"><span class="link-icon">28</span><span>Object Detection: YOLO</span></a>
+      <a href="ch29-image-denoising-autoencoders.html" class="sidebar-link"><span class="link-icon">29</span><span>Image Denoising Autoencoders</span></a>
+      <a href="ch30-video-motion-analysis.html" class="sidebar-link"><span class="link-icon">30</span><span>Video & Motion Analysis</span></a>
+      <a href="ch31-dip-applications-engineering.html" class="sidebar-link"><span class="link-icon">31</span><span>DIP Applications & Ethics</span></a>
+    </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-brand-mark">
+        <div class="mark">DU</div>
+        <div>
+          <strong>DSE-3 MiniBook</strong>
+          <div>University of Delhi</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mandatory Shell Wrapper -->
+  <div id="main-content">
+    <main class="chapter-content">
+      <!-- Chapter Hero -->
+      <div class="chapter-hero">
+        <div class="hero-meta">
+          <span class="part-badge part-iv">Compressing Images</span>
+          <span class="chapter-number">CHAPTER 21</span>
+          <span class="reading-time">⏱️ ~45 min read</span>
+          <span class="tag-badge tag-core">Highest Yield (10-mark guarantee)</span>
+        </div>
+        <h1 class="chapter-title">Image Compression Fundamentals</h1>
+        <p class="chapter-subtitle">
+          Coding, Spatial &amp; Psychovisual Redundancy, Compression Ratios, Shannon Information Entropy, Noiseless Coding Theorem, and Fidelity Metrics (MSE, PSNR)
+        </p>
+
+        <div class="syllabus-anchor">
+          <span class="syllabus-anchor-label">DU Syllabus</span>
+          <span><strong>Image Compression Fundamentals:</strong> Need for compression, coding redundancy, spatial / interpixel redundancy, psychovisual redundancy, data compression metrics (compression ratio, relative redundancy), information theory (entropy definition, Shannon’s first theorem), and fidelity criteria (objective metrics: MSE, RMSE, PSNR; subjective metrics: MOS).</span>
+        </div>
+      </div>
+
+      <!-- In-Page TOC -->
+      <div class="chapter-checklist-card" style="margin-bottom:var(--em-space-8);">
+        <div class="checklist-title">
+          <span>Table of Contents &amp; Visual Section Map</span>
+          <span class="tag-badge tag-math">38 Deep Sections</span>
+        </div>
+        <ul class="part-chapters-list">
+          <li class="part-chapter-item"><a href="#s-21-1"><strong>21.1</strong> Why This Chapter Exists</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-21-2"><strong>21.2</strong> Learning Contract</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-21-3"><strong>21.3</strong> The Compression Problem</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-21-4"><strong>21.4</strong> Why Images Contain So Much Redundancy</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-21-5"><strong>21.5</strong> Four Useful Redundancy Categories</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-21-6"><strong>21.6</strong> Raw Storage: The Baseline</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-21-7"><strong>21.7</strong> Colour Image Storage</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-21-8"><strong>21.8</strong> Compression Ratio</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-21-9"><strong>21.9</strong> Percentage Size Reduction</a> </li>
+      <li class="part-chapter-item"><a href="#s-21-10"><strong>21.10</strong> Bits Per Pixel</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-21-11"><strong>21.11</strong> Compression Ratio vs Bits Per Pixel</a> </li>
+      <li class="part-chapter-item"><a href="#s-21-12"><strong>21.12</strong> Lossless Compression</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-21-13"><strong>21.13</strong> Lossy Compression</a> </li>
+      <li class="part-chapter-item"><a href="#s-21-14"><strong>21.14</strong> Lossless vs. Lossy — Core Comparison</a> </li>
+      <li class="part-chapter-item"><a href="#s-21-15"><strong>21.15</strong> Why Photographs and Text Graphics Behave Differently</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-21-16"><strong>21.16</strong> Redundancy-to-Compression Map</a> </li>
+      <li class="part-chapter-item"><a href="#s-21-17"><strong>21.17</strong> Generic Compression Pipeline</a> </li>
+      <li class="part-chapter-item"><a href="#s-21-18"><strong>21.18</strong> Where Does Compression Actually Happen?</a> </li>
+      <li class="part-chapter-item"><a href="#s-21-19"><strong>21.19</strong> Rate–Quality Trade-off</a> </li>
+      <li class="part-chapter-item"><a href="#s-21-20"><strong>21.20</strong> Rate–Distortion Thinking</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-21-21"><strong>21.21</strong> Measuring Reconstruction Quality</a> </li>
+      <li class="part-chapter-item"><a href="#s-21-22"><strong>21.22</strong> Worked Numerical Example — Compression Metrics</a> </li>
+      <li class="part-chapter-item"><a href="#s-21-23"><strong>21.23</strong> Why File Size Is Not Determined by Resolution Alone</a> </li>
+      <li class="part-chapter-item"><a href="#s-21-24"><strong>21.24</strong> Lossless Compression and Information Entropy</a> </li>
+      <li class="part-chapter-item"><a href="#s-21-25"><strong>21.25</strong> A Tiny Intuition Example</a> </li>
+      <li class="part-chapter-item"><a href="#s-21-26"><strong>21.26</strong> Compression Does Not Always Help Equally</a> </li>
+      <li class="part-chapter-item"><a href="#s-21-27"><strong>21.27</strong> Lossy Compression Is Not Appropriate Everywhere</a> </li>
+      <li class="part-chapter-item"><a href="#s-21-28"><strong>21.28</strong> Engineering Decision Example</a> </li>
+      <li class="part-chapter-item"><a href="#s-21-29"><strong>21.29</strong> Common Traps</a> </li>
+      <li class="part-chapter-item"><a href="#s-21-30"><strong>21.30</strong> Compression Vocabulary</a> </li>
+      <li class="part-chapter-item"><a href="#s-21-31"><strong>21.31</strong> Compression Decision Matrix</a> </li>
+      <li class="part-chapter-item"><a href="#s-21-32"><strong>21.32</strong> Bridge to C22</a> </li>
+      <li class="part-chapter-item"><a href="#s-21-33"><strong>21.33</strong> Exam Lens</a> </li>
+      <li class="part-chapter-item"><a href="#s-21-34"><strong>21.34</strong> Chapter Checkpoint</a> </li>
+      <li class="part-chapter-item"><a href="#s-21-35"><strong>21.35</strong> One-Page Recall Sheet</a> </li>
+      <li class="part-chapter-item"><a href="#s-21-36"><strong>21.36</strong> Cross-Book Links</a> </li>
+      <li class="part-chapter-item"><a href="#s-21-37"><strong>21.37</strong> Final Chapter Summary</a> </li>
+      <li class="part-chapter-item"><a href="#s-21-38"><strong>21.38</strong> Worked Example — 10-Mark University Model Answer: Shannon Information Entropy &amp; Fidelity Metrics</a> </li>
+        </ul>
+      </div>
+
+      <div class="concept-hook" style="margin-bottom:var(--em-space-8);"><h1>C21 — Image Compression Fundamentals</h1>
+<blockquote>
+<p><strong>Chapter thesis:</strong> Image compression reduces the number of bits needed to represent image information by exploiting redundancy or information that can be removed with an acceptable loss of quality.</p>
+</blockquote>
+<hr /></div>
+
+      <!-- All Numbered Sections -->
+      
+  <!-- SECTION 21.1: Why This Chapter Exists -->
+  <section id="s-21-1" class="section-block">
+    <div class="section-header">
+      <span class="section-num">21.1</span>
+      <h2>Why This Chapter Exists</h2>
+      <button class="bookmark-btn" data-id="s-21-1" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A digital image is fundamentally a numerical dataset.</p>
+<p>A grayscale image with width $W$, height $H$, and $k$ bits per pixel requires, before any storage format or coding overhead,</p>
+<p>
+$$
+N_{\text{raw}} = W H k
+$$
+</p>
+<p>bits.</p>
+<p>For a colour image with three 8-bit channels,</p>
+<p>
+$$
+N_{\text{raw}} = W H \times 3 \times 8.
+$$
+</p>
+<p>That representation is simple, but often wasteful.</p>
+<p>Neighbouring pixels can be similar. Repeated values can occur frequently. Some visual information may be less important to human perception than other information. Compression asks a precise engineering question:</p>
+<blockquote>
+<p><strong>What information can be represented with fewer bits, and what information—if any—can be removed?</strong></p>
+</blockquote>
+<p>This chapter builds the vocabulary and reasoning needed before studying entropy coding, DCT, and JPEG.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 21.2: Learning Contract -->
+  <section id="s-21-2" class="section-block">
+    <div class="section-header">
+      <span class="section-num">21.2</span>
+      <h2>Learning Contract</h2>
+      <button class="bookmark-btn" data-id="s-21-2" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>After this chapter, you should be able to:</p>
+<ul>
+<li>explain why image compression is necessary;</li>
+<li>calculate raw image storage requirements;</li>
+<li>distinguish coding, spatial, and perceptual redundancy;</li>
+<li>distinguish lossless and lossy compression;</li>
+<li>calculate compression ratio and related measures;</li>
+<li>explain the trade-off between compression, quality, storage, and transmission;</li>
+<li>identify when a compression method is reversible;</li>
+<li>explain why a compressed file size cannot be predicted from image dimensions alone;</li>
+<li>choose a suitable compression strategy for a stated engineering requirement.</li>
+</ul>
+<p>You should also be able to connect:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>raw image
+→ redundancy
+→ representation/coding
+→ compressed representation
+→ storage / transmission
+→ reconstruction</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 21.3: The Compression Problem -->
+  <section id="s-21-3" class="section-block">
+    <div class="section-header">
+      <span class="section-num">21.3</span>
+      <h2>The Compression Problem</h2>
+      <button class="bookmark-btn" data-id="s-21-3" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Consider an image matrix:</p>
+<p>
+$$
+f(x,y).
+$$
+</p>
+<p>A file stores some representation of that image. The goal of compression is to construct a shorter representation without violating the task's quality requirements.</p>
+<p>A generic system is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Original image
+      │
+      ▼
+Analysis / representation
+      │
+      ▼
+Compression
+      │
+      ▼
+Compressed bitstream
+      │
+      ├──────────► Storage
+      │
+      └──────────► Transmission
+                         │
+                         ▼
+                    Decompression
+                         │
+                         ▼
+                 Reconstructed image</code></pre>
+</div></p>
+<p>For a lossless method:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Original
+  │
+  ▼
+Encoder
+  │
+  ▼
+Compressed representation
+  │
+  ▼
+Decoder
+  │
+  ▼
+Exactly the same image data</code></pre>
+</div></p>
+<p>For a lossy method:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Original
+  │
+  ▼
+Encoder
+  │
+  ▼
+Compressed representation
+  │
+  ▼
+Decoder
+  │
+  ▼
+Approximate reconstruction</code></pre>
+</div></p>
+<p>The difference between these two cases is one of the most important facts in the entire compression unit.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 21.4: Why Images Contain So Much Redundancy -->
+  <section id="s-21-4" class="section-block">
+    <div class="section-header">
+      <span class="section-num">21.4</span>
+      <h2>Why Images Contain So Much Redundancy</h2>
+      <button class="bookmark-btn" data-id="s-21-4" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Compression works because many images contain predictable structure.</p>
+<p>A completely random image is difficult to compress because little can be predicted or represented more compactly.</p>
+<p>A natural photograph, however, commonly contains:</p>
+<ul>
+<li>neighbouring pixels with related values;</li>
+<li>repeated colours or textures;</li>
+<li>smooth intensity regions;</li>
+<li>edges where useful information is concentrated;</li>
+<li>colour channels with related information;</li>
+<li>patterns that occur more often than others.</li>
+</ul>
+<p>The key idea is:</p>
+<blockquote>
+<p><strong>Compression does not primarily “make the image smaller.” It changes the representation so that fewer bits are required.</strong></p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 21.5: Four Useful Redundancy Categories -->
+  <section id="s-21-5" class="section-block">
+    <div class="section-header">
+      <span class="section-num">21.5</span>
+      <h2>Four Useful Redundancy Categories</h2>
+      <button class="bookmark-btn" data-id="s-21-5" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>This chapter uses four categories because they help explain the logic behind different compression families.</p>
+<h2>5.1 Coding Redundancy</h2>
+<p>Suppose a source contains symbols with very unequal probabilities.</p>
+<p>Example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>A A A A A A A B A A C A A A A</code></pre>
+</div></p>
+<p>Using the same number of bits for every symbol may be inefficient.</p>
+<p>If one value occurs much more often than another, a variable-length code can assign:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>frequent symbol   → shorter code
+rare symbol       → longer code</code></pre>
+</div></p>
+<p>This is the basic idea behind entropy coding and Huffman coding.</p>
+<h3>Key intuition</h3>
+<blockquote>
+<p><strong>Coding redundancy comes from representing symbols inefficiently relative to their probabilities.</strong></p>
+</blockquote>
+<hr />
+<h2>5.2 Spatial Redundancy</h2>
+<p>Neighbouring image samples are often correlated.</p>
+<p>Example:</p>
+<p>
+$$
+100,\ 101,\ 100,\ 102,\ 103,\ 102,\ 104
+$$
+</p>
+<p>Storing every value independently ignores the predictability between neighbours.</p>
+<p>A compressor can exploit this relationship through prediction, transforms, run-length coding, differential representation, or related techniques.</p>
+<h3>Key intuition</h3>
+<blockquote>
+<p><strong>Spatial redundancy comes from local similarity or correlation within an image.</strong></p>
+</blockquote>
+<hr />
+<h2>5.3 Interchannel / Spectral Redundancy</h2>
+<p>Colour images contain multiple channels.</p>
+<p>For RGB:</p>
+<p>
+$$
+I(x,y)=
+\begin{bmatrix}
+R(x,y) & G(x,y) & B(x,y)
+\end{bmatrix}.
+$$
+</p>
+<p>The channels are not necessarily independent. Natural scenes often contain related information across channels.</p>
+<p>This means a colour image may contain redundant information if each channel is treated as completely unrelated.</p>
+<p>This is one reason colour transforms and chroma subsampling can help in practical codecs such as JPEG.</p>
+<hr />
+<h2>5.4 Perceptual Redundancy</h2>
+<p>Human vision does not respond equally to every possible change in an image.</p>
+<p>Some fine-grained information may be less visually important than:</p>
+<ul>
+<li>strong edges;</li>
+<li>large structures;</li>
+<li>luminance changes;</li>
+<li>important spatial features.</li>
+</ul>
+<p>Lossy compression can exploit perceptual characteristics by retaining more important information while discarding or coarsening information that has lower perceptual impact.</p>
+<h3>Important caution</h3>
+<p>Perceptual redundancy does <strong>not</strong> mean that lost information is “irrelevant” for every application.</p>
+<p>A change that is visually small can be scientifically, legally, medically, or forensically important.</p>
+<p>Therefore:</p>
+<blockquote>
+<p><strong>A compression decision must be tied to the application, not only to visual appearance.</strong></p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 21.6: Raw Storage: The Baseline -->
+  <section id="s-21-6" class="section-block">
+    <div class="section-header">
+      <span class="section-num">21.6</span>
+      <h2>Raw Storage: The Baseline</h2>
+      <button class="bookmark-btn" data-id="s-21-6" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Before comparing compression methods, calculate the uncompressed size.</p>
+<h2>6.1 Grayscale Image</h2>
+<p>For:</p>
+<ul>
+<li>width = $W$</li>
+<li>height = $H$</li>
+<li>bit depth = $k$</li>
+</ul>
+<p>the raw size is:</p>
+<p>
+$$
+N_{\text{bits}} = W H k
+$$
+</p>
+<p>and</p>
+<p>
+$$
+N_{\text{bytes}} = \frac{W H k}{8}.
+$$
+</p>
+<div class="worked-example"><div class="worked-example-header"><span class="worked-example-title"><span>🧮</span> Worked Example 1</span><span class="tag-badge tag-exam">NUMERICAL WORKTHROUGH</span></div>
+
+A grayscale image is:
+
+
+$$
+1024\times768
+$$
+
+
+with 8 bits per pixel.
+
+Then:
+
+
+$$
+N_{\text{bits}}=1024\times768\times8.
+$$
+
+
+Since one pixel requires one byte:
+
+
+$$
+N_{\text{bytes}}=1024\times768=786{,}432
+$$
+
+
+bytes.
+
+Using decimal units:
+
+
+$$
+\approx0.786\text{ MB}.
+$$
+
+
+Using binary units:
+
+
+$$
+\frac{786{,}432}{1024^2}\approx0.75\text{ MiB}.
+$$
+
+
+</div>
+
+<h3>Engineering note</h3>
+<p>Do not casually use “MB” and “MiB” as if they were identical. For exam calculations, follow the convention used by the question.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 21.7: Colour Image Storage -->
+  <section id="s-21-7" class="section-block">
+    <div class="section-header">
+      <span class="section-num">21.7</span>
+      <h2>Colour Image Storage</h2>
+      <button class="bookmark-btn" data-id="s-21-7" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For three channels each using $k$ bits:</p>
+<p>
+$$
+N_{\text{bits}}=WH(3k).
+$$
+</p>
+<p>For a standard 8-bit-per-channel RGB image:</p>
+<p>
+$$
+N_{\text{bits}}=WH\times24.
+$$
+</p>
+<div class="worked-example"><div class="worked-example-header"><span class="worked-example-title"><span>🧮</span> Worked Example 2</span><span class="tag-badge tag-exam">NUMERICAL WORKTHROUGH</span></div>
+
+For a $1920\times1080$ RGB image with 8 bits per channel:
+
+
+$$
+N_{\text{bytes}}
+=
+1920\times1080\times3.
+$$
+
+
+
+$$
+=6{,}220{,}800\text{ bytes}
+$$
+
+
+or approximately:
+
+
+$$
+6.22\text{ MB}.
+$$
+
+
+This is the raw pixel payload, not necessarily the exact size of a real BMP, PNG, TIFF, or JPEG file.
+
+</div>
+
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 21.8: Compression Ratio -->
+  <section id="s-21-8" class="section-block">
+    <div class="section-header">
+      <span class="section-num">21.8</span>
+      <h2>Compression Ratio</h2>
+      <button class="bookmark-btn" data-id="s-21-8" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A common measure is the <strong>compression ratio</strong>:</p>
+<p>
+$$
+CR=
+\frac{\text{original size}}{\text{compressed size}}.
+$$
+</p>
+<p>A larger $CR$ means stronger size reduction.</p>
+<h3>Example</h3>
+<p>Suppose:</p>
+<ul>
+<li>original = 8 MB</li>
+<li>compressed = 2 MB</li>
+</ul>
+<p>Then:</p>
+<p>
+$$
+CR=\frac{8}{2}=4.
+$$
+</p>
+<p>So the compression ratio is:</p>
+<p>
+$$
+\boxed{4:1}
+$$
+</p>
+<p>The compressed representation uses one quarter of the original storage.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 21.9: Percentage Size Reduction -->
+  <section id="s-21-9" class="section-block">
+    <div class="section-header">
+      <span class="section-num">21.9</span>
+      <h2>Percentage Size Reduction</h2>
+      <button class="bookmark-btn" data-id="s-21-9" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Another useful quantity is:</p>
+<p>
+$$
+\text{Reduction \%}
+=
+\left(
+1-\frac{S_c}{S_o}
+\right)\times100
+$$
+</p>
+<p>where:</p>
+<ul>
+<li>$S_o$ = original size</li>
+<li>$S_c$ = compressed size.</li>
+</ul>
+<p>For 8 MB → 2 MB:</p>
+<p>
+$$
+\left(1-\frac{2}{8}\right)100=75\%.
+$$
+</p>
+<p>So the size is reduced by:</p>
+<p>
+$$
+\boxed{75\%}.
+$$
+</p>
+<p>Do not confuse this with the compression ratio.</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Compression ratio: 4:1
+Size reduction:    75%</code></pre>
+</div></p>
+<p>They describe related but different quantities.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 21.10: Bits Per Pixel -->
+  <section id="s-21-10" class="section-block">
+    <div class="section-header">
+      <span class="section-num">21.10</span>
+      <h2>Bits Per Pixel</h2>
+      <button class="bookmark-btn" data-id="s-21-10" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For an image containing $N$ pixels and a compressed payload containing $B$ bits:</p>
+<p>
+$$
+bpp=\frac{B}{N}.
+$$
+</p>
+<p>This measure is especially useful when comparing compression across images of different dimensions.</p>
+<h3>Example</h3>
+<p>A compressed grayscale image contains:</p>
+<p>
+$$
+300\,000
+$$
+</p>
+<p>bits and has:</p>
+<p>
+$$
+100\,000
+$$
+</p>
+<p>pixels.</p>
+<p>Then:</p>
+<p>
+$$
+bpp=\frac{300\,000}{100\,000}=3.
+$$
+</p>
+<p>The compressed representation uses:</p>
+<p>
+$$
+\boxed{3\text{ bits/pixel}}.
+$$
+</p>
+<p>The original might have used 8 bits/pixel.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 21.11: Compression Ratio vs Bits Per Pixel -->
+  <section id="s-21-11" class="section-block">
+    <div class="section-header">
+      <span class="section-num">21.11</span>
+      <h2>Compression Ratio vs Bits Per Pixel</h2>
+      <button class="bookmark-btn" data-id="s-21-11" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>These measures can be connected.</p>
+<p>For an 8-bit grayscale source:</p>
+<p>
+$$
+CR=\frac{8}{bpp}
+$$
+</p>
+<p>when comparing raw pixels to an idealized compressed payload without side information or format overhead.</p>
+<p>For example, if:</p>
+<p>
+$$
+bpp=2
+$$
+</p>
+<p>then:</p>
+<p>
+$$
+CR=\frac{8}{2}=4:1.
+$$
+</p>
+<p>In real files, headers, metadata, tables, padding, and other overhead mean the measured ratio may differ from this idealized calculation.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 21.12: Lossless Compression -->
+  <section id="s-21-12" class="section-block">
+    <div class="section-header">
+      <span class="section-num">21.12</span>
+      <h2>Lossless Compression</h2>
+      <button class="bookmark-btn" data-id="s-21-12" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A compression method is <strong>lossless</strong> when decompression reproduces the exact original image data.</p>
+<p>Mathematically, if encoder $E$ and decoder $D$ are applied:</p>
+<p>
+$$
+D(E(I))=I.
+$$
+</p>
+<p>No pixel value is changed.</p>
+<h3>Typical use cases</h3>
+<p>Lossless compression is particularly appropriate when exact values matter, such as:</p>
+<ul>
+<li>archival masters;</li>
+<li>scientific images;</li>
+<li>medical workflows where exact pixel values matter;</li>
+<li>images used for further numerical analysis;</li>
+<li>diagrams, text-heavy graphics, and some synthetic images.</li>
+</ul>
+<h3>Strength and limitation</h3>
+<p>Strength:</p>
+<blockquote>
+<p>Exact recovery.</p>
+</blockquote>
+<p>Limitation:</p>
+<blockquote>
+<p>Compression may be substantially weaker than lossy compression for many natural photographs.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 21.13: Lossy Compression -->
+  <section id="s-21-13" class="section-block">
+    <div class="section-header">
+      <span class="section-num">21.13</span>
+      <h2>Lossy Compression</h2>
+      <button class="bookmark-btn" data-id="s-21-13" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A lossy method permits information to be discarded or approximated.</p>
+<p>
+$$
+D(E(I))\approx I.
+$$
+</p>
+<p>The reconstructed image is not necessarily identical to the original.</p>
+<p>The goal is controlled information loss in exchange for significantly lower size.</p>
+<h3>Typical use cases</h3>
+<p>Lossy compression is commonly appropriate when:</p>
+<ul>
+<li>storage/transmission efficiency is important;</li>
+<li>small visual differences are acceptable;</li>
+<li>the image is a photograph or natural scene;</li>
+<li>application requirements specify an acceptable quality threshold.</li>
+</ul>
+<h3>Important distinction</h3>
+<p>Lossy does <strong>not</strong> automatically mean poor quality.</p>
+<p>A lossy codec can produce a reconstruction that is visually very close to the original at moderate compression.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 21.14: Lossless vs. Lossy — Core Comparison -->
+  <section id="s-21-14" class="section-block">
+    <div class="section-header">
+      <span class="section-num">21.14</span>
+      <h2>Lossless vs. Lossy — Core Comparison</h2>
+      <button class="bookmark-btn" data-id="s-21-14" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Property</th>
+<th>Lossless</th>
+<th>Lossy</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Exact original recovery</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Information discarded</td>
+<td>No</td>
+<td>Potentially yes</td>
+</tr>
+<tr>
+<td>Typical compression strength</td>
+<td>Lower</td>
+<td>Higher</td>
+</tr>
+<tr>
+<td>Repeated decoding</td>
+<td>Reversible</td>
+<td>Does not recover original by re-encoding/decoding</td>
+</tr>
+<tr>
+<td>Best for exact numerical preservation</td>
+<td>Yes</td>
+<td>Often unsuitable</td>
+</tr>
+<tr>
+<td>Visual quality can be excellent</td>
+<td>Yes</td>
+<td>Yes, depending on settings</td>
+</tr>
+<tr>
+<td>Typical photographic use</td>
+<td>Possible</td>
+<td>Very common</td>
+</tr>
+<tr>
+<td>Typical analytical/archive use</td>
+<td>Strong candidate</td>
+<td>Must be evaluated carefully</td>
+</tr>
+</tbody>
+</table></div>
+<p>The most important exam sentence is:</p>
+<blockquote>
+<p><strong>Lossless compression reduces representation redundancy while preserving all information; lossy compression sacrifices some information to achieve greater compression.</strong></p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 21.15: Why Photographs and Text Graphics Behave Differently -->
+  <section id="s-21-15" class="section-block">
+    <div class="section-header">
+      <span class="section-num">21.15</span>
+      <h2>Why Photographs and Text Graphics Behave Differently</h2>
+      <button class="bookmark-btn" data-id="s-21-15" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Compression efficiency depends strongly on the source image.</p>
+<h3>Photograph</h3>
+<p>A natural photograph may contain:</p>
+<ul>
+<li>many colours;</li>
+<li>gradual variations;</li>
+<li>texture;</li>
+<li>noise;</li>
+<li>broad spatial correlation.</li>
+</ul>
+<p>A lossy transform-based codec may compress it effectively.</p>
+<h3>Screenshot / text / line art</h3>
+<p>Sharp boundaries and small symbols can be sensitive to compression artifacts.</p>
+<p>For some graphics, lossless compression may preserve the visual structure much better.</p>
+<p>Therefore:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Best compression method
+≠
+same method for every image</code></pre>
+</div></p>
+<p>Instead:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image characteristics
++
+application requirement
++
+quality tolerance
++
+storage/transmission constraints
+→
+compression choice</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 21.16: Redundancy-to-Compression Map -->
+  <section id="s-21-16" class="section-block">
+    <div class="section-header">
+      <span class="section-num">21.16</span>
+      <h2>Redundancy-to-Compression Map</h2>
+      <button class="bookmark-btn" data-id="s-21-16" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Redundancy</th>
+<th>What it means</th>
+<th>Methods that may exploit it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Coding</td>
+<td>Unequal symbol probabilities</td>
+<td>Huffman, arithmetic-style entropy coding</td>
+</tr>
+<tr>
+<td>Spatial</td>
+<td>Similar neighbouring samples</td>
+<td>Prediction, RLE, transforms</td>
+</tr>
+<tr>
+<td>Interchannel</td>
+<td>Related colour channels</td>
+<td>Colour transforms, chroma subsampling</td>
+</tr>
+<tr>
+<td>Perceptual</td>
+<td>Unequal visual importance</td>
+<td>Quantization / perceptual coding</td>
+</tr>
+</tbody>
+</table></div>
+<p>This table is a mental bridge to Chapters 22–24.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 21.17: Generic Compression Pipeline -->
+  <section id="s-21-17" class="section-block">
+    <div class="section-header">
+      <span class="section-num">21.17</span>
+      <h2>Generic Compression Pipeline</h2>
+      <button class="bookmark-btn" data-id="s-21-17" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A codec can often be understood as several conceptual stages:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Input image
+    ↓
+Representation transform
+    ↓
+Redundancy reduction
+    ↓
+Quantization
+    ↓
+Entropy coding
+    ↓
+Compressed bitstream</code></pre>
+</div></p>
+<p>Not every codec contains all stages in exactly this order.</p>
+<p>For a <strong>lossless</strong> system, quantization in the lossy sense is absent because exact recovery is required.</p>
+<p>For a <strong>lossy transform codec</strong> such as JPEG, the conceptual path is closer to:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image
+→ colour transform
+→ block transform
+→ quantization
+→ coefficient ordering
+→ entropy coding
+→ file/bitstream</code></pre>
+</div></p>
+<p>The detailed JPEG implementation appears in C24.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 21.18: Where Does Compression Actually Happen? -->
+  <section id="s-21-18" class="section-block">
+    <div class="section-header">
+      <span class="section-num">21.18</span>
+      <h2>Where Does Compression Actually Happen?</h2>
+      <button class="bookmark-btn" data-id="s-21-18" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>This question is useful because “compression” is not a single operation.</p>
+<p>Consider a transform codec.</p>
+<h3>Stage A — Transform</h3>
+<p>The data is represented differently.</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>spatial samples
+→ transform coefficients</code></pre>
+</div></p>
+<p>The number of samples may not yet have decreased.</p>
+<h3>Stage B — Quantization</h3>
+<p>Some coefficient precision is reduced or removed.</p>
+<p>This is a major lossy step.</p>
+<h3>Stage C — Symbol representation</h3>
+<p>Remaining values are encoded efficiently.</p>
+<p>This reduces coding redundancy.</p>
+<p>Therefore:</p>
+<blockquote>
+<p><strong>A codec can combine representation change, information reduction, and efficient coding.</strong></p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 21.19: Rate–Quality Trade-off -->
+  <section id="s-21-19" class="section-block">
+    <div class="section-header">
+      <span class="section-num">21.19</span>
+      <h2>Rate–Quality Trade-off</h2>
+      <button class="bookmark-btn" data-id="s-21-19" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Lossy compression is an engineering optimization.</p>
+<p>Let:</p>
+<ul>
+<li>$R$ = rate, often bits per pixel or file size;</li>
+<li>$Q$ = quality measure.</li>
+</ul>
+<p>The exact relationship depends on the codec and source.</p>
+<p>A general conceptual curve is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Quality
+  ^
+  |                         ______
+  |                     ___/
+  |                 ___/
+  |             ___/
+  |___________/______________________&gt; bitrate</code></pre>
+</div></p>
+<p>At low bitrates, visual quality can deteriorate substantially.</p>
+<p>At higher bitrates, additional bits may provide progressively smaller visible improvements.</p>
+<p>This is why a single statement such as “JPEG is 10:1 compressed” is incomplete without specifying the actual image and quality settings.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 21.20: Rate–Distortion Thinking -->
+  <section id="s-21-20" class="section-block">
+    <div class="section-header">
+      <span class="section-num">21.20</span>
+      <h2>Rate–Distortion Thinking</h2>
+      <button class="bookmark-btn" data-id="s-21-20" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Lossy compression can be viewed as minimizing distortion subject to a rate constraint:</p>
+<p>
+$$
+\min D
+\quad
+\text{subject to}
+\quad
+R\le R_{\max}
+$$
+</p>
+<p>or alternatively:</p>
+<p>
+$$
+\min (D+\lambda R)
+$$
+</p>
+<p>for a suitable trade-off parameter $\lambda$.</p>
+<p>Here:</p>
+<ul>
+<li>$D$ = distortion;</li>
+<li>$R$ = bitrate;</li>
+<li>$\lambda$ = relative cost assigned to rate.</li>
+</ul>
+<p>You do not need a full rate–distortion-theory treatment for the syllabus, but this formulation captures the engineering problem:</p>
+<blockquote>
+<p><strong>How much quality should be sacrificed to save how many bits?</strong></p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 21.21: Measuring Reconstruction Quality -->
+  <section id="s-21-21" class="section-block">
+    <div class="section-header">
+      <span class="section-num">21.21</span>
+      <h2>Measuring Reconstruction Quality</h2>
+      <button class="bookmark-btn" data-id="s-21-21" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Compression quality should not be judged only by file size.</p>
+<h2>Mean Squared Error</h2>
+<p>For original $I$ and reconstructed image $\hat I$:</p>
+<p>
+$$
+MSE=
+\frac{1}{MN}
+\sum_{x=1}^{M}
+\sum_{y=1}^{N}
+\left[I(x,y)-\hat I(x,y)\right]^2.
+$$
+</p>
+<p>Lower MSE means smaller average squared error.</p>
+<h2>Peak Signal-to-Noise Ratio</h2>
+<p>For peak value $MAX_I$:</p>
+<p>
+$$
+PSNR=
+10\log_{10}
+\left(
+\frac{MAX_I^2}{MSE}
+\right).
+$$
+</p>
+<p>For an 8-bit image:</p>
+<p>
+$$
+MAX_I=255.
+$$
+</p>
+<p>Higher PSNR generally means lower MSE.</p>
+<h3>Important caveat</h3>
+<p>PSNR is not a perfect perceptual-quality metric. Two images with similar PSNR can look different to a human observer.</p>
+<p>Therefore:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>file size
++
+numerical distortion
++
+visual inspection
++
+task-specific requirements</code></pre>
+</div></p>
+<p>should be considered together.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 21.22: Worked Numerical Example — Compression Metrics -->
+  <section id="s-21-22" class="section-block">
+    <div class="section-header">
+      <span class="section-num">21.22</span>
+      <h2>Worked Numerical Example — Compression Metrics</h2>
+      <button class="bookmark-btn" data-id="s-21-22" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>An original image occupies:</p>
+<p>
+$$
+12\text{ MB}
+$$
+</p>
+<p>and the compressed representation occupies:</p>
+<p>
+$$
+3\text{ MB}.
+$$
+</p>
+<h3>Compression ratio</h3>
+<p>
+$$
+CR=\frac{12}{3}=4.
+$$
+</p>
+<p>So:</p>
+<p>
+$$
+\boxed{4:1}
+$$
+</p>
+<h3>Percentage reduction</h3>
+<p>
+$$
+\text{Reduction}
+=
+\left(1-\frac34\right)100
+=75\%.
+$$
+</p>
+<h3>Space saved</h3>
+<p>
+$$
+12-3=9\text{ MB}.
+$$
+</p>
+<p>So the method saves:</p>
+<p>
+$$
+\boxed{9\text{ MB}}
+$$
+</p>
+<p>for this file.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 21.23: Why File Size Is Not Determined by Resolution Alone -->
+  <section id="s-21-23" class="section-block">
+    <div class="section-header">
+      <span class="section-num">21.23</span>
+      <h2>Why File Size Is Not Determined by Resolution Alone</h2>
+      <button class="bookmark-btn" data-id="s-21-23" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose two images are both:</p>
+<p>
+$$
+1920\times1080.
+$$
+</p>
+<p>Their compressed sizes can differ greatly because of:</p>
+<ul>
+<li>image content;</li>
+<li>colour distribution;</li>
+<li>texture;</li>
+<li>noise;</li>
+<li>repeated patterns;</li>
+<li>codec settings;</li>
+<li>metadata;</li>
+<li>quantization;</li>
+<li>entropy of the source.</li>
+</ul>
+<p>Therefore:</p>
+<p>
+$$
+\boxed{\text{same dimensions} \not\Rightarrow \text{same compressed size}}
+$$
+</p>
+<p>This is a common conceptual trap.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 21.24: Lossless Compression and Information Entropy -->
+  <section id="s-21-24" class="section-block">
+    <div class="section-header">
+      <span class="section-num">21.24</span>
+      <h2>Lossless Compression and Information Entropy</h2>
+      <button class="bookmark-btn" data-id="s-21-24" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Before studying C22, one idea is essential:</p>
+<blockquote>
+<p>A source with more predictable symbols can often be encoded using fewer average bits per symbol.</p>
+</blockquote>
+<p>For a discrete random variable $X$, entropy is:</p>
+<p>
+$$
+H(X)=
+-\sum_i p_i\log_2 p_i.
+$$
+</p>
+<p>Entropy represents a lower-bound notion of average information content under ideal coding assumptions.</p>
+<p>We develop this properly in C22.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 21.25: A Tiny Intuition Example -->
+  <section id="s-21-25" class="section-block">
+    <div class="section-header">
+      <span class="section-num">21.25</span>
+      <h2>A Tiny Intuition Example</h2>
+      <button class="bookmark-btn" data-id="s-21-25" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose four symbols occur with equal probability:</p>
+<p>
+$$
+P(A)=P(B)=P(C)=P(D)=0.25.
+$$
+</p>
+<p>All four symbols are equally likely.</p>
+<p>A fixed-length binary representation needs:</p>
+<p>
+$$
+\log_2 4=2
+$$
+</p>
+<p>bits per symbol.</p>
+<p>Now suppose:</p>
+<p>
+$$
+P(A)=0.875,\qquad
+P(B)=P(C)=P(D)=0.041667.
+$$
+</p>
+<p>The source is much more predictable.</p>
+<p>A good variable-length code can give the common symbol a short representation and rarer symbols longer representations.</p>
+<p>The exact coding construction belongs to C22, but the compression principle is already visible:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>predictability
+→ lower average code length
+→ fewer bits</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 21.26: Compression Does Not Always Help Equally -->
+  <section id="s-21-26" class="section-block">
+    <div class="section-header">
+      <span class="section-num">21.26</span>
+      <h2>Compression Does Not Always Help Equally</h2>
+      <button class="bookmark-btn" data-id="s-21-26" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Some inputs are already highly compact or statistically difficult to compress.</p>
+<p>Examples include:</p>
+<ul>
+<li>encrypted image data;</li>
+<li>pseudo-random data;</li>
+<li>heavily noisy data;</li>
+<li>data that has already been compressed effectively.</li>
+</ul>
+<p>Trying another lossless compression stage may provide little or no benefit.</p>
+<p>In some cases, the compressed output can even become slightly larger because of headers and metadata.</p>
+<p>So:</p>
+<blockquote>
+<p><strong>Compression is data-dependent.</strong></p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 21.27: Lossy Compression Is Not Appropriate Everywhere -->
+  <section id="s-21-27" class="section-block">
+    <div class="section-header">
+      <span class="section-num">21.27</span>
+      <h2>Lossy Compression Is Not Appropriate Everywhere</h2>
+      <button class="bookmark-btn" data-id="s-21-27" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Consider a medical image where a tiny intensity difference has diagnostic significance.</p>
+<p>A visually imperceptible modification could still alter the numerical evidence needed for analysis.</p>
+<p>Likewise, in scientific measurements:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>visual similarity
+≠
+scientific equivalence</code></pre>
+</div></p>
+<p>For these systems, the compression policy must be determined by domain requirements.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 21.28: Engineering Decision Example -->
+  <section id="s-21-28" class="section-block">
+    <div class="section-header">
+      <span class="section-num">21.28</span>
+      <h2>Engineering Decision Example</h2>
+      <button class="bookmark-btn" data-id="s-21-28" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Scenario A — Web photograph</h3>
+<p>Requirements:</p>
+<ul>
+<li>low bandwidth;</li>
+<li>reasonable visual quality;</li>
+<li>fast loading.</li>
+</ul>
+<p>A lossy codec may be attractive.</p>
+<h3>Scenario B — Line-art diagram for repeated editing</h3>
+<p>Requirements:</p>
+<ul>
+<li>preserve sharp boundaries;</li>
+<li>preserve exact colours;</li>
+<li>repeated editing.</li>
+</ul>
+<p>Lossless compression may be preferable.</p>
+<h3>Scenario C — Quantitative scientific image</h3>
+<p>Requirements:</p>
+<ul>
+<li>preserve numerical data.</li>
+</ul>
+<p>Lossless compression should be strongly considered unless the application explicitly validates a lossy method.</p>
+<h3>Decision rule</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>What is the image used for?
+        ↓
+Can information be discarded?
+        ↓
+How much storage/bandwidth is saved?
+        ↓
+What distortion is acceptable?
+        ↓
+Select codec + operating point</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 21.29: Common Traps -->
+  <section id="s-21-29" class="section-block">
+    <div class="section-header">
+      <span class="section-num">21.29</span>
+      <h2>Common Traps</h2>
+      <button class="bookmark-btn" data-id="s-21-29" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="trap-box"><div class="trap-title"><span>⚠️</span> Trap 1 — “Lossless means no compression.”</div>
+
+False.
+
+Lossless compression can significantly reduce file size while still allowing exact reconstruction.
+
+</div>
+
+<div class="trap-box"><div class="trap-title"><span>⚠️</span> Trap 2 — “Lossy always looks bad.”</div>
+
+False.
+
+Lossy compression can provide excellent visual quality at appropriate settings.
+
+</div>
+
+<div class="trap-box"><div class="trap-title"><span>⚠️</span> Trap 3 — Compression ratio and percentage reduction are the same.</div>
+
+False.
+
+For $4:1$:
+
+
+$$
+\text{Reduction}=75\%.
+$$
+
+
+</div>
+
+<div class="trap-box"><div class="trap-title"><span>⚠️</span> Trap 4 — Every image can be compressed to an arbitrarily tiny lossless file.</div>
+
+False.
+
+Information content limits how much lossless compression is possible.
+
+</div>
+
+<div class="trap-box"><div class="trap-title"><span>⚠️</span> Trap 5 — A smaller file automatically means a better compression method.</div>
+
+False.
+
+The correct method depends on:
+
+- distortion;
+- task;
+- speed;
+- memory;
+- compatibility;
+- decoding requirements.
+
+</div>
+
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 21.30: Compression Vocabulary -->
+  <section id="s-21-30" class="section-block">
+    <div class="section-header">
+      <span class="section-num">21.30</span>
+      <h2>Compression Vocabulary</h2>
+      <button class="bookmark-btn" data-id="s-21-30" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Compression</td>
+<td>Reducing representation size</td>
+</tr>
+<tr>
+<td>Encoder</td>
+<td>Converts input into compressed representation</td>
+</tr>
+<tr>
+<td>Decoder</td>
+<td>Reconstructs an image from compressed representation</td>
+</tr>
+<tr>
+<td>Bitstream</td>
+<td>Encoded sequence of bits</td>
+</tr>
+<tr>
+<td>Redundancy</td>
+<td>Information that can be represented more efficiently</td>
+</tr>
+<tr>
+<td>Lossless</td>
+<td>Exact reconstruction</td>
+</tr>
+<tr>
+<td>Lossy</td>
+<td>Approximate reconstruction permitted</td>
+</tr>
+<tr>
+<td>Compression ratio</td>
+<td>Original size / compressed size</td>
+</tr>
+<tr>
+<td>Bitrate</td>
+<td>Number of bits used per unit of data</td>
+</tr>
+<tr>
+<td>bpp</td>
+<td>Bits per pixel</td>
+</tr>
+<tr>
+<td>Distortion</td>
+<td>Difference introduced by approximation</td>
+</tr>
+<tr>
+<td>Quantization</td>
+<td>Mapping values to a reduced set of representation levels</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 21.31: Compression Decision Matrix -->
+  <section id="s-21-31" class="section-block">
+    <div class="section-header">
+      <span class="section-num">21.31</span>
+      <h2>Compression Decision Matrix</h2>
+      <button class="bookmark-btn" data-id="s-21-31" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Preferred direction</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Exact numerical recovery</td>
+<td>Lossless</td>
+</tr>
+<tr>
+<td>Maximum size reduction</td>
+<td>Lossy may be appropriate</td>
+</tr>
+<tr>
+<td>Photographic web content</td>
+<td>Often lossy</td>
+</tr>
+<tr>
+<td>Archival exactness</td>
+<td>Lossless</td>
+</tr>
+<tr>
+<td>Repeated numerical analysis</td>
+<td>Lossless</td>
+</tr>
+<tr>
+<td>Bandwidth-constrained delivery</td>
+<td>Higher compression, subject to quality</td>
+</tr>
+<tr>
+<td>Text/line-art preservation</td>
+<td>Often lossless</td>
+</tr>
+<tr>
+<td>Unknown downstream use</td>
+<td>Preserve original / use lossless</td>
+</tr>
+</tbody>
+</table></div>
+<p>This is a decision aid, not a universal codec rule.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 21.32: Bridge to C22 -->
+  <section id="s-21-32" class="section-block">
+    <div class="section-header">
+      <span class="section-num">21.32</span>
+      <h2>Bridge to C22</h2>
+      <button class="bookmark-btn" data-id="s-21-32" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Compression fundamentals establish <strong>why</strong> compression works.</p>
+<p>C22 now asks a more precise question:</p>
+<blockquote>
+<p><strong>How can symbols be encoded using as few bits as possible?</strong></p>
+</blockquote>
+<p>The progression is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>C21
+Why compress?
+     ↓
+Redundancy
+     ↓
+Lossless vs lossy
+     ↓
+Compression metrics
+     ↓
+C22
+Entropy + RLE + Huffman
+     ↓
+C23
+Transform coding + DCT
+     ↓
+C24
+JPEG end to end</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 21.33: Exam Lens -->
+  <section id="s-21-33" class="section-block">
+    <div class="section-header">
+      <span class="section-num">21.33</span>
+      <h2>Exam Lens</h2>
+      <button class="bookmark-btn" data-id="s-21-33" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h2>2-mark questions</h2>
+<p><strong>What is image compression?</strong><br />
+Reduction in the number of bits required to represent image information.</p>
+<p><strong>What is lossless compression?</strong><br />
+Compression in which decompression reproduces the exact original image data.</p>
+<p><strong>What is lossy compression?</strong><br />
+Compression that permits controlled information loss to obtain greater size reduction.</p>
+<p><strong>Define compression ratio.</strong></p>
+<p>
+$$
+CR=\frac{S_o}{S_c}.
+$$
+</p>
+<hr />
+<h2>5-mark question</h2>
+<h3>Explain different forms of image redundancy.</h3>
+<p>A strong answer should name and explain:</p>
+<ol>
+<li>coding redundancy;</li>
+<li>spatial redundancy;</li>
+<li>interchannel/spectral redundancy;</li>
+<li>perceptual redundancy.</li>
+</ol>
+<p>Then connect each to a compression strategy.</p>
+<hr />
+<h2>10-mark question</h2>
+<h3>Compare lossless and lossy image compression.</h3>
+<p>Structure:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>definition
+→ reconstruction property
+→ information loss
+→ compression strength
+→ examples/use cases
+→ advantages
+→ limitations
+→ engineering choice</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 21.34: Chapter Checkpoint -->
+  <section id="s-21-34" class="section-block">
+    <div class="section-header">
+      <span class="section-num">21.34</span>
+      <h2>Chapter Checkpoint</h2>
+      <button class="bookmark-btn" data-id="s-21-34" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Concept</h3>
+<p>Why can a highly structured image compress better than a random image?</p>
+<h3>Numerical</h3>
+<p>A 10 MB file is compressed to 2.5 MB. Find:</p>
+<ol>
+<li>compression ratio;</li>
+<li>percentage size reduction.</li>
+</ol>
+<h3>Reasoning</h3>
+<p>Why is lossless compression usually safer for quantitative image analysis?</p>
+<h3>Engineering</h3>
+<p>A web service must transmit photographs over limited bandwidth. The application tolerates small visible differences but not severe artifacts. Which broad compression family is likely suitable, and why?</p>
+<h3>Forward connection</h3>
+<p>Which idea from C21 explains why Huffman coding can reduce the average number of bits per symbol?</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 21.35: One-Page Recall Sheet -->
+  <section id="s-21-35" class="section-block">
+    <div class="section-header">
+      <span class="section-num">21.35</span>
+      <h2>One-Page Recall Sheet</h2>
+      <button class="bookmark-btn" data-id="s-21-35" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>IMAGE COMPRESSION
+│
+├── Goal
+│   └── fewer bits
+│
+├── Why possible?
+│   ├── coding redundancy
+│   ├── spatial redundancy
+│   ├── interchannel redundancy
+│   └── perceptual redundancy
+│
+├── Lossless
+│   └── exact reconstruction
+│
+├── Lossy
+│   └── approximate reconstruction
+│
+├── Metrics
+│   ├── CR = original / compressed
+│   ├── reduction% = (1 - Sc/So) × 100
+│   └── bpp = bits / pixels
+│
+└── Core engineering trade-off
+    └── size ↔ quality ↔ complexity</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 21.36: Cross-Book Links -->
+  <section id="s-21-36" class="section-block">
+    <div class="section-header">
+      <span class="section-num">21.36</span>
+      <h2>Cross-Book Links</h2>
+      <button class="bookmark-btn" data-id="s-21-36" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Layer</th>
+<th>Connection</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MAIN</td>
+<td>C21 complete conceptual foundation</td>
+</tr>
+<tr>
+<td>MATH</td>
+<td>Entropy and probability become important in C22</td>
+</tr>
+<tr>
+<td>LAB</td>
+<td>LAB-07 uses manual JPEG compression workflow</td>
+</tr>
+<tr>
+<td>CODE</td>
+<td>Raw-size, ratio, entropy, and codec experiments</td>
+</tr>
+<tr>
+<td>EXAM</td>
+<td>Lossless/lossy, redundancy, numerical metrics</td>
+</tr>
+<tr>
+<td>PRACTICE</td>
+<td>Compression calculations and method selection</td>
+</tr>
+<tr>
+<td>RESOURCE</td>
+<td>Gonzalez &amp; Woods; Szeliski; course references</td>
+</tr>
+<tr>
+<td>ASSETS</td>
+<td>Redundancy diagrams, rate–quality sketches, codec pipeline</td>
+</tr>
+<tr>
+<td>MASTER</td>
+<td>Coverage and dependency tracking</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 21.37: Final Chapter Summary -->
+  <section id="s-21-37" class="section-block">
+    <div class="section-header">
+      <span class="section-num">21.37</span>
+      <h2>Final Chapter Summary</h2>
+      <button class="bookmark-btn" data-id="s-21-37" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The central mental model is:</p>
+<blockquote>
+<p><strong>Compression is a representation problem.</strong></p>
+</blockquote>
+<p>Images contain redundancy because their values are structured and statistically non-random. Compression exploits that structure through more efficient coding, representation changes, and—when allowed—controlled removal of information.</p>
+<p>The most important distinction is:</p>
+<p>
+$$
+\boxed{\text{Lossless: exact recovery}}
+$$
+</p>
+<p>versus</p>
+<p>
+$$
+\boxed{\text{Lossy: approximate recovery}}
+$$
+</p>
+<p>Everything that follows in this part of the MiniBook builds on that distinction.</p>
+<hr />
+<p><strong>Next chapter:</strong> C22 — Entropy, Run-Length Encoding and Huffman Coding</p>
+    </div>
+  </section>
+
+  <!-- SECTION 21.38: Worked Example — 10-Mark University Model Answer: Shannon Information Entropy &amp; Fidelity Metrics -->
+  <section id="s-21-38" class="section-block">
+    <div class="section-header">
+      <span class="section-num">21.38</span>
+      <h2>Worked Example — 10-Mark University Model Answer: Shannon Information Entropy &amp; Fidelity Metrics</h2>
+      <button class="bookmark-btn" data-id="s-21-38" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Problem Statement</h3>
+<p>A digital image with $MN = 10,000$ pixels has an 8-bit dynamic range ($L = 256$, baseline $b = 8$ bits/pixel). However, only 4 discrete intensity values appear in the image with the following probabilities:
+
+$$p(r_1) = 0.50, \qquad p(r_2) = 0.25, \qquad p(r_3) = 0.125, \qquad p(r_4) = 0.125$$
+
+1. State the three fundamental data redundancies exploited in image compression.
+2. Compute the Shannon Information Entropy $H$ of the image source in bits/pixel.
+3. Determine the theoretical maximum compression ratio $C$ and the relative coding redundancy $R_D$.
+4. Reconstructed pixel intensities at 4 coordinates are $\hat{f} = [102, 120, 135, 150]$ while pristine intensities are $f = [100, 124, 130, 152]$. Compute the Mean Square Error (MSE), Root Mean Square Error (RMSE), and Peak Signal-to-Noise Ratio (PSNR in dB).</p>
+<h3>Step-by-Step Mathematical Solution</h3>
+<div class="worked-example">
+  <div class="worked-example-header">
+    <span class="worked-example-title">Numerical Examination Trace</span>
+    <span class="tag-badge tag-exam">10-MARK UNIVERSITY MODEL ANSWER</span>
+  </div>
+  <p><strong>1. Three Fundamental Data Redundancies:</strong><br>
+  - <strong>Coding Redundancy:</strong> Occurs when pixel intensities are represented using more bits than theoretically necessary (e.g. using fixed 8-bit codes for symbols with highly unequal probabilities).<br>
+  - <strong>Spatial / Interpixel Redundancy:</strong> Results from the high spatial correlation between adjacent pixels in natural scenes (neighboring pixels usually have almost identical values).<br>
+  - <strong>Psychovisual Redundancy:</strong> Information that the Human Visual System (HVS) cannot perceive (e.g. high-frequency chromatic variations, subtle quantization noise in dark or textured areas).</p>
+
+  <p><strong>2. Shannon Information Entropy ($H$):</strong><br>
+  
+$$H = -\sum_{i=1}^4 p(r_i) \log_2 p(r_i)$$
+
+  Evaluating term by term:<br>
+  - $p(r_1) = 0.50 \implies \log_2(0.50) = -1.0 \implies -0.50(-1.0) = 0.50$<br>
+  - $p(r_2) = 0.25 \implies \log_2(0.25) = -2.0 \implies -0.25(-2.0) = 0.50$<br>
+  - $p(r_3) = 0.125 \implies \log_2(0.125) = -3.0 \implies -0.125(-3.0) = 0.375$<br>
+  - $p(r_4) = 0.125 \implies \log_2(0.125) = -3.0 \implies -0.125(-3.0) = 0.375$<br>
+  
+$$H = 0.50 + 0.50 + 0.375 + 0.375 = \mathbf{1.75 \text{ bits/pixel}}$$
+
+  By Shannon's First Theorem (Noiseless Coding Theorem), the average codeword length cannot be less than $1.75$ bits/pixel without information loss.</p>
+
+  <p><strong>3. Compression Ratio and Coding Redundancy:</strong><br>
+  Baseline uncompressed representation: $b = 8$ bits/pixel.<br>
+  
+$$\text{Theoretical Optimal Compression Ratio } C = \frac{b}{H} = \frac{8}{1.75} \approx \mathbf{4.5714 : 1}$$
+
+  
+$$\text{Relative Coding Redundancy } R_D = 1 - \frac{1}{C} = 1 - \frac{1.75}{8} = 1 - 0.21875 = \mathbf{0.78125 \ (78.13\%)}$$
+
+  This indicates that 78.13% of the data bits in the uncompressed 8-bit image represent pure redundant overhead.</p>
+
+  <p><strong>4. Objective Fidelity Criteria (MSE, RMSE, PSNR):</strong><br>
+  Difference vector $e = f - \hat{f} = [100 - 102, 124 - 120, 130 - 135, 152 - 150] = [-2, +4, -5, +2]$.<br>
+  Squared differences: $e^2 = [4, 16, 25, 4]$.<br>
+  
+$$MSE = \frac{1}{4} (4 + 16 + 25 + 4) = \frac{49}{4} = \mathbf{12.25}$$
+
+  
+$$RMSE = \sqrt{MSE} = \sqrt{12.25} = \mathbf{3.50 \text{ gray levels}}$$
+
+  Peak Signal-to-Noise Ratio for 8-bit dynamic range ($L - 1 = 255$):
+  
+$$PSNR = 10 \log_{10} \left( \frac{255^2}{MSE} \right) = 10 \log_{10} \left( \frac{65025}{12.25} \right) = 10 \log_{10}(5308.16)$$
+
+  
+$$PSNR = 10 \times 3.7249 = \mathbf{37.25 \text{ dB}}$$
+
+  A PSNR above 30 dB in lossy compression indicates excellent fidelity where reconstruction errors are generally imperceptible to the human eye.</p>
+</div>
+    </div>
+  </section>
+
+      <!-- Chapter End Package -->
+      <section class="chapter-end-package">
+        <div class="chapter-nav-grid">
+          <a href="ch20-sift-surf-orb-hog.html" class="chapter-nav-card">
+            <div class="chapter-nav-dir">← Previous</div>
+            <div class="chapter-nav-title">← Ch 20 — SIFT, SURF, ORB & HOG</div>
+          </a>
+          <a href="ch22-lossless-coding.html" class="chapter-nav-card next">
+            <div class="chapter-nav-dir">Next →</div>
+            <div class="chapter-nav-title">Next: Ch 22 — Lossless Coding (RLE & Huffman) →</div>
+          </a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- FLOATING TTS PANEL (SAFE MANUAL MODE ONLY) -->
+  <div id="tts-panel" style="position:fixed; bottom:20px; right:20px; background:var(--em-surface-1); border:1px solid var(--em-border); border-radius:var(--em-radius-md); padding:12px 16px; box-shadow:var(--sh-lg); z-index:var(--z-float); display:none; gap:10px; align-items:center;">
+    <button class="icon-btn" id="tts-play" title="Play / Pause" style="background:var(--em-accent); color:#fff; border-radius:50%; width:36px; height:36px;">▶</button>
+    <button class="icon-btn" id="tts-stop" title="Stop">⏹</button>
+    <div style="font-size:0.75rem; color:var(--em-text-muted);">
+      <span id="tts-status">Ready</span> · <span id="tts-rate-label">1.0x</span>
+    </div>
+  </div>
+
+  <script src="../assets/js/state.js"></script>
+  <script src="../assets/js/core.js"></script>
+  <script src="../assets/js/tts.js"></script>
+  <script src="../assets/js/glossary.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: document.documentElement.getAttribute('data-theme') === 'light' ? 'default' : 'dark'
+      });
+    });
+  </script>
+</body>
+</html>

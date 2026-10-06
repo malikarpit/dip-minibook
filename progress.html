@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Arpit">
+  <meta name="description" content="DIP MiniBook Study Dashboard — Track reading progress, practical completions, and study streaks for DU DSE-3 Digital Image Processing">
+  <title>Study Dashboard 📊 | Digital Image Processing MiniBook</title>
+
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="stylesheet" href="assets/css/chapters.css">
+  <link rel="stylesheet" href="assets/css/animations.css">
+  <link rel="stylesheet" href="assets/css/timer.css">
+
+  <style>
+    .dashboard-header {
+      margin-bottom: var(--em-space-8);
+      padding-bottom: var(--em-space-6);
+      border-bottom: 2px solid var(--em-border);
+    }
+    .dash-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--em-space-4);
+      margin-bottom: var(--em-space-8);
+    }
+    .dash-stat-card {
+      background: var(--em-surface-1);
+      border: 1px solid var(--em-border);
+      border-radius: var(--em-radius-md);
+      padding: var(--em-space-5);
+      text-align: center;
+    }
+    .dash-stat-num {
+      font-family: var(--font-mono);
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--em-accent-text);
+      line-height: 1.1;
+    }
+    .dash-stat-label {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: var(--em-text-muted);
+      margin-top: 6px;
+    }
+
+    .chapter-checklist-card {
+      background: var(--em-surface-1);
+      border: 1px solid var(--em-border);
+      border-radius: var(--em-radius-md);
+      padding: var(--em-space-6);
+      margin-bottom: var(--em-space-8);
+    }
+    .checklist-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--em-text);
+      margin-bottom: var(--em-space-4);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .checklist-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.90rem;
+    }
+    .checklist-table th {
+      text-align: left;
+      padding: 10px 14px;
+      background: var(--em-surface-2);
+      border-bottom: 2px solid var(--em-border);
+      font-weight: 700;
+      color: var(--em-text);
+    }
+    .checklist-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--em-border);
+      color: var(--em-text-secondary);
+    }
+    .checklist-table tr:hover td {
+      background: var(--em-accent-soft);
+    }
+
+    .dash-actions-row {
+      display: flex;
+      gap: var(--em-space-3);
+      flex-wrap: wrap;
+      margin-top: var(--em-space-8);
+    }
+    .btn-outline {
+      padding: 8px 16px;
+      border-radius: var(--em-radius-sm);
+      border: 1px solid var(--em-border);
+      background: var(--em-surface-1);
+      color: var(--em-text);
+      font-size: 0.86rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all var(--em-motion-fast) var(--em-ease);
+    }
+    .btn-outline:hover {
+      background: var(--em-surface-2);
+      border-color: var(--em-border-strong);
+    }
+  </style>
+</head>
+<body data-chapter-id="dashboard">
+  <div id="progress-bar"></div>
+
+  <!-- Header -->
+  <header id="main-header">
+    <div class="header-left">
+      <button id="sidebar-toggle" class="icon-btn" aria-label="Toggle navigation drawer" title="Toggle Sidebar (S)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <a href="index.html" class="brand-logo">
+        <div class="brand-icon">DIP</div>
+        <div class="brand-text">
+          <span class="main">Digital Image Processing</span>
+          <span class="sub">DU DSE-3 Engineering MiniBook</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="header-chapter-title">Study Analytics Dashboard</div>
+
+    <div class="header-right">
+      <button id="reading-mode-btn" class="icon-btn" aria-label="Toggle reading focus mode" title="Focus Mode (F)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+          <line x1="8" y1="21" x2="16" y2="21"></line>
+          <line x1="12" y1="17" x2="12" y2="21"></line>
+        </svg>
+      </button>
+      <button id="theme-toggle" class="icon-btn" aria-label="Cycle theme" title="Theme (T)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="12" cy="12" r="4.5"></circle>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Sidebar Overlay -->
+  <div id="sidebar-overlay"></div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" aria-expanded="true">
+    <div class="sidebar-nav">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">General</div>
+        <a href="index.html" class="sidebar-link">
+          <span class="link-icon">🏛️</span>
+          <span>Subject Portal</span>
+        </a>
+        <a href="progress.html" class="sidebar-link active">
+          <span class="link-icon">📊</span>
+          <span>Study Dashboard</span>
+        </a>
+      </div>
+
+      <!-- Part I -->
+      <div class="sidebar-section">
+        <div class="sidebar-section-label part-label part-i">Part I — The Image</div>
+        <a href="chapters/ch01-big-picture.html" class="sidebar-link">
+          <span class="link-icon">01</span>
+          <span>The Big Picture</span>
+        </a>
+        <a href="chapters/ch02-image-formation.html" class="sidebar-link">
+          <span class="link-icon">02</span>
+          <span>Formation &amp; Acquisition</span>
+        </a>
+        <a href="chapters/ch03-sampling-quantization.html" class="sidebar-link">
+          <span class="link-icon">03</span>
+          <span>Sampling &amp; Quantization</span>
+        </a>
+        <a href="chapters/ch04-image-representation.html" class="sidebar-link">
+          <span class="link-icon">04</span>
+          <span>Pixels, Matrices &amp; Resolution</span>
+        </a>
+        <a href="chapters/ch05-colour-models-file-formats.html" class="sidebar-link">
+          <span class="link-icon">05</span>
+          <span>Colour Models &amp; Formats</span>
+        </a>
+      </div>
+
+      <!-- Part II -->
+      <div class="sidebar-section">
+        <div class="sidebar-section-label part-label part-ii">Part II — Improving the Image</div>
+        <a href="chapters/ch06-point-processing.html" class="sidebar-link">
+          <span class="link-icon">06</span>
+          <span>Point Processing &amp; Intensity</span>
+        </a>
+        <a href="chapters/ch07-histograms-equalization.html" class="sidebar-link">
+          <span class="link-icon">07</span>
+          <span>Histograms &amp; Equalization</span>
+        </a>
+        <a href="chapters/ch08-spatial-filtering.html" class="sidebar-link">
+          <span class="link-icon">08</span>
+          <span>Spatial Filtering &amp; Convolution</span>
+        </a>
+        <a href="chapters/ch09-smoothing-noise-reduction.html" class="sidebar-link">
+          <span class="link-icon">09</span>
+          <span>Smoothing &amp; Noise Reduction</span>
+        </a>
+        <a href="chapters/ch10-sharpening-edge-detection.html" class="sidebar-link">
+          <span class="link-icon">10</span>
+          <span>Sharpening &amp; Edge Detection</span>
+        </a>
+        <a href="chapters/ch11-geometric-transforms.html" class="sidebar-link">
+          <span class="link-icon">11</span>
+          <span>Geometric Transforms</span>
+        </a>
+        <a href="chapters/ch12-fourier-transform.html" class="sidebar-link">
+          <span class="link-icon">12</span>
+          <span>Fourier Transform &amp; Frequency</span>
+        </a>
+        <a href="chapters/ch13-frequency-filtering.html" class="sidebar-link">
+          <span class="link-icon">13</span>
+          <span>Frequency-Domain Filtering</span>
+        </a>
+        <a href="chapters/ch14-image-restoration.html" class="sidebar-link">
+          <span class="link-icon">14</span>
+          <span>Restoration &amp; Deblurring</span>
+        </a>
+      </div>
+
+      <!-- Part III -->
+      <div class="sidebar-section">
+        <div class="sidebar-section-label part-label part-iii">Part III — Understanding Content</div>
+        <a href="chapters/ch15-segmentation-fundamentals.html" class="sidebar-link">
+          <span class="link-icon">15</span>
+          <span>Segmentation Fundamentals</span>
+        </a>
+        <a href="chapters/ch16-thresholding-otsu.html" class="sidebar-link">
+          <span class="link-icon">16</span>
+          <span>Thresholding &amp; Otsu</span>
+        </a>
+        <a href="chapters/ch17-region-segmentation.html" class="sidebar-link">
+          <span class="link-icon">17</span>
+          <span>Region Segmentation</span>
+        </a>
+        <a href="chapters/ch18-mathematical-morphology.html" class="sidebar-link">
+          <span class="link-icon">18</span>
+          <span>Mathematical Morphology</span>
+        </a>
+        <a href="chapters/ch19-features-descriptors.html" class="sidebar-link">
+          <span class="link-icon">19</span>
+          <span>Features &amp; Descriptors</span>
+        </a>
+        <a href="chapters/ch20-sift-surf-orb-hog.html" class="sidebar-link">
+          <span class="link-icon">20</span>
+          <span>SIFT, SURF, ORB &amp; HOG</span>
+        </a>
+      </div>
+
+      <!-- Part IV -->
+      <div class="sidebar-section">
+        <div class="sidebar-section-label part-label part-iv">Part IV — Compressing Images</div>
+        <a href="chapters/ch21-compression-entropy.html" class="sidebar-link">
+          <span class="link-icon">21</span>
+          <span>Compression &amp; Entropy</span>
+        </a>
+        <a href="chapters/ch22-lossless-coding.html" class="sidebar-link">
+          <span class="link-icon">22</span>
+          <span>Lossless Coding</span>
+        </a>
+        <a href="chapters/ch23-lossy-dct-jpeg.html" class="sidebar-link">
+          <span class="link-icon">23</span>
+          <span>Lossy DCT &amp; JPEG</span>
+        </a>
+        <a href="chapters/ch24-wavelets-jpeg2000.html" class="sidebar-link">
+          <span class="link-icon">24</span>
+          <span>Wavelets &amp; JPEG 2000</span>
+        </a>
+      </div>
+
+      <!-- Part V -->
+      <div class="sidebar-section">
+        <div class="sidebar-section-label part-label part-v">Part V — Intelligent Vision</div>
+        <a href="chapters/ch25-image-classification.html" class="sidebar-link">
+          <span class="link-icon">25</span>
+          <span>Image Classification</span>
+        </a>
+        <a href="chapters/ch26-cnns-image-processing.html" class="sidebar-link">
+          <span class="link-icon">26</span>
+          <span>CNNs for Vision</span>
+        </a>
+        <a href="chapters/ch27-modern-vision-architectures.html" class="sidebar-link">
+          <span class="link-icon">27</span>
+          <span>VGG &amp; ResNet</span>
+        </a>
+        <a href="chapters/ch28-object-detection-yolo.html" class="sidebar-link">
+          <span class="link-icon">28</span>
+          <span>Object Detection: YOLO</span>
+        </a>
+        <a href="chapters/ch29-image-denoising-autoencoders.html" class="sidebar-link">
+          <span class="link-icon">29</span>
+          <span>Autoencoders Denoising</span>
+        </a>
+        <a href="chapters/ch30-video-motion-analysis.html" class="sidebar-link">
+          <span class="link-icon">30</span>
+          <span>Video &amp; Motion Analysis</span>
+        </a>
+        <a href="chapters/ch31-dip-applications-engineering.html" class="sidebar-link">
+          <span class="link-icon">31</span>
+          <span>Applications &amp; Ethics</span>
+        </a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mandatory Shell Wrapper -->
+  <div id="main-content">
+    <main class="chapter-content">
+      <div class="dashboard-header">
+        <div class="hero-meta">
+          <span class="tag-badge tag-core">Analytics &amp; Streaks</span>
+          <span class="tag-badge tag-math">Local-First Storage</span>
+        </div>
+        <h1 class="chapter-title">Study Analytics Dashboard</h1>
+        <p class="chapter-subtitle">
+          Real-time tracking of your reading progress, chapter completions, practical laboratory exercises, and offline notes.
+        </p>
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="dash-stats-grid">
+        <div class="dash-stat-card">
+          <div class="dash-stat-num" id="stat-chapters-read">0 / 31</div>
+          <div class="dash-stat-label">Active Chapters Read</div>
+        </div>
+        <div class="dash-stat-card">
+          <div class="dash-stat-num" id="stat-overall-pct">0%</div>
+          <div class="dash-stat-label">Curriculum Completion</div>
+        </div>
+        <div class="dash-stat-card">
+          <div class="dash-stat-num" id="stat-active-streak">1 Day</div>
+          <div class="dash-stat-label">Study Streak</div>
+        </div>
+        <div class="dash-stat-card">
+          <div class="dash-stat-num" id="stat-saved-notes">0</div>
+          <div class="dash-stat-label">Saved Annotations</div>
+        </div>
+      </div>
+
+      <!-- Part I Checklist -->
+      <div class="chapter-checklist-card" style="margin-bottom: var(--em-space-6);">
+        <div class="checklist-title">
+          <span>Part I: The Image — Chapter Completion Tracker</span>
+          <span class="tag-badge tag-core" id="badge-part1-status">5 Chapters Ready</span>
+        </div>
+        <div class="table-wrap">
+          <table class="checklist-table">
+            <thead>
+              <tr>
+                <th style="width: 80px;">Chapter</th>
+                <th>Title</th>
+                <th style="width: 130px;">Progress</th>
+                <th style="width: 100px;">Status</th>
+                <th style="width: 90px;">Action</th>
+              </tr>
+            </thead>
+            <tbody id="part1-table-body">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Part II Checklist -->
+      <div class="chapter-checklist-card" style="margin-bottom: var(--em-space-6);">
+        <div class="checklist-title">
+          <span>Part II: Improving the Image — Chapter Completion Tracker</span>
+          <span class="tag-badge tag-core" id="badge-part2-status">9 Chapters Ready</span>
+        </div>
+        <div class="table-wrap">
+          <table class="checklist-table">
+            <thead>
+              <tr>
+                <th style="width: 80px;">Chapter</th>
+                <th>Title</th>
+                <th style="width: 130px;">Progress</th>
+                <th style="width: 100px;">Status</th>
+                <th style="width: 90px;">Action</th>
+              </tr>
+            </thead>
+            <tbody id="part2-table-body">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Part III Checklist -->
+      <div class="chapter-checklist-card" style="margin-bottom: var(--em-space-6);">
+        <div class="checklist-title">
+          <span>Part III: Understanding Content — Chapter Completion Tracker</span>
+          <span class="tag-badge tag-core" id="badge-part3-status">6 Chapters Ready</span>
+        </div>
+        <div class="table-wrap">
+          <table class="checklist-table">
+            <thead>
+              <tr>
+                <th style="width: 80px;">Chapter</th>
+                <th>Title</th>
+                <th style="width: 130px;">Progress</th>
+                <th style="width: 100px;">Status</th>
+                <th style="width: 90px;">Action</th>
+              </tr>
+            </thead>
+            <tbody id="part3-table-body">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Part IV Checklist -->
+      <div class="chapter-checklist-card" style="margin-bottom: var(--em-space-6);">
+        <div class="checklist-title">
+          <span>Part IV: Compressing Images — Chapter Completion Tracker</span>
+          <span class="tag-badge tag-core" id="badge-part4-status">4 Chapters Ready</span>
+        </div>
+        <div class="table-wrap">
+          <table class="checklist-table">
+            <thead>
+              <tr>
+                <th style="width: 80px;">Chapter</th>
+                <th>Title</th>
+                <th style="width: 130px;">Progress</th>
+                <th style="width: 100px;">Status</th>
+                <th style="width: 90px;">Action</th>
+              </tr>
+            </thead>
+            <tbody id="part4-table-body">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Part V Checklist -->
+      <div class="chapter-checklist-card">
+        <div class="checklist-title">
+          <span>Part V: Intelligent Vision — Chapter Completion Tracker</span>
+          <span class="tag-badge tag-core" id="badge-part5-status">7 Chapters Ready</span>
+        </div>
+        <div class="table-wrap">
+          <table class="checklist-table">
+            <thead>
+              <tr>
+                <th style="width: 80px;">Chapter</th>
+                <th>Title</th>
+                <th style="width: 130px;">Progress</th>
+                <th style="width: 100px;">Status</th>
+                <th style="width: 90px;">Action</th>
+              </tr>
+            </thead>
+            <tbody id="part5-table-body">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Data Export / Import Actions -->
+      <div class="dash-actions-row">
+        <button id="btn-export-data" class="btn-outline">
+          <span>💾</span> Export Study Backup (JSON)
+        </button>
+        <button id="btn-import-data" class="btn-outline">
+          <span>📥</span> Import Study Backup
+        </button>
+        <button id="btn-reset-data" class="btn-outline" style="color: var(--danger); border-color: rgba(220, 38, 38, 0.3);">
+          <span>⚠️</span> Reset Progress
+        </button>
+        <input type="file" id="file-import" accept=".json" style="display: none;">
+      </div>
+    </main>
+  </div>
+
+  <script src="assets/js/state.js"></script>
+  <script src="assets/js/core.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const CHAPTERS_PART1 = [
+        { id: 'ch01', num: '01', title: 'The Big Picture: What is an Image?', file: 'chapters/ch01-big-picture.html' },
+        { id: 'ch02', num: '02', title: 'Image Formation & Physical Acquisition', file: 'chapters/ch02-image-formation.html' },
+        { id: 'ch03', num: '03', title: 'Spatial Sampling & Quantization', file: 'chapters/ch03-sampling-quantization.html' },
+        { id: 'ch04', num: '04', title: 'Pixels, Matrices, Tensors & Resolution', file: 'chapters/ch04-image-representation.html' },
+        { id: 'ch05', num: '05', title: 'Colour Models & File Formats', file: 'chapters/ch05-colour-models-file-formats.html' }
+      ];
+
+      const CHAPTERS_PART2 = [
+        { id: 'ch06', num: '06', title: 'Point Processing & Intensity Transformations', file: 'chapters/ch06-point-processing.html' },
+        { id: 'ch07', num: '07', title: 'Histograms & Contrast Enhancement', file: 'chapters/ch07-histograms-equalization.html' },
+        { id: 'ch08', num: '08', title: 'Spatial Filtering & Convolution', file: 'chapters/ch08-spatial-filtering.html' },
+        { id: 'ch09', num: '09', title: 'Smoothing & Noise Reduction', file: 'chapters/ch09-smoothing-noise-reduction.html' },
+        { id: 'ch10', num: '10', title: 'Sharpening & Edge Detection', file: 'chapters/ch10-sharpening-edge-detection.html' },
+        { id: 'ch11', num: '11', title: 'Geometric Transformations & Interpolation', file: 'chapters/ch11-geometric-transforms.html' },
+        { id: 'ch12', num: '12', title: '2D Fourier Transform & Frequency Domain', file: 'chapters/ch12-fourier-transform.html' },
+        { id: 'ch13', num: '13', title: 'Frequency-Domain Filtering', file: 'chapters/ch13-frequency-filtering.html' },
+        { id: 'ch14', num: '14', title: 'Image Restoration & Deblurring', file: 'chapters/ch14-image-restoration.html' }
+      ];
+
+      const CHAPTERS_PART3 = [
+        { id: 'ch15', num: '15', title: 'Image Segmentation Fundamentals & Edge Linking', file: 'chapters/ch15-segmentation-fundamentals.html' },
+        { id: 'ch16', num: '16', title: 'Thresholding & Otsu\'s Method', file: 'chapters/ch16-thresholding-otsu.html' },
+        { id: 'ch17', num: '17', title: 'Region-Based Segmentation', file: 'chapters/ch17-region-segmentation.html' },
+        { id: 'ch18', num: '18', title: 'Mathematical Morphology', file: 'chapters/ch18-mathematical-morphology.html' },
+        { id: 'ch19', num: '19', title: 'Image Features & Descriptors', file: 'chapters/ch19-features-descriptors.html' },
+        { id: 'ch20', num: '20', title: 'Local Feature Detectors (SIFT, SURF, ORB & HOG)', file: 'chapters/ch20-sift-surf-orb-hog.html' }
+      ];
+
+      const CHAPTERS_PART4 = [
+        { id: 'ch21', num: '21', title: 'Compression Fundamentals & Information Entropy', file: 'chapters/ch21-compression-entropy.html' },
+        { id: 'ch22', num: '22', title: 'Lossless Coding: Run-Length & Huffman Coding', file: 'chapters/ch22-lossless-coding.html' },
+        { id: 'ch23', num: '23', title: 'Lossy Compression: DCT & JPEG Architecture', file: 'chapters/ch23-lossy-dct-jpeg.html' },
+        { id: 'ch24', num: '24', title: 'Wavelet Compression & JPEG 2000', file: 'chapters/ch24-wavelets-jpeg2000.html' }
+      ];
+
+      const CHAPTERS_PART5 = [
+        { id: 'ch25', num: '25', title: 'Image Classification Foundations', file: 'chapters/ch25-image-classification.html' },
+        { id: 'ch26', num: '26', title: 'Convolutional Neural Networks for Image Processing', file: 'chapters/ch26-cnns-image-processing.html' },
+        { id: 'ch27', num: '27', title: 'Modern Vision Architectures: VGG & ResNet', file: 'chapters/ch27-modern-vision-architectures.html' },
+        { id: 'ch28', num: '28', title: 'Object Detection & YOLO', file: 'chapters/ch28-object-detection-yolo.html' },
+        { id: 'ch29', num: '29', title: 'Image Denoising with Autoencoders', file: 'chapters/ch29-image-denoising-autoencoders.html' },
+        { id: 'ch30', num: '30', title: 'Video Processing & Motion Analysis', file: 'chapters/ch30-video-motion-analysis.html' },
+        { id: 'ch31', num: '31', title: 'DIP Applications, Engineering Context & Responsible Use', file: 'chapters/ch31-dip-applications-engineering.html' }
+      ];
+
+      function renderTable(chapters, tbodyId) {
+        const tbody = document.getElementById(tbodyId);
+        if (!tbody) return { read: 0, pctSum: 0 };
+        tbody.innerHTML = '';
+
+        let readCount = 0;
+        let pctSum = 0;
+
+        chapters.forEach(ch => {
+          const pct = StateManager.getReadProgress(ch.id);
+          pctSum += pct;
+          const isDone = pct >= 90;
+          if (isDone) readCount++;
+
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td><strong style="font-family: var(--font-mono); color: var(--em-accent-text);">C${ch.num}</strong></td>
+            <td><strong style="color: var(--em-text);">${ch.title}</strong></td>
+            <td>
+              <div style="background: var(--em-surface-2); border-radius: 4px; height: 8px; width: 100%; overflow: hidden;">
+                <div style="background: var(--em-accent); height: 100%; width: ${pct}%;"></div>
+              </div>
+              <span style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--em-text-muted);">${pct}%</span>
+            </td>
+            <td>
+              <span class="tag-badge ${isDone ? 'tag-lab' : 'tag-core'}">${isDone ? 'COMPLETED' : pct > 0 ? 'READING' : 'NOT STARTED'}</span>
+            </td>
+            <td>
+              <a href="${ch.file}" class="btn-outline" style="padding: 4px 10px; font-size: 0.78rem;">Open →</a>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        return { read: readCount, pctSum: pctSum };
+      }
+
+      function renderDashboard() {
+        const r1 = renderTable(CHAPTERS_PART1, 'part1-table-body');
+        const r2 = renderTable(CHAPTERS_PART2, 'part2-table-body');
+        const r3 = renderTable(CHAPTERS_PART3, 'part3-table-body');
+        const r4 = renderTable(CHAPTERS_PART4, 'part4-table-body');
+        const r5 = renderTable(CHAPTERS_PART5, 'part5-table-body');
+
+        const totalChapters = CHAPTERS_PART1.length + CHAPTERS_PART2.length + CHAPTERS_PART3.length + CHAPTERS_PART4.length + CHAPTERS_PART5.length;
+        const totalRead = r1.read + r2.read + r3.read + r4.read + r5.read;
+        const totalPct = Math.round((r1.pctSum + r2.pctSum + r3.pctSum + r4.pctSum + r5.pctSum) / totalChapters);
+
+        document.getElementById('stat-chapters-read').innerText = `${totalRead} / ${totalChapters}`;
+        document.getElementById('stat-overall-pct').innerText = `${totalPct}%`;
+      }
+
+      renderDashboard();
+
+      // Export / Import
+      document.getElementById('btn-export-data').addEventListener('click', () => {
+        const json = StateManager.exportData();
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `dip-minibook-backup-${new Date().toISOString().slice(0, 10)}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+      });
+
+      const fileInput = document.getElementById('file-import');
+      document.getElementById('btn-import-data').addEventListener('click', () => fileInput.click());
+      fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          if (StateManager.importData(event.target.result)) {
+            alert('Study progress successfully restored!');
+            renderDashboard();
+          } else {
+            alert('Invalid backup file.');
+          }
+        };
+        reader.readAsText(file);
+      });
+
+      document.getElementById('btn-reset-data').addEventListener('click', () => {
+        if (confirm('Are you sure you want to reset all reading progress? This cannot be undone.')) {
+          localStorage.removeItem('dip-minibook-state');
+          location.reload();
+        }
+      });
+    });
+  </script>
+</body>
+</html>

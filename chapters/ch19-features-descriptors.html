@@ -1,0 +1,4284 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Arpit">
+  <meta name="description" content="Chapter 19: Image Features &amp; Descriptors — Digital Image Processing MiniBook. Boundary Descriptors (Chain Codes, Shape Numbers, Fourier Descriptors), Regional Descriptors (Compactness, Euler Number $E = C - H$), Texture via GLCM, and Hu&#x27;s 7 Invariant Moments">
+  <title>C19: Image Features &amp; Descriptors | DIP MiniBook 📷 Arpit</title>
+
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <link rel="stylesheet" href="../assets/css/chapters.css">
+  <link rel="stylesheet" href="../assets/css/animations.css">
+  <link rel="stylesheet" href="../assets/css/timer.css">
+
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body data-chapter-id="ch19-features-descriptors">
+  <div id="progress-bar"></div>
+
+  <!-- Header -->
+  <header id="main-header">
+    <div class="header-left">
+      <button id="sidebar-toggle" class="icon-btn" aria-label="Toggle navigation drawer" title="Toggle Sidebar (S)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <a href="../index.html" class="brand-logo">
+        <div class="brand-icon">DIP</div>
+        <div class="brand-text">
+          <span class="main">Digital Image Processing</span>
+          <span class="sub">DU DSE-3 Engineering MiniBook</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="header-chapter-title">C19: Image Features &amp; Descriptors</div>
+
+    <div class="header-right">
+      <button id="reading-mode-btn" class="icon-btn" aria-label="Toggle reading focus mode" title="Focus Mode (F)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+          <line x1="8" y1="21" x2="16" y2="21"></line>
+          <line x1="12" y1="17" x2="12" y2="21"></line>
+        </svg>
+      </button>
+      <button id="tts-toggle" class="icon-btn" aria-label="Audio Reader" title="Audio Reader">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+        </svg>
+      </button>
+      <button id="theme-toggle" class="icon-btn" aria-label="Cycle theme" title="Theme (T)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="12" cy="12" r="4.5"></circle>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Sidebar Overlay -->
+  <div id="sidebar-overlay"></div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" aria-expanded="true">
+    <div class="sidebar-nav">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">General</div>
+        <a href="../index.html" class="sidebar-link">
+          <span class="link-icon">🏛️</span>
+          <span>Subject Portal</span>
+        </a>
+        <a href="../progress.html" class="sidebar-link">
+          <span class="link-icon">📊</span>
+          <span>Study Dashboard</span>
+        </a>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Current Chapter Sections</div>
+        <a href="#s-19-1" class="sidebar-link"><span class="link-icon">📌</span><span>19.1 Why Features?</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-19-2" class="sidebar-link"><span class="link-icon">📌</span><span>19.2 Feature vs Descriptor vs Keypoint</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-19-3" class="sidebar-link"><span class="link-icon">📌</span><span>19.3 What Makes a Good Feature?</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-19-4" class="sidebar-link"><span class="link-icon">📌</span><span>19.4 Feature Types</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-19-5" class="sidebar-link"><span class="link-icon">📌</span><span>19.5 Global vs Local Features</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-19-6" class="sidebar-link"><span class="link-icon">📌</span><span>19.6 Why Local Features Matter</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-19-7" class="sidebar-link"><span class="link-icon">📌</span><span>19.7 Feature Detection vs Feature Description</span> </a>
+      <a href="#s-19-8" class="sidebar-link"><span class="link-icon">📌</span><span>19.8 Feature Matching</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-19-9" class="sidebar-link"><span class="link-icon">📌</span><span>19.9 Worked Descriptor Distance</span> </a>
+      <a href="#s-19-10" class="sidebar-link"><span class="link-icon">📌</span><span>19.10 Why Descriptor Distance Is Not Universal</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-19-11" class="sidebar-link"><span class="link-icon">📌</span><span>19.11 Hamming Distance</span> </a>
+      <a href="#s-19-12" class="sidebar-link"><span class="link-icon">📌</span><span>19.12 What Is Invariance?</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-19-13" class="sidebar-link"><span class="link-icon">📌</span><span>19.13 What Is Equivariance?</span> </a>
+      <a href="#s-19-14" class="sidebar-link"><span class="link-icon">📌</span><span>19.14 Corners</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-19-15" class="sidebar-link"><span class="link-icon">📌</span><span>19.15 Harris Corner Intuition</span> </a>
+      <a href="#s-19-16" class="sidebar-link"><span class="link-icon">📌</span><span>19.16 Harris Interpretation</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-19-17" class="sidebar-link"><span class="link-icon">📌</span><span>19.17 Harris Response</span> </a>
+      <a href="#s-19-18" class="sidebar-link"><span class="link-icon">📌</span><span>19.18 Worked Harris-Style Interpretation</span> </a>
+      <a href="#s-19-19" class="sidebar-link"><span class="link-icon">📌</span><span>19.19 Why Corners Are Useful</span> </a>
+      <a href="#s-19-20" class="sidebar-link"><span class="link-icon">📌</span><span>19.20 Blobs</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-19-21" class="sidebar-link"><span class="link-icon">📌</span><span>19.21 Scale Space</span> </a>
+      <a href="#s-19-22" class="sidebar-link"><span class="link-icon">📌</span><span>19.22 Difference of Gaussians</span> </a>
+      <a href="#s-19-23" class="sidebar-link"><span class="link-icon">📌</span><span>19.23 Feature Descriptor Goals</span> </a>
+      <a href="#s-19-24" class="sidebar-link"><span class="link-icon">📌</span><span>19.24 Hand-Crafted vs Learned Features</span> </a>
+      <a href="#s-19-25" class="sidebar-link"><span class="link-icon">📌</span><span>19.25 SIFT — Big Picture</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-19-26" class="sidebar-link"><span class="link-icon">📌</span><span>19.26 SIFT Scale-Space Construction</span> </a>
+      <a href="#s-19-27" class="sidebar-link"><span class="link-icon">📌</span><span>19.27 SIFT Keypoint Localization</span> </a>
+      <a href="#s-19-28" class="sidebar-link"><span class="link-icon">📌</span><span>19.28 SIFT Keypoint Refinement</span> </a>
+      <a href="#s-19-29" class="sidebar-link"><span class="link-icon">📌</span><span>19.29 SIFT Orientation Assignment</span> </a>
+      <a href="#s-19-30" class="sidebar-link"><span class="link-icon">📌</span><span>19.30 Why Orientation Assignment Helps</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-19-31" class="sidebar-link"><span class="link-icon">📌</span><span>19.31 SIFT Descriptor Construction</span> </a>
+      <a href="#s-19-32" class="sidebar-link"><span class="link-icon">📌</span><span>19.32 What the 128 Dimensions Represent</span> </a>
+      <a href="#s-19-33" class="sidebar-link"><span class="link-icon">📌</span><span>19.33 SIFT Descriptor Normalization</span> </a>
+      <a href="#s-19-34" class="sidebar-link"><span class="link-icon">📌</span><span>19.34 Worked Normalization Example</span> </a>
+      <a href="#s-19-35" class="sidebar-link"><span class="link-icon">📌</span><span>19.35 SIFT Matching</span> </a>
+      <a href="#s-19-36" class="sidebar-link"><span class="link-icon">📌</span><span>19.36 Lowe-Style Ratio Test</span> </a>
+      <a href="#s-19-37" class="sidebar-link"><span class="link-icon">📌</span><span>19.37 Worked Ratio Example</span> </a>
+      <a href="#s-19-38" class="sidebar-link"><span class="link-icon">📌</span><span>19.38 Why Matching Still Needs Geometric Validation</span> </a>
+      <a href="#s-19-39" class="sidebar-link"><span class="link-icon">📌</span><span>19.39 SURF — Big Picture</span> </a>
+      <a href="#s-19-40" class="sidebar-link"><span class="link-icon">📌</span><span>19.40 SURF Detector Intuition</span> </a>
+      <a href="#s-19-41" class="sidebar-link"><span class="link-icon">📌</span><span>19.41 Integral Image</span> </a>
+      <a href="#s-19-42" class="sidebar-link"><span class="link-icon">📌</span><span>19.42 SURF Descriptor</span> </a>
+      <a href="#s-19-43" class="sidebar-link"><span class="link-icon">📌</span><span>19.43 SIFT vs SURF</span> </a>
+      <a href="#s-19-44" class="sidebar-link"><span class="link-icon">📌</span><span>19.44 ORB — Big Picture</span> </a>
+      <a href="#s-19-45" class="sidebar-link"><span class="link-icon">📌</span><span>19.45 FAST Detector</span> </a>
+      <a href="#s-19-46" class="sidebar-link"><span class="link-icon">📌</span><span>19.46 ORB Orientation</span> </a>
+      <a href="#s-19-47" class="sidebar-link"><span class="link-icon">📌</span><span>19.47 BRIEF Descriptor</span> </a>
+      <a href="#s-19-48" class="sidebar-link"><span class="link-icon">📌</span><span>19.48 Why ORB Is Fast</span> </a>
+      <a href="#s-19-49" class="sidebar-link"><span class="link-icon">📌</span><span>19.49 Worked Hamming Example</span> </a>
+      <a href="#s-19-50" class="sidebar-link"><span class="link-icon">📌</span><span>19.50 SIFT vs ORB</span> </a>
+      <a href="#s-19-51" class="sidebar-link"><span class="link-icon">📌</span><span>19.51 HOG — Histogram of Oriented Gradients</span> </a>
+      <a href="#s-19-52" class="sidebar-link"><span class="link-icon">📌</span><span>19.52 HOG Cell</span> </a>
+      <a href="#s-19-53" class="sidebar-link"><span class="link-icon">📌</span><span>19.53 HOG Orientation Histogram</span> </a>
+      <a href="#s-19-54" class="sidebar-link"><span class="link-icon">📌</span><span>19.54 Why HOG Works for Shape</span> </a>
+      <a href="#s-19-55" class="sidebar-link"><span class="link-icon">📌</span><span>19.55 HOG Block Normalization</span> </a>
+      <a href="#s-19-56" class="sidebar-link"><span class="link-icon">📌</span><span>19.56 Worked HOG Normalization</span> </a>
+      <a href="#s-19-57" class="sidebar-link"><span class="link-icon">📌</span><span>19.57 HOG vs SIFT</span> </a>
+      <a href="#s-19-58" class="sidebar-link"><span class="link-icon">📌</span><span>19.58 HOG vs ORB</span> </a>
+      <a href="#s-19-59" class="sidebar-link"><span class="link-icon">📌</span><span>19.59 Descriptor Comparison Overview</span> </a>
+      <a href="#s-19-60" class="sidebar-link"><span class="link-icon">📌</span><span>19.60 Choosing a Feature Method</span> </a>
+      <a href="#s-19-61" class="sidebar-link"><span class="link-icon">📌</span><span>19.61 Matching Pipeline</span> </a>
+      <a href="#s-19-62" class="sidebar-link"><span class="link-icon">📌</span><span>19.62 RANSAC for Geometric Verification</span> </a>
+      <a href="#s-19-63" class="sidebar-link"><span class="link-icon">📌</span><span>19.63 Reprojection Error</span> </a>
+      <a href="#s-19-64" class="sidebar-link"><span class="link-icon">📌</span><span>19.64 Worked Reprojection Error</span> </a>
+      <a href="#s-19-65" class="sidebar-link"><span class="link-icon">📌</span><span>19.65 Feature Density</span> </a>
+      <a href="#s-19-66" class="sidebar-link"><span class="link-icon">📌</span><span>19.66 Repeated Patterns</span> </a>
+      <a href="#s-19-67" class="sidebar-link"><span class="link-icon">📌</span><span>19.67 Illumination Effects</span> </a>
+      <a href="#s-19-68" class="sidebar-link"><span class="link-icon">📌</span><span>19.68 Blur Effects</span> </a>
+      <a href="#s-19-69" class="sidebar-link"><span class="link-icon">📌</span><span>19.69 Feature Extraction from Segmented Regions</span> </a>
+      <a href="#s-19-70" class="sidebar-link"><span class="link-icon">📌</span><span>19.70 Shape Features from Masks</span> </a>
+      <a href="#s-19-71" class="sidebar-link"><span class="link-icon">📌</span><span>19.71 Moments</span> </a>
+      <a href="#s-19-72" class="sidebar-link"><span class="link-icon">📌</span><span>19.72 Worked Moment Example</span> </a>
+      <a href="#s-19-73" class="sidebar-link"><span class="link-icon">📌</span><span>19.73 Shape vs Local Descriptor</span> </a>
+      <a href="#s-19-74" class="sidebar-link"><span class="link-icon">📌</span><span>19.74 Feature Normalization</span> </a>
+      <a href="#s-19-75" class="sidebar-link"><span class="link-icon">📌</span><span>19.75 Feature Selection</span> </a>
+      <a href="#s-19-76" class="sidebar-link"><span class="link-icon">📌</span><span>19.76 Dimensionality Reduction</span> </a>
+      <a href="#s-19-77" class="sidebar-link"><span class="link-icon">📌</span><span>19.77 Feature Engineering Pipeline</span> </a>
+      <a href="#s-19-78" class="sidebar-link"><span class="link-icon">📌</span><span>19.78 Classical Features vs CNN Features</span> </a>
+      <a href="#s-19-79" class="sidebar-link"><span class="link-icon">📌</span><span>19.79 Feature Matching and Classification</span> </a>
+      <a href="#s-19-80" class="sidebar-link"><span class="link-icon">📌</span><span>19.80 Evaluation of Feature Detectors</span> </a>
+      <a href="#s-19-81" class="sidebar-link"><span class="link-icon">📌</span><span>19.81 Feature Matching Evaluation</span> </a>
+      <a href="#s-19-82" class="sidebar-link"><span class="link-icon">📌</span><span>19.82 Descriptor Distance Distributions</span> </a>
+      <a href="#s-19-83" class="sidebar-link"><span class="link-icon">📌</span><span>19.83 Practical Experiment — SIFT vs ORB</span> </a>
+      <a href="#s-19-84" class="sidebar-link"><span class="link-icon">📌</span><span>19.84 Practical Experiment — HOG</span> </a>
+      <a href="#s-19-85" class="sidebar-link"><span class="link-icon">📌</span><span>19.85 Common Traps</span> </a>
+      <a href="#s-19-86" class="sidebar-link"><span class="link-icon">📌</span><span>19.86 Exam Formula Sheet</span> </a>
+      <a href="#s-19-87" class="sidebar-link"><span class="link-icon">📌</span><span>19.87 Exam-Style Problem — Descriptor Distance</span> </a>
+      <a href="#s-19-88" class="sidebar-link"><span class="link-icon">📌</span><span>19.88 Exam-Style Problem — Harris Interpretation</span> </a>
+      <a href="#s-19-89" class="sidebar-link"><span class="link-icon">📌</span><span>19.89 Exam-Style Problem — SIFT Dimension</span> </a>
+      <a href="#s-19-90" class="sidebar-link"><span class="link-icon">📌</span><span>19.90 Exam-Style Problem — ORB Matching</span> </a>
+      <a href="#s-19-91" class="sidebar-link"><span class="link-icon">📌</span><span>19.91 Exam-Style Problem — Ratio Test</span> </a>
+      <a href="#s-19-92" class="sidebar-link"><span class="link-icon">📌</span><span>19.92 Engineering Insight — Features Are a Compression of Meaning</span> </a>
+      <a href="#s-19-93" class="sidebar-link"><span class="link-icon">📌</span><span>19.93 Cross-Book Bridges</span> </a>
+      <a href="#s-19-94" class="sidebar-link"><span class="link-icon">📌</span><span>19.94 Quick Recall</span> </a>
+      <a href="#s-19-95" class="sidebar-link"><span class="link-icon">📌</span><span>19.95 Chapter Checkpoint</span> </a>
+      <a href="#s-19-96" class="sidebar-link"><span class="link-icon">📌</span><span>19.96 Connection Forward</span> </a>
+      <a href="#s-19-97" class="sidebar-link"><span class="link-icon">📌</span><span>19.97 Worked Example — 10-Mark University Model Answer: Gray-Level Co-occurrence Matrix (GLCM)</span> </a>
+      <a href="#s-19-98" class="sidebar-link"><span class="link-icon">📌</span><span>19.98 Topological Invariant: The Euler Number</span> </a>
+      </div>
+
+      
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-i">Part I — The Image</div>
+      <a href="ch01-big-picture.html" class="sidebar-link"><span class="link-icon">01</span><span>The Big Picture</span></a>
+      <a href="ch02-image-formation.html" class="sidebar-link"><span class="link-icon">02</span><span>Formation & Acquisition</span></a>
+      <a href="ch03-sampling-quantization.html" class="sidebar-link"><span class="link-icon">03</span><span>Sampling & Quantization</span></a>
+      <a href="ch04-image-representation.html" class="sidebar-link"><span class="link-icon">04</span><span>Pixels, Matrices & Resolution</span></a>
+      <a href="ch05-colour-models-file-formats.html" class="sidebar-link"><span class="link-icon">05</span><span>Colour Models & Formats</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-ii">Part II — Improving the Image</div>
+      <a href="ch06-point-processing.html" class="sidebar-link"><span class="link-icon">06</span><span>Point Processing & Intensity</span></a>
+      <a href="ch07-histograms-equalization.html" class="sidebar-link"><span class="link-icon">07</span><span>Histograms & Equalization</span></a>
+      <a href="ch08-spatial-filtering.html" class="sidebar-link"><span class="link-icon">08</span><span>Spatial Filtering & Convolution</span></a>
+      <a href="ch09-smoothing-noise-reduction.html" class="sidebar-link"><span class="link-icon">09</span><span>Smoothing & Noise Reduction</span></a>
+      <a href="ch10-sharpening-edge-detection.html" class="sidebar-link"><span class="link-icon">10</span><span>Sharpening & Edge Detection</span></a>
+      <a href="ch11-geometric-transforms.html" class="sidebar-link"><span class="link-icon">11</span><span>Geometric Transforms</span></a>
+      <a href="ch12-fourier-transform.html" class="sidebar-link"><span class="link-icon">12</span><span>Fourier Transform & Frequency</span></a>
+      <a href="ch13-frequency-filtering.html" class="sidebar-link"><span class="link-icon">13</span><span>Frequency-Domain Filtering</span></a>
+      <a href="ch14-image-restoration.html" class="sidebar-link"><span class="link-icon">14</span><span>Restoration & Deblurring</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-iii">Part III — Understanding Content</div>
+      <a href="ch15-segmentation-fundamentals.html" class="sidebar-link"><span class="link-icon">15</span><span>Segmentation Fundamentals</span></a>
+      <a href="ch16-thresholding-otsu.html" class="sidebar-link"><span class="link-icon">16</span><span>Thresholding & Otsu Method</span></a>
+      <a href="ch17-region-segmentation.html" class="sidebar-link"><span class="link-icon">17</span><span>Region-Based Segmentation</span></a>
+      <a href="ch18-mathematical-morphology.html" class="sidebar-link"><span class="link-icon">18</span><span>Mathematical Morphology</span></a>
+      <a href="ch19-features-descriptors.html" class="sidebar-link active"><span class="link-icon">19</span><span>Image Features & Descriptors</span></a>
+      <a href="ch20-sift-surf-orb-hog.html" class="sidebar-link"><span class="link-icon">20</span><span>SIFT, SURF, ORB & HOG</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-iv">Part IV — Compressing Images</div>
+      <a href="ch21-compression-entropy.html" class="sidebar-link"><span class="link-icon">21</span><span>Compression & Entropy</span></a>
+      <a href="ch22-lossless-coding.html" class="sidebar-link"><span class="link-icon">22</span><span>Lossless: RLE & Huffman</span></a>
+      <a href="ch23-lossy-dct-jpeg.html" class="sidebar-link"><span class="link-icon">23</span><span>Lossy: DCT & JPEG</span></a>
+      <a href="ch24-wavelets-jpeg2000.html" class="sidebar-link"><span class="link-icon">24</span><span>Wavelets & JPEG 2000</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-v">Part V — Intelligent Vision</div>
+      <a href="ch25-image-classification.html" class="sidebar-link"><span class="link-icon">25</span><span>Image Classification</span></a>
+      <a href="ch26-cnns-image-processing.html" class="sidebar-link"><span class="link-icon">26</span><span>CNNs for Image Processing</span></a>
+      <a href="ch27-modern-vision-architectures.html" class="sidebar-link"><span class="link-icon">27</span><span>Modern Vision Architectures</span></a>
+      <a href="ch28-object-detection-yolo.html" class="sidebar-link"><span class="link-icon">28</span><span>Object Detection: YOLO</span></a>
+      <a href="ch29-image-denoising-autoencoders.html" class="sidebar-link"><span class="link-icon">29</span><span>Image Denoising Autoencoders</span></a>
+      <a href="ch30-video-motion-analysis.html" class="sidebar-link"><span class="link-icon">30</span><span>Video & Motion Analysis</span></a>
+      <a href="ch31-dip-applications-engineering.html" class="sidebar-link"><span class="link-icon">31</span><span>DIP Applications & Ethics</span></a>
+    </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-brand-mark">
+        <div class="mark">DU</div>
+        <div>
+          <strong>DSE-3 MiniBook</strong>
+          <div>University of Delhi</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mandatory Shell Wrapper -->
+  <div id="main-content">
+    <main class="chapter-content">
+      <!-- Chapter Hero -->
+      <div class="chapter-hero">
+        <div class="hero-meta">
+          <span class="part-badge part-iii">Understanding Content</span>
+          <span class="chapter-number">CHAPTER 19</span>
+          <span class="reading-time">⏱️ ~65 min read</span>
+          <span class="tag-badge tag-core">Highest Yield (10-mark guarantee)</span>
+        </div>
+        <h1 class="chapter-title">Image Features &amp; Descriptors</h1>
+        <p class="chapter-subtitle">
+          Boundary Descriptors (Chain Codes, Shape Numbers, Fourier Descriptors), Regional Descriptors (Compactness, Euler Number $E = C - H$), Texture via GLCM, and Hu&#x27;s 7 Invariant Moments
+        </p>
+
+        <div class="syllabus-anchor">
+          <span class="syllabus-anchor-label">DU Syllabus</span>
+          <span><strong>Representation and Description:</strong> Boundary representation, Freeman chain codes (4-directional and 8-directional, normalization for rotation and starting point), shape numbers, Fourier descriptors, regional descriptors (simple topological descriptors, Euler number, compactness, circularity), texture analysis (statistical moments, Gray-Level Co-occurrence Matrix GLCM), and moment invariants (central moments, normalized moments, Hu’s 7 moment invariants).</span>
+        </div>
+      </div>
+
+      <!-- In-Page TOC -->
+      <div class="chapter-checklist-card" style="margin-bottom:var(--em-space-8);">
+        <div class="checklist-title">
+          <span>Table of Contents &amp; Visual Section Map</span>
+          <span class="tag-badge tag-math">98 Deep Sections</span>
+        </div>
+        <ul class="part-chapters-list">
+          <li class="part-chapter-item"><a href="#s-19-1"><strong>19.1</strong> Why Features?</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-19-2"><strong>19.2</strong> Feature vs Descriptor vs Keypoint</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-19-3"><strong>19.3</strong> What Makes a Good Feature?</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-19-4"><strong>19.4</strong> Feature Types</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-19-5"><strong>19.5</strong> Global vs Local Features</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-19-6"><strong>19.6</strong> Why Local Features Matter</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-19-7"><strong>19.7</strong> Feature Detection vs Feature Description</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-8"><strong>19.8</strong> Feature Matching</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-19-9"><strong>19.9</strong> Worked Descriptor Distance</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-10"><strong>19.10</strong> Why Descriptor Distance Is Not Universal</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-19-11"><strong>19.11</strong> Hamming Distance</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-12"><strong>19.12</strong> What Is Invariance?</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-19-13"><strong>19.13</strong> What Is Equivariance?</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-14"><strong>19.14</strong> Corners</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-19-15"><strong>19.15</strong> Harris Corner Intuition</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-16"><strong>19.16</strong> Harris Interpretation</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-19-17"><strong>19.17</strong> Harris Response</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-18"><strong>19.18</strong> Worked Harris-Style Interpretation</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-19"><strong>19.19</strong> Why Corners Are Useful</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-20"><strong>19.20</strong> Blobs</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-19-21"><strong>19.21</strong> Scale Space</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-22"><strong>19.22</strong> Difference of Gaussians</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-23"><strong>19.23</strong> Feature Descriptor Goals</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-24"><strong>19.24</strong> Hand-Crafted vs Learned Features</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-25"><strong>19.25</strong> SIFT — Big Picture</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-19-26"><strong>19.26</strong> SIFT Scale-Space Construction</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-27"><strong>19.27</strong> SIFT Keypoint Localization</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-28"><strong>19.28</strong> SIFT Keypoint Refinement</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-29"><strong>19.29</strong> SIFT Orientation Assignment</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-30"><strong>19.30</strong> Why Orientation Assignment Helps</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-19-31"><strong>19.31</strong> SIFT Descriptor Construction</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-32"><strong>19.32</strong> What the 128 Dimensions Represent</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-33"><strong>19.33</strong> SIFT Descriptor Normalization</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-34"><strong>19.34</strong> Worked Normalization Example</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-35"><strong>19.35</strong> SIFT Matching</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-36"><strong>19.36</strong> Lowe-Style Ratio Test</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-37"><strong>19.37</strong> Worked Ratio Example</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-38"><strong>19.38</strong> Why Matching Still Needs Geometric Validation</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-39"><strong>19.39</strong> SURF — Big Picture</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-40"><strong>19.40</strong> SURF Detector Intuition</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-41"><strong>19.41</strong> Integral Image</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-42"><strong>19.42</strong> SURF Descriptor</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-43"><strong>19.43</strong> SIFT vs SURF</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-44"><strong>19.44</strong> ORB — Big Picture</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-45"><strong>19.45</strong> FAST Detector</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-46"><strong>19.46</strong> ORB Orientation</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-47"><strong>19.47</strong> BRIEF Descriptor</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-48"><strong>19.48</strong> Why ORB Is Fast</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-49"><strong>19.49</strong> Worked Hamming Example</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-50"><strong>19.50</strong> SIFT vs ORB</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-51"><strong>19.51</strong> HOG — Histogram of Oriented Gradients</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-52"><strong>19.52</strong> HOG Cell</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-53"><strong>19.53</strong> HOG Orientation Histogram</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-54"><strong>19.54</strong> Why HOG Works for Shape</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-55"><strong>19.55</strong> HOG Block Normalization</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-56"><strong>19.56</strong> Worked HOG Normalization</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-57"><strong>19.57</strong> HOG vs SIFT</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-58"><strong>19.58</strong> HOG vs ORB</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-59"><strong>19.59</strong> Descriptor Comparison Overview</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-60"><strong>19.60</strong> Choosing a Feature Method</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-61"><strong>19.61</strong> Matching Pipeline</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-62"><strong>19.62</strong> RANSAC for Geometric Verification</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-63"><strong>19.63</strong> Reprojection Error</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-64"><strong>19.64</strong> Worked Reprojection Error</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-65"><strong>19.65</strong> Feature Density</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-66"><strong>19.66</strong> Repeated Patterns</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-67"><strong>19.67</strong> Illumination Effects</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-68"><strong>19.68</strong> Blur Effects</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-69"><strong>19.69</strong> Feature Extraction from Segmented Regions</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-70"><strong>19.70</strong> Shape Features from Masks</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-71"><strong>19.71</strong> Moments</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-72"><strong>19.72</strong> Worked Moment Example</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-73"><strong>19.73</strong> Shape vs Local Descriptor</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-74"><strong>19.74</strong> Feature Normalization</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-75"><strong>19.75</strong> Feature Selection</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-76"><strong>19.76</strong> Dimensionality Reduction</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-77"><strong>19.77</strong> Feature Engineering Pipeline</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-78"><strong>19.78</strong> Classical Features vs CNN Features</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-79"><strong>19.79</strong> Feature Matching and Classification</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-80"><strong>19.80</strong> Evaluation of Feature Detectors</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-81"><strong>19.81</strong> Feature Matching Evaluation</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-82"><strong>19.82</strong> Descriptor Distance Distributions</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-83"><strong>19.83</strong> Practical Experiment — SIFT vs ORB</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-84"><strong>19.84</strong> Practical Experiment — HOG</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-85"><strong>19.85</strong> Common Traps</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-86"><strong>19.86</strong> Exam Formula Sheet</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-87"><strong>19.87</strong> Exam-Style Problem — Descriptor Distance</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-88"><strong>19.88</strong> Exam-Style Problem — Harris Interpretation</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-89"><strong>19.89</strong> Exam-Style Problem — SIFT Dimension</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-90"><strong>19.90</strong> Exam-Style Problem — ORB Matching</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-91"><strong>19.91</strong> Exam-Style Problem — Ratio Test</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-92"><strong>19.92</strong> Engineering Insight — Features Are a Compression of Meaning</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-93"><strong>19.93</strong> Cross-Book Bridges</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-94"><strong>19.94</strong> Quick Recall</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-95"><strong>19.95</strong> Chapter Checkpoint</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-96"><strong>19.96</strong> Connection Forward</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-97"><strong>19.97</strong> Worked Example — 10-Mark University Model Answer: Gray-Level Co-occurrence Matrix (GLCM)</a> </li>
+      <li class="part-chapter-item"><a href="#s-19-98"><strong>19.98</strong> Topological Invariant: The Euler Number</a> </li>
+        </ul>
+      </div>
+
+      <div class="concept-hook" style="margin-bottom:var(--em-space-8);"><h1>Chapter 19 — Image Features and Descriptors</h1>
+<blockquote>
+<p><strong>Chapter thesis</strong><br />
+A raw image contains enormous amounts of numerical information, but many computer-vision tasks need a more compact representation of useful structure. A <strong>feature</strong> is a measurable property of an image or region; a <strong>descriptor</strong> is a structured numerical representation intended to characterize that feature so it can be compared, matched or used for later analysis.</p>
+</blockquote>
+<p><strong>Part III — Understanding Image Content</strong><br />
+<strong>Syllabus anchor:</strong> Unit III places feature-detection methods such as SIFT, SURF and HOG after segmentation and morphology. fileciteturn4file0L41-L45</p>
+<hr /></div>
+
+      <!-- All Numbered Sections -->
+      
+  <!-- SECTION 19.1: Why Features? -->
+  <section id="s-19-1" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.1</span>
+      <h2>Why Features?</h2>
+      <button class="bookmark-btn" data-id="s-19-1" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A 1920×1080 RGB image contains millions of channel samples.</p>
+<p>A vision system may not need all of them for every task.</p>
+<p>Instead, it can extract information such as:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>edges
+corners
+blobs
+texture
+shape
+colour statistics
+gradient orientation
+keypoints</code></pre>
+</div></p>
+<p>The pipeline becomes:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>IMAGE
+  ↓
+candidate structure
+  ↓
+FEATURE DETECTION
+  ↓
+FEATURE DESCRIPTION
+  ↓
+feature vectors
+  ↓
+matching / classification / recognition</code></pre>
+</div></p>
+<p>This is a major transition from pixel processing to compact representation.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.2: Feature vs Descriptor vs Keypoint -->
+  <section id="s-19-2" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.2</span>
+      <h2>Feature vs Descriptor vs Keypoint</h2>
+      <button class="bookmark-btn" data-id="s-19-2" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>These terms are often mixed together.</p>
+<h3>Feature</h3>
+<p>A measurable property or structure.</p>
+<p>Examples:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>edge strength
+corner response
+texture statistic
+shape
+colour distribution</code></pre>
+</div></p>
+<h3>Keypoint</h3>
+<p>A detected image location considered distinctive or important.</p>
+<p>Example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>corner at (x,y)</code></pre>
+</div></p>
+<h3>Descriptor</h3>
+<p>A numerical representation associated with a feature/keypoint.</p>
+<p>Example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>vector of local gradient statistics</code></pre>
+</div></p>
+<p>The distinction can be summarized:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>keypoint
+→ WHERE
+
+feature
+→ WHAT structure/property
+
+descriptor
+→ HOW that structure is numerically represented</code></pre>
+</div></p>
+<p>The exact terminology varies across computer-vision literature.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.3: What Makes a Good Feature? -->
+  <section id="s-19-3" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.3</span>
+      <h2>What Makes a Good Feature?</h2>
+      <button class="bookmark-btn" data-id="s-19-3" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A useful feature often aims for some combination of:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>distinctiveness
+repeatability
+localization
+robustness
+compactness
+computational efficiency</code></pre>
+</div></p>
+<p>A feature should ideally remain recognizable when the image undergoes expected changes.</p>
+<p>For example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>small illumination change
+→ feature remains useful</code></pre>
+</div></p>
+<p>or:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>moderate rotation
+→ descriptor remains matchable</code></pre>
+</div></p>
+<p>No classical feature is invariant to every possible transformation.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.4: Feature Types -->
+  <section id="s-19-4" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.4</span>
+      <h2>Feature Types</h2>
+      <button class="bookmark-btn" data-id="s-19-4" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Features can be categorized by the image property they represent.</p>
+<h3>Intensity features</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>mean
+variance
+histogram
+local contrast</code></pre>
+</div></p>
+<h3>Edge features</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>gradient
+edge orientation
+edge density</code></pre>
+</div></p>
+<h3>Corner/keypoint features</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>corner location
+local patch structure</code></pre>
+</div></p>
+<h3>Texture features</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>local variation
+co-occurrence statistics
+frequency patterns</code></pre>
+</div></p>
+<h3>Shape features</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>area
+perimeter
+eccentricity
+curvature
+contour</code></pre>
+</div></p>
+<h3>Colour features</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>channel means
+histograms
+colour moments</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.5: Global vs Local Features -->
+  <section id="s-19-5" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.5</span>
+      <h2>Global vs Local Features</h2>
+      <button class="bookmark-btn" data-id="s-19-5" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Global feature</h3>
+<p>Describes the whole image or large region.</p>
+<p>Example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>global colour histogram</code></pre>
+</div></p>
+<h3>Local feature</h3>
+<p>Describes a small neighbourhood.</p>
+<p>Example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>descriptor around a keypoint</code></pre>
+</div></p>
+<p>Local features are powerful when:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>objects move
+background changes
+image contains multiple objects
+partial visibility occurs</code></pre>
+</div></p>
+<p>because they can represent small distinctive structures.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.6: Why Local Features Matter -->
+  <section id="s-19-6" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.6</span>
+      <h2>Why Local Features Matter</h2>
+      <button class="bookmark-btn" data-id="s-19-6" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose the same object appears:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Image A
+object at left
+
+Image B
+object at right</code></pre>
+</div></p>
+<p>A global representation can change significantly.</p>
+<p>A local descriptor around an object corner can remain similar.</p>
+<p>This supports:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>matching
+registration
+object recognition
+tracking</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.7: Feature Detection vs Feature Description -->
+  <section id="s-19-7" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.7</span>
+      <h2>Feature Detection vs Feature Description</h2>
+      <button class="bookmark-btn" data-id="s-19-7" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>These are separate stages.</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>DETECTION
+→ find interesting locations
+
+DESCRIPTION
+→ encode the local appearance</code></pre>
+</div></p>
+<p>For example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image
+ ↓
+detect keypoints
+ ↓
+300 keypoints
+ ↓
+descriptor for each
+ ↓
+300 feature vectors</code></pre>
+</div></p>
+<p>This is the conceptual structure behind SIFT and ORB.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.8: Feature Matching -->
+  <section id="s-19-8" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.8</span>
+      <h2>Feature Matching</h2>
+      <button class="bookmark-btn" data-id="s-19-8" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Given descriptors:</p>
+<p>
+$$
+\mathbf d_i^A
+$$
+</p>
+<p>from image A and:</p>
+<p>
+$$
+\mathbf d_j^B
+$$
+</p>
+<p>from image B, compute a distance:</p>
+<p>
+$$
+d(\mathbf d_i^A,\mathbf d_j^B)
+$$
+</p>
+<p>and seek compatible pairs.</p>
+<p>For normalized Euclidean descriptors:</p>
+<p>
+$$
+d_E(\mathbf a,\mathbf b)
+=
+\sqrt{
+\sum_k(a_k-b_k)^2
+}
+$$
+</p>
+<p>For binary descriptors, Hamming distance is usually more appropriate.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.9: Worked Descriptor Distance -->
+  <section id="s-19-9" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.9</span>
+      <h2>Worked Descriptor Distance</h2>
+      <button class="bookmark-btn" data-id="s-19-9" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p>
+$$
+\mathbf a=(1,2,3)
+$$
+</p>
+<p>
+$$
+\mathbf b=(2,2,5)
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+d_E=
+\sqrt{
+(1-2)^2+
+(2-2)^2+
+(3-5)^2
+}
+$$
+</p>
+<p>
+$$
+=
+\sqrt{1+0+4}
+$$
+</p>
+<p>
+$$
+\boxed{\sqrt5\approx2.236}
+$$
+</p>
+<p>A smaller distance generally indicates greater similarity under this descriptor metric, assuming the descriptor is designed for Euclidean comparison.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.10: Why Descriptor Distance Is Not Universal -->
+  <section id="s-19-10" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.10</span>
+      <h2>Why Descriptor Distance Is Not Universal</h2>
+      <button class="bookmark-btn" data-id="s-19-10" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Different descriptors use different structures.</p>
+<p>Examples:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>SIFT
+→ floating-point descriptor
+→ often Euclidean/L2-type comparison
+
+ORB
+→ binary descriptor
+→ Hamming distance</code></pre>
+</div></p>
+<p>Therefore:</p>
+<blockquote>
+<p>The distance metric should match the descriptor representation.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.11: Hamming Distance -->
+  <section id="s-19-11" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.11</span>
+      <h2>Hamming Distance</h2>
+      <button class="bookmark-btn" data-id="s-19-11" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For binary vectors:</p>
+<p>
+$$
+\mathbf a=101100
+$$
+</p>
+<p>
+$$
+\mathbf b=100110
+$$
+</p>
+<p>Compare bit by bit:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>1 = same
+0 = same
+1 ≠ 0
+1 = 1
+0 ≠ 1
+0 = 0</code></pre>
+</div></p>
+<p>There are two differing positions.</p>
+<p>Thus:</p>
+<p>
+$$
+\boxed{d_H=2}
+$$
+</p>
+<p>Hamming distance is the number of differing bits.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.12: What Is Invariance? -->
+  <section id="s-19-12" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.12</span>
+      <h2>What Is Invariance?</h2>
+      <button class="bookmark-btn" data-id="s-19-12" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A feature is <strong>invariant</strong> to a transformation when its representation remains sufficiently stable under that transformation.</p>
+<p>Examples:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>rotation invariance
+→ orientation changes, descriptor remains comparable
+
+scale invariance
+→ object size changes, descriptor remains comparable
+
+illumination robustness
+→ brightness changes, descriptor remains useful</code></pre>
+</div></p>
+<p>In practice, invariance is approximate and parameter-dependent.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.13: What Is Equivariance? -->
+  <section id="s-19-13" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.13</span>
+      <h2>What Is Equivariance?</h2>
+      <button class="bookmark-btn" data-id="s-19-13" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <blockquote>
+<p><strong>EXTENSION</strong></p>
+</blockquote>
+<p>A representation is equivariant when a transformation of the input causes a predictable transformation of the output.</p>
+<p>For example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>translate image
+→ keypoint locations translate correspondingly</code></pre>
+</div></p>
+<p>This is different from invariance.</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>INVARIANT
+→ representation stays approximately the same
+
+EQUIVARIANT
+→ representation changes predictably</code></pre>
+</div></p>
+<p>This distinction becomes increasingly important in modern deep learning.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.14: Corners -->
+  <section id="s-19-14" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.14</span>
+      <h2>Corners</h2>
+      <button class="bookmark-btn" data-id="s-19-14" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A corner is a location where intensity changes significantly in more than one direction.</p>
+<p>Compare:</p>
+<h3>Flat region</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>100 100 100
+100 100 100
+100 100 100</code></pre>
+</div></p>
+<h3>Edge</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>100 100 200
+100 100 200
+100 100 200</code></pre>
+</div></p>
+<p>Strong change in one direction.</p>
+<h3>Corner</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>100 100 200
+100 100 200
+200 200 200</code></pre>
+</div></p>
+<p>Changes in multiple directions.</p>
+<p>Corners are useful because they are often more distinctive than points on a uniform edge.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.15: Harris Corner Intuition -->
+  <section id="s-19-15" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.15</span>
+      <h2>Harris Corner Intuition</h2>
+      <button class="bookmark-btn" data-id="s-19-15" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The Harris detector examines local intensity change under small shifts.</p>
+<p>A common formulation uses the structure tensor / second-moment matrix:</p>
+<p>
+$$
+M=
+\sum_{(x,y)\in W}
+w(x,y)
+\begin{bmatrix}
+I_x^2 & I_xI_y\\
+I_xI_y & I_y^2
+\end{bmatrix}
+$$
+</p>
+<p>where:</p>
+<ul>
+<li>$I_x,I_y$ are image gradients,</li>
+<li>$w$ weights the local neighbourhood.</li>
+</ul>
+<p>The eigenvalues:</p>
+<p>
+$$
+\lambda_1,\lambda_2
+$$
+</p>
+<p>describe intensity variation in two principal directions.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.16: Harris Interpretation -->
+  <section id="s-19-16" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.16</span>
+      <h2>Harris Interpretation</h2>
+      <button class="bookmark-btn" data-id="s-19-16" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Flat region</h3>
+<p>
+$$
+\lambda_1\approx0,\quad\lambda_2\approx0
+$$
+</p>
+<h3>Edge</h3>
+<p>One large, one small:</p>
+<p>
+$$
+\lambda_1\gg\lambda_2
+$$
+</p>
+<h3>Corner</h3>
+<p>Both large:</p>
+<p>
+$$
+\lambda_1\approx\lambda_2\gg0
+$$
+</p>
+<p>This is a beautiful example of how linear algebra becomes geometric image understanding.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.17: Harris Response -->
+  <section id="s-19-17" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.17</span>
+      <h2>Harris Response</h2>
+      <button class="bookmark-btn" data-id="s-19-17" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A common Harris response is:</p>
+<p>
+$$
+R=
+\det(M)-k[\operatorname{trace}(M)]^2
+$$
+</p>
+<p>where:</p>
+<p>
+$$
+\det(M)=\lambda_1\lambda_2
+$$
+</p>
+<p>and:</p>
+<p>
+$$
+\operatorname{trace}(M)=\lambda_1+\lambda_2
+$$
+</p>
+<p>The parameter $k$ controls the response behaviour.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.18: Worked Harris-Style Interpretation -->
+  <section id="s-19-18" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.18</span>
+      <h2>Worked Harris-Style Interpretation</h2>
+      <button class="bookmark-btn" data-id="s-19-18" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p>
+$$
+\lambda_1=100
+$$
+</p>
+<p>and:</p>
+<p>
+$$
+\lambda_2=80
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+\det(M)=8000
+$$
+</p>
+<p>
+$$
+\operatorname{trace}(M)=180
+$$
+</p>
+<p>For:</p>
+<p>
+$$
+k=0.04
+$$
+</p>
+<p>
+$$
+R=8000-0.04(180)^2
+$$
+</p>
+<p>
+$$
+=8000-0.04(32400)
+$$
+</p>
+<p>
+$$
+=8000-1296
+$$
+</p>
+<p>
+$$
+\boxed{6704}
+$$
+</p>
+<p>A strong positive response is consistent with corner-like structure under the Harris formulation.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.19: Why Corners Are Useful -->
+  <section id="s-19-19" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.19</span>
+      <h2>Why Corners Are Useful</h2>
+      <button class="bookmark-btn" data-id="s-19-19" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A local corner is often:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>more distinctive
+than
+a point along a long uniform edge</code></pre>
+</div></p>
+<p>because there is significant variation in multiple directions.</p>
+<p>This makes corners useful for:</p>
+<ul>
+<li>image registration,</li>
+<li>panorama stitching,</li>
+<li>tracking,</li>
+<li>object recognition.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.20: Blobs -->
+  <section id="s-19-20" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.20</span>
+      <h2>Blobs</h2>
+      <button class="bookmark-btn" data-id="s-19-20" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A blob is a region-like structure that differs from its surroundings.</p>
+<p>Examples:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>bright spot on dark background
+dark spot on bright background</code></pre>
+</div></p>
+<p>Blob detectors often use scale-space methods.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>small scale
+→ small structures
+
+large scale
+→ larger structures</code></pre>
+</div></p>
+<p>This leads to multi-scale feature detection.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.21: Scale Space -->
+  <section id="s-19-21" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.21</span>
+      <h2>Scale Space</h2>
+      <button class="bookmark-btn" data-id="s-19-21" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <blockquote>
+<p><strong>EXTENSION</strong></p>
+</blockquote>
+<p>A Gaussian scale space can be written:</p>
+<p>
+$$
+L(x,y,\sigma)
+=
+G(x,y,\sigma)*I(x,y)
+$$
+</p>
+<p>where $\sigma$ controls scale.</p>
+<p>As:</p>
+<p>
+$$
+\sigma\uparrow
+$$
+</p>
+<p>fine structures are increasingly smoothed.</p>
+<p>Features can then be detected across multiple scales.</p>
+<p>This concept is central to SIFT.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.22: Difference of Gaussians -->
+  <section id="s-19-22" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.22</span>
+      <h2>Difference of Gaussians</h2>
+      <button class="bookmark-btn" data-id="s-19-22" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>SIFT uses a Difference-of-Gaussians (DoG) scale-space approximation.</p>
+<p>
+$$
+D(x,y,\sigma)
+=
+L(x,y,k\sigma)-L(x,y,\sigma)
+$$
+</p>
+<p>This approximates a scaled Laplacian-of-Gaussian response under appropriate conditions.</p>
+<p>It is efficient for detecting scale-space extrema.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.23: Feature Descriptor Goals -->
+  <section id="s-19-23" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.23</span>
+      <h2>Feature Descriptor Goals</h2>
+      <button class="bookmark-btn" data-id="s-19-23" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A descriptor should ideally encode enough local information to distinguish one feature from another while remaining compact enough for efficient matching.</p>
+<p>Potential properties:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>distinctive
+repeatable
+robust
+compact
+matchable</code></pre>
+</div></p>
+<p>This creates a tradeoff:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>more information
+↔
+larger computation/storage</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.24: Hand-Crafted vs Learned Features -->
+  <section id="s-19-24" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.24</span>
+      <h2>Hand-Crafted vs Learned Features</h2>
+      <button class="bookmark-btn" data-id="s-19-24" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Hand-crafted</h3>
+<p>Designed by mathematical/algorithmic rules.</p>
+<p>Examples:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>SIFT
+SURF
+HOG
+ORB</code></pre>
+</div></p>
+<h3>Learned</h3>
+<p>Learned from data.</p>
+<p>Examples:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>CNN embeddings
+deep local features
+transformer embeddings</code></pre>
+</div></p>
+<p>This chapter focuses on classical descriptors required by the course, while Part V returns to learned representations.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.25: SIFT — Big Picture -->
+  <section id="s-19-25" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.25</span>
+      <h2>SIFT — Big Picture</h2>
+      <button class="bookmark-btn" data-id="s-19-25" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><strong>Scale-Invariant Feature Transform (SIFT)</strong> is a classical feature-detection and description method designed for strong robustness to scale and rotation changes, with additional resilience to moderate illumination and viewpoint changes.</p>
+<p>A simplified SIFT pipeline is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image
+ ↓
+scale-space construction
+ ↓
+Difference of Gaussians
+ ↓
+keypoint localization
+ ↓
+remove unstable/low-contrast points
+ ↓
+assign dominant orientation
+ ↓
+build local gradient descriptor
+ ↓
+descriptor vector</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.26: SIFT Scale-Space Construction -->
+  <section id="s-19-26" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.26</span>
+      <h2>SIFT Scale-Space Construction</h2>
+      <button class="bookmark-btn" data-id="s-19-26" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A Gaussian pyramid uses multiple scales:</p>
+<p>
+$$
+L(x,y,\sigma)
+=
+G(x,y,\sigma)*I(x,y)
+$$
+</p>
+<p>SIFT examines differences between nearby scales:</p>
+<p>
+$$
+D(x,y,\sigma)
+=
+L(x,y,k\sigma)-L(x,y,\sigma)
+$$
+</p>
+<p>This helps identify structures that persist around particular scales.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.27: SIFT Keypoint Localization -->
+  <section id="s-19-27" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.27</span>
+      <h2>SIFT Keypoint Localization</h2>
+      <button class="bookmark-btn" data-id="s-19-27" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Candidate extrema are detected by comparing a point with neighbours in:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>space
++
+scale</code></pre>
+</div></p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>3×3 spatial neighbours
++
+previous scale
++
+next scale</code></pre>
+</div></p>
+<p>A candidate is retained if it is a local maximum/minimum under the DoG representation.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.28: SIFT Keypoint Refinement -->
+  <section id="s-19-28" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.28</span>
+      <h2>SIFT Keypoint Refinement</h2>
+      <button class="bookmark-btn" data-id="s-19-28" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Not every candidate is useful.</p>
+<p>Unstable points can be rejected because of:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>low contrast
++
+edge-like instability</code></pre>
+</div></p>
+<p>This improves descriptor repeatability.</p>
+<p>The exact mathematical localization/refinement uses a local Taylor approximation in the original method.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.29: SIFT Orientation Assignment -->
+  <section id="s-19-29" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.29</span>
+      <h2>SIFT Orientation Assignment</h2>
+      <button class="bookmark-btn" data-id="s-19-29" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Around the keypoint, gradient magnitude and orientation are computed.</p>
+<p>A common gradient representation is:</p>
+<p>
+$$
+m(x,y)
+=
+\sqrt{
+[L(x+1,y)-L(x-1,y)]^2
++
+[L(x,y+1)-L(x,y-1)]^2
+}
+$$
+</p>
+<p>and:</p>
+<p>
+$$
+\theta(x,y)
+=
+\operatorname{atan2}
+(
+L(x,y+1)-L(x,y-1),
+L(x+1,y)-L(x-1,y)
+)
+$$
+</p>
+<p>The dominant local orientation is used to normalize the descriptor orientation.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.30: Why Orientation Assignment Helps -->
+  <section id="s-19-30" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.30</span>
+      <h2>Why Orientation Assignment Helps</h2>
+      <button class="bookmark-btn" data-id="s-19-30" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>feature in Image A
+→ rotated 30°</code></pre>
+</div></p>
+<p>Without orientation normalization:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>descriptor changes strongly</code></pre>
+</div></p>
+<p>With orientation normalization:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>local coordinate frame rotates with feature
+→ descriptor remains more comparable</code></pre>
+</div></p>
+<p>This is the core idea behind rotation robustness.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.31: SIFT Descriptor Construction -->
+  <section id="s-19-31" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.31</span>
+      <h2>SIFT Descriptor Construction</h2>
+      <button class="bookmark-btn" data-id="s-19-31" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A common SIFT descriptor uses:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>4 × 4 spatial cells
+×
+8 orientation bins</code></pre>
+</div></p>
+<p>giving:</p>
+<p>
+$$
+4\times4\times8
+=
+\boxed{128}
+$$
+</p>
+<p>descriptor dimensions.</p>
+<p>The descriptor is a floating-point vector.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.32: What the 128 Dimensions Represent -->
+  <section id="s-19-32" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.32</span>
+      <h2>What the 128 Dimensions Represent</h2>
+      <button class="bookmark-btn" data-id="s-19-32" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>They summarize local gradient orientation distributions.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>keypoint neighbourhood
+      ↓
+4×4 cells
+      ↓
+8 orientation bins/cell
+      ↓
+histograms
+      ↓
+128 values</code></pre>
+</div></p>
+<p>The vector is normalized to reduce sensitivity to some illumination changes.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.33: SIFT Descriptor Normalization -->
+  <section id="s-19-33" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.33</span>
+      <h2>SIFT Descriptor Normalization</h2>
+      <button class="bookmark-btn" data-id="s-19-33" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A common pipeline includes vector normalization.</p>
+<p>Let:</p>
+<p>
+$$
+\mathbf d
+$$
+</p>
+<p>be the descriptor.</p>
+<p>A basic L2 normalization is:</p>
+<p>
+$$
+\mathbf d'=
+\frac{\mathbf d}
+{\|\mathbf d\|_2}
+$$
+</p>
+<p>where:</p>
+<p>
+$$
+\|\mathbf d\|_2
+=
+\sqrt{\sum_i d_i^2}
+$$
+</p>
+<p>Further clipping/renormalization is used in the classic SIFT construction.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.34: Worked Normalization Example -->
+  <section id="s-19-34" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.34</span>
+      <h2>Worked Normalization Example</h2>
+      <button class="bookmark-btn" data-id="s-19-34" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p>
+$$
+\mathbf d=(3,4)
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+\|\mathbf d\|_2
+=
+\sqrt{3^2+4^2}
+=
+5
+$$
+</p>
+<p>Normalized:</p>
+<p>
+$$
+\mathbf d'
+=
+(0.6,0.8)
+$$
+</p>
+<p>and:</p>
+<p>
+$$
+\|\mathbf d'\|_2=1
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.35: SIFT Matching -->
+  <section id="s-19-35" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.35</span>
+      <h2>SIFT Matching</h2>
+      <button class="bookmark-btn" data-id="s-19-35" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Given two descriptors:</p>
+<p>
+$$
+d_A,\ d_B
+$$
+</p>
+<p>a common similarity measure is Euclidean distance:</p>
+<p>
+$$
+d=
+\|d_A-d_B\|_2
+$$
+</p>
+<p>Nearest-neighbour matching selects the closest descriptor candidate.</p>
+<p>But nearest distance alone can produce ambiguous matches.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.36: Lowe-Style Ratio Test -->
+  <section id="s-19-36" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.36</span>
+      <h2>Lowe-Style Ratio Test</h2>
+      <button class="bookmark-btn" data-id="s-19-36" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A commonly used test compares:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>nearest distance
+vs
+second-nearest distance</code></pre>
+</div></p>
+<p>Let:</p>
+<p>
+$$
+d_1=\text{best match distance}
+$$
+</p>
+<p>
+$$
+d_2=\text{second-best distance}
+$$
+</p>
+<p>Accept when:</p>
+<p>
+$$
+\frac{d_1}{d_2}<r
+$$
+</p>
+<p>for a selected ratio $r$.</p>
+<p>A lower ratio indicates that the best match is substantially better than the next candidate.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.37: Worked Ratio Example -->
+  <section id="s-19-37" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.37</span>
+      <h2>Worked Ratio Example</h2>
+      <button class="bookmark-btn" data-id="s-19-37" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p>
+$$
+d_1=0.30
+$$
+</p>
+<p>
+$$
+d_2=0.90
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+\frac{d_1}{d_2}
+=
+\frac{0.30}{0.90}
+=
+0.333
+$$
+</p>
+<p>If:</p>
+<p>
+$$
+r=0.75
+$$
+</p>
+<p>then:</p>
+<p>
+$$
+0.333<0.75
+$$
+</p>
+<p>so the match passes the ratio criterion.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.38: Why Matching Still Needs Geometric Validation -->
+  <section id="s-19-38" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.38</span>
+      <h2>Why Matching Still Needs Geometric Validation</h2>
+      <button class="bookmark-btn" data-id="s-19-38" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Even a good descriptor match can be false.</p>
+<p>If many matches are available, a geometric model can reject inconsistent pairs.</p>
+<p>For example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>feature matches
+ ↓
+estimate transformation
+ ↓
+remove outliers
+ ↓
+use inlier matches</code></pre>
+</div></p>
+<p>RANSAC is commonly used for this purpose.</p>
+<p>This bridges C19/C20 to C11 registration.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.39: SURF — Big Picture -->
+  <section id="s-19-39" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.39</span>
+      <h2>SURF — Big Picture</h2>
+      <button class="bookmark-btn" data-id="s-19-39" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><strong>Speeded-Up Robust Features (SURF)</strong> is another classical local-feature method designed to provide robust keypoints/descriptors with efficient computation.</p>
+<p>SURF uses approximations to scale-space operations and relies heavily on:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>integral images
++
+box filters
++
+Hessian-based responses</code></pre>
+</div></p>
+<p>to speed computation.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.40: SURF Detector Intuition -->
+  <section id="s-19-40" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.40</span>
+      <h2>SURF Detector Intuition</h2>
+      <button class="bookmark-btn" data-id="s-19-40" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A Hessian matrix for an image can be written:</p>
+<p>
+$$
+H(x,y)=
+\begin{bmatrix}
+I_{xx}&I_{xy}\\
+I_{xy}&I_{yy}
+\end{bmatrix}
+$$
+</p>
+<p>Its determinant:</p>
+<p>
+$$
+\det(H)
+=
+I_{xx}I_{yy}-I_{xy}^2
+$$
+</p>
+<p>can identify blob-like structures.</p>
+<p>SURF approximates second-order derivatives using box filters.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.41: Integral Image -->
+  <section id="s-19-41" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.41</span>
+      <h2>Integral Image</h2>
+      <button class="bookmark-btn" data-id="s-19-41" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>An integral image allows fast rectangular-sum computation.</p>
+<p>For image $I$:</p>
+<p>
+$$
+S(x,y)
+=
+\sum_{i\le x}
+\sum_{j\le y}
+I(i,j)
+$$
+</p>
+<p>A rectangle sum can then be obtained using a small number of array accesses.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>large rectangular sum
+→ four corner values</code></pre>
+</div></p>
+<p>This is one reason SURF can evaluate box filters efficiently.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.42: SURF Descriptor -->
+  <section id="s-19-42" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.42</span>
+      <h2>SURF Descriptor</h2>
+      <button class="bookmark-btn" data-id="s-19-42" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>SURF describes local neighbourhoods using Haar-wavelet-like responses.</p>
+<p>A simplified structure is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>keypoint
+ ↓
+orientation
+ ↓
+local square region
+ ↓
+4×4 subregions
+ ↓
+wavelet response statistics
+ ↓
+descriptor</code></pre>
+</div></p>
+<p>The descriptor dimension depends on the variant/configuration.</p>
+<p>This is one reason it is safer to describe SURF conceptually rather than assume one universal vector size.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.43: SIFT vs SURF -->
+  <section id="s-19-43" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.43</span>
+      <h2>SIFT vs SURF</h2>
+      <button class="bookmark-btn" data-id="s-19-43" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Property</th>
+<th>SIFT</th>
+<th>SURF</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>key idea</td>
+<td>DoG scale space + gradients</td>
+<td>Hessian + efficient approximations</td>
+</tr>
+<tr>
+<td>scale handling</td>
+<td>yes</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>orientation</td>
+<td>yes</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>descriptor</td>
+<td>gradient histograms</td>
+<td>Haar-wavelet response statistics</td>
+</tr>
+<tr>
+<td>computation</td>
+<td>comparatively heavier</td>
+<td>designed for faster computation</td>
+</tr>
+<tr>
+<td>descriptor comparison</td>
+<td>typically Euclidean</td>
+<td>typically Euclidean</td>
+</tr>
+<tr>
+<td>course role</td>
+<td>major classical feature</td>
+<td>comparative classical feature</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.44: ORB — Big Picture -->
+  <section id="s-19-44" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.44</span>
+      <h2>ORB — Big Picture</h2>
+      <button class="bookmark-btn" data-id="s-19-44" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><strong>Oriented FAST and Rotated BRIEF (ORB)</strong> combines:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>FAST keypoint detection
++
+orientation estimation
++
+rotated BRIEF binary descriptor</code></pre>
+</div></p>
+<p>It is designed to be computationally efficient.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.45: FAST Detector -->
+  <section id="s-19-45" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.45</span>
+      <h2>FAST Detector</h2>
+      <button class="bookmark-btn" data-id="s-19-45" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>FAST identifies corners by examining pixels on a circle around a candidate.</p>
+<p>A candidate is considered corner-like if a sufficient contiguous sequence of circle pixels is significantly brighter or darker than the centre according to the detector's threshold.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>       o o o
+    o         o
+   o     P     o
+    o         o
+       o o o</code></pre>
+</div></p>
+<p>The circular test is much cheaper than some more elaborate corner detectors.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.46: ORB Orientation -->
+  <section id="s-19-46" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.46</span>
+      <h2>ORB Orientation</h2>
+      <button class="bookmark-btn" data-id="s-19-46" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>ORB estimates an orientation for the FAST keypoint using local intensity moments.</p>
+<p>Then the BRIEF sampling pattern is rotated according to that orientation.</p>
+<p>This gives a degree of rotation robustness.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.47: BRIEF Descriptor -->
+  <section id="s-19-47" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.47</span>
+      <h2>BRIEF Descriptor</h2>
+      <button class="bookmark-btn" data-id="s-19-47" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>BRIEF uses intensity comparisons between selected point pairs.</p>
+<p>For two sampled intensities:</p>
+<p>
+$$
+I(p)
+$$
+</p>
+<p>and:</p>
+<p>
+$$
+I(q)
+$$
+</p>
+<p>define:</p>
+<p>
+$$
+\tau(p,q)=
+\begin{cases}
+1,&I(p)<I(q)\\
+0,&I(p)\ge I(q)
+\end{cases}
+$$
+</p>
+<p>Many such binary tests are concatenated:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>1 0 1 1 0 0 1 ...</code></pre>
+</div></p>
+<p>The result is a binary descriptor.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.48: Why ORB Is Fast -->
+  <section id="s-19-48" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.48</span>
+      <h2>Why ORB Is Fast</h2>
+      <button class="bookmark-btn" data-id="s-19-48" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>ORB benefits from:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>FAST detector
++
+binary descriptor
++
+Hamming distance</code></pre>
+</div></p>
+<p>Binary descriptors are compact and can be matched efficiently using bit operations.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.49: Worked Hamming Example -->
+  <section id="s-19-49" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.49</span>
+      <h2>Worked Hamming Example</h2>
+      <button class="bookmark-btn" data-id="s-19-49" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Descriptor A:</p>
+<p>
+$$
+10101100
+$$
+</p>
+<p>Descriptor B:</p>
+<p>
+$$
+10011110
+$$
+</p>
+<p>Compare:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>1 0 1 0 1 1 0 0
+1 0 0 1 1 1 1 0</code></pre>
+</div></p>
+<p>Differences occur at positions:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>3
+4
+7</code></pre>
+</div></p>
+<p>Therefore:</p>
+<p>
+$$
+\boxed{d_H=3}
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.50: SIFT vs ORB -->
+  <section id="s-19-50" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.50</span>
+      <h2>SIFT vs ORB</h2>
+      <button class="bookmark-btn" data-id="s-19-50" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Property</th>
+<th>SIFT</th>
+<th>ORB</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>descriptor type</td>
+<td>floating-point</td>
+<td>binary</td>
+</tr>
+<tr>
+<td>typical distance</td>
+<td>L2</td>
+<td>Hamming</td>
+</tr>
+<tr>
+<td>scale robustness</td>
+<td>strong</td>
+<td>more limited depending on implementation</td>
+</tr>
+<tr>
+<td>rotation handling</td>
+<td>yes</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>speed</td>
+<td>generally slower</td>
+<td>generally faster</td>
+</tr>
+<tr>
+<td>memory</td>
+<td>larger</td>
+<td>compact</td>
+</tr>
+<tr>
+<td>practical use</td>
+<td>robust matching</td>
+<td>efficient real-time matching</td>
+</tr>
+</tbody>
+</table></div>
+<p>The comparison is qualitative; actual speed depends on implementation and hardware.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.51: HOG — Histogram of Oriented Gradients -->
+  <section id="s-19-51" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.51</span>
+      <h2>HOG — Histogram of Oriented Gradients</h2>
+      <button class="bookmark-btn" data-id="s-19-51" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><strong>Histogram of Oriented Gradients (HOG)</strong> describes object appearance through local gradient orientation distributions.</p>
+<p>Unlike SIFT/ORB, which are typically keypoint-centric, HOG is commonly built over a dense grid of cells.</p>
+<p>Conceptual pipeline:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image
+ ↓
+gradient
+ ↓
+orientation + magnitude
+ ↓
+cells
+ ↓
+orientation histograms
+ ↓
+blocks
+ ↓
+normalization
+ ↓
+feature vector</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.52: HOG Cell -->
+  <section id="s-19-52" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.52</span>
+      <h2>HOG Cell</h2>
+      <button class="bookmark-btn" data-id="s-19-52" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A cell contains a small image region.</p>
+<p>For each pixel:</p>
+<p>
+$$
+G_x,\quad G_y
+$$
+</p>
+<p>are computed.</p>
+<p>Magnitude:</p>
+<p>
+$$
+m=
+\sqrt{G_x^2+G_y^2}
+$$
+</p>
+<p>Orientation:</p>
+<p>
+$$
+\theta=
+\operatorname{atan2}(G_y,G_x)
+$$
+</p>
+<p>Then votes are accumulated into orientation bins.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.53: HOG Orientation Histogram -->
+  <section id="s-19-53" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.53</span>
+      <h2>HOG Orientation Histogram</h2>
+      <button class="bookmark-btn" data-id="s-19-53" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose a cell uses 9 bins.</p>
+<p>Each pixel contributes:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>orientation bin
++
+weighted magnitude</code></pre>
+</div></p>
+<p>A conceptual histogram:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>frequency
+   ↑
+   │       █
+   │   █   ███
+   │ ███   █
+   └────────────→ orientation</code></pre>
+</div></p>
+<p>This describes the local distribution of edge directions.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.54: Why HOG Works for Shape -->
+  <section id="s-19-54" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.54</span>
+      <h2>Why HOG Works for Shape</h2>
+      <button class="bookmark-btn" data-id="s-19-54" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Object silhouettes and local contours create characteristic gradient orientations.</p>
+<p>Therefore:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>gradient orientation
+→ local shape cue
+→ HOG descriptor</code></pre>
+</div></p>
+<p>HOG became particularly influential in classical object detection.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.55: HOG Block Normalization -->
+  <section id="s-19-55" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.55</span>
+      <h2>HOG Block Normalization</h2>
+      <button class="bookmark-btn" data-id="s-19-55" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Local histograms are grouped into blocks and normalized to reduce sensitivity to illumination/contrast changes.</p>
+<p>For descriptor vector $v$:</p>
+<h3>L2 normalization</h3>
+<p>
+$$
+v'=
+\frac{v}
+{\sqrt{\|v\|_2^2+\epsilon^2}}
+$$
+</p>
+<p>where $\epsilon$ avoids division by zero.</p>
+<p>Other normalization variants exist.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.56: Worked HOG Normalization -->
+  <section id="s-19-56" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.56</span>
+      <h2>Worked HOG Normalization</h2>
+      <button class="bookmark-btn" data-id="s-19-56" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p>
+$$
+v=(3,4)
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+\|v\|_2=5
+$$
+</p>
+<p>with small $\epsilon$ ignored for illustration:</p>
+<p>
+$$
+v'=(0.6,0.8)
+$$
+</p>
+<p>Again:</p>
+<p>
+$$
+\|v'\|_2=1
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.57: HOG vs SIFT -->
+  <section id="s-19-57" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.57</span>
+      <h2>HOG vs SIFT</h2>
+      <button class="bookmark-btn" data-id="s-19-57" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Property</th>
+<th>HOG</th>
+<th>SIFT</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>sampling</td>
+<td>commonly dense grid</td>
+<td>keypoint-centred</td>
+</tr>
+<tr>
+<td>main signal</td>
+<td>gradient orientations</td>
+<td>local gradient structure</td>
+</tr>
+<tr>
+<td>scale handling</td>
+<td>depends on window/design</td>
+<td>explicit scale-space</td>
+</tr>
+<tr>
+<td>rotation handling</td>
+<td>limited unless designed for it</td>
+<td>explicit orientation assignment</td>
+</tr>
+<tr>
+<td>typical role</td>
+<td>shape/object appearance</td>
+<td>local matching/recognition</td>
+</tr>
+<tr>
+<td>descriptor</td>
+<td>grid/cell/block histogram</td>
+<td>local 128-D-style gradient descriptor</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.58: HOG vs ORB -->
+  <section id="s-19-58" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.58</span>
+      <h2>HOG vs ORB</h2>
+      <button class="bookmark-btn" data-id="s-19-58" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Property</th>
+<th>HOG</th>
+<th>ORB</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>feature style</td>
+<td>dense region descriptor</td>
+<td>local keypoint descriptor</td>
+</tr>
+<tr>
+<td>values</td>
+<td>real-valued</td>
+<td>binary</td>
+</tr>
+<tr>
+<td>typical distance</td>
+<td>Euclidean</td>
+<td>Hamming</td>
+</tr>
+<tr>
+<td>strength</td>
+<td>contour/shape appearance</td>
+<td>fast local matching</td>
+</tr>
+<tr>
+<td>scale invariance</td>
+<td>not inherent</td>
+<td>limited compared with SIFT</td>
+</tr>
+<tr>
+<td>speed</td>
+<td>practical</td>
+<td>highly efficient for matching</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.59: Descriptor Comparison Overview -->
+  <section id="s-19-59" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.59</span>
+      <h2>Descriptor Comparison Overview</h2>
+      <button class="bookmark-btn" data-id="s-19-59" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Method</th>
+<th>Detector</th>
+<th>Descriptor</th>
+<th>Main strength</th>
+<th>Typical distance</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SIFT</td>
+<td>scale-space DoG</td>
+<td>gradient histogram</td>
+<td>robust local matching</td>
+<td>L2</td>
+</tr>
+<tr>
+<td>SURF</td>
+<td>Hessian-based</td>
+<td>wavelet responses</td>
+<td>efficient robust features</td>
+<td>L2</td>
+</tr>
+<tr>
+<td>ORB</td>
+<td>FAST</td>
+<td>rotated BRIEF</td>
+<td>fast binary matching</td>
+<td>Hamming</td>
+</tr>
+<tr>
+<td>HOG</td>
+<td>dense gradient grid</td>
+<td>orientation histograms</td>
+<td>shape/appearance</td>
+<td>L2-like</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.60: Choosing a Feature Method -->
+  <section id="s-19-60" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.60</span>
+      <h2>Choosing a Feature Method</h2>
+      <button class="bookmark-btn" data-id="s-19-60" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Need robust local matching across scale/rotation?
+→ SIFT
+
+Need efficient classical Hessian-style features?
+→ SURF
+
+Need fast binary local matching?
+→ ORB
+
+Need dense shape/gradient representation?
+→ HOG</code></pre>
+</div></p>
+<p>This is a practical starting point, not a universal benchmark.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.61: Matching Pipeline -->
+  <section id="s-19-61" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.61</span>
+      <h2>Matching Pipeline</h2>
+      <button class="bookmark-btn" data-id="s-19-61" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A classical local-feature matching system:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image A
+  ↓
+detect
+  ↓
+describe
+  ↓
+descriptors A
+
+image B
+  ↓
+detect
+  ↓
+describe
+  ↓
+descriptors B
+
+A ↔ B matching
+  ↓
+ratio/filter test
+  ↓
+geometric verification
+  ↓
+inliers</code></pre>
+</div></p>
+<p>This is directly useful for registration and image alignment.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.62: RANSAC for Geometric Verification -->
+  <section id="s-19-62" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.62</span>
+      <h2>RANSAC for Geometric Verification</h2>
+      <button class="bookmark-btn" data-id="s-19-62" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <blockquote>
+<p><strong>EXTENSION</strong></p>
+</blockquote>
+<p>Suppose feature matches suggest a transformation:</p>
+<p>
+$$
+\mathbf p'_i\approx H\mathbf p_i
+$$
+</p>
+<p>Some matches may be wrong.</p>
+<p>RANSAC repeatedly:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>select minimal sample
+→ estimate model
+→ count inliers
+→ repeat
+→ choose strong consensus model</code></pre>
+</div></p>
+<p>The result separates:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>geometrically consistent matches</code></pre>
+</div></p>
+<p>from:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>outliers</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.63: Reprojection Error -->
+  <section id="s-19-63" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.63</span>
+      <h2>Reprojection Error</h2>
+      <button class="bookmark-btn" data-id="s-19-63" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Given an estimated transformation $T$, a correspondence:</p>
+<p>
+$$
+p_i\rightarrow p_i'
+$$
+</p>
+<p>has reprojection error:</p>
+<p>
+$$
+e_i=
+\|p_i'-T(p_i)\|
+$$
+</p>
+<p>Small:</p>
+<p>
+$$
+e_i
+$$
+</p>
+<p>suggests consistency with the model.</p>
+<p>This is a useful bridge between feature matching and geometric registration.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.64: Worked Reprojection Error -->
+  <section id="s-19-64" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.64</span>
+      <h2>Worked Reprojection Error</h2>
+      <button class="bookmark-btn" data-id="s-19-64" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose predicted point:</p>
+<p>
+$$
+\hat p=(102,49)
+$$
+</p>
+<p>and measured point:</p>
+<p>
+$$
+p'=(100,50)
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+e=
+\sqrt{(100-102)^2+(50-49)^2}
+$$
+</p>
+<p>
+$$
+=
+\sqrt{4+1}
+$$
+</p>
+<p>
+$$
+\boxed{\sqrt5\approx2.236}
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.65: Feature Density -->
+  <section id="s-19-65" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.65</span>
+      <h2>Feature Density</h2>
+      <button class="bookmark-btn" data-id="s-19-65" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Not every image produces the same number of useful features.</p>
+<p>Examples:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>textured scene
+→ many keypoints
+
+blank wall
+→ few keypoints
+
+motion blur
+→ unstable features</code></pre>
+</div></p>
+<p>Feature count alone is therefore not enough.</p>
+<p>Quality and repeatability matter.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.66: Repeated Patterns -->
+  <section id="s-19-66" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.66</span>
+      <h2>Repeated Patterns</h2>
+      <button class="bookmark-btn" data-id="s-19-66" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A repeated texture can create many similar local features.</p>
+<p>This creates ambiguity:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>many candidates
+→ similar descriptor distances
+→ uncertain matching</code></pre>
+</div></p>
+<p>This is where ratio testing and geometric verification become important.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.67: Illumination Effects -->
+  <section id="s-19-67" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.67</span>
+      <h2>Illumination Effects</h2>
+      <button class="bookmark-btn" data-id="s-19-67" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Feature detectors/descriptors can be affected by:</p>
+<ul>
+<li>shadows,</li>
+<li>saturation,</li>
+<li>strong exposure changes,</li>
+<li>colour shifts.</li>
+</ul>
+<p>Descriptor normalization improves some robustness, but not unlimited.</p>
+<p>The correct question is:</p>
+<blockquote>
+<p>Is the expected image variation within the feature method's robustness regime?</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.68: Blur Effects -->
+  <section id="s-19-68" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.68</span>
+      <h2>Blur Effects</h2>
+      <button class="bookmark-btn" data-id="s-19-68" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Motion blur can:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>remove keypoint detail
+→ reduce detection
+→ alter descriptors</code></pre>
+</div></p>
+<p>This links C14 restoration concepts to feature extraction.</p>
+<p>Restoring blur can sometimes help, but restoration artifacts can also damage features.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.69: Feature Extraction from Segmented Regions -->
+  <section id="s-19-69" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.69</span>
+      <h2>Feature Extraction from Segmented Regions</h2>
+      <button class="bookmark-btn" data-id="s-19-69" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Segmentation can provide an ROI:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image
+ ↓
+segment object
+ ↓
+crop/mask ROI
+ ↓
+extract features</code></pre>
+</div></p>
+<p>This can reduce background interference.</p>
+<p>Conversely, local features can help initialize or guide segmentation.</p>
+<p>The relationship can be bidirectional.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.70: Shape Features from Masks -->
+  <section id="s-19-70" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.70</span>
+      <h2>Shape Features from Masks</h2>
+      <button class="bookmark-btn" data-id="s-19-70" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A segmented region can provide classical features:</p>
+<p>
+$$
+A=\text{area}
+$$
+</p>
+<p>
+$$
+P=\text{perimeter}
+$$
+</p>
+<p>
+$$
+AR=\frac{\text{width}}{\text{height}}
+$$
+</p>
+<p>and moments.</p>
+<p>These are simpler than SIFT/ORB but highly useful when object geometry is known.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.71: Moments -->
+  <section id="s-19-71" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.71</span>
+      <h2>Moments</h2>
+      <button class="bookmark-btn" data-id="s-19-71" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For a binary region, raw moments can be:</p>
+<p>
+$$
+m_{pq}
+=
+\sum_x\sum_y
+x^py^qI(x,y)
+$$
+</p>
+<p>The zeroth moment:</p>
+<p>
+$$
+m_{00}
+$$
+</p>
+<p>corresponds to area for a binary region.</p>
+<p>Centroid:</p>
+<p>
+$$
+\bar x=\frac{m_{10}}{m_{00}}
+$$
+</p>
+<p>
+$$
+\bar y=\frac{m_{01}}{m_{00}}
+$$
+</p>
+<p>These connect segmentation directly to feature extraction.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.72: Worked Moment Example -->
+  <section id="s-19-72" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.72</span>
+      <h2>Worked Moment Example</h2>
+      <button class="bookmark-btn" data-id="s-19-72" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose foreground pixels are:</p>
+<p>
+$$
+(1,1),(2,1),(1,2),(2,2)
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+m_{00}=4
+$$
+</p>
+<p>
+$$
+m_{10}=1+2+1+2=6
+$$
+</p>
+<p>
+$$
+m_{01}=1+1+2+2=6
+$$
+</p>
+<p>So:</p>
+<p>
+$$
+\bar x=\frac64=1.5
+$$
+</p>
+<p>
+$$
+\bar y=\frac64=1.5
+$$
+</p>
+<p>This matches the centroid derived in C15.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.73: Shape vs Local Descriptor -->
+  <section id="s-19-73" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.73</span>
+      <h2>Shape vs Local Descriptor</h2>
+      <button class="bookmark-btn" data-id="s-19-73" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Feature family</th>
+<th>Example</th>
+<th>Main information</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>region statistics</td>
+<td>area, centroid</td>
+<td>global object geometry</td>
+</tr>
+<tr>
+<td>contour</td>
+<td>perimeter, curvature</td>
+<td>boundary shape</td>
+</tr>
+<tr>
+<td>corner</td>
+<td>Harris</td>
+<td>local distinctive structure</td>
+</tr>
+<tr>
+<td>local descriptor</td>
+<td>SIFT/ORB</td>
+<td>local appearance</td>
+</tr>
+<tr>
+<td>dense descriptor</td>
+<td>HOG</td>
+<td>local/global shape pattern</td>
+</tr>
+<tr>
+<td>texture</td>
+<td>local statistics</td>
+<td>surface structure</td>
+</tr>
+</tbody>
+</table></div>
+<p>A good system may combine several.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.74: Feature Normalization -->
+  <section id="s-19-74" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.74</span>
+      <h2>Feature Normalization</h2>
+      <button class="bookmark-btn" data-id="s-19-74" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Features can have different numeric scales.</p>
+<p>Example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>area
+→ thousands
+
+aspect ratio
+→ around 1
+
+colour mean
+→ 0–255</code></pre>
+</div></p>
+<p>A machine-learning model may be dominated by large-scale features unless normalization is applied.</p>
+<p>Possible transformations include:</p>
+<p>
+$$
+z=
+\frac{x-\mu}{\sigma}
+$$
+</p>
+<p>or min-max scaling:</p>
+<p>
+$$
+x'=
+\frac{x-x_{\min}}
+{x_{\max}-x_{\min}}
+$$
+</p>
+<p>depending on the downstream model.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.75: Feature Selection -->
+  <section id="s-19-75" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.75</span>
+      <h2>Feature Selection</h2>
+      <button class="bookmark-btn" data-id="s-19-75" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Not every feature is useful.</p>
+<p>A large feature vector can introduce:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>redundancy
+noise
+computation
+overfitting risk</code></pre>
+</div></p>
+<p>Feature selection asks:</p>
+<blockquote>
+<p>Which measured properties contribute useful information?</p>
+</blockquote>
+<p>This is a bridge to classical machine learning.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.76: Dimensionality Reduction -->
+  <section id="s-19-76" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.76</span>
+      <h2>Dimensionality Reduction</h2>
+      <button class="bookmark-btn" data-id="s-19-76" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <blockquote>
+<p><strong>EXTENSION</strong></p>
+</blockquote>
+<p>Techniques such as PCA can reduce feature dimensionality.</p>
+<p>Given feature vectors collected into matrix:</p>
+<p>
+$$
+X
+$$
+</p>
+<p>PCA finds directions of large variance.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>many dimensions
+→ principal components
+→ fewer dimensions</code></pre>
+</div></p>
+<p>The goal is often compact representation while retaining important variation.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.77: Feature Engineering Pipeline -->
+  <section id="s-19-77" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.77</span>
+      <h2>Feature Engineering Pipeline</h2>
+      <button class="bookmark-btn" data-id="s-19-77" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A classical vision system can be:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image
+ ↓
+preprocessing
+ ↓
+segmentation / ROI
+ ↓
+feature detection
+ ↓
+feature description
+ ↓
+feature selection
+ ↓
+classifier / matcher</code></pre>
+</div></p>
+<p>This is the predecessor architecture to modern learned pipelines.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.78: Classical Features vs CNN Features -->
+  <section id="s-19-78" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.78</span>
+      <h2>Classical Features vs CNN Features</h2>
+      <button class="bookmark-btn" data-id="s-19-78" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Classical</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>human-designed detector
++
+human-designed descriptor</code></pre>
+</div></p>
+<h3>CNN</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>learned filters
++
+learned intermediate representations</code></pre>
+</div></p>
+<p>The CNN may learn features directly from data.</p>
+<p>However, classical descriptors remain valuable because they are:</p>
+<ul>
+<li>interpretable,</li>
+<li>useful with limited data,</li>
+<li>often efficient,</li>
+<li>strong for matching tasks.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.79: Feature Matching and Classification -->
+  <section id="s-19-79" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.79</span>
+      <h2>Feature Matching and Classification</h2>
+      <button class="bookmark-btn" data-id="s-19-79" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Descriptors can be used in two broad ways.</p>
+<h3>Matching</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>descriptor A
+↔
+descriptor B</code></pre>
+</div></p>
+<h3>Classification</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>many feature vectors
+→ classifier
+→ class</code></pre>
+</div></p>
+<p>HOG historically became strongly associated with classification pipelines such as linear classifiers for object detection.</p>
+<p>SIFT/ORB are more naturally associated with matching and local correspondence.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.80: Evaluation of Feature Detectors -->
+  <section id="s-19-80" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.80</span>
+      <h2>Evaluation of Feature Detectors</h2>
+      <button class="bookmark-btn" data-id="s-19-80" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Useful metrics include:</p>
+<h3>Repeatability</h3>
+<p>Does the same physical point get detected again after transformation?</p>
+<h3>Localization accuracy</h3>
+<p>How precisely is the feature located?</p>
+<h3>Matching accuracy</h3>
+<p>How many correct correspondences are obtained?</p>
+<h3>Robustness</h3>
+<p>How does performance change under:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>rotation
+scale
+blur
+illumination
+viewpoint
+noise</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.81: Feature Matching Evaluation -->
+  <section id="s-19-81" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.81</span>
+      <h2>Feature Matching Evaluation</h2>
+      <button class="bookmark-btn" data-id="s-19-81" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>100 candidate matches
+70 correct
+30 incorrect</code></pre>
+</div></p>
+<p>Then:</p>
+<p>
+$$
+Precision=
+\frac{70}{100}=0.70
+$$
+</p>
+<p>If 80 correct correspondences actually exist in the images:</p>
+<p>
+$$
+Recall=
+\frac{70}{80}=0.875
+$$
+</p>
+<p>So:</p>
+<p>
+$$
+\boxed{Precision=70\%,\ Recall=87.5\%}
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.82: Descriptor Distance Distributions -->
+  <section id="s-19-82" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.82</span>
+      <h2>Descriptor Distance Distributions</h2>
+      <button class="bookmark-btn" data-id="s-19-82" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A useful diagnostic is to inspect:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>correct-match distances
+incorrect-match distances</code></pre>
+</div></p>
+<p>A good descriptor should ideally produce:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>correct
+→ low distances
+
+incorrect
+→ higher distances</code></pre>
+</div></p>
+<p>If distributions overlap heavily, matching becomes difficult.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.83: Practical Experiment — SIFT vs ORB -->
+  <section id="s-19-83" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.83</span>
+      <h2>Practical Experiment — SIFT vs ORB</h2>
+      <button class="bookmark-btn" data-id="s-19-83" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Use two images with:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>translation
+rotation
+scale change</code></pre>
+</div></p>
+<p>Run:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>SIFT
+ORB</code></pre>
+</div></p>
+<p>Record:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>keypoint count
+descriptor count
+matching time
+candidate matches
+filtered matches
+geometric inliers</code></pre>
+</div></p>
+<p>This turns a comparison into measurable evidence.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.84: Practical Experiment — HOG -->
+  <section id="s-19-84" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.84</span>
+      <h2>Practical Experiment — HOG</h2>
+      <button class="bookmark-btn" data-id="s-19-84" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Use two categories with visible shape differences.</p>
+<p>Pipeline:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image
+ ↓
+resize/normalize
+ ↓
+gradient
+ ↓
+HOG
+ ↓
+feature vector
+ ↓
+classifier
+ ↓
+accuracy</code></pre>
+</div></p>
+<p>Vary:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>cell size
+block size
+orientation bins</code></pre>
+</div></p>
+<p>and observe performance.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.85: Common Traps -->
+  <section id="s-19-85" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.85</span>
+      <h2>Common Traps</h2>
+      <button class="bookmark-btn" data-id="s-19-85" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h2>Trap 1 — “Feature and descriptor are the same.”</h2>
+<p>Not necessarily.</p>
+<p>Detection and description are related but distinct stages.</p>
+<h2>Trap 2 — “More features always means better vision.”</h2>
+<p>False.</p>
+<p>Many unstable or repetitive features can make matching worse.</p>
+<h2>Trap 3 — “SIFT is a classifier.”</h2>
+<p>False.</p>
+<p>SIFT primarily detects and describes local image structure.</p>
+<h2>Trap 4 — “HOG detects objects by itself.”</h2>
+<p>False.</p>
+<p>HOG provides a descriptor; a detector/classifier can be built on top of it.</p>
+<h2>Trap 5 — “ORB and SIFT use the same distance metric.”</h2>
+<p>False.</p>
+<p>ORB is binary and commonly uses Hamming distance; SIFT is floating-point and commonly uses Euclidean/L2 distance.</p>
+<h2>Trap 6 — “A nearest descriptor match is always correct.”</h2>
+<p>False.</p>
+<p>Ambiguity and repetitive patterns create false matches.</p>
+<h2>Trap 7 — “Feature matching alone proves images are aligned.”</h2>
+<p>False.</p>
+<p>Geometric verification is often required.</p>
+<h2>Trap 8 — “Scale invariance means any scale change works perfectly.”</h2>
+<p>False.</p>
+<p>Robustness is approximate and parameter-dependent.</p>
+<h2>Trap 9 — “HOG is naturally rotation invariant.”</h2>
+<p>False.</p>
+<p>Its orientation histogram is not equivalent to the explicit orientation normalization used by SIFT.</p>
+<h2>Trap 10 — “Classical features are obsolete.”</h2>
+<p>False.</p>
+<p>They remain valuable for matching, registration, low-data settings and interpretable engineered systems.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.86: Exam Formula Sheet -->
+  <section id="s-19-86" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.86</span>
+      <h2>Exam Formula Sheet</h2>
+      <button class="bookmark-btn" data-id="s-19-86" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Euclidean descriptor distance</h3>
+<p>
+$$
+\boxed{
+d_E(\mathbf a,\mathbf b)
+=
+\sqrt{\sum_i(a_i-b_i)^2}
+}
+$$
+</p>
+<h3>Hamming distance</h3>
+<p>
+$$
+\boxed{
+d_H=
+\text{number of differing bits}
+}
+$$
+</p>
+<h3>Harris matrix</h3>
+<p>
+$$
+\boxed{
+M=
+\sum_W
+w
+\begin{bmatrix}
+I_x^2&I_xI_y\\
+I_xI_y&I_y^2
+\end{bmatrix}
+}
+$$
+</p>
+<h3>Harris response</h3>
+<p>
+$$
+\boxed{
+R=\det(M)-k[\operatorname{trace}(M)]^2
+}
+$$
+</p>
+<h3>Scale-space Gaussian</h3>
+<p>
+$$
+\boxed{
+L(x,y,\sigma)=G(x,y,\sigma)*I(x,y)
+}
+$$
+</p>
+<h3>Difference of Gaussians</h3>
+<p>
+$$
+\boxed{
+D(x,y,\sigma)
+=
+L(x,y,k\sigma)-L(x,y,\sigma)
+}
+$$
+</p>
+<h3>Descriptor normalization</h3>
+<p>
+$$
+\boxed{
+\mathbf d'=
+\frac{\mathbf d}
+{\|\mathbf d\|_2}
+}
+$$
+</p>
+<h3>Ratio test</h3>
+<p>
+$$
+\boxed{
+\frac{d_1}{d_2}<r
+}
+$$
+</p>
+<h3>Reprojection error</h3>
+<p>
+$$
+\boxed{
+e_i=\|p_i'-T(p_i)\|
+}
+$$
+</p>
+<h3>Region moments</h3>
+<p>
+$$
+\boxed{
+m_{pq}
+=
+\sum_x\sum_yx^py^qI(x,y)
+}
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.87: Exam-Style Problem — Descriptor Distance -->
+  <section id="s-19-87" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.87</span>
+      <h2>Exam-Style Problem — Descriptor Distance</h2>
+      <button class="bookmark-btn" data-id="s-19-87" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Given:</p>
+<p>
+$$
+a=(2,4,6)
+$$
+</p>
+<p>
+$$
+b=(1,4,3)
+$$
+</p>
+<p>Calculate Euclidean distance.</p>
+<p>
+$$
+d=
+\sqrt{
+(2-1)^2+
+(4-4)^2+
+(6-3)^2
+}
+$$
+</p>
+<p>
+$$
+=
+\sqrt{1+0+9}
+$$
+</p>
+<p>
+$$
+\boxed{\sqrt{10}\approx3.162}
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.88: Exam-Style Problem — Harris Interpretation -->
+  <section id="s-19-88" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.88</span>
+      <h2>Exam-Style Problem — Harris Interpretation</h2>
+      <button class="bookmark-btn" data-id="s-19-88" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose a point has:</p>
+<p>
+$$
+\lambda_1=0,\quad\lambda_2=0
+$$
+</p>
+<p>Interpret it.</p>
+<p>Answer:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>little intensity change in either direction
+→ flat-region behaviour
+→ weak corner response</code></pre>
+</div></p>
+<p>Suppose:</p>
+<p>
+$$
+\lambda_1\gg0,\quad\lambda_2\approx0
+$$
+</p>
+<p>Then:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>strong change in one direction
+→ edge-like</code></pre>
+</div></p>
+<p>Suppose both are large:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>strong change in both directions
+→ corner-like</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.89: Exam-Style Problem — SIFT Dimension -->
+  <section id="s-19-89" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.89</span>
+      <h2>Exam-Style Problem — SIFT Dimension</h2>
+      <button class="bookmark-btn" data-id="s-19-89" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A simplified SIFT descriptor uses:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>4 × 4 spatial cells
+8 orientation bins per cell</code></pre>
+</div></p>
+<p>Dimension:</p>
+<p>
+$$
+4\times4\times8
+$$
+</p>
+<p>
+$$
+\boxed{128}
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.90: Exam-Style Problem — ORB Matching -->
+  <section id="s-19-90" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.90</span>
+      <h2>Exam-Style Problem — ORB Matching</h2>
+      <button class="bookmark-btn" data-id="s-19-90" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Two 8-bit descriptors:</p>
+<p>
+$$
+A=10110100
+$$
+</p>
+<p>
+$$
+B=11100110
+$$
+</p>
+<p>Differences:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>position 2
+position 5
+position 7</code></pre>
+</div></p>
+<p>Therefore:</p>
+<p>
+$$
+\boxed{d_H=3}
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.91: Exam-Style Problem — Ratio Test -->
+  <section id="s-19-91" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.91</span>
+      <h2>Exam-Style Problem — Ratio Test</h2>
+      <button class="bookmark-btn" data-id="s-19-91" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Given:</p>
+<p>
+$$
+d_1=20
+$$
+</p>
+<p>
+$$
+d_2=50
+$$
+</p>
+<p>and:</p>
+<p>
+$$
+r=0.5
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+\frac{20}{50}=0.4
+$$
+</p>
+<p>Since:</p>
+<p>
+$$
+0.4<0.5
+$$
+</p>
+<p>the match passes the ratio test.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.92: Engineering Insight — Features Are a Compression of Meaning -->
+  <section id="s-19-92" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.92</span>
+      <h2>Engineering Insight — Features Are a Compression of Meaning</h2>
+      <button class="bookmark-btn" data-id="s-19-92" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A useful way to think about feature extraction is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>millions of pixel values
+        ↓
+task-relevant structure
+        ↓
+hundreds/thousands of features</code></pre>
+</div></p>
+<p>Good features preserve what the next task needs.</p>
+<p>Bad features can discard exactly the information required for recognition.</p>
+<p>Therefore feature engineering is another form of <strong>representation design</strong>.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.93: Cross-Book Bridges -->
+  <section id="s-19-93" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.93</span>
+      <h2>Cross-Book Bridges</h2>
+      <button class="bookmark-btn" data-id="s-19-93" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <blockquote>
+<p><strong>C10 BRIDGE</strong><br />
+Gradients and edge orientation provide the mathematical foundation for HOG and local descriptors.</p>
+<p><strong>C15–C18 BRIDGE</strong><br />
+Segmentation and morphology can define regions of interest before feature extraction.</p>
+<p><strong>C20 BRIDGE</strong><br />
+SIFT, SURF, ORB and HOG specialize the general feature/descriptor framework.</p>
+<p><strong>C11 BRIDGE</strong><br />
+Geometric verification and registration use matched features to estimate image transformations.</p>
+<p><strong>C25 BRIDGE</strong><br />
+Feature vectors can feed classical classifiers.</p>
+<p><strong>C28 BRIDGE</strong><br />
+Modern object detection replaces much hand-crafted feature engineering with learned representations.</p>
+<p><strong>C30 BRIDGE</strong><br />
+Feature points can be tracked through video for motion estimation.</p>
+<p><strong>LAB BRIDGE</strong><br />
+Detect features, compute descriptors, match images and evaluate geometric inliers.</p>
+<p><strong>PRACTICE BRIDGE</strong><br />
+Calculate descriptor distances, Harris statistics, HOG normalization, ratio tests and reprojection error.</p>
+<p><strong>EXAM BRIDGE</strong><br />
+Know feature/keypoint/descriptor distinctions, corner/gradient concepts, SIFT/SURF/ORB/HOG pipelines and matching principles.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.94: Quick Recall -->
+  <section id="s-19-94" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.94</span>
+      <h2>Quick Recall</h2>
+      <button class="bookmark-btn" data-id="s-19-94" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>FEATURE
+→ measurable image property
+
+KEYPOINT
+→ distinctive location
+
+DESCRIPTOR
+→ numerical representation
+
+SIFT
+→ DoG + orientation + gradient descriptor
+
+SURF
+→ Hessian + integral-image efficiency
+
+ORB
+→ FAST + rotated BRIEF
+
+HOG
+→ gradient-orientation histograms
+
+MATCHING
+→ descriptor distance
+
+VERIFICATION
+→ geometric consistency</code></pre>
+</div></p>
+<p>Core rule:</p>
+<blockquote>
+<p><strong>A feature detector finds where to look; a descriptor encodes what was found.</strong></p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.95: Chapter Checkpoint -->
+  <section id="s-19-95" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.95</span>
+      <h2>Chapter Checkpoint</h2>
+      <button class="bookmark-btn" data-id="s-19-95" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <ol>
+<li>Define a feature.</li>
+<li>Define a keypoint.</li>
+<li>Define a descriptor.</li>
+<li>Explain the difference between detection and description.</li>
+<li>What makes a feature useful?</li>
+<li>Compare global and local features.</li>
+<li>Define invariance and equivariance.</li>
+<li>Explain why corners are useful.</li>
+<li>Describe Harris corner intuition using eigenvalues.</li>
+<li>Define scale space.</li>
+<li>Explain the Difference-of-Gaussians idea.</li>
+<li>Outline the SIFT pipeline.</li>
+<li>Why is SIFT commonly described as rotation/scale robust?</li>
+<li>Why does the classic SIFT descriptor have 128 dimensions?</li>
+<li>Explain SURF's Hessian/integral-image idea.</li>
+<li>Describe ORB's FAST + BRIEF construction.</li>
+<li>Why is Hamming distance appropriate for ORB?</li>
+<li>Explain HOG's cell/block histogram structure.</li>
+<li>Compare SIFT, SURF, ORB and HOG.</li>
+<li>Why is geometric verification necessary after feature matching?</li>
+</ol>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 19.96: Connection Forward -->
+  <section id="s-19-96" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.96</span>
+      <h2>Connection Forward</h2>
+      <button class="bookmark-btn" data-id="s-19-96" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>This chapter created the general feature language.</p>
+<p>Chapter 20 now turns that language into the four syllabus-named feature methods:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>SIFT
+SURF
+ORB
+HOG</code></pre>
+</div></p>
+<p>The next chapter will focus more tightly on:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>algorithm pipelines
++
+descriptor construction
++
+matching
++
+parameter tradeoffs
++
+practical implementation
++
+comparison</code></pre>
+</div></p>
+<p>This makes C20 the <strong>classical feature-methods laboratory chapter</strong>, while C19 remains the conceptual feature foundation.</p>
+    </div>
+  </section>
+
+  <!-- SECTION 19.97: Worked Example — 10-Mark University Model Answer: Gray-Level Co-occurrence Matrix (GLCM) -->
+  <section id="s-19-97" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.97</span>
+      <h2>Worked Example — 10-Mark University Model Answer: Gray-Level Co-occurrence Matrix (GLCM)</h2>
+      <button class="bookmark-btn" data-id="s-19-97" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Problem Statement</h3>
+<p>A $4 \times 4$ sub-image with $L = 4$ gray levels ($0, 1, 2, 3$) is given by:
+
+$$F = \begin{bmatrix}
+0 & 0 & 1 & 1 \\
+0 & 0 & 1 & 1 \\
+0 & 2 & 2 & 2 \\
+2 & 2 & 3 & 3
+\end{bmatrix}$$
+
+1. Formulate the definition of the Gray-Level Co-occurrence Matrix $P(i, j \mid d, \theta)$.
+2. Compute the unnormalized and normalized GLCM for distance $d = 1$ and horizontal angle $\theta = 0^\circ$.
+3. Compute the following texture descriptors from the normalized GLCM:
+   - Angular Second Moment (Energy / Uniformity): $ASM = \sum_i \sum_j p(i, j)^2$
+   - Contrast: $CON = \sum_i \sum_j (i - j)^2 p(i, j)$
+   - Homogeneity: $HOM = \sum_i \sum_j \frac{p(i, j)}{1 + |i - j|}$</p>
+<h3>Step-by-Step Mathematical Solution</h3>
+<div class="worked-example">
+  <div class="worked-example-header">
+    <span class="worked-example-title">Numerical Examination Trace</span>
+    <span class="tag-badge tag-exam">10-MARK UNIVERSITY MODEL ANSWER</span>
+  </div>
+  <p><strong>1. GLCM Definition:</strong><br>
+  The element $P(i, j \mid d, \theta)$ counts the number of times a pixel with intensity $i$ occurs horizontally adjacent ($d=1, \theta=0^\circ$) to a pixel with intensity $j$.</p>
+
+  <p><strong>2. Horizontal Pixel Pair Inventory (Row-by-Row):</strong><br>
+  - Row 1: $(0, 0), (0, 1), (1, 1) \implies (0,0): 1, \ (0,1): 1, \ (1,1): 1$<br>
+  - Row 2: $(0, 0), (0, 1), (1, 1) \implies (0,0): 1, \ (0,1): 1, \ (1,1): 1$<br>
+  - Row 3: $(0, 2), (2, 2), (2, 2) \implies (0,2): 1, \ (2,2): 2$<br>
+  - Row 4: $(2, 2), (2, 3), (3, 3) \implies (2,2): 1, \ (2,3): 1, \ (3,3): 1$</p>
+
+  <p>Total horizontal pairs $= 4 \text{ rows} \times 3 \text{ pairs/row} = \mathbf{12}$.</p>
+
+  <p><strong>Unnormalized GLCM $P(i, j)$ and Normalized GLCM $p(i, j) = P(i, j) / 12$:</strong></p>
+  <div class="table-wrap">
+    <table class="comparison-table">
+      <thead>
+        <tr>
+          <th>$i \backslash j$</th>
+          <th>$j = 0$</th>
+          <th>$j = 1$</th>
+          <th>$j = 2$</th>
+          <th>$j = 3$</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>$i = 0$</strong></td><td>$2 \ (2/12)$</td><td>$2 \ (2/12)$</td><td>$1 \ (1/12)$</td><td>$0 \ (0)$</td></tr>
+        <tr><td><strong>$i = 1$</strong></td><td>$0 \ (0)$</td><td>$2 \ (2/12)$</td><td>$0 \ (0)$</td><td>$0 \ (0)$</td></tr>
+        <tr><td><strong>$i = 2$</strong></td><td>$0 \ (0)$</td><td>$0 \ (0)$</td><td>$3 \ (3/12)$</td><td>$1 \ (1/12)$</td></tr>
+        <tr><td><strong>$i = 3$</strong></td><td>$0 \ (0)$</td><td>$0 \ (0)$</td><td>$0 \ (0)$</td><td>$1 \ (1/12)$</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p><strong>3. Numerical Computation of Texture Descriptors:</strong><br>
+  - <strong>Energy (Angular Second Moment):</strong>
+  
+$$ASM = \sum_{i=0}^3 \sum_{j=0}^3 p(i, j)^2 = \left(\frac{2}{12}\right)^2 + \left(\frac{2}{12}\right)^2 + \left(\frac{1}{12}\right)^2 + \left(\frac{2}{12}\right)^2 + \left(\frac{3}{12}\right)^2 + \left(\frac{1}{12}\right)^2 + \left(\frac{1}{12}\right)^2$$
+
+  
+$$ASM = \frac{4 + 4 + 1 + 4 + 9 + 1 + 1}{144} = \frac{24}{144} = \frac{1}{6} \approx \mathbf{0.1667}$$
+</p>
+
+  <p>- <strong>Contrast:</strong>
+  
+$$CON = \sum_{i=0}^3 \sum_{j=0}^3 (i - j)^2 p(i, j)$$
+
+  Diagonal terms ($i=j$) contribute $(0)^2 = 0$.<br>
+  Non-zero off-diagonal terms:<br>
+  - $(0, 1): (0 - 1)^2 \left(\frac{2}{12}\right) = 1 \left(\frac{2}{12}\right) = \frac{2}{12}$<br>
+  - $(0, 2): (0 - 2)^2 \left(\frac{1}{12}\right) = 4 \left(\frac{1}{12}\right) = \frac{4}{12}$<br>
+  - $(2, 3): (2 - 3)^2 \left(\frac{1}{12}\right) = 1 \left(\frac{1}{12}\right) = \frac{1}{12}$<br>
+  
+$$CON = \frac{2 + 4 + 1}{12} = \frac{7}{12} \approx \mathbf{0.5833}$$
+</p>
+
+  <p>- <strong>Homogeneity:</strong>
+  
+$$HOM = \sum_{i=0}^3 \sum_{j=0}^3 \frac{p(i, j)}{1 + |i - j|}$$
+
+  - Diagonal $(i=j \implies |i-j|=0)$: $(p_{00} + p_{11} + p_{22} + p_{33}) = \frac{2 + 2 + 3 + 1}{12} = \frac{8}{12} \times \frac{1}{1+0} = \frac{8}{12}$<br>
+  - Pair $(0, 1): \frac{2/12}{1 + 1} = \frac{1}{12}$<br>
+  - Pair $(0, 2): \frac{1/12}{1 + 2} = \frac{1}{36}$<br>
+  - Pair $(2, 3): \frac{1/12}{1 + 1} = \frac{1}{24}$<br>
+  
+$$HOM = \frac{8}{12} + \frac{1}{12} + \frac{1}{36} + \frac{1}{24} = \frac{48 + 6 + 2 + 3}{72} = \frac{59}{72} \approx \mathbf{0.8194}$$
+</p>
+</div>
+    </div>
+  </section>
+
+  <!-- SECTION 19.98: Topological Invariant: The Euler Number -->
+  <section id="s-19-98" class="section-block">
+    <div class="section-header">
+      <span class="section-num">19.98</span>
+      <h2>Topological Invariant: The Euler Number</h2>
+      <button class="bookmark-btn" data-id="s-19-98" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The <strong>Euler Number</strong> (Euler Characteristic) $E$ is a fundamental topological descriptor that remains invariant under arbitrary rubber-sheet stretching, warping, and rotation.
+For a 2D binary image:
+
+$$E = C - H$$
+
+where $C$ denotes the number of connected components (objects) and $H$ denotes the total number of holes (interior background cavities).</p>
+<div class="table-wrap">
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th>Geometric Character / Glyph</th>
+        <th>Connected Components ($C$)</th>
+        <th>Holes ($H$)</th>
+        <th>Euler Number ($E = C - H$)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Letter 'A'</td><td>1</td><td>1</td><td>$1 - 1 = \mathbf{0}$</td></tr>
+      <tr><td>Letter 'B'</td><td>1</td><td>2</td><td>$1 - 2 = \mathbf{-1}$</td></tr>
+      <tr><td>Letter 'C', 'E', 'L', 'S'</td><td>1</td><td>0</td><td>$1 - 0 = \mathbf{1}$</td></tr>
+      <tr><td>Colon symbol ':'</td><td>2</td><td>0</td><td>$2 - 0 = \mathbf{2}$</td></tr>
+      <tr><td>Number '8'</td><td>1</td><td>2</td><td>$1 - 2 = \mathbf{-1}$</td></tr>
+    </tbody>
+  </table>
+</div>
+    </div>
+  </section>
+
+      <!-- Chapter End Package -->
+      <section class="chapter-end-package">
+        <div class="chapter-nav-grid">
+          <a href="ch18-mathematical-morphology.html" class="chapter-nav-card">
+            <div class="chapter-nav-dir">← Previous</div>
+            <div class="chapter-nav-title">← Ch 18 — Mathematical Morphology</div>
+          </a>
+          <a href="ch20-sift-surf-orb-hog.html" class="chapter-nav-card next">
+            <div class="chapter-nav-dir">Next →</div>
+            <div class="chapter-nav-title">Next: Ch 20 — SIFT, SURF, ORB & HOG →</div>
+          </a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- FLOATING TTS PANEL (SAFE MANUAL MODE ONLY) -->
+  <div id="tts-panel" style="position:fixed; bottom:20px; right:20px; background:var(--em-surface-1); border:1px solid var(--em-border); border-radius:var(--em-radius-md); padding:12px 16px; box-shadow:var(--sh-lg); z-index:var(--z-float); display:none; gap:10px; align-items:center;">
+    <button class="icon-btn" id="tts-play" title="Play / Pause" style="background:var(--em-accent); color:#fff; border-radius:50%; width:36px; height:36px;">▶</button>
+    <button class="icon-btn" id="tts-stop" title="Stop">⏹</button>
+    <div style="font-size:0.75rem; color:var(--em-text-muted);">
+      <span id="tts-status">Ready</span> · <span id="tts-rate-label">1.0x</span>
+    </div>
+  </div>
+
+  <script src="../assets/js/state.js"></script>
+  <script src="../assets/js/core.js"></script>
+  <script src="../assets/js/tts.js"></script>
+  <script src="../assets/js/glossary.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: document.documentElement.getAttribute('data-theme') === 'light' ? 'default' : 'dark'
+      });
+    });
+  </script>
+</body>
+</html>

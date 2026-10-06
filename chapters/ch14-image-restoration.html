@@ -1,0 +1,2700 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Arpit">
+  <meta name="description" content="Chapter 14: Image Restoration &amp; Deblurring — Digital Image Processing MiniBook. Degradation Model $g(x,y)=f(x,y)*h(x,y)+\eta(x,y)$, Inverse Filtering Noise Explosion, Wiener (MMSE) Regularized Restoration, Constrained Least Squares (CLS), and Geometric Registration">
+  <title>C14: Image Restoration &amp; Deblurring | DIP MiniBook 📷 Arpit</title>
+
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <link rel="stylesheet" href="../assets/css/chapters.css">
+  <link rel="stylesheet" href="../assets/css/animations.css">
+  <link rel="stylesheet" href="../assets/css/timer.css">
+
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body data-chapter-id="ch14-image-restoration">
+  <div id="progress-bar"></div>
+
+  <!-- Header -->
+  <header id="main-header">
+    <div class="header-left">
+      <button id="sidebar-toggle" class="icon-btn" aria-label="Toggle navigation drawer" title="Toggle Sidebar (S)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <a href="../index.html" class="brand-logo">
+        <div class="brand-icon">DIP</div>
+        <div class="brand-text">
+          <span class="main">Digital Image Processing</span>
+          <span class="sub">DU DSE-3 Engineering MiniBook</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="header-chapter-title">C14: Image Restoration &amp; Deblurring</div>
+
+    <div class="header-right">
+      <button id="reading-mode-btn" class="icon-btn" aria-label="Toggle reading focus mode" title="Focus Mode (F)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+          <line x1="8" y1="21" x2="16" y2="21"></line>
+          <line x1="12" y1="17" x2="12" y2="21"></line>
+        </svg>
+      </button>
+      <button id="tts-toggle" class="icon-btn" aria-label="Audio Reader" title="Audio Reader">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+        </svg>
+      </button>
+      <button id="theme-toggle" class="icon-btn" aria-label="Cycle theme" title="Theme (T)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="12" cy="12" r="4.5"></circle>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Sidebar Overlay -->
+  <div id="sidebar-overlay"></div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" aria-expanded="true">
+    <div class="sidebar-nav">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">General</div>
+        <a href="../index.html" class="sidebar-link">
+          <span class="link-icon">🏛️</span>
+          <span>Subject Portal</span>
+        </a>
+        <a href="../progress.html" class="sidebar-link">
+          <span class="link-icon">📊</span>
+          <span>Study Dashboard</span>
+        </a>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Current Chapter Sections</div>
+        <a href="#s-14-1" class="sidebar-link"><span class="link-icon">📌</span><span>14.1 Enhancement vs Restoration</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-14-2" class="sidebar-link"><span class="link-icon">📌</span><span>14.2 The Degradation Model</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-14-3" class="sidebar-link"><span class="link-icon">📌</span><span>14.3 Why Deblurring Is Hard</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-14-4" class="sidebar-link"><span class="link-icon">📌</span><span>14.4 Frequency-Domain Degradation Model</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-14-5" class="sidebar-link"><span class="link-icon">📌</span><span>14.5 Ideal Inverse Filtering</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-14-6" class="sidebar-link"><span class="link-icon">📌</span><span>14.6 Why Inverse Filtering Can Explode</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-14-7" class="sidebar-link"><span class="link-icon">📌</span><span>14.7 Worked Inverse-Filter Example</span> </a>
+      <a href="#s-14-8" class="sidebar-link"><span class="link-icon">📌</span><span>14.8 Frequencies Where \(H=0\)</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-14-9" class="sidebar-link"><span class="link-icon">📌</span><span>14.9 Ill-Posedness</span> </a>
+      <a href="#s-14-10" class="sidebar-link"><span class="link-icon">📌</span><span>14.10 Point-Spread Function (PSF)</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-14-11" class="sidebar-link"><span class="link-icon">📌</span><span>14.11 Line-Spread Function</span> </a>
+      <a href="#s-14-12" class="sidebar-link"><span class="link-icon">📌</span><span>14.12 Motion Blur</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-14-13" class="sidebar-link"><span class="link-icon">📌</span><span>14.13 Defocus Blur</span> </a>
+      <a href="#s-14-14" class="sidebar-link"><span class="link-icon">📌</span><span>14.14 Atmospheric / System Blur</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-14-15" class="sidebar-link"><span class="link-icon">📌</span><span>14.15 Wiener Filtering</span> </a>
+      <a href="#s-14-16" class="sidebar-link"><span class="link-icon">📌</span><span>14.16 Why Wiener Is More Stable</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-14-17" class="sidebar-link"><span class="link-icon">📌</span><span>14.17 Worked Wiener-Style Example</span> </a>
+      <a href="#s-14-18" class="sidebar-link"><span class="link-icon">📌</span><span>14.18 Wiener Interpretation</span> </a>
+      <a href="#s-14-19" class="sidebar-link"><span class="link-icon">📌</span><span>14.19 Regularization</span> </a>
+      <a href="#s-14-20" class="sidebar-link"><span class="link-icon">📌</span><span>14.20 Tikhonov-Style Regularization</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-14-21" class="sidebar-link"><span class="link-icon">📌</span><span>14.21 Why Regularization Is Necessary</span> </a>
+      <a href="#s-14-22" class="sidebar-link"><span class="link-icon">📌</span><span>14.22 Noise-Free vs Noisy Restoration</span> </a>
+      <a href="#s-14-23" class="sidebar-link"><span class="link-icon">📌</span><span>14.23 Blur and Noise Are Different Degradations</span> </a>
+      <a href="#s-14-24" class="sidebar-link"><span class="link-icon">📌</span><span>14.24 Restoration vs Denoising</span> </a>
+      <a href="#s-14-25" class="sidebar-link"><span class="link-icon">📌</span><span>14.25 Estimating the Degradation Function</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-14-26" class="sidebar-link"><span class="link-icon">📌</span><span>14.26 Blind Deconvolution</span> </a>
+      <a href="#s-14-27" class="sidebar-link"><span class="link-icon">📌</span><span>14.27 Why Wrong PSF Can Be Worse Than No Restoration</span> </a>
+      <a href="#s-14-28" class="sidebar-link"><span class="link-icon">📌</span><span>14.28 Motion Deblurring Example</span> </a>
+      <a href="#s-14-29" class="sidebar-link"><span class="link-icon">📌</span><span>14.29 Restoration Pipeline</span> </a>
+      <a href="#s-14-30" class="sidebar-link"><span class="link-icon">📌</span><span>14.30 Restoration Quality Evaluation</span> </a>
+      <a href="#s-14-31" class="sidebar-link"><span class="link-icon">📌</span><span>14.31 Worked Restoration Example</span> </a>
+      <a href="#s-14-32" class="sidebar-link"><span class="link-icon">📌</span><span>14.32 Interpreting Restoration as an Inverse Problem</span> </a>
+      <a href="#s-14-33" class="sidebar-link"><span class="link-icon">📌</span><span>14.33 Information Loss and Irrecoverability</span> </a>
+      <a href="#s-14-34" class="sidebar-link"><span class="link-icon">📌</span><span>14.34 Prior Knowledge</span> </a>
+      <a href="#s-14-35" class="sidebar-link"><span class="link-icon">📌</span><span>14.35 Classical vs Learned Restoration</span> </a>
+      <a href="#s-14-36" class="sidebar-link"><span class="link-icon">📌</span><span>14.36 Responsible Restoration</span> </a>
+      <a href="#s-14-37" class="sidebar-link"><span class="link-icon">📌</span><span>14.37 Restoration Artifacts</span> </a>
+      <a href="#s-14-38" class="sidebar-link"><span class="link-icon">📌</span><span>14.38 Why Deblurring Can Create Ringing</span> </a>
+      <a href="#s-14-39" class="sidebar-link"><span class="link-icon">📌</span><span>14.39 Noise-Restoration Tradeoff</span> </a>
+      <a href="#s-14-40" class="sidebar-link"><span class="link-icon">📌</span><span>14.40 Restoration Parameter Selection</span> </a>
+      <a href="#s-14-41" class="sidebar-link"><span class="link-icon">📌</span><span>14.41 Boundary Conditions</span> </a>
+      <a href="#s-14-42" class="sidebar-link"><span class="link-icon">📌</span><span>14.42 Practical Deblurring Experiment</span> </a>
+      <a href="#s-14-43" class="sidebar-link"><span class="link-icon">📌</span><span>14.43 Controlled Motion-Blur Experiment</span> </a>
+      <a href="#s-14-44" class="sidebar-link"><span class="link-icon">📌</span><span>14.44 Why Inverse Filter Can Win in a Noise-Free Toy Case</span> </a>
+      <a href="#s-14-45" class="sidebar-link"><span class="link-icon">📌</span><span>14.45 Frequency-Domain Restoration Pipeline</span> </a>
+      <a href="#s-14-46" class="sidebar-link"><span class="link-icon">📌</span><span>14.46 Common Traps</span> </a>
+      <a href="#s-14-47" class="sidebar-link"><span class="link-icon">📌</span><span>14.47 Exam Formula Sheet</span> </a>
+      <a href="#s-14-48" class="sidebar-link"><span class="link-icon">📌</span><span>14.48 Exam-Style Problem — Inverse Filtering</span> </a>
+      <a href="#s-14-49" class="sidebar-link"><span class="link-icon">📌</span><span>14.49 Exam-Style Problem — Inverse Instability</span> </a>
+      <a href="#s-14-50" class="sidebar-link"><span class="link-icon">📌</span><span>14.50 Exam-Style Problem — Wiener Gain</span> </a>
+      <a href="#s-14-51" class="sidebar-link"><span class="link-icon">📌</span><span>14.51 Restoration Decision Tree</span> </a>
+      <a href="#s-14-52" class="sidebar-link"><span class="link-icon">📌</span><span>14.52 Enhancement → Filtering → Restoration</span> </a>
+      <a href="#s-14-53" class="sidebar-link"><span class="link-icon">📌</span><span>14.53 Cross-Book Bridges</span> </a>
+      <a href="#s-14-54" class="sidebar-link"><span class="link-icon">📌</span><span>14.54 Quick Recall</span> </a>
+      <a href="#s-14-55" class="sidebar-link"><span class="link-icon">📌</span><span>14.55 Chapter Checkpoint</span> </a>
+      <a href="#s-14-56" class="sidebar-link"><span class="link-icon">📌</span><span>14.56 Part II Completion Gate</span> </a>
+      <a href="#s-14-57" class="sidebar-link"><span class="link-icon">📌</span><span>14.57 Part III Preview</span> </a>
+      <a href="#s-14-58" class="sidebar-link"><span class="link-icon">📌</span><span>14.58 Mathematical Derivation: Inverse Filtering Noise Catastrophe</span> </a>
+      <a href="#s-14-59" class="sidebar-link"><span class="link-icon">📌</span><span>14.59 Worked Example — 10-Mark University Model Answer: Wiener (MMSE) Filtering</span> </a>
+      </div>
+
+      
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-i">Part I — The Image</div>
+      <a href="ch01-big-picture.html" class="sidebar-link"><span class="link-icon">01</span><span>The Big Picture</span></a>
+      <a href="ch02-image-formation.html" class="sidebar-link"><span class="link-icon">02</span><span>Formation & Acquisition</span></a>
+      <a href="ch03-sampling-quantization.html" class="sidebar-link"><span class="link-icon">03</span><span>Sampling & Quantization</span></a>
+      <a href="ch04-image-representation.html" class="sidebar-link"><span class="link-icon">04</span><span>Pixels, Matrices & Resolution</span></a>
+      <a href="ch05-colour-models-file-formats.html" class="sidebar-link"><span class="link-icon">05</span><span>Colour Models & Formats</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-ii">Part II — Improving the Image</div>
+      <a href="ch06-point-processing.html" class="sidebar-link"><span class="link-icon">06</span><span>Point Processing & Intensity</span></a>
+      <a href="ch07-histograms-equalization.html" class="sidebar-link"><span class="link-icon">07</span><span>Histograms & Equalization</span></a>
+      <a href="ch08-spatial-filtering.html" class="sidebar-link"><span class="link-icon">08</span><span>Spatial Filtering & Convolution</span></a>
+      <a href="ch09-smoothing-noise-reduction.html" class="sidebar-link"><span class="link-icon">09</span><span>Smoothing & Noise Reduction</span></a>
+      <a href="ch10-sharpening-edge-detection.html" class="sidebar-link"><span class="link-icon">10</span><span>Sharpening & Edge Detection</span></a>
+      <a href="ch11-geometric-transforms.html" class="sidebar-link"><span class="link-icon">11</span><span>Geometric Transforms</span></a>
+      <a href="ch12-fourier-transform.html" class="sidebar-link"><span class="link-icon">12</span><span>Fourier Transform & Frequency</span></a>
+      <a href="ch13-frequency-filtering.html" class="sidebar-link"><span class="link-icon">13</span><span>Frequency-Domain Filtering</span></a>
+      <a href="ch14-image-restoration.html" class="sidebar-link active"><span class="link-icon">14</span><span>Restoration & Deblurring</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-iii">Part III — Understanding Content</div>
+      <a href="ch15-segmentation-fundamentals.html" class="sidebar-link"><span class="link-icon">15</span><span>Segmentation Fundamentals</span></a>
+      <a href="ch16-thresholding-otsu.html" class="sidebar-link"><span class="link-icon">16</span><span>Thresholding & Otsu Method</span></a>
+      <a href="ch17-region-segmentation.html" class="sidebar-link"><span class="link-icon">17</span><span>Region-Based Segmentation</span></a>
+      <a href="ch18-mathematical-morphology.html" class="sidebar-link"><span class="link-icon">18</span><span>Mathematical Morphology</span></a>
+      <a href="ch19-features-descriptors.html" class="sidebar-link"><span class="link-icon">19</span><span>Image Features & Descriptors</span></a>
+      <a href="ch20-sift-surf-orb-hog.html" class="sidebar-link"><span class="link-icon">20</span><span>SIFT, SURF, ORB & HOG</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-iv">Part IV — Compressing Images</div>
+      <a href="ch21-compression-entropy.html" class="sidebar-link"><span class="link-icon">21</span><span>Compression & Entropy</span></a>
+      <a href="ch22-lossless-coding.html" class="sidebar-link"><span class="link-icon">22</span><span>Lossless: RLE & Huffman</span></a>
+      <a href="ch23-lossy-dct-jpeg.html" class="sidebar-link"><span class="link-icon">23</span><span>Lossy: DCT & JPEG</span></a>
+      <a href="ch24-wavelets-jpeg2000.html" class="sidebar-link"><span class="link-icon">24</span><span>Wavelets & JPEG 2000</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-v">Part V — Intelligent Vision</div>
+      <a href="ch25-image-classification.html" class="sidebar-link"><span class="link-icon">25</span><span>Image Classification</span></a>
+      <a href="ch26-cnns-image-processing.html" class="sidebar-link"><span class="link-icon">26</span><span>CNNs for Image Processing</span></a>
+      <a href="ch27-modern-vision-architectures.html" class="sidebar-link"><span class="link-icon">27</span><span>Modern Vision Architectures</span></a>
+      <a href="ch28-object-detection-yolo.html" class="sidebar-link"><span class="link-icon">28</span><span>Object Detection: YOLO</span></a>
+      <a href="ch29-image-denoising-autoencoders.html" class="sidebar-link"><span class="link-icon">29</span><span>Image Denoising Autoencoders</span></a>
+      <a href="ch30-video-motion-analysis.html" class="sidebar-link"><span class="link-icon">30</span><span>Video & Motion Analysis</span></a>
+      <a href="ch31-dip-applications-engineering.html" class="sidebar-link"><span class="link-icon">31</span><span>DIP Applications & Ethics</span></a>
+    </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-brand-mark">
+        <div class="mark">DU</div>
+        <div>
+          <strong>DSE-3 MiniBook</strong>
+          <div>University of Delhi</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mandatory Shell Wrapper -->
+  <div id="main-content">
+    <main class="chapter-content">
+      <!-- Chapter Hero -->
+      <div class="chapter-hero">
+        <div class="hero-meta">
+          <span class="part-badge part-ii">Improving the Image</span>
+          <span class="chapter-number">CHAPTER 14</span>
+          <span class="reading-time">⏱️ ~55 min read</span>
+          <span class="tag-badge tag-core">Highest Yield (10-mark guarantee)</span>
+        </div>
+        <h1 class="chapter-title">Image Restoration &amp; Deblurring</h1>
+        <p class="chapter-subtitle">
+          Degradation Model $g(x,y)=f(x,y)*h(x,y)+\eta(x,y)$, Inverse Filtering Noise Explosion, Wiener (MMSE) Regularized Restoration, Constrained Least Squares (CLS), and Geometric Registration
+        </p>
+
+        <div class="syllabus-anchor">
+          <span class="syllabus-anchor-label">DU Syllabus</span>
+          <span><strong>Image Restoration:</strong> Degradation model in spatial and frequency domains, noise probability density functions (Gaussian, Rayleigh, Erlang, exponential, uniform, impulse salt-and-pepper), estimation of noise parameters, restoration in the presence of noise only, periodic noise reduction, inverse filtering and noise catastrophe, Wiener (minimum mean square error) filtering, Constrained Least Squares (CLS) restoration, and geometric distortion correction.</span>
+        </div>
+      </div>
+
+      <!-- In-Page TOC -->
+      <div class="chapter-checklist-card" style="margin-bottom:var(--em-space-8);">
+        <div class="checklist-title">
+          <span>Table of Contents &amp; Visual Section Map</span>
+          <span class="tag-badge tag-math">59 Deep Sections</span>
+        </div>
+        <ul class="part-chapters-list">
+          <li class="part-chapter-item"><a href="#s-14-1"><strong>14.1</strong> Enhancement vs Restoration</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-14-2"><strong>14.2</strong> The Degradation Model</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-14-3"><strong>14.3</strong> Why Deblurring Is Hard</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-14-4"><strong>14.4</strong> Frequency-Domain Degradation Model</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-14-5"><strong>14.5</strong> Ideal Inverse Filtering</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-14-6"><strong>14.6</strong> Why Inverse Filtering Can Explode</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-14-7"><strong>14.7</strong> Worked Inverse-Filter Example</a> </li>
+      <li class="part-chapter-item"><a href="#s-14-8"><strong>14.8</strong> Frequencies Where \(H=0\)</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-14-9"><strong>14.9</strong> Ill-Posedness</a> </li>
+      <li class="part-chapter-item"><a href="#s-14-10"><strong>14.10</strong> Point-Spread Function (PSF)</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-14-11"><strong>14.11</strong> Line-Spread Function</a> </li>
+      <li class="part-chapter-item"><a href="#s-14-12"><strong>14.12</strong> Motion Blur</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-14-13"><strong>14.13</strong> Defocus Blur</a> </li>
+      <li class="part-chapter-item"><a href="#s-14-14"><strong>14.14</strong> Atmospheric / System Blur</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-14-15"><strong>14.15</strong> Wiener Filtering</a> </li>
+      <li class="part-chapter-item"><a href="#s-14-16"><strong>14.16</strong> Why Wiener Is More Stable</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-14-17"><strong>14.17</strong> Worked Wiener-Style Example</a> </li>
+      <li class="part-chapter-item"><a href="#s-14-18"><strong>14.18</strong> Wiener Interpretation</a> </li>
+      <li class="part-chapter-item"><a href="#s-14-19"><strong>14.19</strong> Regularization</a> </li>
+      <li class="part-chapter-item"><a href="#s-14-20"><strong>14.20</strong> Tikhonov-Style Regularization</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-14-21"><strong>14.21</strong> Why Regularization Is Necessary</a> </li>
+      <li class="part-chapter-item"><a href="#s-14-22"><strong>14.22</strong> Noise-Free vs Noisy Restoration</a> </li>
+      <li class="part-chapter-item"><a href="#s-14-23"><strong>14.23</strong> Blur and Noise Are Different Degradations</a> </li>
+      <li class="part-chapter-item"><a href="#s-14-24"><strong>14.24</strong> Restoration vs Denoising</a> </li>
+      <li class="part-chapter-item"><a href="#s-14-25"><strong>14.25</strong> Estimating the Degradation Function</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-14-26"><strong>14.26</strong> Blind Deconvolution</a> </li>
+      <li class="part-chapter-item"><a href="#s-14-27"><strong>14.27</strong> Why Wrong PSF Can Be Worse Than No Restoration</a> </li>
+      <li class="part-chapter-item"><a href="#s-14-28"><strong>14.28</strong> Motion Deblurring Example</a> </li>
+      <li class="part-chapter-item"><a href="#s-14-29"><strong>14.29</strong> Restoration Pipeline</a> </li>
+      <li class="part-chapter-item"><a href="#s-14-30"><strong>14.30</strong> Restoration Quality Evaluation</a> </li>
+      <li class="part-chapter-item"><a href="#s-14-31"><strong>14.31</strong> Worked Restoration Example</a> </li>
+      <li class="part-chapter-item"><a href="#s-14-32"><strong>14.32</strong> Interpreting Restoration as an Inverse Problem</a> </li>
+      <li class="part-chapter-item"><a href="#s-14-33"><strong>14.33</strong> Information Loss and Irrecoverability</a> </li>
+      <li class="part-chapter-item"><a href="#s-14-34"><strong>14.34</strong> Prior Knowledge</a> </li>
+      <li class="part-chapter-item"><a href="#s-14-35"><strong>14.35</strong> Classical vs Learned Restoration</a> </li>
+      <li class="part-chapter-item"><a href="#s-14-36"><strong>14.36</strong> Responsible Restoration</a> </li>
+      <li class="part-chapter-item"><a href="#s-14-37"><strong>14.37</strong> Restoration Artifacts</a> </li>
+      <li class="part-chapter-item"><a href="#s-14-38"><strong>14.38</strong> Why Deblurring Can Create Ringing</a> </li>
+      <li class="part-chapter-item"><a href="#s-14-39"><strong>14.39</strong> Noise-Restoration Tradeoff</a> </li>
+      <li class="part-chapter-item"><a href="#s-14-40"><strong>14.40</strong> Restoration Parameter Selection</a> </li>
+      <li class="part-chapter-item"><a href="#s-14-41"><strong>14.41</strong> Boundary Conditions</a> </li>
+      <li class="part-chapter-item"><a href="#s-14-42"><strong>14.42</strong> Practical Deblurring Experiment</a> </li>
+      <li class="part-chapter-item"><a href="#s-14-43"><strong>14.43</strong> Controlled Motion-Blur Experiment</a> </li>
+      <li class="part-chapter-item"><a href="#s-14-44"><strong>14.44</strong> Why Inverse Filter Can Win in a Noise-Free Toy Case</a> </li>
+      <li class="part-chapter-item"><a href="#s-14-45"><strong>14.45</strong> Frequency-Domain Restoration Pipeline</a> </li>
+      <li class="part-chapter-item"><a href="#s-14-46"><strong>14.46</strong> Common Traps</a> </li>
+      <li class="part-chapter-item"><a href="#s-14-47"><strong>14.47</strong> Exam Formula Sheet</a> </li>
+      <li class="part-chapter-item"><a href="#s-14-48"><strong>14.48</strong> Exam-Style Problem — Inverse Filtering</a> </li>
+      <li class="part-chapter-item"><a href="#s-14-49"><strong>14.49</strong> Exam-Style Problem — Inverse Instability</a> </li>
+      <li class="part-chapter-item"><a href="#s-14-50"><strong>14.50</strong> Exam-Style Problem — Wiener Gain</a> </li>
+      <li class="part-chapter-item"><a href="#s-14-51"><strong>14.51</strong> Restoration Decision Tree</a> </li>
+      <li class="part-chapter-item"><a href="#s-14-52"><strong>14.52</strong> Enhancement → Filtering → Restoration</a> </li>
+      <li class="part-chapter-item"><a href="#s-14-53"><strong>14.53</strong> Cross-Book Bridges</a> </li>
+      <li class="part-chapter-item"><a href="#s-14-54"><strong>14.54</strong> Quick Recall</a> </li>
+      <li class="part-chapter-item"><a href="#s-14-55"><strong>14.55</strong> Chapter Checkpoint</a> </li>
+      <li class="part-chapter-item"><a href="#s-14-56"><strong>14.56</strong> Part II Completion Gate</a> </li>
+      <li class="part-chapter-item"><a href="#s-14-57"><strong>14.57</strong> Part III Preview</a> </li>
+      <li class="part-chapter-item"><a href="#s-14-58"><strong>14.58</strong> Mathematical Derivation: Inverse Filtering Noise Catastrophe</a> </li>
+      <li class="part-chapter-item"><a href="#s-14-59"><strong>14.59</strong> Worked Example — 10-Mark University Model Answer: Wiener (MMSE) Filtering</a> </li>
+        </ul>
+      </div>
+
+      <div class="concept-hook" style="margin-bottom:var(--em-space-8);"><h1>Chapter 14 — Image Restoration and Deblurring</h1>
+<blockquote>
+<p><strong>Chapter thesis</strong><br />
+Restoration treats an observed image as the output of a degradation process and attempts to estimate the unknown original. The central model is an inverse problem: blur, noise and sampling have transformed the underlying image, and restoration asks what original image is most consistent with the observed data and an assumed degradation model.</p>
+</blockquote>
+<p><strong>Part II — Improving the Image</strong></p>
+<blockquote>
+<p><strong>Scope note:</strong> The university Unit II scope explicitly includes noise reduction/restoration within the image-processing sequence. This chapter expands that foundation into classical degradation and restoration models so the student can understand the difference between enhancement and model-based recovery. fileciteturn4file0L36-L40</p>
+</blockquote>
+<hr /></div>
+
+      <!-- All Numbered Sections -->
+      
+  <!-- SECTION 14.1: Enhancement vs Restoration -->
+  <section id="s-14-1" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.1</span>
+      <h2>Enhancement vs Restoration</h2>
+      <button class="bookmark-btn" data-id="s-14-1" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>This distinction is one of the most important in the entire MiniBook.</p>
+<h3>Enhancement</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>observed image
+     ↓
+choose useful transformation
+     ↓
+more useful appearance/representation</code></pre>
+</div></p>
+<h3>Restoration</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>observed degraded image
+     ↓
+estimate degradation model
+     ↓
+invert / estimate degradation
+     ↓
+restored image</code></pre>
+</div></p>
+<p>Enhancement may be subjective or task-driven.</p>
+<p>Restoration is generally model-driven.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.2: The Degradation Model -->
+  <section id="s-14-2" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.2</span>
+      <h2>The Degradation Model</h2>
+      <button class="bookmark-btn" data-id="s-14-2" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A classical degradation model is:</p>
+<p>
+$$
+g(x,y)=h(x,y)*f(x,y)+\eta(x,y)
+$$
+</p>
+<p>where:</p>
+<ul>
+<li>$f(x,y)$ = original image,</li>
+<li>$h(x,y)$ = degradation/blur function,</li>
+<li>$*$ = convolution,</li>
+<li>$\eta(x,y)$ = noise,</li>
+<li>$g(x,y)$ = observed degraded image.</li>
+</ul>
+<p>Conceptual pipeline:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>ORIGINAL IMAGE f
+      ↓
+  blur h
+      ↓
+add noise η
+      ↓
+OBSERVED IMAGE g</code></pre>
+</div></p>
+<p>This model is not universal, but it is foundational.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.3: Why Deblurring Is Hard -->
+  <section id="s-14-3" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.3</span>
+      <h2>Why Deblurring Is Hard</h2>
+      <button class="bookmark-btn" data-id="s-14-3" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>If:</p>
+<p>
+$$
+g=h*f+\eta
+$$
+</p>
+<p>we would like:</p>
+<p>
+$$
+f\approx ?
+$$
+</p>
+<p>The difficulty is that:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>blur
+→ mixes neighbouring pixels
+
+noise
+→ introduces uncertainty
+
+some frequency components
+→ may be strongly attenuated</code></pre>
+</div></p>
+<p>So simply “undoing the blur” can amplify noise enormously.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.4: Frequency-Domain Degradation Model -->
+  <section id="s-14-4" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.4</span>
+      <h2>Frequency-Domain Degradation Model</h2>
+      <button class="bookmark-btn" data-id="s-14-4" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Taking Fourier transforms:</p>
+<p>
+$$
+G(u,v)=H(u,v)F(u,v)+N(u,v)
+$$
+</p>
+<p>This is a powerful simplification.</p>
+<p>Instead of spatial convolution:</p>
+<p>
+$$
+h*f
+$$
+</p>
+<p>we have multiplication:</p>
+<p>
+$$
+HF
+$$
+</p>
+<p>The restoration problem becomes:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>G
+=
+HF + N</code></pre>
+</div></p>
+<p>and we want to estimate:</p>
+<p>
+$$
+F
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.5: Ideal Inverse Filtering -->
+  <section id="s-14-5" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.5</span>
+      <h2>Ideal Inverse Filtering</h2>
+      <button class="bookmark-btn" data-id="s-14-5" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Ignoring noise for a moment:</p>
+<p>
+$$
+G=HF
+$$
+</p>
+<p>Therefore:</p>
+<p>
+$$
+F=\frac{G}{H}
+$$
+</p>
+<p>This suggests the inverse filter:</p>
+<p>
+$$
+\hat F=
+\frac{G}{H}
+$$
+</p>
+<p>where $H\ne0$.</p>
+<p>This seems perfect mathematically.</p>
+<p>It is not robust in practice.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.6: Why Inverse Filtering Can Explode -->
+  <section id="s-14-6" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.6</span>
+      <h2>Why Inverse Filtering Can Explode</h2>
+      <button class="bookmark-btn" data-id="s-14-6" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p>
+$$
+|H|=0.1
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+\frac1{|H|}=10
+$$
+</p>
+<p>A noise component of magnitude:</p>
+<p>
+$$
+0.02
+$$
+</p>
+<p>can become:</p>
+<p>
+$$
+0.02\times10=0.2
+$$
+</p>
+<p>after inversion.</p>
+<p>If:</p>
+<p>
+$$
+|H|=0.001
+$$
+</p>
+<p>then:</p>
+<p>
+$$
+\frac1{|H|}=1000
+$$
+</p>
+<p>and even tiny noise can become enormous.</p>
+<p>Therefore:</p>
+<blockquote>
+<p><strong>Inverse filtering is extremely sensitive to frequencies where the degradation transfer function is small.</strong></p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.7: Worked Inverse-Filter Example -->
+  <section id="s-14-7" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.7</span>
+      <h2>Worked Inverse-Filter Example</h2>
+      <button class="bookmark-btn" data-id="s-14-7" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose one frequency component has:</p>
+<p>
+$$
+G=0.52
+$$
+</p>
+<p>and:</p>
+<p>
+$$
+H=0.8
+$$
+</p>
+<p>Ignoring noise:</p>
+<p>
+$$
+\hat F=
+\frac{0.52}{0.8}
+$$
+</p>
+<p>
+$$
+\boxed{\hat F=0.65}
+$$
+</p>
+<p>Now suppose:</p>
+<p>
+$$
+H=0.02
+$$
+</p>
+<p>with the same observed value:</p>
+<p>
+$$
+\hat F=\frac{0.52}{0.02}=26
+$$
+</p>
+<p>The estimate becomes extremely large.</p>
+<p>This is the instability problem.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.8: Frequencies Where \(H=0\) -->
+  <section id="s-14-8" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.8</span>
+      <h2>Frequencies Where \(H=0\)</h2>
+      <button class="bookmark-btn" data-id="s-14-8" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>If:</p>
+<p>
+$$
+H(u,v)=0
+$$
+</p>
+<p>then:</p>
+<p>
+$$
+\frac{1}{H}
+$$
+</p>
+<p>is undefined.</p>
+<p>That means the degradation has completely removed that frequency in the model.</p>
+<p>No inverse filter can recover information that is mathematically absent from the observed signal without additional prior information.</p>
+<p>This is a core inverse-problem insight.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.9: Ill-Posedness -->
+  <section id="s-14-9" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.9</span>
+      <h2>Ill-Posedness</h2>
+      <button class="bookmark-btn" data-id="s-14-9" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A restoration problem can be ill-conditioned or ill-posed because:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>different originals
+→ can produce similar observations
+
+small observation error
+→ can create large restoration changes</code></pre>
+</div></p>
+<p>Noise makes the problem especially unstable.</p>
+<p>This is why regularization matters.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.10: Point-Spread Function (PSF) -->
+  <section id="s-14-10" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.10</span>
+      <h2>Point-Spread Function (PSF)</h2>
+      <button class="bookmark-btn" data-id="s-14-10" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The blur function:</p>
+<p>
+$$
+h(x,y)
+$$
+</p>
+<p>is often called the <strong>point-spread function (PSF)</strong>.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>ideal point object
+      ↓
+imaging system
+      ↓
+spread-out point</code></pre>
+</div></p>
+<p>The PSF describes how a point-like input is distributed by the system.</p>
+<p>A sharp system produces a concentrated PSF.</p>
+<p>A blurry system produces a wider PSF.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.11: Line-Spread Function -->
+  <section id="s-14-11" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.11</span>
+      <h2>Line-Spread Function</h2>
+      <button class="bookmark-btn" data-id="s-14-11" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <blockquote>
+<p><strong>EXTENSION</strong></p>
+</blockquote>
+<p>A line-spread function can characterize the response to an ideal line feature.</p>
+<p>It is related to the PSF through integration along an appropriate direction.</p>
+<p>The PSF is generally the more fundamental 2-D concept for image restoration.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.12: Motion Blur -->
+  <section id="s-14-12" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.12</span>
+      <h2>Motion Blur</h2>
+      <button class="bookmark-btn" data-id="s-14-12" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Camera or object motion can produce directional blur.</p>
+<p>A simplified PSF may look like:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>████████</code></pre>
+</div></p>
+<p>rather than a compact point.</p>
+<p>In the frequency domain, this produces direction-dependent attenuation.</p>
+<p>Restoration requires a model of:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>motion direction
++
+motion length
++
+possible exposure behaviour</code></pre>
+</div></p>
+<p>The exact physical model can be more complex than a simple uniform line spread.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.13: Defocus Blur -->
+  <section id="s-14-13" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.13</span>
+      <h2>Defocus Blur</h2>
+      <button class="bookmark-btn" data-id="s-14-13" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Defocus can spread a point into a disk-like region in a simplified model.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>point
+ ↓
+  ●
+blurred point
+ ↓
+ ◉</code></pre>
+</div></p>
+<p>This produces a characteristic PSF.</p>
+<p>Again:</p>
+<blockquote>
+<p>Real optical blur can be more complicated than the idealized textbook PSF.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.14: Atmospheric / System Blur -->
+  <section id="s-14-14" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.14</span>
+      <h2>Atmospheric / System Blur</h2>
+      <button class="bookmark-btn" data-id="s-14-14" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <blockquote>
+<p><strong>EXTENSION</strong></p>
+</blockquote>
+<p>Imaging through turbulence, scattering or other propagation effects can introduce blur and contrast loss.</p>
+<p>Restoration then requires a model of the propagation/degradation process.</p>
+<p>This illustrates a general rule:</p>
+<blockquote>
+<p>The quality of a restoration result depends strongly on how well the degradation model matches reality.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.15: Wiener Filtering -->
+  <section id="s-14-15" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.15</span>
+      <h2>Wiener Filtering</h2>
+      <button class="bookmark-btn" data-id="s-14-15" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A classical approach balances inversion against noise amplification.</p>
+<p>The Wiener filter minimizes mean-square estimation error under the assumptions of the model.</p>
+<p>A common frequency-domain form is:</p>
+<p>
+$$
+\hat F(u,v)
+=
+\frac{H^*(u,v)}
+{|H(u,v)|^2+K(u,v)}
+G(u,v)
+$$
+</p>
+<p>A commonly taught simplified form uses a constant:</p>
+<p>
+$$
+\hat F(u,v)
+=
+\frac{H^*(u,v)}
+{|H(u,v)|^2+K}
+G(u,v)
+$$
+</p>
+<p>where:</p>
+<ul>
+<li>$H^*$ = complex conjugate of $H$,</li>
+<li>$K$ is related to the noise-to-signal power ratio under the chosen formulation.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.16: Why Wiener Is More Stable -->
+  <section id="s-14-16" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.16</span>
+      <h2>Why Wiener Is More Stable</h2>
+      <button class="bookmark-btn" data-id="s-14-16" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Compare:</p>
+<h3>Inverse</h3>
+<p>
+$$
+\frac{1}{H}
+$$
+</p>
+<h3>Wiener-like</h3>
+<p>
+$$
+\frac{H^*}{|H|^2+K}
+$$
+</p>
+<p>When:</p>
+<p>
+$$
+|H|\rightarrow0
+$$
+</p>
+<p>the inverse filter becomes unstable.</p>
+<p>But if:</p>
+<p>
+$$
+K>0
+$$
+</p>
+<p>the denominator remains nonzero.</p>
+<p>So the Wiener approach prevents unlimited amplification of weak spectral regions.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.17: Worked Wiener-Style Example -->
+  <section id="s-14-17" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.17</span>
+      <h2>Worked Wiener-Style Example</h2>
+      <button class="bookmark-btn" data-id="s-14-17" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p>
+$$
+H=0.1
+$$
+</p>
+<p>and:</p>
+<p>
+$$
+K=0.01
+$$
+</p>
+<p>Assume real $H$ for simplicity.</p>
+<p>Then:</p>
+<p>
+$$
+H^*=0.1
+$$
+</p>
+<p>
+$$
+|H|^2=0.01
+$$
+</p>
+<p>Therefore the filter gain is:</p>
+<p>
+$$
+\frac{0.1}{0.01+0.01}
+$$
+</p>
+<p>
+$$
+=\frac{0.1}{0.02}
+$$
+</p>
+<p>
+$$
+\boxed{5}
+$$
+</p>
+<p>The direct inverse gain would be:</p>
+<p>
+$$
+\frac1{0.1}=10
+$$
+</p>
+<p>Thus the Wiener-style regularization reduces the amplification in this example.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.18: Wiener Interpretation -->
+  <section id="s-14-18" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.18</span>
+      <h2>Wiener Interpretation</h2>
+      <button class="bookmark-btn" data-id="s-14-18" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The denominator:</p>
+<p>
+$$
+|H|^2+K
+$$
+</p>
+<p>creates a compromise:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>strongly transmitted frequency
+→ permit more recovery
+
+weakly transmitted / noisy frequency
+→ avoid excessive amplification</code></pre>
+</div></p>
+<p>It is therefore a model-based tradeoff.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.19: Regularization -->
+  <section id="s-14-19" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.19</span>
+      <h2>Regularization</h2>
+      <button class="bookmark-btn" data-id="s-14-19" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>More generally, restoration can be viewed as:</p>
+<p>
+$$
+\text{data fidelity}
++
+\lambda\cdot\text{prior/regularization}
+$$
+</p>
+<p>The first term says:</p>
+<blockquote>
+<p>stay consistent with the observed image.</p>
+</blockquote>
+<p>The second says:</p>
+<blockquote>
+<p>prefer a plausible or stable solution.</p>
+</blockquote>
+<p>This is the broader mathematical view of inverse problems.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.20: Tikhonov-Style Regularization -->
+  <section id="s-14-20" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.20</span>
+      <h2>Tikhonov-Style Regularization</h2>
+      <button class="bookmark-btn" data-id="s-14-20" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <blockquote>
+<p><strong>EXTENSION</strong></p>
+</blockquote>
+<p>A common formulation is:</p>
+<p>
+$$
+\hat f
+=
+\arg\min_f
+\left[
+\|Hf-g\|_2^2
++
+\lambda\|Lf\|_2^2
+\right]
+$$
+</p>
+<p>where:</p>
+<ul>
+<li>$Hf$ models degradation,</li>
+<li>$g$ is observed data,</li>
+<li>$L$ is a regularization operator,</li>
+<li>$\lambda$ controls the tradeoff.</li>
+</ul>
+<p>This says:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>fit observed image
++
+avoid implausibly unstable solution</code></pre>
+</div></p>
+<p>The exact solution depends on the chosen $L$, boundary conditions and optimization formulation.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.21: Why Regularization Is Necessary -->
+  <section id="s-14-21" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.21</span>
+      <h2>Why Regularization Is Necessary</h2>
+      <button class="bookmark-btn" data-id="s-14-21" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Without regularization:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>fit data exactly
+→ may fit noise
+→ may explode at weak frequencies</code></pre>
+</div></p>
+<p>With too much regularization:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>stable solution
+→ but useful detail may be suppressed</code></pre>
+</div></p>
+<p>Therefore:</p>
+<p>
+$$
+\text{regularization strength}
+$$
+</p>
+<p>is itself a model-selection parameter.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.22: Noise-Free vs Noisy Restoration -->
+  <section id="s-14-22" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.22</span>
+      <h2>Noise-Free vs Noisy Restoration</h2>
+      <button class="bookmark-btn" data-id="s-14-22" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Noise-free</h3>
+<p>If:</p>
+<p>
+$$
+\eta=0
+$$
+</p>
+<p>the inverse problem is simpler.</p>
+<h3>Noisy</h3>
+<p>If:</p>
+<p>
+$$
+\eta\ne0
+$$
+</p>
+<p>then direct inversion can amplify noise.</p>
+<p>This is why restoration methods must explicitly account for noise assumptions.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.23: Blur and Noise Are Different Degradations -->
+  <section id="s-14-23" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.23</span>
+      <h2>Blur and Noise Are Different Degradations</h2>
+      <button class="bookmark-btn" data-id="s-14-23" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Blur</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>mixes spatial information</code></pre>
+</div></p>
+<h3>Noise</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>adds uncertainty/variation</code></pre>
+</div></p>
+<p>A good restoration model may need both:</p>
+<p>
+$$
+g=h*f+\eta
+$$
+</p>
+<p>Ignoring one component can lead to poor recovery.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.24: Restoration vs Denoising -->
+  <section id="s-14-24" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.24</span>
+      <h2>Restoration vs Denoising</h2>
+      <button class="bookmark-btn" data-id="s-14-24" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Denoising:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>focus on noise</code></pre>
+</div></p>
+<p>Deblurring:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>focus on blur</code></pre>
+</div></p>
+<p>Restoration:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>estimate degradation process
++
+recover original</code></pre>
+</div></p>
+<p>Real systems may require both simultaneously.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.25: Estimating the Degradation Function -->
+  <section id="s-14-25" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.25</span>
+      <h2>Estimating the Degradation Function</h2>
+      <button class="bookmark-btn" data-id="s-14-25" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Sometimes $H$ is known or calibrated.</p>
+<p>Examples:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>known optical system
+known motion direction
+known blur kernel</code></pre>
+</div></p>
+<p>Other times it must be estimated.</p>
+<p>This is called <strong>blind deconvolution</strong> when both the original image and degradation are unknown or only partially known.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.26: Blind Deconvolution -->
+  <section id="s-14-26" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.26</span>
+      <h2>Blind Deconvolution</h2>
+      <button class="bookmark-btn" data-id="s-14-26" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>observed image
+      ↓
+estimate blur
+      ↓
+estimate original
+      ↕
+refine blur
+      ↕
+refine original</code></pre>
+</div></p>
+<p>This is difficult because many combinations of:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image
++
+blur kernel</code></pre>
+</div></p>
+<p>can explain the observations.</p>
+<p>Therefore strong priors and good initialization can matter.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.27: Why Wrong PSF Can Be Worse Than No Restoration -->
+  <section id="s-14-27" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.27</span>
+      <h2>Why Wrong PSF Can Be Worse Than No Restoration</h2>
+      <button class="bookmark-btn" data-id="s-14-27" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose the true blur is directional but the restoration algorithm assumes isotropic Gaussian blur.</p>
+<p>Then:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>model mismatch
+→ incorrect inversion
+→ artifacts
+→ ringing/noise</code></pre>
+</div></p>
+<p>Thus:</p>
+<blockquote>
+<p><strong>Restoration is only as good as the degradation model and assumptions behind it.</strong></p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.28: Motion Deblurring Example -->
+  <section id="s-14-28" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.28</span>
+      <h2>Motion Deblurring Example</h2>
+      <button class="bookmark-btn" data-id="s-14-28" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>horizontal motion
+→ blur horizontally</code></pre>
+</div></p>
+<p>A correct PSF might represent motion along the x-axis.</p>
+<p>A Gaussian isotropic blur assumption would not capture the directionality.</p>
+<p>The resulting restoration can fail even if the algorithm itself is implemented correctly.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.29: Restoration Pipeline -->
+  <section id="s-14-29" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.29</span>
+      <h2>Restoration Pipeline</h2>
+      <button class="bookmark-btn" data-id="s-14-29" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A disciplined restoration pipeline is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>observed image g
+      ↓
+diagnose degradation
+      ↓
+choose/model h
+      ↓
+estimate noise statistics
+      ↓
+choose restoration method
+      ↓
+restore
+      ↓
+range / datatype handling
+      ↓
+evaluate against reference or task</code></pre>
+</div></p>
+<p>This is more principled than:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>try random sharpening</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.30: Restoration Quality Evaluation -->
+  <section id="s-14-30" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.30</span>
+      <h2>Restoration Quality Evaluation</h2>
+      <button class="bookmark-btn" data-id="s-14-30" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>When a clean reference exists:</p>
+<h3>MSE</h3>
+<p>
+$$
+MSE=
+\frac1{MN}\sum(I-\hat I)^2
+$$
+</p>
+<h3>PSNR</h3>
+<p>
+$$
+PSNR=
+10\log_{10}
+\left(
+\frac{MAX_I^2}{MSE}
+\right)
+$$
+</p>
+<p>But also inspect:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>edge preservation
+texture
+ringing
+noise</code></pre>
+</div></p>
+<p>If no reference exists, evaluation becomes harder and may rely on:</p>
+<ul>
+<li>no-reference metrics,</li>
+<li>task accuracy,</li>
+<li>visual inspection,</li>
+<li>consistency with known system constraints.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.31: Worked Restoration Example -->
+  <section id="s-14-31" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.31</span>
+      <h2>Worked Restoration Example</h2>
+      <button class="bookmark-btn" data-id="s-14-31" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose one frequency satisfies:</p>
+<p>
+$$
+G=0.42
+$$
+</p>
+<p>and:</p>
+<p>
+$$
+H=0.7
+$$
+</p>
+<p>Ignoring noise:</p>
+<p>
+$$
+\hat F=\frac{0.42}{0.7}
+$$
+</p>
+<p>
+$$
+\boxed{\hat F=0.6}
+$$
+</p>
+<p>Now assume:</p>
+<p>
+$$
+K=0.04
+$$
+</p>
+<p>in a simplified Wiener expression.</p>
+<p>Then:</p>
+<p>
+$$
+\hat F_W=
+\frac{0.7}
+{0.7^2+0.04}
+(0.42)
+$$
+</p>
+<p>
+$$
+=
+\frac{0.7}{0.49+0.04}\times0.42
+$$
+</p>
+<p>
+$$
+=
+\frac{0.7}{0.53}\times0.42
+$$
+</p>
+<p>
+$$
+\approx0.555
+$$
+</p>
+<p>The regularized estimate is smaller than the direct inverse estimate.</p>
+<p>This is the intended stabilizing behaviour.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.32: Interpreting Restoration as an Inverse Problem -->
+  <section id="s-14-32" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.32</span>
+      <h2>Interpreting Restoration as an Inverse Problem</h2>
+      <button class="bookmark-btn" data-id="s-14-32" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The forward process is:</p>
+<p>
+$$
+f
+\xrightarrow{h}
+h*f
+\xrightarrow{+\eta}
+g
+$$
+</p>
+<p>Restoration reverses this:</p>
+<p>
+$$
+g
+\xrightarrow{\text{model}}
+\hat f
+$$
+</p>
+<p>But the reverse is not exact because:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>noise
++
+information attenuation
++
+unknown parameters</code></pre>
+</div></p>
+<p>make the inverse uncertain.</p>
+<p>This is why a restored image is an <strong>estimate</strong>, not proof of the exact original.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.33: Information Loss and Irrecoverability -->
+  <section id="s-14-33" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.33</span>
+      <h2>Information Loss and Irrecoverability</h2>
+      <button class="bookmark-btn" data-id="s-14-33" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose a degradation completely suppresses a frequency:</p>
+<p>
+$$
+H(u,v)=0
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+G(u,v)=N(u,v)
+$$
+</p>
+<p>at that location.</p>
+<p>The original signal component cannot be recovered from the data alone.</p>
+<p>Any estimate must come from:</p>
+<ul>
+<li>priors,</li>
+<li>neighbouring frequencies,</li>
+<li>spatial assumptions,</li>
+<li>statistical structure.</li>
+</ul>
+<p>This is the central difference between:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>reconstruction</code></pre>
+</div></p>
+<p>and:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>guessing with priors</code></pre>
+</div></p>
+<p>A restoration algorithm combines evidence and assumptions.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.34: Prior Knowledge -->
+  <section id="s-14-34" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.34</span>
+      <h2>Prior Knowledge</h2>
+      <button class="bookmark-btn" data-id="s-14-34" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Useful priors can include assumptions such as:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>images are usually smooth except at edges
+noise is statistically structured
+blur kernel has known shape
+natural images contain spatial redundancy</code></pre>
+</div></p>
+<p>Different algorithms encode different priors.</p>
+<p>This becomes a bridge to modern machine-learning restoration.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.35: Classical vs Learned Restoration -->
+  <section id="s-14-35" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.35</span>
+      <h2>Classical vs Learned Restoration</h2>
+      <button class="bookmark-btn" data-id="s-14-35" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Classical</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>explicit degradation model
++
+explicit regularizer/statistics</code></pre>
+</div></p>
+<h3>Learned</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>data
++
+model/training
+→
+learned mapping/prior</code></pre>
+</div></p>
+<p>Modern deep-learning restoration can learn powerful priors, but it can also hallucinate structures when evidence is insufficient.</p>
+<p>This is particularly important in high-stakes imaging.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.36: Responsible Restoration -->
+  <section id="s-14-36" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.36</span>
+      <h2>Responsible Restoration</h2>
+      <button class="bookmark-btn" data-id="s-14-36" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A restored image should not be presented as:</p>
+<blockquote>
+<p>“the true original”</p>
+</blockquote>
+<p>unless the claim is actually supported.</p>
+<p>Better language:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>restored estimate
+model-based reconstruction
+deblurred estimate</code></pre>
+</div></p>
+<p>Record:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>original input
+restoration method
+degradation assumptions
+parameters
+reference/ground truth if available</code></pre>
+</div></p>
+<p>This preserves scientific traceability.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.37: Restoration Artifacts -->
+  <section id="s-14-37" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.37</span>
+      <h2>Restoration Artifacts</h2>
+      <button class="bookmark-btn" data-id="s-14-37" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Possible artifacts include:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>ringing
+oversharpening
+noise amplification
+haloing
+texture distortion
+false structures
+edge oscillations</code></pre>
+</div></p>
+<p>These are not random annoyances.</p>
+<p>They often reveal:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>model mismatch
++
+unstable inversion
++
+over-aggressive regularization choices</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.38: Why Deblurring Can Create Ringing -->
+  <section id="s-14-38" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.38</span>
+      <h2>Why Deblurring Can Create Ringing</h2>
+      <button class="bookmark-btn" data-id="s-14-38" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>If the inverse filter aggressively boosts frequencies that were attenuated by blur, it can create oscillations near edges.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>blurred edge
+██████▓▓▒░░░
+
+inverse
+███████│░│░│</code></pre>
+</div></p>
+<p>This is a classic inverse-filtering artifact.</p>
+<p>Regularized filters attempt to control it.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.39: Noise-Restoration Tradeoff -->
+  <section id="s-14-39" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.39</span>
+      <h2>Noise-Restoration Tradeoff</h2>
+      <button class="bookmark-btn" data-id="s-14-39" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose the degradation suppresses high frequencies.</p>
+<p>An inverse method tries to restore them:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>missing/attenuated detail
+→ boost</code></pre>
+</div></p>
+<p>But:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>noise at same frequencies
+→ also boosted</code></pre>
+</div></p>
+<p>Therefore restoration is fundamentally a tradeoff:</p>
+<p>
+$$
+\text{sharpness}
+\leftrightarrow
+\text{noise amplification}
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.40: Restoration Parameter Selection -->
+  <section id="s-14-40" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.40</span>
+      <h2>Restoration Parameter Selection</h2>
+      <button class="bookmark-btn" data-id="s-14-40" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Relevant parameters can include:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>PSF size
+PSF orientation
+noise variance
+Wiener K
+regularization λ
+stopping condition
+boundary model</code></pre>
+</div></p>
+<p>Parameter selection should ideally use:</p>
+<ul>
+<li>calibration,</li>
+<li>reference validation,</li>
+<li>cross-validation,</li>
+<li>known imaging physics,</li>
+<li>downstream task evaluation.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.41: Boundary Conditions -->
+  <section id="s-14-41" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.41</span>
+      <h2>Boundary Conditions</h2>
+      <button class="bookmark-btn" data-id="s-14-41" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>As with filtering:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image boundaries
+→ affect convolution
+→ affect frequency model
+→ affect restoration</code></pre>
+</div></p>
+<p>Possible assumptions include:</p>
+<ul>
+<li>periodic,</li>
+<li>zero,</li>
+<li>reflective,</li>
+<li>other model-specific boundaries.</li>
+</ul>
+<p>A restoration result can change substantially if boundary assumptions change.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.42: Practical Deblurring Experiment -->
+  <section id="s-14-42" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.42</span>
+      <h2>Practical Deblurring Experiment</h2>
+      <button class="bookmark-btn" data-id="s-14-42" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A strong lab experiment can create controlled blur:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>clean image
+    ↓
+known Gaussian PSF
+    ↓
+blurred image
+    ↓
+optional Gaussian noise
+    ↓
+inverse filtering
+    ↓
+Wiener restoration
+    ↓
+compare to clean image</code></pre>
+</div></p>
+<p>Record:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>PSF size
+noise level
+inverse method
+Wiener parameter
+MSE
+PSNR
+visual artifacts
+edge sharpness</code></pre>
+</div></p>
+<p>This turns an abstract restoration problem into an experimentally verifiable pipeline.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.43: Controlled Motion-Blur Experiment -->
+  <section id="s-14-43" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.43</span>
+      <h2>Controlled Motion-Blur Experiment</h2>
+      <button class="bookmark-btn" data-id="s-14-43" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>clean image
+   ↓
+synthetic motion PSF
+   ↓
+blurred image
+   ↓
+add noise
+   ↓
+estimate/use known PSF
+   ↓
+restore
+   ↓
+compare</code></pre>
+</div></p>
+<p>Now compare:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>no restoration
+inverse filter
+Wiener</code></pre>
+</div></p>
+<p>The experiment makes instability visible.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.44: Why Inverse Filter Can Win in a Noise-Free Toy Case -->
+  <section id="s-14-44" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.44</span>
+      <h2>Why Inverse Filter Can Win in a Noise-Free Toy Case</h2>
+      <button class="bookmark-btn" data-id="s-14-44" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>PSF perfectly known
+noise = 0
+H never near zero</code></pre>
+</div></p>
+<p>Then direct inversion may recover the original extremely well.</p>
+<p>This is useful educationally.</p>
+<p>But once:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>noise &gt; 0
+or
+PSF uncertain</code></pre>
+</div></p>
+<p>the situation changes.</p>
+<p>This is why classroom formulas should never be transferred blindly into production imaging systems.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.45: Frequency-Domain Restoration Pipeline -->
+  <section id="s-14-45" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.45</span>
+      <h2>Frequency-Domain Restoration Pipeline</h2>
+      <button class="bookmark-btn" data-id="s-14-45" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>g(x,y)
+  ↓
+FFT
+  ↓
+G(u,v)
+
+estimate H(u,v)
+estimate noise model
+  ↓
+choose:
+  inverse
+  Wiener
+  regularized method
+  ↓
+construct restoration transfer function
+  ↓
+multiply
+  ↓
+inverse FFT
+  ↓
+real output
+  ↓
+range handling
+  ↓
+evaluation</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.46: Common Traps -->
+  <section id="s-14-46" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.46</span>
+      <h2>Common Traps</h2>
+      <button class="bookmark-btn" data-id="s-14-46" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h2>Trap 1 — “Restoration is just stronger enhancement.”</h2>
+<p>False.</p>
+<p>Restoration is model-based estimation.</p>
+<h2>Trap 2 — “Divide by the blur spectrum and everything is recovered.”</h2>
+<p>False.</p>
+<p>Small $H$ values amplify noise and zeros make inversion undefined.</p>
+<h2>Trap 3 — “Wiener filter always produces a perfect result.”</h2>
+<p>False.</p>
+<p>It depends on model assumptions and parameterization.</p>
+<h2>Trap 4 — “A wrong PSF is a small issue.”</h2>
+<p>False.</p>
+<p>Model mismatch can dominate the result.</p>
+<h2>Trap 5 — “If the image looks sharper, restoration succeeded.”</h2>
+<p>Not necessarily.</p>
+<p>Sharpness may come from noise, ringing or false detail.</p>
+<h2>Trap 6 — “Blur and noise are the same.”</h2>
+<p>False.</p>
+<p>Blur mixes/attenuates spatial information; noise introduces uncertainty.</p>
+<h2>Trap 7 — “A restored image is the original image.”</h2>
+<p>False.</p>
+<p>It is generally an estimate conditioned on a model and data.</p>
+<h2>Trap 8 — “No reference image means restoration quality can be judged by eye alone.”</h2>
+<p>False.</p>
+<p>No-reference situations are harder and require appropriate domain/task evaluation.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.47: Exam Formula Sheet -->
+  <section id="s-14-47" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.47</span>
+      <h2>Exam Formula Sheet</h2>
+      <button class="bookmark-btn" data-id="s-14-47" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Degradation model</h3>
+<p>
+$$
+\boxed{
+g=h*f+\eta
+}
+$$
+</p>
+<h3>Frequency-domain degradation</h3>
+<p>
+$$
+\boxed{
+G=HF+N
+}
+$$
+</p>
+<h3>Inverse filter</h3>
+<p>
+$$
+\boxed{
+\hat F=\frac{G}{H}
+}
+$$
+</p>
+<p>when $H\ne0$ and the model permits it.</p>
+<h3>Wiener-style filter</h3>
+<p>
+$$
+\boxed{
+\hat F=
+\frac{H^*}{|H|^2+K}G
+}
+$$
+</p>
+<p>for the simplified common formulation.</p>
+<h3>MSE</h3>
+<p>
+$$
+\boxed{
+MSE=
+\frac1{MN}
+\sum(I-\hat I)^2
+}
+$$
+</p>
+<h3>PSNR</h3>
+<p>
+$$
+\boxed{
+PSNR=
+10\log_{10}
+\frac{MAX_I^2}{MSE}
+}
+$$
+</p>
+<h3>Regularized inverse-problem form</h3>
+<p>
+$$
+\boxed{
+\hat f=
+\arg\min_f
+\left[
+\|Hf-g\|_2^2+
+\lambda\|Lf\|_2^2
+\right]
+}
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.48: Exam-Style Problem — Inverse Filtering -->
+  <section id="s-14-48" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.48</span>
+      <h2>Exam-Style Problem — Inverse Filtering</h2>
+      <button class="bookmark-btn" data-id="s-14-48" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Given:</p>
+<p>
+$$
+G=0.8,\qquad H=0.4
+$$
+</p>
+<p>Ignoring noise:</p>
+<p>
+$$
+\hat F=\frac{0.8}{0.4}
+$$
+</p>
+<p>
+$$
+\boxed{\hat F=2}
+$$
+</p>
+<p>The value can exceed the observed magnitude because the system attenuation is being inverted.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.49: Exam-Style Problem — Inverse Instability -->
+  <section id="s-14-49" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.49</span>
+      <h2>Exam-Style Problem — Inverse Instability</h2>
+      <button class="bookmark-btn" data-id="s-14-49" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p>
+$$
+H=0.01
+$$
+</p>
+<p>and noise magnitude is:</p>
+<p>
+$$
+N=0.03
+$$
+</p>
+<p>The inverse gain is:</p>
+<p>
+$$
+\frac1H=100
+$$
+</p>
+<p>Therefore the noise contribution after inversion can be approximately:</p>
+<p>
+$$
+0.03\times100=3
+$$
+</p>
+<p>The noise becomes much larger.</p>
+<p>This demonstrates why direct inverse filtering can be unstable.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.50: Exam-Style Problem — Wiener Gain -->
+  <section id="s-14-50" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.50</span>
+      <h2>Exam-Style Problem — Wiener Gain</h2>
+      <button class="bookmark-btn" data-id="s-14-50" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Given:</p>
+<p>
+$$
+H=0.5,\qquad K=0.1
+$$
+</p>
+<p>Assume $H$ is real.</p>
+<p>Then:</p>
+<p>
+$$
+\frac{H^*}{|H|^2+K}
+=
+\frac{0.5}{0.25+0.1}
+$$
+</p>
+<p>
+$$
+=
+\frac{0.5}{0.35}
+$$
+</p>
+<p>
+$$
+\boxed{\approx1.429}
+$$
+</p>
+<p>The corresponding direct inverse gain would be:</p>
+<p>
+$$
+2
+$$
+</p>
+<p>so the Wiener form is less aggressive under this parameter choice.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.51: Restoration Decision Tree -->
+  <section id="s-14-51" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.51</span>
+      <h2>Restoration Decision Tree</h2>
+      <button class="bookmark-btn" data-id="s-14-51" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>OBSERVED DEGRADATION
+        │
+        ├── mainly random noise?
+        │       ↓
+        │   denoising candidate
+        │
+        ├── known blur + low noise?
+        │       ↓
+        │   inverse/deconvolution candidate
+        │
+        ├── known blur + significant noise?
+        │       ↓
+        │   Wiener / regularized restoration
+        │
+        ├── unknown blur?
+        │       ↓
+        │   estimate PSF / blind deconvolution
+        │
+        └── uncertain degradation?
+                ↓
+        diagnose/model first</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.52: Enhancement → Filtering → Restoration -->
+  <section id="s-14-52" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.52</span>
+      <h2>Enhancement → Filtering → Restoration</h2>
+      <button class="bookmark-btn" data-id="s-14-52" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The end of Part II now forms a coherent progression:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>C06
+INTENSITY TRANSFORMATION
+        ↓
+C07
+HISTOGRAM
+        ↓
+C08
+SPATIAL FILTER
+        ↓
+C09
+NOISE REDUCTION
+        ↓
+C10
+SHARPENING / EDGE
+        ↓
+C11
+GEOMETRIC RESAMPLING
+        ↓
+C12
+FOURIER REPRESENTATION
+        ↓
+C13
+FREQUENCY FILTERING
+        ↓
+C14
+RESTORATION</code></pre>
+</div></p>
+<p>The intellectual progression is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>modify values
+→ understand distributions
+→ use neighbourhoods
+→ diagnose noise
+→ emphasize structure
+→ move coordinates
+→ change mathematical representation
+→ selectively filter frequencies
+→ solve an inverse problem</code></pre>
+</div></p>
+<p>This completes the classical enhancement/processing portion of the MiniBook.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.53: Cross-Book Bridges -->
+  <section id="s-14-53" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.53</span>
+      <h2>Cross-Book Bridges</h2>
+      <button class="bookmark-btn" data-id="s-14-53" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <blockquote>
+<p><strong>C09 BRIDGE</strong><br />
+Noise models and PSNR/MSE provide the quantitative basis for evaluating restoration.</p>
+<p><strong>C12 BRIDGE</strong><br />
+The frequency-domain degradation model is built directly on the DFT/FFT representation.</p>
+<p><strong>C13 BRIDGE</strong><br />
+Frequency filtering explains why inverse filtering works—and why it fails when $H$ is small.</p>
+<p><strong>C08 BRIDGE</strong><br />
+Spatial convolution and the PSF form the forward degradation model.</p>
+<p><strong>C11 BRIDGE</strong><br />
+Geometric blur such as motion depends on coordinate motion and resampling concepts.</p>
+<p><strong>C21–C24 BRIDGE</strong><br />
+Transform-domain thinking later reappears in compression, where the objective is efficient representation rather than restoration.</p>
+<p><strong>C31 BRIDGE</strong><br />
+Responsible restoration requires provenance, uncertainty awareness and careful claims about reconstructed information.</p>
+<p><strong>LAB BRIDGE</strong><br />
+Generate controlled blur/noise, estimate/use a PSF, compare inverse and Wiener restoration quantitatively.</p>
+<p><strong>PRACTICE BRIDGE</strong><br />
+Solve degradation-model equations, inverse-filter stability questions, Wiener calculations and model-selection problems.</p>
+<p><strong>EXAM BRIDGE</strong><br />
+Know the degradation model, inverse filtering, instability at small $H$, Wiener filtering, PSF, regularization and enhancement-vs-restoration distinction.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.54: Quick Recall -->
+  <section id="s-14-54" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.54</span>
+      <h2>Quick Recall</h2>
+      <button class="bookmark-btn" data-id="s-14-54" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>DEGRADATION
+g = h*f + η
+
+FREQUENCY MODEL
+G = HF + N
+
+INVERSE
+F̂ = G/H
+
+PROBLEM
+small |H|
+→ noise amplification
+
+WIENER
+H* / (|H|² + K)
+
+CORE IDEA
+restoration = model-based estimation</code></pre>
+</div></p>
+<p>The most important sentence:</p>
+<blockquote>
+<p><strong>A restoration algorithm does not recover “the truth” automatically; it estimates an underlying image under assumptions about the degradation and the data.</strong></p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.55: Chapter Checkpoint -->
+  <section id="s-14-55" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.55</span>
+      <h2>Chapter Checkpoint</h2>
+      <button class="bookmark-btn" data-id="s-14-55" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <ol>
+<li>Distinguish enhancement and restoration.</li>
+<li>Write the degradation model.</li>
+<li>Interpret each term in $g=h*f+\eta$.</li>
+<li>Derive the frequency-domain degradation model.</li>
+<li>Explain inverse filtering.</li>
+<li>Why does inverse filtering amplify noise when $|H|$ is small?</li>
+<li>What happens when $H=0$?</li>
+<li>Define the point-spread function.</li>
+<li>Give examples of motion and defocus blur.</li>
+<li>Write the common simplified Wiener filter equation.</li>
+<li>Explain the role of $K$.</li>
+<li>Compare inverse and Wiener filtering.</li>
+<li>Define an ill-conditioned inverse problem.</li>
+<li>Explain regularization.</li>
+<li>What is blind deconvolution?</li>
+<li>Why can a wrong PSF produce a poor restoration?</li>
+<li>Why is a restored image an estimate rather than necessarily the original?</li>
+<li>How should restoration be evaluated?</li>
+<li>Design a controlled deblurring experiment.</li>
+<li>Explain the tradeoff between sharpness and noise amplification.</li>
+</ol>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.56: Part II Completion Gate -->
+  <section id="s-14-56" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.56</span>
+      <h2>Part II Completion Gate</h2>
+      <button class="bookmark-btn" data-id="s-14-56" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Before moving to Part III, the student should be able to look at an image problem and classify it:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Need simple intensity adjustment?
+→ C06
+
+Need distribution-based contrast control?
+→ C07
+
+Need local neighbourhood operation?
+→ C08
+
+Need noise suppression?
+→ C09
+
+Need stronger edges/detail?
+→ C10
+
+Need resize/rotate/warp?
+→ C11
+
+Need spectral analysis?
+→ C12
+
+Need frequency-selective filtering?
+→ C13
+
+Need model-based deblurring/restoration?
+→ C14</code></pre>
+</div></p>
+<p>This classification skill is more important than memorizing isolated algorithms.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 14.57: Part III Preview -->
+  <section id="s-14-57" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.57</span>
+      <h2>Part III Preview</h2>
+      <button class="bookmark-btn" data-id="s-14-57" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The next part changes the question.</p>
+<p>Part II asked:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>How can we improve or reconstruct the image?</code></pre>
+</div></p>
+<p>Part III asks:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>How can we understand what is inside the image?</code></pre>
+</div></p>
+<p>The progression becomes:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>C15
+SEGMENTATION FUNDAMENTALS
+      ↓
+C16
+THRESHOLDING
+      ↓
+C17
+REGION-BASED SEGMENTATION
+      ↓
+C18
+MATHEMATICAL MORPHOLOGY
+      ↓
+C19
+FEATURES + DESCRIPTORS
+      ↓
+C20
+SIFT / SURF / ORB / HOG</code></pre>
+</div></p>
+<p>This moves the MiniBook from <strong>image processing</strong> toward <strong>image analysis and computer vision</strong>.</p>
+    </div>
+  </section>
+
+  <!-- SECTION 14.58: Mathematical Derivation: Inverse Filtering Noise Catastrophe -->
+  <section id="s-14-58" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.58</span>
+      <h2>Mathematical Derivation: Inverse Filtering Noise Catastrophe</h2>
+      <button class="bookmark-btn" data-id="s-14-58" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Spatial and Frequency Domain Degradation Model</h3>
+<p>The forward image degradation process is mathematically modeled as:
+
+$$g(x, y) = f(x, y) * h(x, y) + \eta(x, y)$$
+
+where $f(x,y)$ is the original pristine scene, $h(x,y)$ is the blur Point Spread Function (PSF), and $\eta(x,y)$ is additive noise.
+Taking the 2D Discrete Fourier Transform:
+
+$$G(u, v) = F(u, v) \cdot H(u, v) + N(u, v)$$
+</p>
+<h3>Direct Inverse Filtering Formulation</h3>
+<p>Direct inverse filtering attempts to recover $F(u,v)$ by dividing $G(u,v)$ by the optical transfer function $H(u,v)$:
+
+$$\hat{F}(u, v) = \frac{G(u, v)}{H(u, v)} = \frac{F(u, v) H(u, v) + N(u, v)}{H(u, v)}$$
+
+
+$$\hat{F}(u, v) = F(u, v) + \frac{N(u, v)}{H(u, v)}$$
+</p>
+<h3>The Noise Catastrophe Proof</h3>
+<p>Optical degradation transfer functions $H(u, v)$ (such as atmospheric turbulence $e^{-k(u^2+v^2)^{5/6}}$ or motion blur $\frac{\sin(\pi u a)}{\pi u a}$) act as lowpass filters:
+
+$$\lim_{D(u,v) \to \infty} H(u, v) \to 0$$
+
+However, additive sensor noise $N(u,v)$ typically exhibits broad high-frequency spectrum (white or thermal noise):
+
+$$|N(u, v)| > 0 \qquad \forall (u, v)$$
+
+As frequency distance increases:
+
+$$\lim_{H(u,v) \to 0} \left| \frac{N(u, v)}{H(u, v)} \right| \to \infty$$
+
+Even if the noise amplitude $N(u,v)$ is minuscule ($10^{-5}$), dividing by a vanishing transfer function $H(u,v) \approx 10^{-6}$ amplifies noise by $10^6$, completely dominating the true signal $F(u,v)$ and rendering the restored image a chaotic pattern of high-frequency static.</p>
+    </div>
+  </section>
+
+  <!-- SECTION 14.59: Worked Example — 10-Mark University Model Answer: Wiener (MMSE) Filtering -->
+  <section id="s-14-59" class="section-block">
+    <div class="section-header">
+      <span class="section-num">14.59</span>
+      <h2>Worked Example — 10-Mark University Model Answer: Wiener (MMSE) Filtering</h2>
+      <button class="bookmark-btn" data-id="s-14-59" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Problem Statement</h3>
+<ol>
+<li>Derive the Wiener Filter transfer function $W(u, v)$ that minimizes the Mean Square Error (MSE):
+
+$$e^2 = \mathbb{E}\left\{ |f(x, y) - \hat{f}(x, y)|^2 \right\}$$
+</li>
+<li>Express the Wiener restoration formula using the constant ratio approximation $K = S_\eta(u,v) / S_f(u,v)$.</li>
+<li>Analyze the asymptotic behavior of the Wiener filter when the Signal-to-Noise Ratio (SNR) approaches infinity ($K \to 0$) versus when SNR approaches zero ($K \to \infty$).</li>
+</ol>
+<h3>Step-by-Step Mathematical Solution</h3>
+<div class="worked-example">
+  <div class="worked-example-header">
+    <span class="worked-example-title">Numerical Examination Trace</span>
+    <span class="tag-badge tag-exam">10-MARK UNIVERSITY MODEL ANSWER</span>
+  </div>
+  <p><strong>1. Wiener Filter Transfer Function Derivation:</strong><br>
+  Under the assumption that noise $\eta$ and image $f$ are uncorrelated zero-mean stationary random fields, the optimal linear filter that minimizes MSE in the frequency domain is:
+  
+$$\hat{F}(u, v) = \left[ \frac{H^*(u, v)}{|H(u, v)|^2 + \frac{S_\eta(u, v)}{S_f(u, v)}} \right] G(u, v)$$
+
+  where $H^*(u,v)$ is the complex conjugate of $H(u,v)$, $S_\eta(u,v) = |N(u,v)|^2$ is the noise power spectral density, and $S_f(u,v) = |F(u,v)|^2$ is the pristine signal power spectral density.</p>
+
+  <p>Multiplying and dividing the bracketed term by $H(u,v)$:
+  
+$$\hat{F}(u, v) = \left[ \frac{1}{H(u, v)} \frac{|H(u, v)|^2}{|H(u, v)|^2 + \frac{S_\eta(u, v)}{S_f(u, v)}} \right] G(u, v)$$
+</p>
+
+  <p><strong>2. Constant Ratio Approximation Formulation:</strong><br>
+  In practice, the true power spectrum of the original pristine image $S_f(u,v)$ is unknown. We approximate the noise-to-signal power ratio by an empirical tuning constant $K$:
+  
+$$K = \frac{S_\eta(u, v)}{S_f(u, v)} \approx \text{const}$$
+
+  
+$$\hat{F}(u, v) = \left[ \frac{1}{H(u, v)} \frac{|H(u, v)|^2}{|H(u, v)|^2 + K} \right] G(u, v)$$
+</p>
+
+  <p><strong>3. Asymptotic Boundary Analysis:</strong><br>
+  - <em>Case 1: Noise-Free Condition (High SNR, $K \to 0$):</em>
+  
+$$\lim_{K \to 0} \hat{F}(u, v) = \left[ \frac{1}{H(u, v)} \frac{|H(u, v)|^2}{|H(u, v)|^2 + 0} \right] G(u, v) = \frac{G(u, v)}{H(u, v)}$$
+
+  The Wiener filter gracefully simplifies to the direct <strong>Inverse Filter</strong> when no noise is present.</p>
+
+  <p>- <em>Case 2: Pure Noise Condition ($|H(u,v)|^2 \ll K$ at high frequencies):</em>
+  
+$$\lim_{|H(u,v)| \to 0} \hat{F}(u, v) \approx \left[ \frac{1}{H(u, v)} \frac{0}{K} \right] G(u, v) = 0$$
+
+  When $|H(u,v)|^2$ drops below noise floor threshold $K$, the filter automatically attenuates the output to zero instead of blowing up to infinity. This proves how the Wiener filter completely eradicates the catastrophic noise explosion of inverse filtering.</p>
+</div>
+    </div>
+  </section>
+
+      <!-- Chapter End Package -->
+      <section class="chapter-end-package">
+        <div class="chapter-nav-grid">
+          <a href="ch13-frequency-filtering.html" class="chapter-nav-card">
+            <div class="chapter-nav-dir">← Previous</div>
+            <div class="chapter-nav-title">← Ch 13 — Frequency-Domain Filtering</div>
+          </a>
+          <a href="ch15-segmentation-fundamentals.html" class="chapter-nav-card next">
+            <div class="chapter-nav-dir">Next →</div>
+            <div class="chapter-nav-title">Next: Ch 15 — Segmentation Fundamentals →</div>
+          </a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- FLOATING TTS PANEL (SAFE MANUAL MODE ONLY) -->
+  <div id="tts-panel" style="position:fixed; bottom:20px; right:20px; background:var(--em-surface-1); border:1px solid var(--em-border); border-radius:var(--em-radius-md); padding:12px 16px; box-shadow:var(--sh-lg); z-index:var(--z-float); display:none; gap:10px; align-items:center;">
+    <button class="icon-btn" id="tts-play" title="Play / Pause" style="background:var(--em-accent); color:#fff; border-radius:50%; width:36px; height:36px;">▶</button>
+    <button class="icon-btn" id="tts-stop" title="Stop">⏹</button>
+    <div style="font-size:0.75rem; color:var(--em-text-muted);">
+      <span id="tts-status">Ready</span> · <span id="tts-rate-label">1.0x</span>
+    </div>
+  </div>
+
+  <script src="../assets/js/state.js"></script>
+  <script src="../assets/js/core.js"></script>
+  <script src="../assets/js/tts.js"></script>
+  <script src="../assets/js/glossary.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: document.documentElement.getAttribute('data-theme') === 'light' ? 'default' : 'dark'
+      });
+    });
+  </script>
+</body>
+</html>

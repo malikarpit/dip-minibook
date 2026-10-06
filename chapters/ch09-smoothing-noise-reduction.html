@@ -1,0 +1,2425 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Arpit">
+  <meta name="description" content="Chapter 09: Smoothing &amp; Noise Reduction — Digital Image Processing MiniBook. Linear Smoothing (Box &amp; Weighted Average), 2D Gaussian Kernel Derivation ($6\sigma+1$ Rule), Non-Linear Order-Statistic Median Filters, and Bilateral Filtering">
+  <title>C09: Smoothing &amp; Noise Reduction | DIP MiniBook 📷 Arpit</title>
+
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <link rel="stylesheet" href="../assets/css/chapters.css">
+  <link rel="stylesheet" href="../assets/css/animations.css">
+  <link rel="stylesheet" href="../assets/css/timer.css">
+
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body data-chapter-id="ch09-smoothing-noise-reduction">
+  <div id="progress-bar"></div>
+
+  <!-- Header -->
+  <header id="main-header">
+    <div class="header-left">
+      <button id="sidebar-toggle" class="icon-btn" aria-label="Toggle navigation drawer" title="Toggle Sidebar (S)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <a href="../index.html" class="brand-logo">
+        <div class="brand-icon">DIP</div>
+        <div class="brand-text">
+          <span class="main">Digital Image Processing</span>
+          <span class="sub">DU DSE-3 Engineering MiniBook</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="header-chapter-title">C09: Smoothing &amp; Noise Reduction</div>
+
+    <div class="header-right">
+      <button id="reading-mode-btn" class="icon-btn" aria-label="Toggle reading focus mode" title="Focus Mode (F)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+          <line x1="8" y1="21" x2="16" y2="21"></line>
+          <line x1="12" y1="17" x2="12" y2="21"></line>
+        </svg>
+      </button>
+      <button id="tts-toggle" class="icon-btn" aria-label="Audio Reader" title="Audio Reader">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+        </svg>
+      </button>
+      <button id="theme-toggle" class="icon-btn" aria-label="Cycle theme" title="Theme (T)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="12" cy="12" r="4.5"></circle>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Sidebar Overlay -->
+  <div id="sidebar-overlay"></div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" aria-expanded="true">
+    <div class="sidebar-nav">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">General</div>
+        <a href="../index.html" class="sidebar-link">
+          <span class="link-icon">🏛️</span>
+          <span>Subject Portal</span>
+        </a>
+        <a href="../progress.html" class="sidebar-link">
+          <span class="link-icon">📊</span>
+          <span>Study Dashboard</span>
+        </a>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Current Chapter Sections</div>
+        <a href="#s-09-0" class="sidebar-link"><span class="link-icon">📌</span><span>09.0 Why This Chapter Is Separate from C08</span> </a>
+      <a href="#s-09-1" class="sidebar-link"><span class="link-icon">📌</span><span>09.1 What Is Image Noise?</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-09-2" class="sidebar-link"><span class="link-icon">📌</span><span>09.2 Why Noise Matters</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-09-3" class="sidebar-link"><span class="link-icon">📌</span><span>09.3 Three Different Meanings of “Clean Image”</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-09-4" class="sidebar-link"><span class="link-icon">📌</span><span>09.4 Noise Sources</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-09-5" class="sidebar-link"><span class="link-icon">📌</span><span>09.5 Gaussian Noise</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-09-6" class="sidebar-link"><span class="link-icon">📌</span><span>09.6 Gaussian Noise Intuition</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-09-7" class="sidebar-link"><span class="link-icon">📌</span><span>09.7 Salt-and-Pepper Noise</span> </a>
+      <a href="#s-09-8" class="sidebar-link"><span class="link-icon">📌</span><span>09.8 Why Mean Filtering Struggles with Impulse Noise</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-09-9" class="sidebar-link"><span class="link-icon">📌</span><span>09.9 Uniform Noise</span> </a>
+      <a href="#s-09-10" class="sidebar-link"><span class="link-icon">📌</span><span>09.10 Periodic Noise</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-09-11" class="sidebar-link"><span class="link-icon">📌</span><span>09.11 Speckle and Multiplicative Noise</span> </a>
+      <a href="#s-09-12" class="sidebar-link"><span class="link-icon">📌</span><span>09.12 Quantization Noise vs Acquisition Noise</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-09-13" class="sidebar-link"><span class="link-icon">📌</span><span>09.13 Noise Model Comparison</span> </a>
+      <a href="#s-09-14" class="sidebar-link"><span class="link-icon">📌</span><span>09.14 Signal-to-Noise Ratio</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-09-15" class="sidebar-link"><span class="link-icon">📌</span><span>09.15 Amplitude-Ratio Form</span> </a>
+      <a href="#s-09-16" class="sidebar-link"><span class="link-icon">📌</span><span>09.16 PSNR</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-09-17" class="sidebar-link"><span class="link-icon">📌</span><span>09.17 MSE</span> </a>
+      <a href="#s-09-18" class="sidebar-link"><span class="link-icon">📌</span><span>09.18 Worked MSE Example</span> </a>
+      <a href="#s-09-19" class="sidebar-link"><span class="link-icon">📌</span><span>09.19 PSNR Limitations</span> </a>
+      <a href="#s-09-20" class="sidebar-link"><span class="link-icon">📌</span><span>09.20 Mean / Box Smoothing</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-09-21" class="sidebar-link"><span class="link-icon">📌</span><span>09.21 Gaussian Smoothing</span> </a>
+      <a href="#s-09-22" class="sidebar-link"><span class="link-icon">📌</span><span>09.22 Effect of Gaussian Sigma</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-09-23" class="sidebar-link"><span class="link-icon">📌</span><span>09.23 Mean vs Gaussian</span> </a>
+      <a href="#s-09-24" class="sidebar-link"><span class="link-icon">📌</span><span>09.24 Median Filtering</span> </a>
+      <a href="#s-09-25" class="sidebar-link"><span class="link-icon">📌</span><span>09.25 Why Median Preserves Edges Better in Some Cases</span> </a>
+      <a href="#s-09-26" class="sidebar-link"><span class="link-icon">📌</span><span>09.26 Kernel Size for Median Filtering</span> </a>
+      <a href="#s-09-27" class="sidebar-link"><span class="link-icon">📌</span><span>09.27 Order-Statistics Filters</span> </a>
+      <a href="#s-09-28" class="sidebar-link"><span class="link-icon">📌</span><span>09.28 Arithmetic Mean Filter</span> </a>
+      <a href="#s-09-29" class="sidebar-link"><span class="link-icon">📌</span><span>09.29 Geometric Mean Filter</span> </a>
+      <a href="#s-09-30" class="sidebar-link"><span class="link-icon">📌</span><span>09.30 Harmonic Mean Filter</span> </a>
+      <a href="#s-09-31" class="sidebar-link"><span class="link-icon">📌</span><span>09.31 Contraharmonic Mean Filter</span> </a>
+      <a href="#s-09-32" class="sidebar-link"><span class="link-icon">📌</span><span>09.32 Why Parameter Sign Matters</span> </a>
+      <a href="#s-09-33" class="sidebar-link"><span class="link-icon">📌</span><span>09.33 Adaptive Local Noise Reduction</span> </a>
+      <a href="#s-09-34" class="sidebar-link"><span class="link-icon">📌</span><span>09.34 Why Adaptive Filtering Is Attractive</span> </a>
+      <a href="#s-09-35" class="sidebar-link"><span class="link-icon">📌</span><span>09.35 Noise Reduction vs Edge Preservation</span> </a>
+      <a href="#s-09-36" class="sidebar-link"><span class="link-icon">📌</span><span>09.36 Noise and Edge Detection</span> </a>
+      <a href="#s-09-37" class="sidebar-link"><span class="link-icon">📌</span><span>09.37 Over-Smoothing Failure</span> </a>
+      <a href="#s-09-38" class="sidebar-link"><span class="link-icon">📌</span><span>09.38 Denoising Evaluation Matrix</span> </a>
+      <a href="#s-09-39" class="sidebar-link"><span class="link-icon">📌</span><span>09.39 Before/After Experiment Design</span> </a>
+      <a href="#s-09-40" class="sidebar-link"><span class="link-icon">📌</span><span>09.40 Synthetic Noise as a Learning Tool</span> </a>
+      <a href="#s-09-41" class="sidebar-link"><span class="link-icon">📌</span><span>09.41 Practical Decision Tree</span> </a>
+      <a href="#s-09-42" class="sidebar-link"><span class="link-icon">📌</span><span>09.42 Worked Example — Choosing a Filter</span> </a>
+      <a href="#s-09-43" class="sidebar-link"><span class="link-icon">📌</span><span>09.43 Worked Example — Gaussian Noise</span> </a>
+      <a href="#s-09-44" class="sidebar-link"><span class="link-icon">📌</span><span>09.44 Why Noise Reduction Is Partly a Statistical Problem</span> </a>
+      <a href="#s-09-45" class="sidebar-link"><span class="link-icon">📌</span><span>09.45 Colour Images and Denoising</span> </a>
+      <a href="#s-09-46" class="sidebar-link"><span class="link-icon">📌</span><span>09.46 Border Handling During Denoising</span> </a>
+      <a href="#s-09-47" class="sidebar-link"><span class="link-icon">📌</span><span>09.47 Computational Considerations</span> </a>
+      <a href="#s-09-48" class="sidebar-link"><span class="link-icon">📌</span><span>09.48 Practical Pseudocode</span> </a>
+      <a href="#s-09-49" class="sidebar-link"><span class="link-icon">📌</span><span>09.49 Common Traps</span> </a>
+      <a href="#s-09-50" class="sidebar-link"><span class="link-icon">📌</span><span>09.50 Exam Formula Sheet</span> </a>
+      <a href="#s-09-51" class="sidebar-link"><span class="link-icon">📌</span><span>09.51 Exam-Style Comparison</span> </a>
+      <a href="#s-09-52" class="sidebar-link"><span class="link-icon">📌</span><span>09.52 Cross-Book Bridges</span> </a>
+      <a href="#s-09-53" class="sidebar-link"><span class="link-icon">📌</span><span>09.53 Quick Recall</span> </a>
+      <a href="#s-09-54" class="sidebar-link"><span class="link-icon">📌</span><span>09.54 Chapter Checkpoint</span> </a>
+      <a href="#s-09-55" class="sidebar-link"><span class="link-icon">📌</span><span>09.55 Connection Forward</span> </a>
+      <a href="#s-09-56" class="sidebar-link"><span class="link-icon">📌</span><span>09.56 Mathematical Derivation: 2D Gaussian Kernel &amp; Parameter $\sigma$</span> </a>
+      </div>
+
+      
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-i">Part I — The Image</div>
+      <a href="ch01-big-picture.html" class="sidebar-link"><span class="link-icon">01</span><span>The Big Picture</span></a>
+      <a href="ch02-image-formation.html" class="sidebar-link"><span class="link-icon">02</span><span>Formation & Acquisition</span></a>
+      <a href="ch03-sampling-quantization.html" class="sidebar-link"><span class="link-icon">03</span><span>Sampling & Quantization</span></a>
+      <a href="ch04-image-representation.html" class="sidebar-link"><span class="link-icon">04</span><span>Pixels, Matrices & Resolution</span></a>
+      <a href="ch05-colour-models-file-formats.html" class="sidebar-link"><span class="link-icon">05</span><span>Colour Models & Formats</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-ii">Part II — Improving the Image</div>
+      <a href="ch06-point-processing.html" class="sidebar-link"><span class="link-icon">06</span><span>Point Processing & Intensity</span></a>
+      <a href="ch07-histograms-equalization.html" class="sidebar-link"><span class="link-icon">07</span><span>Histograms & Equalization</span></a>
+      <a href="ch08-spatial-filtering.html" class="sidebar-link"><span class="link-icon">08</span><span>Spatial Filtering & Convolution</span></a>
+      <a href="ch09-smoothing-noise-reduction.html" class="sidebar-link active"><span class="link-icon">09</span><span>Smoothing & Noise Reduction</span></a>
+      <a href="ch10-sharpening-edge-detection.html" class="sidebar-link"><span class="link-icon">10</span><span>Sharpening & Edge Detection</span></a>
+      <a href="ch11-geometric-transforms.html" class="sidebar-link"><span class="link-icon">11</span><span>Geometric Transforms</span></a>
+      <a href="ch12-fourier-transform.html" class="sidebar-link"><span class="link-icon">12</span><span>Fourier Transform & Frequency</span></a>
+      <a href="ch13-frequency-filtering.html" class="sidebar-link"><span class="link-icon">13</span><span>Frequency-Domain Filtering</span></a>
+      <a href="ch14-image-restoration.html" class="sidebar-link"><span class="link-icon">14</span><span>Restoration & Deblurring</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-iii">Part III — Understanding Content</div>
+      <a href="ch15-segmentation-fundamentals.html" class="sidebar-link"><span class="link-icon">15</span><span>Segmentation Fundamentals</span></a>
+      <a href="ch16-thresholding-otsu.html" class="sidebar-link"><span class="link-icon">16</span><span>Thresholding & Otsu Method</span></a>
+      <a href="ch17-region-segmentation.html" class="sidebar-link"><span class="link-icon">17</span><span>Region-Based Segmentation</span></a>
+      <a href="ch18-mathematical-morphology.html" class="sidebar-link"><span class="link-icon">18</span><span>Mathematical Morphology</span></a>
+      <a href="ch19-features-descriptors.html" class="sidebar-link"><span class="link-icon">19</span><span>Image Features & Descriptors</span></a>
+      <a href="ch20-sift-surf-orb-hog.html" class="sidebar-link"><span class="link-icon">20</span><span>SIFT, SURF, ORB & HOG</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-iv">Part IV — Compressing Images</div>
+      <a href="ch21-compression-entropy.html" class="sidebar-link"><span class="link-icon">21</span><span>Compression & Entropy</span></a>
+      <a href="ch22-lossless-coding.html" class="sidebar-link"><span class="link-icon">22</span><span>Lossless: RLE & Huffman</span></a>
+      <a href="ch23-lossy-dct-jpeg.html" class="sidebar-link"><span class="link-icon">23</span><span>Lossy: DCT & JPEG</span></a>
+      <a href="ch24-wavelets-jpeg2000.html" class="sidebar-link"><span class="link-icon">24</span><span>Wavelets & JPEG 2000</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-v">Part V — Intelligent Vision</div>
+      <a href="ch25-image-classification.html" class="sidebar-link"><span class="link-icon">25</span><span>Image Classification</span></a>
+      <a href="ch26-cnns-image-processing.html" class="sidebar-link"><span class="link-icon">26</span><span>CNNs for Image Processing</span></a>
+      <a href="ch27-modern-vision-architectures.html" class="sidebar-link"><span class="link-icon">27</span><span>Modern Vision Architectures</span></a>
+      <a href="ch28-object-detection-yolo.html" class="sidebar-link"><span class="link-icon">28</span><span>Object Detection: YOLO</span></a>
+      <a href="ch29-image-denoising-autoencoders.html" class="sidebar-link"><span class="link-icon">29</span><span>Image Denoising Autoencoders</span></a>
+      <a href="ch30-video-motion-analysis.html" class="sidebar-link"><span class="link-icon">30</span><span>Video & Motion Analysis</span></a>
+      <a href="ch31-dip-applications-engineering.html" class="sidebar-link"><span class="link-icon">31</span><span>DIP Applications & Ethics</span></a>
+    </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-brand-mark">
+        <div class="mark">DU</div>
+        <div>
+          <strong>DSE-3 MiniBook</strong>
+          <div>University of Delhi</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mandatory Shell Wrapper -->
+  <div id="main-content">
+    <main class="chapter-content">
+      <!-- Chapter Hero -->
+      <div class="chapter-hero">
+        <div class="hero-meta">
+          <span class="part-badge part-ii">Improving the Image</span>
+          <span class="chapter-number">CHAPTER 09</span>
+          <span class="reading-time">⏱️ ~50 min read</span>
+          <span class="tag-badge tag-core">High Yield (5–10 mark guarantee)</span>
+        </div>
+        <h1 class="chapter-title">Smoothing &amp; Noise Reduction</h1>
+        <p class="chapter-subtitle">
+          Linear Smoothing (Box &amp; Weighted Average), 2D Gaussian Kernel Derivation ($6\sigma+1$ Rule), Non-Linear Order-Statistic Median Filters, and Bilateral Filtering
+        </p>
+
+        <div class="syllabus-anchor">
+          <span class="syllabus-anchor-label">DU Syllabus</span>
+          <span><strong>Smoothing Spatial Filters:</strong> Box filter, weighted average filter, Gaussian lowpass filter derivation and parameter sigma selection, order-statistic filters (median, min, max, alpha-trimmed), salt-and-pepper noise removal, and bilateral edge-preserving smoothing.</span>
+        </div>
+      </div>
+
+      <!-- In-Page TOC -->
+      <div class="chapter-checklist-card" style="margin-bottom:var(--em-space-8);">
+        <div class="checklist-title">
+          <span>Table of Contents &amp; Visual Section Map</span>
+          <span class="tag-badge tag-math">57 Deep Sections</span>
+        </div>
+        <ul class="part-chapters-list">
+          <li class="part-chapter-item"><a href="#s-09-0"><strong>09.0</strong> Why This Chapter Is Separate from C08</a> </li>
+      <li class="part-chapter-item"><a href="#s-09-1"><strong>09.1</strong> What Is Image Noise?</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-09-2"><strong>09.2</strong> Why Noise Matters</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-09-3"><strong>09.3</strong> Three Different Meanings of “Clean Image”</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-09-4"><strong>09.4</strong> Noise Sources</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-09-5"><strong>09.5</strong> Gaussian Noise</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-09-6"><strong>09.6</strong> Gaussian Noise Intuition</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-09-7"><strong>09.7</strong> Salt-and-Pepper Noise</a> </li>
+      <li class="part-chapter-item"><a href="#s-09-8"><strong>09.8</strong> Why Mean Filtering Struggles with Impulse Noise</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-09-9"><strong>09.9</strong> Uniform Noise</a> </li>
+      <li class="part-chapter-item"><a href="#s-09-10"><strong>09.10</strong> Periodic Noise</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-09-11"><strong>09.11</strong> Speckle and Multiplicative Noise</a> </li>
+      <li class="part-chapter-item"><a href="#s-09-12"><strong>09.12</strong> Quantization Noise vs Acquisition Noise</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-09-13"><strong>09.13</strong> Noise Model Comparison</a> </li>
+      <li class="part-chapter-item"><a href="#s-09-14"><strong>09.14</strong> Signal-to-Noise Ratio</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-09-15"><strong>09.15</strong> Amplitude-Ratio Form</a> </li>
+      <li class="part-chapter-item"><a href="#s-09-16"><strong>09.16</strong> PSNR</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-09-17"><strong>09.17</strong> MSE</a> </li>
+      <li class="part-chapter-item"><a href="#s-09-18"><strong>09.18</strong> Worked MSE Example</a> </li>
+      <li class="part-chapter-item"><a href="#s-09-19"><strong>09.19</strong> PSNR Limitations</a> </li>
+      <li class="part-chapter-item"><a href="#s-09-20"><strong>09.20</strong> Mean / Box Smoothing</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-09-21"><strong>09.21</strong> Gaussian Smoothing</a> </li>
+      <li class="part-chapter-item"><a href="#s-09-22"><strong>09.22</strong> Effect of Gaussian Sigma</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-09-23"><strong>09.23</strong> Mean vs Gaussian</a> </li>
+      <li class="part-chapter-item"><a href="#s-09-24"><strong>09.24</strong> Median Filtering</a> </li>
+      <li class="part-chapter-item"><a href="#s-09-25"><strong>09.25</strong> Why Median Preserves Edges Better in Some Cases</a> </li>
+      <li class="part-chapter-item"><a href="#s-09-26"><strong>09.26</strong> Kernel Size for Median Filtering</a> </li>
+      <li class="part-chapter-item"><a href="#s-09-27"><strong>09.27</strong> Order-Statistics Filters</a> </li>
+      <li class="part-chapter-item"><a href="#s-09-28"><strong>09.28</strong> Arithmetic Mean Filter</a> </li>
+      <li class="part-chapter-item"><a href="#s-09-29"><strong>09.29</strong> Geometric Mean Filter</a> </li>
+      <li class="part-chapter-item"><a href="#s-09-30"><strong>09.30</strong> Harmonic Mean Filter</a> </li>
+      <li class="part-chapter-item"><a href="#s-09-31"><strong>09.31</strong> Contraharmonic Mean Filter</a> </li>
+      <li class="part-chapter-item"><a href="#s-09-32"><strong>09.32</strong> Why Parameter Sign Matters</a> </li>
+      <li class="part-chapter-item"><a href="#s-09-33"><strong>09.33</strong> Adaptive Local Noise Reduction</a> </li>
+      <li class="part-chapter-item"><a href="#s-09-34"><strong>09.34</strong> Why Adaptive Filtering Is Attractive</a> </li>
+      <li class="part-chapter-item"><a href="#s-09-35"><strong>09.35</strong> Noise Reduction vs Edge Preservation</a> </li>
+      <li class="part-chapter-item"><a href="#s-09-36"><strong>09.36</strong> Noise and Edge Detection</a> </li>
+      <li class="part-chapter-item"><a href="#s-09-37"><strong>09.37</strong> Over-Smoothing Failure</a> </li>
+      <li class="part-chapter-item"><a href="#s-09-38"><strong>09.38</strong> Denoising Evaluation Matrix</a> </li>
+      <li class="part-chapter-item"><a href="#s-09-39"><strong>09.39</strong> Before/After Experiment Design</a> </li>
+      <li class="part-chapter-item"><a href="#s-09-40"><strong>09.40</strong> Synthetic Noise as a Learning Tool</a> </li>
+      <li class="part-chapter-item"><a href="#s-09-41"><strong>09.41</strong> Practical Decision Tree</a> </li>
+      <li class="part-chapter-item"><a href="#s-09-42"><strong>09.42</strong> Worked Example — Choosing a Filter</a> </li>
+      <li class="part-chapter-item"><a href="#s-09-43"><strong>09.43</strong> Worked Example — Gaussian Noise</a> </li>
+      <li class="part-chapter-item"><a href="#s-09-44"><strong>09.44</strong> Why Noise Reduction Is Partly a Statistical Problem</a> </li>
+      <li class="part-chapter-item"><a href="#s-09-45"><strong>09.45</strong> Colour Images and Denoising</a> </li>
+      <li class="part-chapter-item"><a href="#s-09-46"><strong>09.46</strong> Border Handling During Denoising</a> </li>
+      <li class="part-chapter-item"><a href="#s-09-47"><strong>09.47</strong> Computational Considerations</a> </li>
+      <li class="part-chapter-item"><a href="#s-09-48"><strong>09.48</strong> Practical Pseudocode</a> </li>
+      <li class="part-chapter-item"><a href="#s-09-49"><strong>09.49</strong> Common Traps</a> </li>
+      <li class="part-chapter-item"><a href="#s-09-50"><strong>09.50</strong> Exam Formula Sheet</a> </li>
+      <li class="part-chapter-item"><a href="#s-09-51"><strong>09.51</strong> Exam-Style Comparison</a> </li>
+      <li class="part-chapter-item"><a href="#s-09-52"><strong>09.52</strong> Cross-Book Bridges</a> </li>
+      <li class="part-chapter-item"><a href="#s-09-53"><strong>09.53</strong> Quick Recall</a> </li>
+      <li class="part-chapter-item"><a href="#s-09-54"><strong>09.54</strong> Chapter Checkpoint</a> </li>
+      <li class="part-chapter-item"><a href="#s-09-55"><strong>09.55</strong> Connection Forward</a> </li>
+      <li class="part-chapter-item"><a href="#s-09-56"><strong>09.56</strong> Mathematical Derivation: 2D Gaussian Kernel &amp; Parameter $\sigma$</a> </li>
+        </ul>
+      </div>
+
+      <div class="concept-hook" style="margin-bottom:var(--em-space-8);"><h1>Chapter 09 — Smoothing and Noise Reduction</h1>
+<blockquote>
+<p><strong>Chapter thesis</strong><br />
+Noise reduction is not simply “make the image smoother.” A good denoising method is a deliberate compromise between suppressing unwanted variation and preserving edges, textures and other information that the task needs.</p>
+</blockquote>
+<p><strong>Part II — Improving the Image</strong><br />
+<strong>Syllabus anchor:</strong> Unit II includes smoothing and noise reduction within spatial-domain enhancement. fileciteturn4file0L36-L40</p>
+<hr /></div>
+
+      <!-- All Numbered Sections -->
+      
+  <!-- SECTION 09.0: Why This Chapter Is Separate from C08 -->
+  <section id="s-09-0" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.0</span>
+      <h2>Why This Chapter Is Separate from C08</h2>
+      <button class="bookmark-btn" data-id="s-09-0" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Chapter 08 established the general spatial-filtering machinery:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image
++
+neighbourhood
++
+kernel
+→
+filtered response</code></pre>
+</div></p>
+<p>This chapter asks a more specific question:</p>
+<blockquote>
+<p><strong>What kind of variation is unwanted, what kind of noise produced it, and which filter suppresses it while preserving useful information?</strong></p>
+</blockquote>
+<p>That changes the learning direction from:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>HOW a filter works</code></pre>
+</div></p>
+<p>to:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>WHY this denoising filter is appropriate</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.1: What Is Image Noise? -->
+  <section id="s-09-1" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.1</span>
+      <h2>What Is Image Noise?</h2>
+      <button class="bookmark-btn" data-id="s-09-1" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Image noise is unwanted variation introduced into an image during:</p>
+<ul>
+<li>acquisition,</li>
+<li>transmission,</li>
+<li>sensing,</li>
+<li>digitisation,</li>
+<li>storage,</li>
+<li>processing.</li>
+</ul>
+<p>A simple additive model is:</p>
+<p>
+$$
+g(x,y)=f(x,y)+\eta(x,y)
+$$
+</p>
+<p>where:</p>
+<ul>
+<li>$f$ = ideal/original image,</li>
+<li>$\eta$ = noise,</li>
+<li>$g$ = observed noisy image.</li>
+</ul>
+<p>This is a useful model, but not every physical noise source is purely additive.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.2: Why Noise Matters -->
+  <section id="s-09-2" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.2</span>
+      <h2>Why Noise Matters</h2>
+      <button class="bookmark-btn" data-id="s-09-2" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Noise can:</p>
+<ul>
+<li>obscure low-contrast detail,</li>
+<li>create false edges,</li>
+<li>disturb segmentation,</li>
+<li>corrupt measurements,</li>
+<li>reduce feature quality,</li>
+<li>degrade compression efficiency,</li>
+<li>confuse machine-learning models.</li>
+</ul>
+<p>A good denoising method therefore has to balance:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>noise suppression
+        ↕
+detail preservation</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.3: Three Different Meanings of “Clean Image” -->
+  <section id="s-09-3" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.3</span>
+      <h2>Three Different Meanings of “Clean Image”</h2>
+      <button class="bookmark-btn" data-id="s-09-3" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>In engineering work, “cleaner” can mean different things.</p>
+<h3>Visually cleaner</h3>
+<p>Fewer visible speckles or fluctuations.</p>
+<h3>Numerically closer</h3>
+<p>Lower error relative to a known reference.</p>
+<h3>More useful for the task</h3>
+<p>Better segmentation/classification/detection performance.</p>
+<p>These are not guaranteed to agree.</p>
+<p>A strongly blurred image may look smooth but be worse for edge detection.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.4: Noise Sources -->
+  <section id="s-09-4" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.4</span>
+      <h2>Noise Sources</h2>
+      <button class="bookmark-btn" data-id="s-09-4" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Typical sources include:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>sensor electronics
+thermal effects
+photon statistics
+readout circuitry
+transmission errors
+quantization
+compression/processing</code></pre>
+</div></p>
+<p>The exact statistical model depends on the imaging system.</p>
+<p>For engineering analysis, we often begin by identifying the <strong>observed noise pattern</strong> and then choose a useful model.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.5: Gaussian Noise -->
+  <section id="s-09-5" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.5</span>
+      <h2>Gaussian Noise</h2>
+      <button class="bookmark-btn" data-id="s-09-5" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A common simplified model assumes noise values follow a Gaussian distribution.</p>
+<p>Its probability density function is:</p>
+<p>
+$$
+p(\eta)=
+\frac{1}{\sqrt{2\pi\sigma^2}}
+e^{-\frac{(\eta-\mu)^2}{2\sigma^2}}
+$$
+</p>
+<p>where:</p>
+<ul>
+<li>$\mu$ = mean,</li>
+<li>$\sigma^2$ = variance.</li>
+</ul>
+<p>For zero-mean Gaussian noise:</p>
+<p>
+$$
+\mu=0
+$$
+</p>
+<p>and:</p>
+<p>
+$$
+p(\eta)=
+\frac{1}{\sqrt{2\pi\sigma^2}}
+e^{-\frac{\eta^2}{2\sigma^2}}
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.6: Gaussian Noise Intuition -->
+  <section id="s-09-6" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.6</span>
+      <h2>Gaussian Noise Intuition</h2>
+      <button class="bookmark-btn" data-id="s-09-6" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For zero-mean Gaussian noise:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>small disturbances
+→ common
+
+large disturbances
+→ less common</code></pre>
+</div></p>
+<p>A histogram of noise values tends to look approximately bell-shaped under the model.</p>
+<p>In a real image, the observed histogram combines:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image signal
++
+noise</code></pre>
+</div></p>
+<p>so the image histogram itself is not automatically a Gaussian noise histogram.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.7: Salt-and-Pepper Noise -->
+  <section id="s-09-7" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.7</span>
+      <h2>Salt-and-Pepper Noise</h2>
+      <button class="bookmark-btn" data-id="s-09-7" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Salt-and-pepper noise is characterized by isolated extreme-valued pixels.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>normal image
+████████████████
+
+with impulse noise
+
+███████•████████
+████████████•███
+██•█████████████</code></pre>
+</div></p>
+<p>Depending on the representation:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>pepper → dark impulses
+salt   → bright impulses</code></pre>
+</div></p>
+<p>This noise is called <strong>impulse noise</strong>.</p>
+<p>It is especially useful for understanding why the median filter can outperform simple averaging.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.8: Why Mean Filtering Struggles with Impulse Noise -->
+  <section id="s-09-8" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.8</span>
+      <h2>Why Mean Filtering Struggles with Impulse Noise</h2>
+      <button class="bookmark-btn" data-id="s-09-8" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Consider:</p>
+<p>
+$$
+[10,10,10,10,250]
+$$
+</p>
+<p>Mean:</p>
+<p>
+$$
+\frac{10+10+10+10+250}{5}
+=
+58
+$$
+</p>
+<p>Median:</p>
+<p>
+$$
+10
+$$
+</p>
+<p>The single extreme outlier moves the mean substantially.</p>
+<p>The median is much more resistant to that outlier.</p>
+<p>Therefore:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>impulse noise
+→ median is often a strong candidate</code></pre>
+</div></p>
+<p>This is not a guarantee for every image or parameter setting.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.9: Uniform Noise -->
+  <section id="s-09-9" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.9</span>
+      <h2>Uniform Noise</h2>
+      <button class="bookmark-btn" data-id="s-09-9" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A simplified uniform-noise model assumes equal probability within a finite interval.</p>
+<p>For:</p>
+<p>
+$$
+a\le\eta\le b
+$$
+</p>
+<p>the probability density is:</p>
+<p>
+$$
+p(\eta)=
+\begin{cases}
+\frac{1}{b-a},&a\le\eta\le b\\
+0,&\text{otherwise}
+\end{cases}
+$$
+</p>
+<p>Uniform noise may be useful in simulation and analysis even when it is not a perfect physical model.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.10: Periodic Noise -->
+  <section id="s-09-10" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.10</span>
+      <h2>Periodic Noise</h2>
+      <button class="bookmark-btn" data-id="s-09-10" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Periodic or sinusoidal interference may appear as repeating patterns.</p>
+<p>For example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>//// //// //// ////</code></pre>
+</div></p>
+<p>or:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>dark-light-dark-light</code></pre>
+</div></p>
+<p>in structured directions.</p>
+<p>A useful model can be:</p>
+<p>
+$$
+\eta(x,y)=A\sin(2\pi(u_0x+v_0y)+\phi)
+$$
+</p>
+<p>where:</p>
+<ul>
+<li>$A$ = amplitude,</li>
+<li>$u_0,v_0$ = spatial frequencies,</li>
+<li>$\phi$ = phase.</li>
+</ul>
+<p>Periodic noise is especially important because it often becomes easy to identify in the frequency domain.</p>
+<p>This will connect directly to C12–C13.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.11: Speckle and Multiplicative Noise -->
+  <section id="s-09-11" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.11</span>
+      <h2>Speckle and Multiplicative Noise</h2>
+      <button class="bookmark-btn" data-id="s-09-11" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Some imaging systems are better described using a multiplicative model:</p>
+<p>
+$$
+g(x,y)=f(x,y)n(x,y)
+$$
+</p>
+<p>where $n$ is a multiplicative noise factor.</p>
+<p>This occurs in settings such as coherent imaging.</p>
+<p>A common extension is the logarithmic transformation:</p>
+<p>
+$$
+\ln g=\ln f+\ln n
+$$
+</p>
+<p>which turns multiplication into addition, making additive-noise tools potentially more applicable after suitable handling.</p>
+<blockquote>
+<p><strong>EXTENSION:</strong> This transformation requires positive-valued data and careful range/zero handling.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.12: Quantization Noise vs Acquisition Noise -->
+  <section id="s-09-12" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.12</span>
+      <h2>Quantization Noise vs Acquisition Noise</h2>
+      <button class="bookmark-btn" data-id="s-09-12" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>C03 introduced quantization.</p>
+<p>Quantization error is not automatically the same thing as sensor noise.</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>quantization
+→ finite numerical representation
+
+sensor/acquisition noise
+→ unwanted physical/electronic variation</code></pre>
+</div></p>
+<p>Both may affect the final image, but their causes and mathematical models differ.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.13: Noise Model Comparison -->
+  <section id="s-09-13" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.13</span>
+      <h2>Noise Model Comparison</h2>
+      <button class="bookmark-btn" data-id="s-09-13" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Noise type</th>
+<th>Typical appearance</th>
+<th>Simplified model</th>
+<th>Common candidate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Gaussian</td>
+<td>small random fluctuations</td>
+<td>additive Gaussian</td>
+<td>Gaussian/linear smoothing</td>
+</tr>
+<tr>
+<td>Salt-and-pepper</td>
+<td>isolated dark/bright impulses</td>
+<td>impulse noise</td>
+<td>median</td>
+</tr>
+<tr>
+<td>Uniform</td>
+<td>bounded random variation</td>
+<td>uniform PDF</td>
+<td>averaging/adaptive methods</td>
+</tr>
+<tr>
+<td>Periodic</td>
+<td>repeating structure</td>
+<td>sinusoidal components</td>
+<td>frequency-domain filtering</td>
+</tr>
+<tr>
+<td>Speckle-like</td>
+<td>granular/multiplicative</td>
+<td>$g=fn$</td>
+<td>model-dependent</td>
+</tr>
+</tbody>
+</table></div>
+<p>The “candidate” column is a starting point, not a universal prescription.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.14: Signal-to-Noise Ratio -->
+  <section id="s-09-14" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.14</span>
+      <h2>Signal-to-Noise Ratio</h2>
+      <button class="bookmark-btn" data-id="s-09-14" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A useful quality concept is the signal-to-noise ratio:</p>
+<p>
+$$
+\mathrm{SNR}
+=
+\frac{P_{\text{signal}}}
+{P_{\text{noise}}}
+$$
+</p>
+<p>where $P$ denotes an appropriate power measure.</p>
+<p>In decibels:</p>
+<p>
+$$
+\mathrm{SNR}_{dB}
+=
+10\log_{10}
+\left(
+\frac{P_{\text{signal}}}
+{P_{\text{noise}}}
+\right)
+$$
+</p>
+<p>A higher SNR generally indicates a stronger signal relative to noise under the chosen measurement definition.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.15: Amplitude-Ratio Form -->
+  <section id="s-09-15" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.15</span>
+      <h2>Amplitude-Ratio Form</h2>
+      <button class="bookmark-btn" data-id="s-09-15" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>When RMS amplitudes rather than powers are used:</p>
+<p>
+$$
+\mathrm{SNR}_{dB}
+=
+20\log_{10}
+\left(
+\frac{A_{\text{signal}}}
+{A_{\text{noise}}}
+\right)
+$$
+</p>
+<p>This is mathematically consistent with the power form when power is proportional to squared amplitude.</p>
+<blockquote>
+<p><strong>Exam trap:</strong> Use 10 log for a power ratio and 20 log for an amplitude ratio.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.16: PSNR -->
+  <section id="s-09-16" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.16</span>
+      <h2>PSNR</h2>
+      <button class="bookmark-btn" data-id="s-09-16" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For image restoration tasks, <strong>Peak Signal-to-Noise Ratio (PSNR)</strong> is often used.</p>
+<p>For maximum possible sample value $MAX_I$ and mean squared error $MSE$:</p>
+<p>
+$$
+\mathrm{PSNR}
+=
+10\log_{10}
+\left(
+\frac{MAX_I^2}{MSE}
+\right)
+$$
+</p>
+<p>If the image is an 8-bit representation with maximum value 255:</p>
+<p>
+$$
+MAX_I=255
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+\mathrm{PSNR}
+=
+10\log_{10}
+\left(
+\frac{255^2}{MSE}
+\right)
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.17: MSE -->
+  <section id="s-09-17" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.17</span>
+      <h2>MSE</h2>
+      <button class="bookmark-btn" data-id="s-09-17" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For two images $I$ and $K$:</p>
+<p>
+$$
+MSE=
+\frac{1}{MN}
+\sum_{x=0}^{M-1}
+\sum_{y=0}^{N-1}
+[I(x,y)-K(x,y)]^2
+$$
+</p>
+<p>For colour images, the averaging convention must be stated because channels may be incorporated differently.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.18: Worked MSE Example -->
+  <section id="s-09-18" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.18</span>
+      <h2>Worked MSE Example</h2>
+      <button class="bookmark-btn" data-id="s-09-18" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose the reference and output values for four pixels are:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Reference:  10 20 30 40
+Output:     12 18 29 43</code></pre>
+</div></p>
+<p>Errors:</p>
+<p>
+$$
+2,-2,-1,3
+$$
+</p>
+<p>Squared errors:</p>
+<p>
+$$
+4,4,1,9
+$$
+</p>
+<p>Therefore:</p>
+<p>
+$$
+MSE=\frac{4+4+1+9}{4}
+$$
+</p>
+<p>
+$$
+=\frac{18}{4}
+$$
+</p>
+<p>
+$$
+\boxed{4.5}
+$$
+</p>
+<p>For an 8-bit image:</p>
+<p>
+$$
+PSNR=
+10\log_{10}
+\left(
+\frac{255^2}{4.5}
+\right)
+$$
+</p>
+<p>which is approximately:</p>
+<p>
+$$
+\boxed{41.6\text{ dB}}
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.19: PSNR Limitations -->
+  <section id="s-09-19" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.19</span>
+      <h2>PSNR Limitations</h2>
+      <button class="bookmark-btn" data-id="s-09-19" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>PSNR is useful, but it is not a complete measure of perceptual quality.</p>
+<p>Two images can have:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>similar PSNR</code></pre>
+</div></p>
+<p>but substantially different visual quality or task performance.</p>
+<p>Likewise:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>higher PSNR</code></pre>
+</div></p>
+<p>does not automatically mean better edge preservation.</p>
+<p>Use metrics according to the task.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.20: Mean / Box Smoothing -->
+  <section id="s-09-20" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.20</span>
+      <h2>Mean / Box Smoothing</h2>
+      <button class="bookmark-btn" data-id="s-09-20" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The $K\times K$ mean filter computes:</p>
+<p>
+$$
+g(x,y)
+=
+\frac{1}{K^2}
+\sum_{s,t}f(x-s,y-t)
+$$
+</p>
+<p>under the chosen boundary convention.</p>
+<p>Its main effect is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>local averaging
+→ reduced random variation
+→ reduced high-frequency detail</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.21: Gaussian Smoothing -->
+  <section id="s-09-21" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.21</span>
+      <h2>Gaussian Smoothing</h2>
+      <button class="bookmark-btn" data-id="s-09-21" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A Gaussian filter uses distance-dependent weights.</p>
+<p>Continuous Gaussian:</p>
+<p>
+$$
+G(x,y)
+=
+\frac{1}{2\pi\sigma^2}
+e^{-\frac{x^2+y^2}{2\sigma^2}}
+$$
+</p>
+<p>Higher $\sigma$ gives a wider kernel.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>small σ
+→ narrow smoothing
+
+large σ
+→ broader smoothing</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.22: Effect of Gaussian Sigma -->
+  <section id="s-09-22" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.22</span>
+      <h2>Effect of Gaussian Sigma</h2>
+      <button class="bookmark-btn" data-id="s-09-22" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Imagine:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>σ small
+→ preserve more local detail
+→ less smoothing
+
+σ large
+→ stronger blur
+→ more noise suppression
+→ more detail loss</code></pre>
+</div></p>
+<p>There is no universally correct sigma.</p>
+<p>It should be selected from:</p>
+<ul>
+<li>noise strength,</li>
+<li>object scale,</li>
+<li>desired edge preservation,</li>
+<li>downstream task.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.23: Mean vs Gaussian -->
+  <section id="s-09-23" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.23</span>
+      <h2>Mean vs Gaussian</h2>
+      <button class="bookmark-btn" data-id="s-09-23" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Property</th>
+<th>Mean</th>
+<th>Gaussian</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>weighting</td>
+<td>equal</td>
+<td>centre-weighted</td>
+</tr>
+<tr>
+<td>mathematical shape</td>
+<td>box</td>
+<td>Gaussian</td>
+</tr>
+<tr>
+<td>implementation</td>
+<td>very simple</td>
+<td>still efficient</td>
+</tr>
+<tr>
+<td>smoothing</td>
+<td>uniform neighbourhood</td>
+<td>distance-weighted</td>
+</tr>
+<tr>
+<td>common use</td>
+<td>simple baseline</td>
+<td>general-purpose smoothing</td>
+</tr>
+</tbody>
+</table></div>
+<p>Gaussian filtering is often preferred when a smoother spatial response is desired.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.24: Median Filtering -->
+  <section id="s-09-24" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.24</span>
+      <h2>Median Filtering</h2>
+      <button class="bookmark-btn" data-id="s-09-24" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For an odd-sized neighbourhood, arrange the values in sorted order and select the middle value.</p>
+<p>For:</p>
+<p>
+$$
+[12,11,13,10,120]
+$$
+</p>
+<p>sorted:</p>
+<p>
+$$
+[10,11,12,13,120]
+$$
+</p>
+<p>median:</p>
+<p>
+$$
+\boxed{12}
+$$
+</p>
+<p>The extreme outlier has much less effect than it would under averaging.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.25: Why Median Preserves Edges Better in Some Cases -->
+  <section id="s-09-25" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.25</span>
+      <h2>Why Median Preserves Edges Better in Some Cases</h2>
+      <button class="bookmark-btn" data-id="s-09-25" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>An isolated impulse can be removed without averaging a dark/bright boundary into intermediate values.</p>
+<p>For example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>left region      right region
+
+10 10 | 200 200</code></pre>
+</div></p>
+<p>An averaging filter near the boundary can produce intermediate values.</p>
+<p>A median filter may preserve the dominant local levels more effectively.</p>
+<p>However, median filtering can also remove thin structures if the kernel is too large.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.26: Kernel Size for Median Filtering -->
+  <section id="s-09-26" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.26</span>
+      <h2>Kernel Size for Median Filtering</h2>
+      <button class="bookmark-btn" data-id="s-09-26" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A common choice is:</p>
+<p>
+$$
+3\times3
+$$
+</p>
+<p>for mild impulse noise.</p>
+<p>Larger kernels:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>5×5
+7×7
+...</code></pre>
+</div></p>
+<p>can remove stronger noise but increase the risk of:</p>
+<ul>
+<li>edge loss,</li>
+<li>thin-line removal,</li>
+<li>small-object removal,</li>
+<li>texture destruction.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.27: Order-Statistics Filters -->
+  <section id="s-09-27" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.27</span>
+      <h2>Order-Statistics Filters</h2>
+      <button class="bookmark-btn" data-id="s-09-27" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The median belongs to a broader family.</p>
+<p>For values in a neighbourhood:</p>
+<h3>Minimum filter</h3>
+<p>
+$$
+g=\min\{f_i\}
+$$
+</p>
+<p>Useful for emphasizing dark regions / suppressing bright impulses in some contexts.</p>
+<h3>Maximum filter</h3>
+<p>
+$$
+g=\max\{f_i\}
+$$
+</p>
+<p>Useful for emphasizing bright regions / suppressing dark impulses in some contexts.</p>
+<h3>Midpoint filter</h3>
+<p>
+$$
+g=
+\frac{\min+\max}{2}
+$$
+</p>
+<p>Can be useful for certain noise types but is sensitive to extremes.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.28: Arithmetic Mean Filter -->
+  <section id="s-09-28" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.28</span>
+      <h2>Arithmetic Mean Filter</h2>
+      <button class="bookmark-btn" data-id="s-09-28" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The arithmetic mean is:</p>
+<p>
+$$
+g=
+\frac{1}{N}\sum_{i=1}^{N}x_i
+$$
+</p>
+<p>It reduces random variation by averaging.</p>
+<p>But every sample participates equally.</p>
+<p>Thus extreme outliers can strongly influence the result.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.29: Geometric Mean Filter -->
+  <section id="s-09-29" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.29</span>
+      <h2>Geometric Mean Filter</h2>
+      <button class="bookmark-btn" data-id="s-09-29" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A geometric mean is:</p>
+<p>
+$$
+g=
+\left(
+\prod_{i=1}^{N}x_i
+\right)^{1/N}
+$$
+</p>
+<p>This requires careful treatment when values are zero or negative.</p>
+<p>For typical nonnegative image data, it can behave differently from arithmetic averaging and can sometimes preserve detail better.</p>
+<blockquote>
+<p><strong>Extension:</strong> The practical value of a geometric mean filter is task- and data-dependent.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.30: Harmonic Mean Filter -->
+  <section id="s-09-30" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.30</span>
+      <h2>Harmonic Mean Filter</h2>
+      <button class="bookmark-btn" data-id="s-09-30" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The harmonic mean can be written:</p>
+<p>
+$$
+g=
+\frac{N}{
+\sum_{i=1}^{N}\frac{1}{x_i}
+}
+$$
+</p>
+<p>It also requires nonzero values.</p>
+<p>It is particularly sensitive to small values.</p>
+<p>Its use is more specialized than the mean or median.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.31: Contraharmonic Mean Filter -->
+  <section id="s-09-31" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.31</span>
+      <h2>Contraharmonic Mean Filter</h2>
+      <button class="bookmark-btn" data-id="s-09-31" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A contraharmonic mean filter is:</p>
+<p>
+$$
+g=
+\frac{
+\sum x_i^{Q+1}
+}{
+\sum x_i^Q
+}
+$$
+</p>
+<p>where $Q$ is the filter parameter.</p>
+<p>A commonly taught property is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Q &gt; 0
+→ tends to suppress pepper-like dark impulses
+
+Q &lt; 0
+→ tends to suppress salt-like bright impulses</code></pre>
+</div></p>
+<p>The denominator must be handled carefully, especially near zero.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.32: Why Parameter Sign Matters -->
+  <section id="s-09-32" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.32</span>
+      <h2>Why Parameter Sign Matters</h2>
+      <button class="bookmark-btn" data-id="s-09-32" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose the neighbourhood contains:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>10 10 10 250</code></pre>
+</div></p>
+<p>The desired direction of suppression depends on whether the problematic impulse is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>dark</code></pre>
+</div></p>
+<p>or:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>bright</code></pre>
+</div></p>
+<p>The contraharmonic parameter $Q$ controls which side receives stronger influence.</p>
+<p>This is a classic exam concept, but practical use requires parameter validation and zero handling.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.33: Adaptive Local Noise Reduction -->
+  <section id="s-09-33" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.33</span>
+      <h2>Adaptive Local Noise Reduction</h2>
+      <button class="bookmark-btn" data-id="s-09-33" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <blockquote>
+<p><strong>EXTENSION</strong></p>
+</blockquote>
+<p>A fixed filter treats every neighbourhood similarly.</p>
+<p>An adaptive filter attempts to use local statistics:</p>
+<p>
+$$
+\mu_L,\qquad \sigma_L^2
+$$
+</p>
+<p>to decide how strongly to smooth.</p>
+<p>One common form is:</p>
+<p>
+$$
+\hat f(x,y)
+=
+g(x,y)
+-
+\frac{\sigma_\eta^2}
+{\sigma_L^2}
+\left[
+g(x,y)-\mu_L
+\right]
+$$
+</p>
+<p>when the local variance is treated as informative and under the assumptions of the particular model.</p>
+<p>Interpretation:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>local variance ≈ noise variance
+→ stronger smoothing
+
+local variance &gt;&gt; noise variance
+→ preserve more local structure</code></pre>
+</div></p>
+<p>The exact adaptive filter and assumptions must be stated.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.34: Why Adaptive Filtering Is Attractive -->
+  <section id="s-09-34" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.34</span>
+      <h2>Why Adaptive Filtering Is Attractive</h2>
+      <button class="bookmark-btn" data-id="s-09-34" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A uniform background does not need the same treatment as a textured edge region.</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>smooth background
+→ can tolerate stronger smoothing
+
+edge / texture
+→ requires more preservation</code></pre>
+</div></p>
+<p>Adaptive filters attempt to exploit that difference.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.35: Noise Reduction vs Edge Preservation -->
+  <section id="s-09-35" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.35</span>
+      <h2>Noise Reduction vs Edge Preservation</h2>
+      <button class="bookmark-btn" data-id="s-09-35" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Imagine:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>noise strength
+↑
+│\
+│ \
+│  \
+│   \
+└────────→ smoothing strength
+
+              ↑
+       too much smoothing
+       destroys useful detail</code></pre>
+</div></p>
+<p>This is not a fixed universal curve; it represents the general tradeoff.</p>
+<p>A good denoising method should be evaluated at the task level.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.36: Noise and Edge Detection -->
+  <section id="s-09-36" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.36</span>
+      <h2>Noise and Edge Detection</h2>
+      <button class="bookmark-btn" data-id="s-09-36" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>original edge
+████████|░░░░░░</code></pre>
+</div></p>
+<p>Noise can introduce false transitions:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>███░████|░█░░██</code></pre>
+</div></p>
+<p>A derivative filter may interpret these as edges.</p>
+<p>Therefore a practical edge-detection pipeline often begins with:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>denoise / smooth
+        ↓
+derivative
+        ↓
+edge decision</code></pre>
+</div></p>
+<p>This links C09 to C10.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.37: Over-Smoothing Failure -->
+  <section id="s-09-37" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.37</span>
+      <h2>Over-Smoothing Failure</h2>
+      <button class="bookmark-btn" data-id="s-09-37" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A common mistake is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>noise visible
+→ increase kernel size
+→ increase again
+→ image becomes very smooth</code></pre>
+</div></p>
+<p>The result may have:</p>
+<ul>
+<li>weak edges,</li>
+<li>lost texture,</li>
+<li>merged small structures,</li>
+<li>poorer segmentation.</li>
+</ul>
+<p>Therefore:</p>
+<blockquote>
+<p>Do not optimize only for minimum visible noise.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.38: Denoising Evaluation Matrix -->
+  <section id="s-09-38" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.38</span>
+      <h2>Denoising Evaluation Matrix</h2>
+      <button class="bookmark-btn" data-id="s-09-38" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Evaluation</th>
+<th>What it asks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>visual</td>
+<td>Does the image look cleaner?</td>
+</tr>
+<tr>
+<td>MSE</td>
+<td>How close is it to a reference?</td>
+</tr>
+<tr>
+<td>PSNR</td>
+<td>How strong is signal relative to reconstruction error?</td>
+</tr>
+<tr>
+<td>edge preservation</td>
+<td>Are important boundaries retained?</td>
+</tr>
+<tr>
+<td>texture preservation</td>
+<td>Is meaningful high-frequency information retained?</td>
+</tr>
+<tr>
+<td>downstream accuracy</td>
+<td>Did the actual task improve?</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.39: Before/After Experiment Design -->
+  <section id="s-09-39" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.39</span>
+      <h2>Before/After Experiment Design</h2>
+      <button class="bookmark-btn" data-id="s-09-39" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A strong lab experiment should store:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>original clean/reference
+       ↓
+synthetic noisy image
+       ↓
+mean filter
+Gaussian filter
+median filter
+       ↓
+compare</code></pre>
+</div></p>
+<p>Record:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>kernel size
+sigma
+noise type
+noise parameter
+MSE
+PSNR
+visual observations
+edge observations</code></pre>
+</div></p>
+<p>This turns “try filters” into a reproducible engineering experiment.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.40: Synthetic Noise as a Learning Tool -->
+  <section id="s-09-40" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.40</span>
+      <h2>Synthetic Noise as a Learning Tool</h2>
+      <button class="bookmark-btn" data-id="s-09-40" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>When a clean image is available, generate controlled noise:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>clean image
+    ↓
+known noise model
+    ↓
+noisy image
+    ↓
+denoising method
+    ↓
+compare against known original</code></pre>
+</div></p>
+<p>Advantages:</p>
+<ul>
+<li>ground truth is known,</li>
+<li>parameters are controlled,</li>
+<li>methods can be compared fairly.</li>
+</ul>
+<p>Limitations:</p>
+<blockquote>
+<p>Synthetic noise may not reproduce all real acquisition-system behaviour.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.41: Practical Decision Tree -->
+  <section id="s-09-41" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.41</span>
+      <h2>Practical Decision Tree</h2>
+      <button class="bookmark-btn" data-id="s-09-41" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>OBSERVED NOISE
+      │
+      ├── isolated black/white impulses
+      │       ↓
+      │      median
+      │
+      ├── approximately random Gaussian-like fluctuations
+      │       ↓
+      │      Gaussian / linear smoothing
+      │
+      ├── repeating interference
+      │       ↓
+      │      frequency-domain analysis
+      │
+      └── multiplicative/granular pattern
+              ↓
+          identify imaging model
+              ↓
+          model-aware method</code></pre>
+</div></p>
+<p>The first job is diagnosis, not filter selection.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.42: Worked Example — Choosing a Filter -->
+  <section id="s-09-42" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.42</span>
+      <h2>Worked Example — Choosing a Filter</h2>
+      <button class="bookmark-btn" data-id="s-09-42" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose a 256×256 image shows:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>isolated white dots
++
+isolated black dots</code></pre>
+</div></p>
+<p>A reasonable first candidate is a median filter.</p>
+<p>Why?</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>noise
+→ impulsive extremes
+
+median
+→ robust to isolated extreme values</code></pre>
+</div></p>
+<p>A large Gaussian blur may reduce the dots, but it may also smear edges and texture.</p>
+<p>Therefore median is a more targeted first experiment.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.43: Worked Example — Gaussian Noise -->
+  <section id="s-09-43" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.43</span>
+      <h2>Worked Example — Gaussian Noise</h2>
+      <button class="bookmark-btn" data-id="s-09-43" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose an image is corrupted by small random fluctuations with approximately zero mean.</p>
+<p>A Gaussian filter can be tested.</p>
+<p>Workflow:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>estimate noise strength
+      ↓
+choose sigma
+      ↓
+apply Gaussian
+      ↓
+measure MSE/PSNR if reference exists
+      ↓
+inspect edges</code></pre>
+</div></p>
+<p>A larger sigma does not automatically give a better result.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.44: Why Noise Reduction Is Partly a Statistical Problem -->
+  <section id="s-09-44" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.44</span>
+      <h2>Why Noise Reduction Is Partly a Statistical Problem</h2>
+      <button class="bookmark-btn" data-id="s-09-44" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Noise has properties such as:</p>
+<ul>
+<li>mean,</li>
+<li>variance,</li>
+<li>distribution,</li>
+<li>spatial correlation,</li>
+<li>temporal behaviour.</li>
+</ul>
+<p>Therefore, good denoising uses statistical assumptions.</p>
+<p>This creates a bridge:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image processing
++
+probability/statistics</code></pre>
+</div></p>
+<p>That mathematical connection becomes deeper in restoration and machine learning.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.45: Colour Images and Denoising -->
+  <section id="s-09-45" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.45</span>
+      <h2>Colour Images and Denoising</h2>
+      <button class="bookmark-btn" data-id="s-09-45" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Denoising can be applied:</p>
+<h3>Independently per channel</h3>
+<p>Simple, but channel relationships can be disturbed.</p>
+<h3>On a luminance-like component</h3>
+<p>May better preserve colour relationships.</p>
+<h3>In a colour space designed to separate brightness and chroma</h3>
+<p>Can allow different smoothing strengths.</p>
+<p>The correct method depends on:</p>
+<ul>
+<li>noise source,</li>
+<li>colour representation,</li>
+<li>application.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.46: Border Handling During Denoising -->
+  <section id="s-09-46" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.46</span>
+      <h2>Border Handling During Denoising</h2>
+      <button class="bookmark-btn" data-id="s-09-46" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A filter near an image boundary sees fewer real neighbours.</p>
+<p>The algorithm must choose a border policy.</p>
+<p>Common options:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>zero
+replicate
+reflect
+wrap</code></pre>
+</div></p>
+<p>The choice can affect:</p>
+<ul>
+<li>edge appearance,</li>
+<li>boundary statistics,</li>
+<li>measured error.</li>
+</ul>
+<p>A reproducible experiment must record it.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.47: Computational Considerations -->
+  <section id="s-09-47" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.47</span>
+      <h2>Computational Considerations</h2>
+      <button class="bookmark-btn" data-id="s-09-47" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For a direct $K\times K$ linear filter:</p>
+<p>
+$$
+O(MNK^2)
+$$
+</p>
+<p>is a useful simple complexity estimate.</p>
+<p>A separable Gaussian can reduce the direct work substantially.</p>
+<p>Median filtering has different computational behaviour because sorting/order statistics are involved.</p>
+<p>Modern implementations may use optimized algorithms, vectorization or specialized hardware.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.48: Practical Pseudocode -->
+  <section id="s-09-48" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.48</span>
+      <h2>Practical Pseudocode</h2>
+      <button class="bookmark-btn" data-id="s-09-48" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>INPUT:
+    image
+    noise model
+    filter parameters
+
+inspect:
+    shape
+    channels
+    dtype
+    min/max
+
+if required:
+    convert to working representation
+
+estimate or specify noise characteristics
+
+select candidate filter
+
+apply filter
+
+restore intended output range/dtype
+
+evaluate:
+    visual quality
+    edge preservation
+    numerical metrics
+    downstream task</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.49: Common Traps -->
+  <section id="s-09-49" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.49</span>
+      <h2>Common Traps</h2>
+      <button class="bookmark-btn" data-id="s-09-49" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h2>Trap 1 — “Noise reduction always improves an image.”</h2>
+<p>False.</p>
+<p>It can remove meaningful detail.</p>
+<h2>Trap 2 — “Gaussian filter is best for all noise.”</h2>
+<p>False.</p>
+<p>It is a general smoothing method, not a universal denoiser.</p>
+<h2>Trap 3 — “Median filter works by averaging.”</h2>
+<p>False.</p>
+<p>It selects an order statistic.</p>
+<h2>Trap 4 — “Salt-and-pepper noise is Gaussian noise.”</h2>
+<p>False.</p>
+<p>Impulse noise has a different structure.</p>
+<h2>Trap 5 — “PSNR tells complete visual quality.”</h2>
+<p>False.</p>
+<p>It is a useful numerical metric, not a complete perceptual/task metric.</p>
+<h2>Trap 6 — “More smoothing means less error.”</h2>
+<p>False.</p>
+<p>Beyond an optimum, detail loss can increase error.</p>
+<h2>Trap 7 — “Noise model always comes from the final image histogram.”</h2>
+<p>False.</p>
+<p>The observed histogram mixes scene and noise statistics.</p>
+<h2>Trap 8 — “Denoising before edge detection is optional.”</h2>
+<p>Not always.</p>
+<p>It is often important because differentiation is sensitive to high-frequency variation.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.50: Exam Formula Sheet -->
+  <section id="s-09-50" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.50</span>
+      <h2>Exam Formula Sheet</h2>
+      <button class="bookmark-btn" data-id="s-09-50" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Additive noise</h3>
+<p>
+$$
+\boxed{g=f+\eta}
+$$
+</p>
+<h3>Gaussian PDF</h3>
+<p>
+$$
+\boxed{
+p(\eta)=
+\frac{1}{\sqrt{2\pi\sigma^2}}
+e^{-\frac{(\eta-\mu)^2}{2\sigma^2}}
+}
+$$
+</p>
+<h3>Uniform PDF</h3>
+<p>
+$$
+\boxed{
+p(\eta)=\frac1{b-a},
+\quad a\le\eta\le b
+}
+$$
+</p>
+<h3>SNR</h3>
+<p>
+$$
+\boxed{
+SNR=\frac{P_s}{P_n}
+}
+$$
+</p>
+<h3>SNR in dB</h3>
+<p>
+$$
+\boxed{
+SNR_{dB}
+=
+10\log_{10}\frac{P_s}{P_n}
+}
+$$
+</p>
+<h3>PSNR</h3>
+<p>
+$$
+\boxed{
+PSNR
+=
+10\log_{10}
+\frac{MAX_I^2}{MSE}
+}
+$$
+</p>
+<h3>MSE</h3>
+<p>
+$$
+\boxed{
+MSE=
+\frac1{MN}
+\sum
+(I-K)^2
+}
+$$
+</p>
+<h3>Median</h3>
+<p>
+$$
+\boxed{
+g=\operatorname{median}\{f_i\}
+}
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.51: Exam-Style Comparison -->
+  <section id="s-09-51" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.51</span>
+      <h2>Exam-Style Comparison</h2>
+      <button class="bookmark-btn" data-id="s-09-51" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Noise</th>
+<th>Why it is difficult</th>
+<th>Candidate method</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Gaussian</td>
+<td>distributed over many pixels</td>
+<td>Gaussian/mean/adaptive</td>
+</tr>
+<tr>
+<td>salt-and-pepper</td>
+<td>extreme impulses</td>
+<td>median</td>
+</tr>
+<tr>
+<td>periodic</td>
+<td>structured interference</td>
+<td>frequency-domain analysis</td>
+</tr>
+<tr>
+<td>multiplicative</td>
+<td>signal-dependent distortion</td>
+<td>model-aware processing</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.52: Cross-Book Bridges -->
+  <section id="s-09-52" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.52</span>
+      <h2>Cross-Book Bridges</h2>
+      <button class="bookmark-btn" data-id="s-09-52" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <blockquote>
+<p><strong>C08 BRIDGE</strong><br />
+General spatial-filter mechanics are reused here with noise-specific decision logic.</p>
+<p><strong>C10 BRIDGE</strong><br />
+Noise suppression is often performed before derivative-based edge detection.</p>
+<p><strong>C12–C13 BRIDGE</strong><br />
+Periodic noise is especially informative in the frequency domain.</p>
+<p><strong>C14 BRIDGE</strong><br />
+Restoration treats blur/noise using an explicit degradation model and can use Wiener/model-based methods.</p>
+<p><strong>LAB BRIDGE</strong><br />
+Add controlled Gaussian and impulse noise, run candidate filters, and compare metrics.</p>
+<p><strong>PRACTICE BRIDGE</strong><br />
+Identify noise models, compute MSE/PSNR, select filters and analyze tradeoffs.</p>
+<p><strong>EXAM BRIDGE</strong><br />
+Prepare noise distributions, mean/median/contraharmonic filters, SNR/PSNR and filter-selection reasoning.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.53: Quick Recall -->
+  <section id="s-09-53" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.53</span>
+      <h2>Quick Recall</h2>
+      <button class="bookmark-btn" data-id="s-09-53" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>NOISE
+→ unwanted variation
+
+GAUSSIAN
+→ random bell-shaped model
+
+SALT + PEPPER
+→ impulse extremes
+
+MEAN / GAUSSIAN
+→ linear smoothing
+
+MEDIAN
+→ nonlinear impulse suppression
+
+PERIODIC NOISE
+→ frequency-domain candidate
+
+PSNR
+→ reference-based numerical quality measure</code></pre>
+</div></p>
+<p>Core rule:</p>
+<blockquote>
+<p><strong>Identify the noise before choosing the filter.</strong></p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.54: Chapter Checkpoint -->
+  <section id="s-09-54" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.54</span>
+      <h2>Chapter Checkpoint</h2>
+      <button class="bookmark-btn" data-id="s-09-54" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <ol>
+<li>Define image noise.</li>
+<li>Write the additive noise model.</li>
+<li>Describe Gaussian noise.</li>
+<li>Explain salt-and-pepper noise.</li>
+<li>Why does median filtering work well for impulse noise?</li>
+<li>Define periodic noise and explain why frequency-domain analysis can help.</li>
+<li>Differentiate additive and multiplicative noise.</li>
+<li>Define SNR and PSNR.</li>
+<li>Calculate MSE for two short image sequences.</li>
+<li>Compare mean, Gaussian and median filtering.</li>
+<li>Explain contraharmonic mean filtering and the role of $Q$.</li>
+<li>Why can over-smoothing reduce task performance?</li>
+<li>Why is PSNR insufficient as a complete image-quality measure?</li>
+<li>How should a reproducible denoising experiment be designed?</li>
+</ol>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 09.55: Connection Forward -->
+  <section id="s-09-55" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.55</span>
+      <h2>Connection Forward</h2>
+      <button class="bookmark-btn" data-id="s-09-55" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>We now understand how to suppress unwanted variation.</p>
+<p>But the next question is the opposite:</p>
+<blockquote>
+<p><strong>How do we deliberately emphasize boundaries, fine detail and intensity transitions?</strong></p>
+</blockquote>
+<p>That is Chapter 10:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>noise reduction
+      ↓
+gradient / derivative
+      ↓
+edge response
+      ↓
+edge decision
+      ↓
+sharpened / structured image</code></pre>
+</div></p>
+    </div>
+  </section>
+
+  <!-- SECTION 09.56: Mathematical Derivation: 2D Gaussian Kernel &amp; Parameter $\sigma$ -->
+  <section id="s-09-56" class="section-block">
+    <div class="section-header">
+      <span class="section-num">09.56</span>
+      <h2>Mathematical Derivation: 2D Gaussian Kernel &amp; Parameter $\sigma$</h2>
+      <button class="bookmark-btn" data-id="s-09-56" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Continuous 2D Gaussian Distribution</h3>
+<p>The circularly symmetric continuous 2D Gaussian function centered at the origin is defined as:
+
+$$G(x, y) = \frac{1}{2\pi \sigma^2} e^{-\frac{x^2 + y^2}{2\sigma^2}}$$
+
+where $\sigma$ denotes the standard deviation (spread of the bell curve).</p>
+<h3>Mathematical Proof of Separability</h3>
+<p>
+$$G(x, y) = \left( \frac{1}{\sqrt{2\pi}\sigma} e^{-\frac{x^2}{2\sigma^2}} \right) \cdot \left( \frac{1}{\sqrt{2\pi}\sigma} e^{-\frac{y^2}{2\sigma^2}} \right) = g(x) \cdot g(y)$$
+
+This confirms that the 2D Gaussian kernel is mathematically separable into two identical 1D Gaussian operations along the horizontal and vertical axes.</p>
+<h3>The $6\sigma + 1$ Filter Window Size Rule</h3>
+<p>The integral of a Gaussian distribution within $[-3\sigma, +3\sigma]$ contains $99.73\%$ of its total volume under the curve:
+
+$$\int_{-3\sigma}^{3\sigma} g(x) dx \approx 0.9973$$
+
+To prevent sharp boundary truncation that produces high-frequency ringing artifacts, the spatial discrete window size $k \times k$ must span at least $6\sigma$:
+
+$$k \ge 2 \lceil 3\sigma \rceil + 1$$
+
+For example, if $\sigma = 1.0$, $k \ge 2(3) + 1 = 7 \implies 7 \times 7$ window.</p>
+<h3>Derivation of the Canonical $3 \times 3$ Integer Gaussian Kernel</h3>
+<p>For $k = 3$ ($x, y \in \{-1, 0, 1\}$), choose $\sigma \approx 0.84932$ such that the corner values satisfy $G(1,1) / G(0,0) = 0.25$:
+- Center $(0, 0): e^0 = 1.0 \to 4$
+- Orthogonal neighbors $(\pm 1, 0), (0, \pm 1): e^{-1/(2\sigma^2)} \approx 0.5 \to 2$
+- Diagonal corners $(\pm 1, \pm 1): e^{-2/(2\sigma^2)} \approx 0.25 \to 1$</p>
+<p>Sum of integer weights $= 4(1) + 4(2) + 1(4) = 16 = 2^4$.
+
+$$K_{Gaussian} = \frac{1}{16} \begin{bmatrix} 1 & 2 & 1 \\ 2 & 4 & 2 \\ 1 & 2 & 1 \end{bmatrix}$$
+
+Because the normalization factor is $16 = 2^4$, convolution can be implemented on embedded hardware using bitwise right-shift <code>&gt;&gt; 4</code> without floating-point division.</p>
+    </div>
+  </section>
+
+      <!-- Chapter End Package -->
+      <section class="chapter-end-package">
+        <div class="chapter-nav-grid">
+          <a href="ch08-spatial-filtering.html" class="chapter-nav-card">
+            <div class="chapter-nav-dir">← Previous</div>
+            <div class="chapter-nav-title">← Ch 8 — Spatial Filtering & Convolution</div>
+          </a>
+          <a href="ch10-sharpening-edge-detection.html" class="chapter-nav-card next">
+            <div class="chapter-nav-dir">Next →</div>
+            <div class="chapter-nav-title">Next: Ch 10 — Sharpening & Edge Detection →</div>
+          </a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- FLOATING TTS PANEL (SAFE MANUAL MODE ONLY) -->
+  <div id="tts-panel" style="position:fixed; bottom:20px; right:20px; background:var(--em-surface-1); border:1px solid var(--em-border); border-radius:var(--em-radius-md); padding:12px 16px; box-shadow:var(--sh-lg); z-index:var(--z-float); display:none; gap:10px; align-items:center;">
+    <button class="icon-btn" id="tts-play" title="Play / Pause" style="background:var(--em-accent); color:#fff; border-radius:50%; width:36px; height:36px;">▶</button>
+    <button class="icon-btn" id="tts-stop" title="Stop">⏹</button>
+    <div style="font-size:0.75rem; color:var(--em-text-muted);">
+      <span id="tts-status">Ready</span> · <span id="tts-rate-label">1.0x</span>
+    </div>
+  </div>
+
+  <script src="../assets/js/state.js"></script>
+  <script src="../assets/js/core.js"></script>
+  <script src="../assets/js/tts.js"></script>
+  <script src="../assets/js/glossary.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: document.documentElement.getAttribute('data-theme') === 'light' ? 'default' : 'dark'
+      });
+    });
+  </script>
+</body>
+</html>

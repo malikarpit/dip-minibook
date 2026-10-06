@@ -1,0 +1,2418 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Arpit">
+  <meta name="description" content="Chapter 06: Point Processing &amp; Intensity Transformations — Digital Image Processing MiniBook. Digital Negatives, Logarithmic Dynamic Range Compression, Power-Law (Gamma) Correction, Contrast Stretching, and Bit-Plane Slicing">
+  <title>C06: Point Processing &amp; Intensity Transformations | DIP MiniBook 📷 Arpit</title>
+
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <link rel="stylesheet" href="../assets/css/chapters.css">
+  <link rel="stylesheet" href="../assets/css/animations.css">
+  <link rel="stylesheet" href="../assets/css/timer.css">
+
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body data-chapter-id="ch06-point-processing">
+  <div id="progress-bar"></div>
+
+  <!-- Header -->
+  <header id="main-header">
+    <div class="header-left">
+      <button id="sidebar-toggle" class="icon-btn" aria-label="Toggle navigation drawer" title="Toggle Sidebar (S)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <a href="../index.html" class="brand-logo">
+        <div class="brand-icon">DIP</div>
+        <div class="brand-text">
+          <span class="main">Digital Image Processing</span>
+          <span class="sub">DU DSE-3 Engineering MiniBook</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="header-chapter-title">C06: Point Processing &amp; Intensity Transformations</div>
+
+    <div class="header-right">
+      <button id="reading-mode-btn" class="icon-btn" aria-label="Toggle reading focus mode" title="Focus Mode (F)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+          <line x1="8" y1="21" x2="16" y2="21"></line>
+          <line x1="12" y1="17" x2="12" y2="21"></line>
+        </svg>
+      </button>
+      <button id="tts-toggle" class="icon-btn" aria-label="Audio Reader" title="Audio Reader">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+        </svg>
+      </button>
+      <button id="theme-toggle" class="icon-btn" aria-label="Cycle theme" title="Theme (T)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="12" cy="12" r="4.5"></circle>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Sidebar Overlay -->
+  <div id="sidebar-overlay"></div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" aria-expanded="true">
+    <div class="sidebar-nav">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">General</div>
+        <a href="../index.html" class="sidebar-link">
+          <span class="link-icon">🏛️</span>
+          <span>Subject Portal</span>
+        </a>
+        <a href="../progress.html" class="sidebar-link">
+          <span class="link-icon">📊</span>
+          <span>Study Dashboard</span>
+        </a>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Current Chapter Sections</div>
+        <a href="#s-06-1" class="sidebar-link"><span class="link-icon">📌</span><span>06.1 Why Start with Point Processing?</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-06-2" class="sidebar-link"><span class="link-icon">📌</span><span>06.2 Point Processing vs Neighbourhood Processing</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-06-3" class="sidebar-link"><span class="link-icon">📌</span><span>06.3 The Intensity Transformation Function</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-06-4" class="sidebar-link"><span class="link-icon">📌</span><span>06.4 What Is Enhancement?</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-06-5" class="sidebar-link"><span class="link-icon">📌</span><span>06.5 Identity Transformation</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-06-6" class="sidebar-link"><span class="link-icon">📌</span><span>06.6 Negative Transformation</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-06-7" class="sidebar-link"><span class="link-icon">📌</span><span>06.7 Worked Example — Image Negative</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-06-8" class="sidebar-link"><span class="link-icon">📌</span><span>06.8 Why Use an Image Negative?</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-06-9" class="sidebar-link"><span class="link-icon">📌</span><span>06.9 Logarithmic Transformation</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-06-10" class="sidebar-link"><span class="link-icon">📌</span><span>06.10 Why the \(1+r\)?</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-06-11" class="sidebar-link"><span class="link-icon">📌</span><span>06.11 Worked Log Example</span> </a>
+      <a href="#s-06-12" class="sidebar-link"><span class="link-icon">📌</span><span>06.12 Inverse Log / Exponential-Like Transform</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-06-13" class="sidebar-link"><span class="link-icon">📌</span><span>06.13 Power-Law (Gamma) Transformation</span> </a>
+      <a href="#s-06-14" class="sidebar-link"><span class="link-icon">📌</span><span>06.14 Shape of the Power-Law Transform</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-06-15" class="sidebar-link"><span class="link-icon">📌</span><span>06.15 Worked Gamma Example</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-06-16" class="sidebar-link"><span class="link-icon">📌</span><span>06.16 Scaling a Normalized Result to 8-bit</span> </a>
+      <a href="#s-06-17" class="sidebar-link"><span class="link-icon">📌</span><span>06.17 Contrast Stretching</span> </a>
+      <a href="#s-06-18" class="sidebar-link"><span class="link-icon">📌</span><span>06.18 Worked Contrast-Stretch Example</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-06-19" class="sidebar-link"><span class="link-icon">📌</span><span>06.19 Why Contrast Stretching Helps</span> </a>
+      <a href="#s-06-20" class="sidebar-link"><span class="link-icon">📌</span><span>06.20 Piecewise-Linear Transformation</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-06-21" class="sidebar-link"><span class="link-icon">📌</span><span>06.21 Example — Highlighting a Target Range</span> </a>
+      <a href="#s-06-22" class="sidebar-link"><span class="link-icon">📌</span><span>06.22 Thresholding as an Extreme Point Transform</span> </a>
+      <a href="#s-06-23" class="sidebar-link"><span class="link-icon">📌</span><span>06.23 Clipping</span> </a>
+      <a href="#s-06-24" class="sidebar-link"><span class="link-icon">📌</span><span>06.24 Clipping Is Not the Same as Rescaling</span> </a>
+      <a href="#s-06-25" class="sidebar-link"><span class="link-icon">📌</span><span>06.25 Point Processing as a Lookup Table</span> </a>
+      <a href="#s-06-26" class="sidebar-link"><span class="link-icon">📌</span><span>06.26 Matrix Example — Point Transformation</span> </a>
+      <a href="#s-06-27" class="sidebar-link"><span class="link-icon">📌</span><span>06.27 Matrix Example — Threshold</span> </a>
+      <a href="#s-06-28" class="sidebar-link"><span class="link-icon">📌</span><span>06.28 Point Processing and Histograms</span> </a>
+      <a href="#s-06-29" class="sidebar-link"><span class="link-icon">📌</span><span>06.29 Enhancement Function Selection</span> </a>
+      <a href="#s-06-30" class="sidebar-link"><span class="link-icon">📌</span><span>06.30 Worked Comparison</span> </a>
+      <a href="#s-06-31" class="sidebar-link"><span class="link-icon">📌</span><span>06.31 Colour Images and Point Processing</span> </a>
+      <a href="#s-06-32" class="sidebar-link"><span class="link-icon">📌</span><span>06.32 Example — Why Independent RGB Enhancement Can Change Colour</span> </a>
+      <a href="#s-06-33" class="sidebar-link"><span class="link-icon">📌</span><span>06.33 Dynamic Range Compression vs Contrast Enhancement</span> </a>
+      <a href="#s-06-34" class="sidebar-link"><span class="link-icon">📌</span><span>06.34 Noise Interaction</span> </a>
+      <a href="#s-06-35" class="sidebar-link"><span class="link-icon">📌</span><span>06.35 Quantization Interaction</span> </a>
+      <a href="#s-06-36" class="sidebar-link"><span class="link-icon">📌</span><span>06.36 Implementation Pattern</span> </a>
+      <a href="#s-06-37" class="sidebar-link"><span class="link-icon">📌</span><span>06.37 Pseudocode</span> </a>
+      <a href="#s-06-38" class="sidebar-link"><span class="link-icon">📌</span><span>06.38 Engineering Example — Improving a Dark Image</span> </a>
+      <a href="#s-06-39" class="sidebar-link"><span class="link-icon">📌</span><span>06.39 Evaluation: How Do We Know It Helped?</span> </a>
+      <a href="#s-06-40" class="sidebar-link"><span class="link-icon">📌</span><span>06.40 Common Traps</span> </a>
+      <a href="#s-06-41" class="sidebar-link"><span class="link-icon">📌</span><span>06.41 Exam Formula Sheet</span> </a>
+      <a href="#s-06-42" class="sidebar-link"><span class="link-icon">📌</span><span>06.42 Worked Exam-Style Problem</span> </a>
+      <a href="#s-06-43" class="sidebar-link"><span class="link-icon">📌</span><span>06.43 Deep Concept — Transformations as Functions on a Histogram</span> </a>
+      <a href="#s-06-44" class="sidebar-link"><span class="link-icon">📌</span><span>06.44 Cross-Book Bridges</span> </a>
+      <a href="#s-06-45" class="sidebar-link"><span class="link-icon">📌</span><span>06.45 Quick Recall</span> </a>
+      <a href="#s-06-46" class="sidebar-link"><span class="link-icon">📌</span><span>06.46 Chapter Checkpoint</span> </a>
+      <a href="#s-06-47" class="sidebar-link"><span class="link-icon">📌</span><span>06.47 Part II Opening Map</span> </a>
+      <a href="#s-06-48" class="sidebar-link"><span class="link-icon">📌</span><span>06.48 Worked Numerical Problem: Piecewise Linear Contrast Stretching</span> </a>
+      <a href="#s-06-49" class="sidebar-link"><span class="link-icon">📌</span><span>06.49 Bit-Plane Slicing Architecture &amp; Steganography Lab Blueprint</span> </a>
+      </div>
+
+      
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-i">Part I — The Image</div>
+      <a href="ch01-big-picture.html" class="sidebar-link"><span class="link-icon">01</span><span>The Big Picture</span></a>
+      <a href="ch02-image-formation.html" class="sidebar-link"><span class="link-icon">02</span><span>Formation & Acquisition</span></a>
+      <a href="ch03-sampling-quantization.html" class="sidebar-link"><span class="link-icon">03</span><span>Sampling & Quantization</span></a>
+      <a href="ch04-image-representation.html" class="sidebar-link"><span class="link-icon">04</span><span>Pixels, Matrices & Resolution</span></a>
+      <a href="ch05-colour-models-file-formats.html" class="sidebar-link"><span class="link-icon">05</span><span>Colour Models & Formats</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-ii">Part II — Improving the Image</div>
+      <a href="ch06-point-processing.html" class="sidebar-link active"><span class="link-icon">06</span><span>Point Processing & Intensity</span></a>
+      <a href="ch07-histograms-equalization.html" class="sidebar-link"><span class="link-icon">07</span><span>Histograms & Equalization</span></a>
+      <a href="ch08-spatial-filtering.html" class="sidebar-link"><span class="link-icon">08</span><span>Spatial Filtering & Convolution</span></a>
+      <a href="ch09-smoothing-noise-reduction.html" class="sidebar-link"><span class="link-icon">09</span><span>Smoothing & Noise Reduction</span></a>
+      <a href="ch10-sharpening-edge-detection.html" class="sidebar-link"><span class="link-icon">10</span><span>Sharpening & Edge Detection</span></a>
+      <a href="ch11-geometric-transforms.html" class="sidebar-link"><span class="link-icon">11</span><span>Geometric Transforms</span></a>
+      <a href="ch12-fourier-transform.html" class="sidebar-link"><span class="link-icon">12</span><span>Fourier Transform & Frequency</span></a>
+      <a href="ch13-frequency-filtering.html" class="sidebar-link"><span class="link-icon">13</span><span>Frequency-Domain Filtering</span></a>
+      <a href="ch14-image-restoration.html" class="sidebar-link"><span class="link-icon">14</span><span>Restoration & Deblurring</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-iii">Part III — Understanding Content</div>
+      <a href="ch15-segmentation-fundamentals.html" class="sidebar-link"><span class="link-icon">15</span><span>Segmentation Fundamentals</span></a>
+      <a href="ch16-thresholding-otsu.html" class="sidebar-link"><span class="link-icon">16</span><span>Thresholding & Otsu Method</span></a>
+      <a href="ch17-region-segmentation.html" class="sidebar-link"><span class="link-icon">17</span><span>Region-Based Segmentation</span></a>
+      <a href="ch18-mathematical-morphology.html" class="sidebar-link"><span class="link-icon">18</span><span>Mathematical Morphology</span></a>
+      <a href="ch19-features-descriptors.html" class="sidebar-link"><span class="link-icon">19</span><span>Image Features & Descriptors</span></a>
+      <a href="ch20-sift-surf-orb-hog.html" class="sidebar-link"><span class="link-icon">20</span><span>SIFT, SURF, ORB & HOG</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-iv">Part IV — Compressing Images</div>
+      <a href="ch21-compression-entropy.html" class="sidebar-link"><span class="link-icon">21</span><span>Compression & Entropy</span></a>
+      <a href="ch22-lossless-coding.html" class="sidebar-link"><span class="link-icon">22</span><span>Lossless: RLE & Huffman</span></a>
+      <a href="ch23-lossy-dct-jpeg.html" class="sidebar-link"><span class="link-icon">23</span><span>Lossy: DCT & JPEG</span></a>
+      <a href="ch24-wavelets-jpeg2000.html" class="sidebar-link"><span class="link-icon">24</span><span>Wavelets & JPEG 2000</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-v">Part V — Intelligent Vision</div>
+      <a href="ch25-image-classification.html" class="sidebar-link"><span class="link-icon">25</span><span>Image Classification</span></a>
+      <a href="ch26-cnns-image-processing.html" class="sidebar-link"><span class="link-icon">26</span><span>CNNs for Image Processing</span></a>
+      <a href="ch27-modern-vision-architectures.html" class="sidebar-link"><span class="link-icon">27</span><span>Modern Vision Architectures</span></a>
+      <a href="ch28-object-detection-yolo.html" class="sidebar-link"><span class="link-icon">28</span><span>Object Detection: YOLO</span></a>
+      <a href="ch29-image-denoising-autoencoders.html" class="sidebar-link"><span class="link-icon">29</span><span>Image Denoising Autoencoders</span></a>
+      <a href="ch30-video-motion-analysis.html" class="sidebar-link"><span class="link-icon">30</span><span>Video & Motion Analysis</span></a>
+      <a href="ch31-dip-applications-engineering.html" class="sidebar-link"><span class="link-icon">31</span><span>DIP Applications & Ethics</span></a>
+    </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-brand-mark">
+        <div class="mark">DU</div>
+        <div>
+          <strong>DSE-3 MiniBook</strong>
+          <div>University of Delhi</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mandatory Shell Wrapper -->
+  <div id="main-content">
+    <main class="chapter-content">
+      <!-- Chapter Hero -->
+      <div class="chapter-hero">
+        <div class="hero-meta">
+          <span class="part-badge part-ii">Improving the Image</span>
+          <span class="chapter-number">CHAPTER 06</span>
+          <span class="reading-time">⏱️ ~45 min read</span>
+          <span class="tag-badge tag-core">Highest Yield (10-mark guarantee)</span>
+        </div>
+        <h1 class="chapter-title">Point Processing &amp; Intensity Transformations</h1>
+        <p class="chapter-subtitle">
+          Digital Negatives, Logarithmic Dynamic Range Compression, Power-Law (Gamma) Correction, Contrast Stretching, and Bit-Plane Slicing
+        </p>
+
+        <div class="syllabus-anchor">
+          <span class="syllabus-anchor-label">DU Syllabus</span>
+          <span><strong>Intensity Transformations:</strong> Basic gray-level transformations (image negative, log transform, power-law gamma transformations), Piecewise linear transformation functions (contrast stretching, gray-level slicing with and without background, bit-plane slicing and steganography).</span>
+        </div>
+      </div>
+
+      <!-- In-Page TOC -->
+      <div class="chapter-checklist-card" style="margin-bottom:var(--em-space-8);">
+        <div class="checklist-title">
+          <span>Table of Contents &amp; Visual Section Map</span>
+          <span class="tag-badge tag-math">49 Deep Sections</span>
+        </div>
+        <ul class="part-chapters-list">
+          <li class="part-chapter-item"><a href="#s-06-1"><strong>06.1</strong> Why Start with Point Processing?</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-06-2"><strong>06.2</strong> Point Processing vs Neighbourhood Processing</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-06-3"><strong>06.3</strong> The Intensity Transformation Function</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-06-4"><strong>06.4</strong> What Is Enhancement?</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-06-5"><strong>06.5</strong> Identity Transformation</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-06-6"><strong>06.6</strong> Negative Transformation</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-06-7"><strong>06.7</strong> Worked Example — Image Negative</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-06-8"><strong>06.8</strong> Why Use an Image Negative?</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-06-9"><strong>06.9</strong> Logarithmic Transformation</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-06-10"><strong>06.10</strong> Why the \(1+r\)?</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-06-11"><strong>06.11</strong> Worked Log Example</a> </li>
+      <li class="part-chapter-item"><a href="#s-06-12"><strong>06.12</strong> Inverse Log / Exponential-Like Transform</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-06-13"><strong>06.13</strong> Power-Law (Gamma) Transformation</a> </li>
+      <li class="part-chapter-item"><a href="#s-06-14"><strong>06.14</strong> Shape of the Power-Law Transform</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-06-15"><strong>06.15</strong> Worked Gamma Example</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-06-16"><strong>06.16</strong> Scaling a Normalized Result to 8-bit</a> </li>
+      <li class="part-chapter-item"><a href="#s-06-17"><strong>06.17</strong> Contrast Stretching</a> </li>
+      <li class="part-chapter-item"><a href="#s-06-18"><strong>06.18</strong> Worked Contrast-Stretch Example</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-06-19"><strong>06.19</strong> Why Contrast Stretching Helps</a> </li>
+      <li class="part-chapter-item"><a href="#s-06-20"><strong>06.20</strong> Piecewise-Linear Transformation</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-06-21"><strong>06.21</strong> Example — Highlighting a Target Range</a> </li>
+      <li class="part-chapter-item"><a href="#s-06-22"><strong>06.22</strong> Thresholding as an Extreme Point Transform</a> </li>
+      <li class="part-chapter-item"><a href="#s-06-23"><strong>06.23</strong> Clipping</a> </li>
+      <li class="part-chapter-item"><a href="#s-06-24"><strong>06.24</strong> Clipping Is Not the Same as Rescaling</a> </li>
+      <li class="part-chapter-item"><a href="#s-06-25"><strong>06.25</strong> Point Processing as a Lookup Table</a> </li>
+      <li class="part-chapter-item"><a href="#s-06-26"><strong>06.26</strong> Matrix Example — Point Transformation</a> </li>
+      <li class="part-chapter-item"><a href="#s-06-27"><strong>06.27</strong> Matrix Example — Threshold</a> </li>
+      <li class="part-chapter-item"><a href="#s-06-28"><strong>06.28</strong> Point Processing and Histograms</a> </li>
+      <li class="part-chapter-item"><a href="#s-06-29"><strong>06.29</strong> Enhancement Function Selection</a> </li>
+      <li class="part-chapter-item"><a href="#s-06-30"><strong>06.30</strong> Worked Comparison</a> </li>
+      <li class="part-chapter-item"><a href="#s-06-31"><strong>06.31</strong> Colour Images and Point Processing</a> </li>
+      <li class="part-chapter-item"><a href="#s-06-32"><strong>06.32</strong> Example — Why Independent RGB Enhancement Can Change Colour</a> </li>
+      <li class="part-chapter-item"><a href="#s-06-33"><strong>06.33</strong> Dynamic Range Compression vs Contrast Enhancement</a> </li>
+      <li class="part-chapter-item"><a href="#s-06-34"><strong>06.34</strong> Noise Interaction</a> </li>
+      <li class="part-chapter-item"><a href="#s-06-35"><strong>06.35</strong> Quantization Interaction</a> </li>
+      <li class="part-chapter-item"><a href="#s-06-36"><strong>06.36</strong> Implementation Pattern</a> </li>
+      <li class="part-chapter-item"><a href="#s-06-37"><strong>06.37</strong> Pseudocode</a> </li>
+      <li class="part-chapter-item"><a href="#s-06-38"><strong>06.38</strong> Engineering Example — Improving a Dark Image</a> </li>
+      <li class="part-chapter-item"><a href="#s-06-39"><strong>06.39</strong> Evaluation: How Do We Know It Helped?</a> </li>
+      <li class="part-chapter-item"><a href="#s-06-40"><strong>06.40</strong> Common Traps</a> </li>
+      <li class="part-chapter-item"><a href="#s-06-41"><strong>06.41</strong> Exam Formula Sheet</a> </li>
+      <li class="part-chapter-item"><a href="#s-06-42"><strong>06.42</strong> Worked Exam-Style Problem</a> </li>
+      <li class="part-chapter-item"><a href="#s-06-43"><strong>06.43</strong> Deep Concept — Transformations as Functions on a Histogram</a> </li>
+      <li class="part-chapter-item"><a href="#s-06-44"><strong>06.44</strong> Cross-Book Bridges</a> </li>
+      <li class="part-chapter-item"><a href="#s-06-45"><strong>06.45</strong> Quick Recall</a> </li>
+      <li class="part-chapter-item"><a href="#s-06-46"><strong>06.46</strong> Chapter Checkpoint</a> </li>
+      <li class="part-chapter-item"><a href="#s-06-47"><strong>06.47</strong> Part II Opening Map</a> </li>
+      <li class="part-chapter-item"><a href="#s-06-48"><strong>06.48</strong> Worked Numerical Problem: Piecewise Linear Contrast Stretching</a> </li>
+      <li class="part-chapter-item"><a href="#s-06-49"><strong>06.49</strong> Bit-Plane Slicing Architecture &amp; Steganography Lab Blueprint</a> </li>
+        </ul>
+      </div>
+
+      <div class="concept-hook" style="margin-bottom:var(--em-space-8);"><h1>Chapter 06 — Point Processing and Intensity Transformations</h1>
+<blockquote>
+<p><strong>Chapter thesis</strong><br />
+The simplest image-enhancement operation changes each pixel according to a transformation that depends only on that pixel's current value. By choosing the transformation carefully, we can brighten, darken, invert, expand contrast, compress dynamic range or emphasize selected intensity intervals.</p>
+</blockquote>
+<p><strong>Part II — Improving the Image</strong><br />
+<strong>Syllabus anchor:</strong> Unit II includes spatial-domain enhancement and the associated enhancement operations developed through filtering and histogram methods. fileciteturn4file0L36-L40</p>
+<hr /></div>
+
+      <!-- All Numbered Sections -->
+      
+  <!-- SECTION 06.1: Why Start with Point Processing? -->
+  <section id="s-06-1" class="section-block">
+    <div class="section-header">
+      <span class="section-num">06.1</span>
+      <h2>Why Start with Point Processing?</h2>
+      <button class="bookmark-btn" data-id="s-06-1" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Before filtering neighbourhoods, Fourier transforms or segmentation, we should master the simplest possible image transformation.</p>
+<p>For every pixel:</p>
+<p>
+$$
+r\rightarrow s
+$$
+</p>
+<p>where:</p>
+<ul>
+<li>$r$ = input intensity,</li>
+<li>$s$ = output intensity.</li>
+</ul>
+<p>More formally:</p>
+<p>
+$$
+s=T(r)
+$$
+</p>
+<p>The output of one pixel depends only on its own input value.</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>INPUT PIXEL
+     │
+     ▼
+ TRANSFORM T
+     │
+     ▼
+OUTPUT PIXEL</code></pre>
+</div></p>
+<p>There is no neighbourhood yet.</p>
+<p>That is what makes point processing such a powerful foundation.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 06.2: Point Processing vs Neighbourhood Processing -->
+  <section id="s-06-2" class="section-block">
+    <div class="section-header">
+      <span class="section-num">06.2</span>
+      <h2>Point Processing vs Neighbourhood Processing</h2>
+      <button class="bookmark-btn" data-id="s-06-2" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Point processing</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>output at (x,y)
+depends on
+input at (x,y)</code></pre>
+</div></p>
+<p>Mathematically:</p>
+<p>
+$$
+g(x,y)=T(f(x,y))
+$$
+</p>
+<h3>Neighbourhood processing</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>output at (x,y)
+depends on
+a local set of neighbouring pixels</code></pre>
+</div></p>
+<p>For example:</p>
+<p>
+$$
+g(x,y)=
+\sum_{s,t}
+w(s,t)f(x-s,y-t)
+$$
+</p>
+<p>The second category leads to convolution and spatial filtering in Chapter 08.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 06.3: The Intensity Transformation Function -->
+  <section id="s-06-3" class="section-block">
+    <div class="section-header">
+      <span class="section-num">06.3</span>
+      <h2>The Intensity Transformation Function</h2>
+      <button class="bookmark-btn" data-id="s-06-3" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The function:</p>
+<p>
+$$
+s=T(r)
+$$
+</p>
+<p>maps input intensity values to output intensity values.</p>
+<p>An intensity-transform curve is therefore a compact way of describing an image operation.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>output s
+  ↑
+  │         /
+  │       /
+  │     /
+  │   /
+  │ /
+  └────────────→ input r</code></pre>
+</div></p>
+<p>Different curves create different visual effects.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 06.4: What Is Enhancement? -->
+  <section id="s-06-4" class="section-block">
+    <div class="section-header">
+      <span class="section-num">06.4</span>
+      <h2>What Is Enhancement?</h2>
+      <button class="bookmark-btn" data-id="s-06-4" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Image enhancement modifies an image so that selected features become more useful for:</p>
+<ul>
+<li>human viewing,</li>
+<li>measurement,</li>
+<li>subsequent processing,</li>
+<li>segmentation,</li>
+<li>feature extraction.</li>
+</ul>
+<p>Enhancement is task-dependent.</p>
+<p>An operation that improves one property may damage another.</p>
+<p>For example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>strong sharpening
+→ clearer edges
+→ also stronger noise</code></pre>
+</div></p>
+<p>Therefore enhancement is an engineering tradeoff, not an objective universal “quality increase.”</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 06.5: Identity Transformation -->
+  <section id="s-06-5" class="section-block">
+    <div class="section-header">
+      <span class="section-num">06.5</span>
+      <h2>Identity Transformation</h2>
+      <button class="bookmark-btn" data-id="s-06-5" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The simplest transformation is:</p>
+<p>
+$$
+s=r
+$$
+</p>
+<p>Every input intensity stays unchanged.</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>input
+  ↓
+identity
+  ↓
+same image</code></pre>
+</div></p>
+<p>This is useful as a baseline.</p>
+<p>Whenever implementing an enhancement method, it is helpful to compare the result against the identity case.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 06.6: Negative Transformation -->
+  <section id="s-06-6" class="section-block">
+    <div class="section-header">
+      <span class="section-num">06.6</span>
+      <h2>Negative Transformation</h2>
+      <button class="bookmark-btn" data-id="s-06-6" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For an image with:</p>
+<p>
+$$
+L
+$$
+</p>
+<p>possible intensity levels, the standard image-negative transformation is:</p>
+<p>
+$$
+s=(L-1)-r
+$$
+</p>
+<p>For an 8-bit image:</p>
+<p>
+$$
+L=256
+$$
+</p>
+<p>so:</p>
+<p>
+$$
+s=255-r
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 06.7: Worked Example — Image Negative -->
+  <section id="s-06-7" class="section-block">
+    <div class="section-header">
+      <span class="section-num">06.7</span>
+      <h2>Worked Example — Image Negative</h2>
+      <button class="bookmark-btn" data-id="s-06-7" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p>
+$$
+r=80
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+s=255-80
+$$
+</p>
+<p>
+$$
+\boxed{s=175}
+$$
+</p>
+<p>For several pixels:</p>
+<div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th style="text-align: right;">Input $r$</th>
+<th style="text-align: right;">Output $s=255-r$</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">255</td>
+</tr>
+<tr>
+<td style="text-align: right;">50</td>
+<td style="text-align: right;">205</td>
+</tr>
+<tr>
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">155</td>
+</tr>
+<tr>
+<td style="text-align: right;">150</td>
+<td style="text-align: right;">105</td>
+</tr>
+<tr>
+<td style="text-align: right;">200</td>
+<td style="text-align: right;">55</td>
+</tr>
+<tr>
+<td style="text-align: right;">255</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table></div>
+<p>Dark values become bright and bright values become dark.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 06.8: Why Use an Image Negative? -->
+  <section id="s-06-8" class="section-block">
+    <div class="section-header">
+      <span class="section-num">06.8</span>
+      <h2>Why Use an Image Negative?</h2>
+      <button class="bookmark-btn" data-id="s-06-8" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Negative transformation can be useful when details of interest are more visible in the inverted intensity relationship.</p>
+<p>A classic conceptual application is displaying structures whose visual interpretation benefits from reversing bright/dark relationships.</p>
+<p>The important idea is not:</p>
+<blockquote>
+<p>“Negative is always better.”</p>
+</blockquote>
+<p>It is:</p>
+<blockquote>
+<p>“Negative changes the intensity ordering in a controlled way.”</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 06.9: Logarithmic Transformation -->
+  <section id="s-06-9" class="section-block">
+    <div class="section-header">
+      <span class="section-num">06.9</span>
+      <h2>Logarithmic Transformation</h2>
+      <button class="bookmark-btn" data-id="s-06-9" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A common form is:</p>
+<p>
+$$
+s=c\log(1+r)
+$$
+</p>
+<p>where $c$ controls scaling.</p>
+<p>The log function expands lower input values relative to higher values.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>small r
+→ relatively large output change
+
+large r
+→ compressed output change</code></pre>
+</div></p>
+<p>This is useful when the input dynamic range is very large and weaker components need greater visibility.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 06.10: Why the \(1+r\)? -->
+  <section id="s-06-10" class="section-block">
+    <div class="section-header">
+      <span class="section-num">06.10</span>
+      <h2>Why the \(1+r\)?</h2>
+      <button class="bookmark-btn" data-id="s-06-10" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>If:</p>
+<p>
+$$
+r=0
+$$
+</p>
+<p>then:</p>
+<p>
+$$
+\log(1+r)=\log(1)=0
+$$
+</p>
+<p>This avoids the mathematical problem of attempting:</p>
+<p>
+$$
+\log(0)
+$$
+</p>
+<p>at the zero-intensity point.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 06.11: Worked Log Example -->
+  <section id="s-06-11" class="section-block">
+    <div class="section-header">
+      <span class="section-num">06.11</span>
+      <h2>Worked Log Example</h2>
+      <button class="bookmark-btn" data-id="s-06-11" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p>
+$$
+r=9
+$$
+</p>
+<p>and:</p>
+<p>
+$$
+c=1
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+s=\log(1+9)=\log(10)
+$$
+</p>
+<p>Using natural logarithm:</p>
+<p>
+$$
+s\approx2.303
+$$
+</p>
+<p>The numerical value is not yet in an 8-bit display range.</p>
+<p>Therefore a practical pipeline often requires normalization/scaling before storing or displaying the result.</p>
+<blockquote>
+<p><strong>Engineering trap:</strong> A mathematically valid transformation is not automatically a valid 8-bit image without range handling.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 06.12: Inverse Log / Exponential-Like Transform -->
+  <section id="s-06-12" class="section-block">
+    <div class="section-header">
+      <span class="section-num">06.12</span>
+      <h2>Inverse Log / Exponential-Like Transform</h2>
+      <button class="bookmark-btn" data-id="s-06-12" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>An exponential-type transformation has the opposite qualitative behaviour:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>small input region
+→ compressed
+
+large input region
+→ expanded</code></pre>
+</div></p>
+<p>The exact formula depends on the chosen transformation and parameterization.</p>
+<p>The important conceptual comparison is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>log transform
+→ expands low range, compresses high range
+
+inverse/exponential-type transform
+→ can emphasize higher intensities</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 06.13: Power-Law (Gamma) Transformation -->
+  <section id="s-06-13" class="section-block">
+    <div class="section-header">
+      <span class="section-num">06.13</span>
+      <h2>Power-Law (Gamma) Transformation</h2>
+      <button class="bookmark-btn" data-id="s-06-13" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A widely used family is:</p>
+<p>
+$$
+s=cr^\gamma
+$$
+</p>
+<p>where:</p>
+<ul>
+<li>$c$ = scaling constant,</li>
+<li>$\gamma$ = exponent.</li>
+</ul>
+<p>This is also called a gamma or power-law transformation in many DIP contexts.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 06.14: Shape of the Power-Law Transform -->
+  <section id="s-06-14" class="section-block">
+    <div class="section-header">
+      <span class="section-num">06.14</span>
+      <h2>Shape of the Power-Law Transform</h2>
+      <button class="bookmark-btn" data-id="s-06-14" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For normalized:</p>
+<p>
+$$
+r\in[0,1]
+$$
+</p>
+<p>and $c=1$:</p>
+<h3>If $0<\gamma<1$</h3>
+<p>The curve lies above the identity line:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>s
+↑
+│       ╭────
+│     ╭─
+│   ╭─
+│ ╭─
+└────────────→ r</code></pre>
+</div></p>
+<p>Low and mid intensities are expanded.</p>
+<h3>If $\gamma>1$</h3>
+<p>The curve lies below the identity line:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>s
+↑
+│        ───╮
+│           ╰╮
+│            ╰╮
+│              ╰
+└────────────→ r</code></pre>
+</div></p>
+<p>Low and mid intensities are compressed.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 06.15: Worked Gamma Example -->
+  <section id="s-06-15" class="section-block">
+    <div class="section-header">
+      <span class="section-num">06.15</span>
+      <h2>Worked Gamma Example</h2>
+      <button class="bookmark-btn" data-id="s-06-15" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Let:</p>
+<p>
+$$
+r=0.25
+$$
+</p>
+<p>and:</p>
+<p>
+$$
+\gamma=0.5
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+s=(0.25)^{0.5}
+$$
+</p>
+<p>
+$$
+s=0.5
+$$
+</p>
+<p>So a normalized input of 0.25 becomes 0.5.</p>
+<p>That is an example of low-range expansion.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 06.16: Scaling a Normalized Result to 8-bit -->
+  <section id="s-06-16" class="section-block">
+    <div class="section-header">
+      <span class="section-num">06.16</span>
+      <h2>Scaling a Normalized Result to 8-bit</h2>
+      <button class="bookmark-btn" data-id="s-06-16" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p>
+$$
+s=0.5
+$$
+</p>
+<p>and we want an 8-bit display value:</p>
+<p>
+$$
+s_{8}=255s
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+s_8=127.5
+$$
+</p>
+<p>Depending on the conversion convention, this may be rounded to:</p>
+<p>
+$$
+128
+$$
+</p>
+<p>This illustrates why numerical pipelines must specify:</p>
+<ul>
+<li>normalization range,</li>
+<li>output datatype,</li>
+<li>rounding,</li>
+<li>clipping.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 06.17: Contrast Stretching -->
+  <section id="s-06-17" class="section-block">
+    <div class="section-header">
+      <span class="section-num">06.17</span>
+      <h2>Contrast Stretching</h2>
+      <button class="bookmark-btn" data-id="s-06-17" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose the useful input range is:</p>
+<p>
+$$
+[r_{\min},r_{\max}]
+$$
+</p>
+<p>and we want to map it to:</p>
+<p>
+$$
+[s_{\min},s_{\max}]
+$$
+</p>
+<p>A linear contrast-stretching transformation is:</p>
+<p>
+$$
+s
+=
+s_{\min}
++
+\frac{(r-r_{\min})(s_{\max}-s_{\min})}
+{r_{\max}-r_{\min}}
+$$
+</p>
+<p>for:</p>
+<p>
+$$
+r_{\max}\ne r_{\min}
+$$
+</p>
+<p>This expands a narrow intensity range into a wider output range.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 06.18: Worked Contrast-Stretch Example -->
+  <section id="s-06-18" class="section-block">
+    <div class="section-header">
+      <span class="section-num">06.18</span>
+      <h2>Worked Contrast-Stretch Example</h2>
+      <button class="bookmark-btn" data-id="s-06-18" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose an image effectively uses only:</p>
+<p>
+$$
+r_{\min}=50
+$$
+</p>
+<p>to:</p>
+<p>
+$$
+r_{\max}=180
+$$
+</p>
+<p>and we want:</p>
+<p>
+$$
+s_{\min}=0,\qquad s_{\max}=255
+$$
+</p>
+<p>For:</p>
+<p>
+$$
+r=100
+$$
+</p>
+<p>we get:</p>
+<p>
+$$
+s=
+\frac{(100-50)(255)}
+{180-50}
+$$
+</p>
+<p>
+$$
+=
+\frac{50\times255}{130}
+$$
+</p>
+<p>
+$$
+\approx98.08
+$$
+</p>
+<p>After integer conversion, this is approximately:</p>
+<p>
+$$
+\boxed{98}
+$$
+</p>
+<p>The same input value becomes more separated from the dark end of the output range than in the original narrow range.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 06.19: Why Contrast Stretching Helps -->
+  <section id="s-06-19" class="section-block">
+    <div class="section-header">
+      <span class="section-num">06.19</span>
+      <h2>Why Contrast Stretching Helps</h2>
+      <button class="bookmark-btn" data-id="s-06-19" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose a dark image occupies only:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>50 ........................ 100</code></pre>
+</div></p>
+<p>of a possible 0–255 display range.</p>
+<p>The output may look compressed:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>████████████████████</code></pre>
+</div></p>
+<p>After stretching:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>0 ......................... 255</code></pre>
+</div></p>
+<p>differences can become more visible.</p>
+<p>This is especially useful when the recorded image has a narrow effective intensity distribution.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 06.20: Piecewise-Linear Transformation -->
+  <section id="s-06-20" class="section-block">
+    <div class="section-header">
+      <span class="section-num">06.20</span>
+      <h2>Piecewise-Linear Transformation</h2>
+      <button class="bookmark-btn" data-id="s-06-20" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Not every enhancement should use one straight line.</p>
+<p>A piecewise transformation can define different behaviour in different intensity ranges:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>output
+  ↑
+  │             /
+  │           /
+  │     _____/
+  │   /
+  │__/
+  └──────────────→ input</code></pre>
+</div></p>
+<p>This allows us to:</p>
+<ul>
+<li>suppress one range,</li>
+<li>expand another,</li>
+<li>preserve selected intensities.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 06.21: Example — Highlighting a Target Range -->
+  <section id="s-06-21" class="section-block">
+    <div class="section-header">
+      <span class="section-num">06.21</span>
+      <h2>Example — Highlighting a Target Range</h2>
+      <button class="bookmark-btn" data-id="s-06-21" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose the useful feature occurs in:</p>
+<p>
+$$
+[100,150]
+$$
+</p>
+<p>A piecewise mapping could:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>0–99
+→ keep dark
+
+100–150
+→ expand strongly
+
+151–255
+→ compress</code></pre>
+</div></p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>input range
+────────┬────────────┬────────
+        100         150
+         ↑ target ↑</code></pre>
+</div></p>
+<p>This is useful for selective enhancement.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 06.22: Thresholding as an Extreme Point Transform -->
+  <section id="s-06-22" class="section-block">
+    <div class="section-header">
+      <span class="section-num">06.22</span>
+      <h2>Thresholding as an Extreme Point Transform</h2>
+      <button class="bookmark-btn" data-id="s-06-22" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A binary threshold can be written:</p>
+<p>
+$$
+s=
+\begin{cases}
+0,&r<T\\
+255,&r\ge T
+\end{cases}
+$$
+</p>
+<p>for a conventional binary 8-bit output.</p>
+<p>This is technically a point transformation because the output depends only on the individual pixel value.</p>
+<p>However, in this MiniBook it is treated fully in the segmentation section because the <strong>goal and interpretation</strong> are different.</p>
+<p>That distinction prevents overlap:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>C06
+→ transformation mechanics
+
+C16
+→ segmentation meaning and threshold selection</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 06.23: Clipping -->
+  <section id="s-06-23" class="section-block">
+    <div class="section-header">
+      <span class="section-num">06.23</span>
+      <h2>Clipping</h2>
+      <button class="bookmark-btn" data-id="s-06-23" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose transformed values fall outside the valid output range.</p>
+<p>For an 8-bit unsigned image:</p>
+<p>
+$$
+0\le s\le255
+$$
+</p>
+<p>A simple clipping operation is:</p>
+<p>
+$$
+s_{\text{clip}}=
+\min(255,\max(0,s))
+$$
+</p>
+<h3>Example</h3>
+<p>If:</p>
+<p>
+$$
+s=-10
+$$
+</p>
+<p>then:</p>
+<p>
+$$
+s_{\text{clip}}=0
+$$
+</p>
+<p>If:</p>
+<p>
+$$
+s=280
+$$
+</p>
+<p>then:</p>
+<p>
+$$
+s_{\text{clip}}=255
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 06.24: Clipping Is Not the Same as Rescaling -->
+  <section id="s-06-24" class="section-block">
+    <div class="section-header">
+      <span class="section-num">06.24</span>
+      <h2>Clipping Is Not the Same as Rescaling</h2>
+      <button class="bookmark-btn" data-id="s-06-24" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>values = [-20, 50, 300]</code></pre>
+</div></p>
+<h3>Clipping</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>[-20, 50, 300]
+      ↓
+[0, 50, 255]</code></pre>
+</div></p>
+<h3>Rescaling</h3>
+<p>The values are mapped relatively into a chosen output interval.</p>
+<p>These operations have different effects.</p>
+<blockquote>
+<p><strong>Engineering trap:</strong> Blind clipping can destroy relative information outside the valid range.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 06.25: Point Processing as a Lookup Table -->
+  <section id="s-06-25" class="section-block">
+    <div class="section-header">
+      <span class="section-num">06.25</span>
+      <h2>Point Processing as a Lookup Table</h2>
+      <button class="bookmark-btn" data-id="s-06-25" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For discrete intensity values, a transformation can be implemented as a lookup table.</p>
+<p>For an 8-bit image:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>input:
+0 ... 255
+
+LUT:
+T(0) ... T(255)</code></pre>
+</div></p>
+<p>Then every pixel is replaced using:</p>
+<p>
+$$
+s=T(r)
+$$
+</p>
+<p>This is computationally efficient.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>pixel value
+    ↓
+lookup index
+    ↓
+transformed value</code></pre>
+</div></p>
+<p>This technique is useful for real-time and repeated transformations.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 06.26: Matrix Example — Point Transformation -->
+  <section id="s-06-26" class="section-block">
+    <div class="section-header">
+      <span class="section-num">06.26</span>
+      <h2>Matrix Example — Point Transformation</h2>
+      <button class="bookmark-btn" data-id="s-06-26" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Consider:</p>
+<p>
+$$
+I=
+\begin{bmatrix}
+10&20&30\\
+40&50&60\\
+70&80&90
+\end{bmatrix}
+$$
+</p>
+<p>Apply:</p>
+<p>
+$$
+s=100-r
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+O=
+\begin{bmatrix}
+90&80&70\\
+60&50&40\\
+30&20&10
+\end{bmatrix}
+$$
+</p>
+<p>Notice:</p>
+<blockquote>
+<p>each output pixel was computed independently.</p>
+</blockquote>
+<p>No neighbourhood was needed.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 06.27: Matrix Example — Threshold -->
+  <section id="s-06-27" class="section-block">
+    <div class="section-header">
+      <span class="section-num">06.27</span>
+      <h2>Matrix Example — Threshold</h2>
+      <button class="bookmark-btn" data-id="s-06-27" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For:</p>
+<p>
+$$
+T=50
+$$
+</p>
+<p>using:</p>
+<p>
+$$
+s=
+\begin{cases}
+0,&r<50\\
+255,&r\ge50
+\end{cases}
+$$
+</p>
+<p>the same matrix becomes:</p>
+<p>
+$$
+O=
+\begin{bmatrix}
+0&0&0\\
+0&255&255\\
+255&255&255
+\end{bmatrix}
+$$
+</p>
+<p>The spatial pattern remains, but the intensity representation has been drastically simplified.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 06.28: Point Processing and Histograms -->
+  <section id="s-06-28" class="section-block">
+    <div class="section-header">
+      <span class="section-num">06.28</span>
+      <h2>Point Processing and Histograms</h2>
+      <button class="bookmark-btn" data-id="s-06-28" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Point transformations change the intensity values and therefore change the image histogram.</p>
+<p>For example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>contrast stretching
+→ spreads histogram
+
+negative
+→ reverses intensity ordering
+
+threshold
+→ collapses values into a few levels</code></pre>
+</div></p>
+<p>This is why histogram analysis is the natural next chapter.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 06.29: Enhancement Function Selection -->
+  <section id="s-06-29" class="section-block">
+    <div class="section-header">
+      <span class="section-num">06.29</span>
+      <h2>Enhancement Function Selection</h2>
+      <button class="bookmark-btn" data-id="s-06-29" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A useful decision table:</p>
+<div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Problem</th>
+<th>Candidate transformation</th>
+<th>Main effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>image too dark</td>
+<td>gamma with $\gamma<1$, suitable scaling</td>
+<td>expand lower intensities</td>
+</tr>
+<tr>
+<td>image too bright</td>
+<td>gamma with $\gamma>1$, suitable scaling</td>
+<td>suppress lower/mid intensities</td>
+</tr>
+<tr>
+<td>narrow intensity range</td>
+<td>contrast stretch</td>
+<td>expand useful range</td>
+</tr>
+<tr>
+<td>need inversion</td>
+<td>negative</td>
+<td>reverse intensity ordering</td>
+</tr>
+<tr>
+<td>very wide dynamic range</td>
+<td>log-type transform</td>
+<td>compress high values, expand low values</td>
+</tr>
+<tr>
+<td>isolate intensity class</td>
+<td>threshold / piecewise mapping</td>
+<td>separate target range</td>
+</tr>
+</tbody>
+</table></div>
+<p>These are starting points, not automatic prescriptions.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 06.30: Worked Comparison -->
+  <section id="s-06-30" class="section-block">
+    <div class="section-header">
+      <span class="section-num">06.30</span>
+      <h2>Worked Comparison</h2>
+      <button class="bookmark-btn" data-id="s-06-30" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose two pixels have:</p>
+<p>
+$$
+r_1=50,\qquad r_2=100
+$$
+</p>
+<p>Under a negative transformation:</p>
+<p>
+$$
+s_1=255-50=205
+$$
+</p>
+<p>
+$$
+s_2=255-100=155
+$$
+</p>
+<p>Under contrast stretching, their outputs depend on the image's global $r_{\min},r_{\max}$.</p>
+<p>Under a gamma transformation, their outputs depend on:</p>
+<p>
+$$
+c,\gamma
+$$
+</p>
+<p>Therefore an enhancement cannot be selected from the pixel value alone.</p>
+<p>The function and its parameters define the behaviour.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 06.31: Colour Images and Point Processing -->
+  <section id="s-06-31" class="section-block">
+    <div class="section-header">
+      <span class="section-num">06.31</span>
+      <h2>Colour Images and Point Processing</h2>
+      <button class="bookmark-btn" data-id="s-06-31" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A point transformation can be applied:</p>
+<h3>Per channel</h3>
+<p>
+$$
+R'=T(R),\quad
+G'=T(G),\quad
+B'=T(B)
+$$
+</p>
+<p>But this can alter colour relationships.</p>
+<p>For example, applying a strong nonlinear function independently to each RGB channel can change saturation and hue.</p>
+<h3>On a luminance/luma-like component</h3>
+<p>An alternative is to transform a brightness-related component while preserving chromatic information more directly.</p>
+<p>This depends on the colour representation and application.</p>
+<blockquote>
+<p><strong>Engineering Insight:</strong> Point processing on RGB is not automatically colour-safe.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 06.32: Example — Why Independent RGB Enhancement Can Change Colour -->
+  <section id="s-06-32" class="section-block">
+    <div class="section-header">
+      <span class="section-num">06.32</span>
+      <h2>Example — Why Independent RGB Enhancement Can Change Colour</h2>
+      <button class="bookmark-btn" data-id="s-06-32" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p>
+$$
+(R,G,B)=(100,100,200)
+$$
+</p>
+<p>The blue component is stronger than red and green.</p>
+<p>Now imagine applying different channel transforms:</p>
+<p>
+$$
+R'=0.8R
+$$
+</p>
+<p>
+$$
+G'=1.2G
+$$
+</p>
+<p>
+$$
+B'=0.9B
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+(R',G',B')=(80,120,180)
+$$
+</p>
+<p>The relative channel balance changed.</p>
+<p>Therefore the perceived colour can change even though the operation was intended as “brightness enhancement.”</p>
+<p>This is one reason colour processing often requires deliberate colour-space selection.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 06.33: Dynamic Range Compression vs Contrast Enhancement -->
+  <section id="s-06-33" class="section-block">
+    <div class="section-header">
+      <span class="section-num">06.33</span>
+      <h2>Dynamic Range Compression vs Contrast Enhancement</h2>
+      <button class="bookmark-btn" data-id="s-06-33" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>These ideas can appear contradictory.</p>
+<h3>Contrast enhancement</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>spread selected intensity differences
+→ make differences more visible</code></pre>
+</div></p>
+<h3>Dynamic-range compression</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>fit very large values into a smaller range
+→ prevent extreme values from dominating</code></pre>
+</div></p>
+<p>A logarithmic transform can compress a huge range while simultaneously making weaker signals more visible.</p>
+<p>Thus:</p>
+<blockquote>
+<p>“Enhancement” is about task usefulness, not simply increasing every numerical difference.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 06.34: Noise Interaction -->
+  <section id="s-06-34" class="section-block">
+    <div class="section-header">
+      <span class="section-num">06.34</span>
+      <h2>Noise Interaction</h2>
+      <button class="bookmark-btn" data-id="s-06-34" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Point transformations also modify noise.</p>
+<p>Suppose:</p>
+<p>
+$$
+g=f+\eta
+$$
+</p>
+<p>and we apply:</p>
+<p>
+$$
+s=T(g)
+$$
+</p>
+<p>For nonlinear $T$, the noise is generally transformed nonlinearly as well.</p>
+<p>Therefore:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>enhancement
+→ can make desired details clearer
+→ can also make noise more visible</code></pre>
+</div></p>
+<p>This motivates more careful smoothing/restoration methods later.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 06.35: Quantization Interaction -->
+  <section id="s-06-35" class="section-block">
+    <div class="section-header">
+      <span class="section-num">06.35</span>
+      <h2>Quantization Interaction</h2>
+      <button class="bookmark-btn" data-id="s-06-35" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Remember C03.</p>
+<p>A transformation may produce floating-point values that are then mapped back to finite levels.</p>
+<p>For example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>float result
+   ↓
+normalize
+   ↓
+clip
+   ↓
+round
+   ↓
+uint8</code></pre>
+</div></p>
+<p>Each step can introduce additional numerical effects.</p>
+<p>A correct algorithm therefore specifies the entire value pipeline.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 06.36: Implementation Pattern -->
+  <section id="s-06-36" class="section-block">
+    <div class="section-header">
+      <span class="section-num">06.36</span>
+      <h2>Implementation Pattern</h2>
+      <button class="bookmark-btn" data-id="s-06-36" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A robust point-processing implementation conceptually looks like:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>load image
+     ↓
+inspect datatype/range
+     ↓
+convert to a safe working representation
+     ↓
+apply T(r)
+     ↓
+handle range
+     ↓
+clip/normalize as required
+     ↓
+convert to destination datatype
+     ↓
+visualize and evaluate</code></pre>
+</div></p>
+<p>Never assume the library will make the scientifically intended choice automatically.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 06.37: Pseudocode -->
+  <section id="s-06-37" class="section-block">
+    <div class="section-header">
+      <span class="section-num">06.37</span>
+      <h2>Pseudocode</h2>
+      <button class="bookmark-btn" data-id="s-06-37" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>INPUT image I
+
+inspect:
+    shape
+    channels
+    datatype
+    min/max
+
+convert to working representation
+
+for each pixel value r:
+    s = T(r)
+
+apply intended range handling
+
+convert to output representation
+
+return output</code></pre>
+</div></p>
+<p>For a lookup-table implementation:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>construct LUT[k] = T(k)
+
+for each pixel r:
+    output = LUT[r]</code></pre>
+</div></p>
+<p>when the source domain is a suitable discrete integer range.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 06.38: Engineering Example — Improving a Dark Image -->
+  <section id="s-06-38" class="section-block">
+    <div class="section-header">
+      <span class="section-num">06.38</span>
+      <h2>Engineering Example — Improving a Dark Image</h2>
+      <button class="bookmark-btn" data-id="s-06-38" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose an image has values concentrated around:</p>
+<p>
+$$
+20\le r\le90
+$$
+</p>
+<p>Possible first choices:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>contrast stretching
+or
+gamma &lt; 1</code></pre>
+</div></p>
+<p>A good workflow is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>inspect histogram
+       ↓
+identify useful range
+       ↓
+choose transformation
+       ↓
+apply
+       ↓
+compare before/after
+       ↓
+check noise and clipping</code></pre>
+</div></p>
+<p>Do not apply a transformation only because it is famous.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 06.39: Evaluation: How Do We Know It Helped? -->
+  <section id="s-06-39" class="section-block">
+    <div class="section-header">
+      <span class="section-num">06.39</span>
+      <h2>Evaluation: How Do We Know It Helped?</h2>
+      <button class="bookmark-btn" data-id="s-06-39" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Possible checks:</p>
+<h3>Visual</h3>
+<ul>
+<li>Is the target structure more visible?</li>
+<li>Did colours change unexpectedly?</li>
+<li>Was noise amplified?</li>
+</ul>
+<h3>Numerical</h3>
+<ul>
+<li>Did dynamic range increase?</li>
+<li>Did saturation/clipping increase?</li>
+<li>How did the histogram change?</li>
+</ul>
+<h3>Downstream</h3>
+<ul>
+<li>Did segmentation improve?</li>
+<li>Did feature extraction improve?</li>
+<li>Did a classifier perform better?</li>
+</ul>
+<p>The correct evaluation depends on the task.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 06.40: Common Traps -->
+  <section id="s-06-40" class="section-block">
+    <div class="section-header">
+      <span class="section-num">06.40</span>
+      <h2>Common Traps</h2>
+      <button class="bookmark-btn" data-id="s-06-40" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h2>Trap 1 — “Enhancement always improves the image.”</h2>
+<p>False.</p>
+<p>Enhancement is task-dependent.</p>
+<h2>Trap 2 — “Log transformation simply brightens the image.”</h2>
+<p>Incomplete.</p>
+<p>It compresses high intensities and expands lower intensities relative to the input scale.</p>
+<h2>Trap 3 — “Gamma less than 1 always gives a brighter image.”</h2>
+<p>Only under a suitable normalized positive-domain formulation and output scaling.</p>
+<p>The exact implementation matters.</p>
+<h2>Trap 4 — “Contrast stretching cannot lose information.”</h2>
+<p>False.</p>
+<p>It can involve clipping or datatype conversion, and extreme values may be affected depending on implementation.</p>
+<h2>Trap 5 — “Point processing uses neighbouring pixels.”</h2>
+<p>False.</p>
+<p>By definition, each output depends only on the corresponding input value for a pure point transform.</p>
+<h2>Trap 6 — “Applying the same formula independently to RGB preserves colour.”</h2>
+<p>Not necessarily.</p>
+<p>Relative channel relationships can change.</p>
+<h2>Trap 7 — “Mathematically computed values can always be stored directly.”</h2>
+<p>False.</p>
+<p>The output datatype and range may require scaling, clipping or conversion.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 06.41: Exam Formula Sheet -->
+  <section id="s-06-41" class="section-block">
+    <div class="section-header">
+      <span class="section-num">06.41</span>
+      <h2>Exam Formula Sheet</h2>
+      <button class="bookmark-btn" data-id="s-06-41" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>General point transformation</h3>
+<p>
+$$
+\boxed{s=T(r)}
+$$
+</p>
+<h3>Negative</h3>
+<p>
+$$
+\boxed{s=(L-1)-r}
+$$
+</p>
+<h3>Log</h3>
+<p>
+$$
+\boxed{s=c\log(1+r)}
+$$
+</p>
+<h3>Power-law</h3>
+<p>
+$$
+\boxed{s=cr^\gamma}
+$$
+</p>
+<h3>Linear contrast stretch</h3>
+<p>
+$$
+\boxed{
+s=
+s_{\min}
++
+\frac{(r-r_{\min})(s_{\max}-s_{\min})}
+{r_{\max}-r_{\min}}
+}
+$$
+</p>
+<h3>8-bit clipping</h3>
+<p>
+$$
+\boxed{
+s_{\text{clip}}=\min(255,\max(0,s))
+}
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 06.42: Worked Exam-Style Problem -->
+  <section id="s-06-42" class="section-block">
+    <div class="section-header">
+      <span class="section-num">06.42</span>
+      <h2>Worked Exam-Style Problem</h2>
+      <button class="bookmark-btn" data-id="s-06-42" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Problem</h3>
+<p>An 8-bit grayscale image has useful intensity values between 40 and 160. Map this range linearly to 0–255. Find the output for input intensity 100.</p>
+<h3>Given</h3>
+<p>
+$$
+r_{\min}=40
+$$
+</p>
+<p>
+$$
+r_{\max}=160
+$$
+</p>
+<p>
+$$
+s_{\min}=0
+$$
+</p>
+<p>
+$$
+s_{\max}=255
+$$
+</p>
+<p>
+$$
+r=100
+$$
+</p>
+<h3>Formula</h3>
+<p>
+$$
+s=
+0+
+\frac{(100-40)(255)}
+{160-40}
+$$
+</p>
+<p>
+$$
+=
+\frac{60\times255}{120}
+$$
+</p>
+<p>
+$$
+=127.5
+$$
+</p>
+<p>After a specified integer conversion, approximately:</p>
+<p>
+$$
+\boxed{128}
+$$
+</p>
+<h3>Interpretation</h3>
+<p>The midpoint of the original useful range maps to the midpoint of the target range.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 06.43: Deep Concept — Transformations as Functions on a Histogram -->
+  <section id="s-06-43" class="section-block">
+    <div class="section-header">
+      <span class="section-num">06.43</span>
+      <h2>Deep Concept — Transformations as Functions on a Histogram</h2>
+      <button class="bookmark-btn" data-id="s-06-43" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A point transformation does not use spatial relationships.</p>
+<p>Therefore it can be studied partly through the intensity distribution.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>input histogram
+      ↓
+mapping T(r)
+      ↓
+output histogram</code></pre>
+</div></p>
+<p>This gives an important connection:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>C06
+point transformations
+
+        ↓
+
+C07
+histogram-based enhancement</code></pre>
+</div></p>
+<p>The next chapter therefore moves from:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>pixel-by-pixel mapping</code></pre>
+</div></p>
+<p>to:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>distribution-aware enhancement</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 06.44: Cross-Book Bridges -->
+  <section id="s-06-44" class="section-block">
+    <div class="section-header">
+      <span class="section-num">06.44</span>
+      <h2>Cross-Book Bridges</h2>
+      <button class="bookmark-btn" data-id="s-06-44" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <blockquote>
+<p><strong>C03 BRIDGE</strong><br />
+Quantization and datatype constraints determine how transformed values are stored.</p>
+<p><strong>C05 BRIDGE</strong><br />
+Colour-space choice determines whether the transformation acts directly on RGB channels or on another representation.</p>
+<p><strong>C07 BRIDGE</strong><br />
+Histograms provide a distribution-level view of intensity transformation.</p>
+<p><strong>C08 BRIDGE</strong><br />
+Spatial filters extend the idea from one-pixel functions to neighbourhood-dependent operations.</p>
+<p><strong>LAB BRIDGE</strong><br />
+Implement negative, log, gamma and contrast-stretch transformations and compare their histograms.</p>
+<p><strong>PRACTICE BRIDGE</strong><br />
+Solve transformation calculations and diagnose enhancement failures.</p>
+<p><strong>EXAM BRIDGE</strong><br />
+Memorize formulas, but also understand when each transformation is useful and what information it can distort.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 06.45: Quick Recall -->
+  <section id="s-06-45" class="section-block">
+    <div class="section-header">
+      <span class="section-num">06.45</span>
+      <h2>Quick Recall</h2>
+      <button class="bookmark-btn" data-id="s-06-45" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Point processing:
+g(x,y)=T(f(x,y))
+
+Negative:
+s=(L-1)-r
+
+Log:
+s=c log(1+r)
+
+Gamma:
+s=c r^γ
+
+Contrast stretch:
+map [rmin,rmax] → [smin,smax]</code></pre>
+</div></p>
+<p>Core questions:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>What does T(r) do?
+Why was it chosen?
+What happens to the histogram?
+What happens to noise?
+What happens to datatype/range?
+Does it actually improve the task?</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 06.46: Chapter Checkpoint -->
+  <section id="s-06-46" class="section-block">
+    <div class="section-header">
+      <span class="section-num">06.46</span>
+      <h2>Chapter Checkpoint</h2>
+      <button class="bookmark-btn" data-id="s-06-46" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <ol>
+<li>Define point processing.</li>
+<li>Write the general point-processing equation.</li>
+<li>Differentiate point processing from neighbourhood processing.</li>
+<li>Derive the negative transformation for an $L$-level image.</li>
+<li>Apply a log transform to a specified value.</li>
+<li>Explain the effect of $0<\gamma<1$ versus $\gamma>1$.</li>
+<li>Derive and apply a linear contrast-stretch formula.</li>
+<li>Why might clipping be necessary?</li>
+<li>Why is clipping different from rescaling?</li>
+<li>What is a lookup table and why is it useful?</li>
+<li>Why can independent RGB enhancement alter colour?</li>
+<li>Explain why an enhancement method should be evaluated against the downstream task.</li>
+</ol>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 06.47: Part II Opening Map -->
+  <section id="s-06-47" class="section-block">
+    <div class="section-header">
+      <span class="section-num">06.47</span>
+      <h2>Part II Opening Map</h2>
+      <button class="bookmark-btn" data-id="s-06-47" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>C06
+POINT PROCESSING
+      ↓
+C07
+HISTOGRAMS + CONTRAST
+      ↓
+C08
+SPATIAL FILTERING + CONVOLUTION
+      ↓
+C09
+SMOOTHING + NOISE REDUCTION
+      ↓
+C10
+SHARPENING + EDGE DETECTION
+      ↓
+C11
+GEOMETRIC TRANSFORMATIONS
+      ↓
+C12
+FOURIER TRANSFORM
+      ↓
+C13
+FREQUENCY-DOMAIN FILTERING
+      ↓
+C14
+RESTORATION + DEBLURRING</code></pre>
+</div></p>
+<p>The central progression is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>ONE PIXEL
+→
+NEIGHBOURHOOD
+→
+WHOLE IMAGE DISTRIBUTION
+→
+FREQUENCY CONTENT
+→
+DEGRADED-IMAGE MODEL</code></pre>
+</div></p>
+<p>That progression is one of the core intellectual structures of Digital Image Processing.</p>
+    </div>
+  </section>
+
+  <!-- SECTION 06.48: Worked Numerical Problem: Piecewise Linear Contrast Stretching -->
+  <section id="s-06-48" class="section-block">
+    <div class="section-header">
+      <span class="section-num">06.48</span>
+      <h2>Worked Numerical Problem: Piecewise Linear Contrast Stretching</h2>
+      <button class="bookmark-btn" data-id="s-06-48" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Problem Statement</h3>
+<p>An 8-bit grayscale image of size $4 \times 4$ exhibits low contrast with pixel intensities concentrated in the range $[r_{\min}, r_{\max}] = [60, 140]$.
+1. Design a piecewise linear contrast stretching transformation function $s = T(r)$ that maps the range $[60, 140]$ linearly to full dynamic range $[0, 255]$ while clipping intensities below 60 to 0 and above 140 to 255.
+2. Formulate the mathematical piecewise equation with explicit slopes $\alpha, \beta, \gamma$.
+3. Compute the output intensities for the input matrix:
+
+$$A = \begin{bmatrix} 50 & 70 & 80 & 60 \\ 100 & 140 & 130 & 90 \\ 110 & 150 & 65 & 120 \\ 75 & 85 & 135 & 105 \end{bmatrix}$$
+</p>
+<h3>Step-by-Step Solution</h3>
+<div class="worked-example">
+  <div class="worked-example-header">
+    <span class="worked-example-title">Numerical Examination Trace</span>
+    <span class="tag-badge tag-exam">10-MARK UNIVERSITY MODEL ANSWER</span>
+  </div>
+  <p><strong>1. Threshold Parameters:</strong><br>
+  Let $(r_1, s_1) = (60, 0)$ and $(r_2, s_2) = (140, 255)$.</p>
+
+  <p><strong>2. Piecewise Linear Function Formulation:</strong><br>
+  
+$$s = T(r) = \begin{cases}
+  \alpha \cdot r = 0 & 0 \le r < 60 \\
+  s_1 + \beta (r - r_1) = 0 + \frac{255 - 0}{140 - 60} (r - 60) = 3.1875 (r - 60) & 60 \le r \le 140 \\
+  s_2 + \gamma (r - r_2) = 255 & 140 < r \le 255
+  \end{cases}$$
+
+  Here, slope in the active region is $\beta = \frac{255}{80} = 3.1875 > 1$, which stretches contrast dynamically.</p>
+
+  <p><strong>3. Matrix Output Calculation:</strong><br>
+  - $r = 50 < 60 \implies s = 0$<br>
+  - $r = 60 \implies s = 3.1875(60 - 60) = 0$<br>
+  - $r = 65 \implies s = \text{round}(3.1875 \times 5) = \text{round}(15.94) = 16$<br>
+  - $r = 70 \implies s = \text{round}(3.1875 \times 10) = 32$<br>
+  - $r = 75 \implies s = \text{round}(3.1875 \times 15) = 48$<br>
+  - $r = 80 \implies s = \text{round}(3.1875 \times 20) = 64$<br>
+  - $r = 85 \implies s = \text{round}(3.1875 \times 25) = 80$<br>
+  - $r = 90 \implies s = \text{round}(3.1875 \times 30) = 96$<br>
+  - $r = 100 \implies s = \text{round}(3.1875 \times 40) = 128$<br>
+  - $r = 105 \implies s = \text{round}(3.1875 \times 45) = 143$<br>
+  - $r = 110 \implies s = \text{round}(3.1875 \times 50) = 159$<br>
+  - $r = 120 \implies s = \text{round}(3.1875 \times 60) = 191$<br>
+  - $r = 130 \implies s = \text{round}(3.1875 \times 70) = 223$<br>
+  - $r = 135 \implies s = \text{round}(3.1875 \times 75) = 239$<br>
+  - $r = 140 \implies s = 3.1875(80) = 255$<br>
+  - $r = 150 > 140 \implies s = 255$</p>
+
+  <p><strong>Resulting Contrast-Stretched Matrix:</strong>
+  
+$$A_{out} = \begin{bmatrix} 0 & 32 & 64 & 0 \\ 128 & 255 & 223 & 96 \\ 159 & 255 & 16 & 191 \\ 48 & 80 & 239 & 143 \end{bmatrix}$$
+
+  Notice that subtle variations within $[60, 140]$ now span the full range $0$ to $255$, dramatically enhancing perceptual readability.</p>
+</div>
+    </div>
+  </section>
+
+  <!-- SECTION 06.49: Bit-Plane Slicing Architecture &amp; Steganography Lab Blueprint -->
+  <section id="s-06-49" class="section-block">
+    <div class="section-header">
+      <span class="section-num">06.49</span>
+      <h2>Bit-Plane Slicing Architecture &amp; Steganography Lab Blueprint</h2>
+      <button class="bookmark-btn" data-id="s-06-49" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Mathematical Formulation of Bit Planes</h3>
+<p>Every 8-bit grayscale pixel $f(x,y) \in [0, 255]$ can be uniquely expanded as an 8-term binary polynomial:
+
+$$f(x,y) = a_7(x,y) 2^7 + a_6(x,y) 2^6 + a_5(x,y) 2^5 + a_4(x,y) 2^4 + a_3(x,y) 2^3 + a_2(x,y) 2^2 + a_1(x,y) 2^1 + a_0(x,y) 2^0$$
+
+where $a_k(x,y) \in \{0, 1\}$ represents the $k$-th bit-plane binary slice:
+
+$$a_k(x,y) = \left\lfloor \frac{f(x,y)}{2^k} \right\rfloor \bmod 2$$
+</p>
+<div class="table-wrap">
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th>Bit Plane</th>
+        <th>Bit Weight ($2^k$)</th>
+        <th>Visual Energy Contribution</th>
+        <th>Structural Significance</th>
+        <th>Application & Engineering Role</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Plane 7 (MSB)</strong></td>
+        <td>128</td>
+        <td>~50.0% of total image variance</td>
+        <td>High-contrast macroscopic scene geometry, broad object boundaries.</td>
+        <td>Primary visual intelligibility; retained in heavy lossy compression.</td>
+      </tr>
+      <tr>
+        <td><strong>Plane 6</strong></td>
+        <td>64</td>
+        <td>~25.0% of total image variance</td>
+        <td>Major shading gradients and primary surface textures.</td>
+        <td>Secondary structural contours.</td>
+      </tr>
+      <tr>
+        <td><strong>Plane 5</strong></td>
+        <td>32</td>
+        <td>~12.5% of total image variance</td>
+        <td>Subtle lighting variations and secondary relief textures.</td>
+        <td>Reconstruction threshold for human identification.</td>
+      </tr>
+      <tr>
+        <td><strong>Plane 4</strong></td>
+        <td>16</td>
+        <td>~6.25% of total image variance</td>
+        <td>Fine textural details and faint surface modulations.</td>
+        <td>Combined with planes 5-7 restores >93% perceptual quality.</td>
+      </tr>
+      <tr>
+        <td><strong>Plane 3</strong></td>
+        <td>8</td>
+        <td>~3.12% of total image variance</td>
+        <td>Micro-textures and low-amplitude noise.</td>
+        <td>Often zeroed out in rate-distortion compression pipelines.</td>
+      </tr>
+      <tr>
+        <td><strong>Plane 2</strong></td>
+        <td>4</td>
+        <td>~1.56% of total image variance</td>
+        <td>High-frequency sensor thermal noise and grain.</td>
+        <td>Perceptually indistinguishable to human eye under normal viewing.</td>
+      </tr>
+      <tr>
+        <td><strong>Plane 1</strong></td>
+        <td>2</td>
+        <td>~0.78% of total image variance</td>
+        <td>High-frequency pseudo-random sensor fluctuations.</td>
+        <td>Steganographic auxiliary channel.</td>
+      </tr>
+      <tr>
+        <td><strong>Plane 0 (LSB)</strong></td>
+        <td>1</td>
+        <td>~0.39% of total image variance</td>
+        <td>Visually indistinguishable white Gaussian noise.</td>
+        <td><strong>LSB Steganography:</strong> Replacement with covert data without visible degradation.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+    </div>
+  </section>
+
+      <!-- Chapter End Package -->
+      <section class="chapter-end-package">
+        <div class="chapter-nav-grid">
+          <a href="ch05-colour-models-file-formats.html" class="chapter-nav-card">
+            <div class="chapter-nav-dir">← Previous</div>
+            <div class="chapter-nav-title">← Ch 5 — Colour Models & Formats</div>
+          </a>
+          <a href="ch07-histograms-equalization.html" class="chapter-nav-card next">
+            <div class="chapter-nav-dir">Next →</div>
+            <div class="chapter-nav-title">Next: Ch 7 — Histograms & Contrast Enhancement →</div>
+          </a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- FLOATING TTS PANEL (SAFE MANUAL MODE ONLY) -->
+  <div id="tts-panel" style="position:fixed; bottom:20px; right:20px; background:var(--em-surface-1); border:1px solid var(--em-border); border-radius:var(--em-radius-md); padding:12px 16px; box-shadow:var(--sh-lg); z-index:var(--z-float); display:none; gap:10px; align-items:center;">
+    <button class="icon-btn" id="tts-play" title="Play / Pause" style="background:var(--em-accent); color:#fff; border-radius:50%; width:36px; height:36px;">▶</button>
+    <button class="icon-btn" id="tts-stop" title="Stop">⏹</button>
+    <div style="font-size:0.75rem; color:var(--em-text-muted);">
+      <span id="tts-status">Ready</span> · <span id="tts-rate-label">1.0x</span>
+    </div>
+  </div>
+
+  <script src="../assets/js/state.js"></script>
+  <script src="../assets/js/core.js"></script>
+  <script src="../assets/js/tts.js"></script>
+  <script src="../assets/js/glossary.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: document.documentElement.getAttribute('data-theme') === 'light' ? 'default' : 'dark'
+      });
+    });
+  </script>
+</body>
+</html>

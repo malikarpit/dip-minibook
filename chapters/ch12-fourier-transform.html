@@ -1,0 +1,2946 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Arpit">
+  <meta name="description" content="Chapter 12: Fourier Transform &amp; Frequency Domain — Digital Image Processing MiniBook. Continuous to 2D Discrete Fourier Transform (DFT), Fourier Spectrum $|F(u,v)|$, Phase Angle, Centering via $(-1)^{x+y}$, 2D Convolution Theorem, and FFT">
+  <title>C12: Fourier Transform &amp; Frequency Domain | DIP MiniBook 📷 Arpit</title>
+
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <link rel="stylesheet" href="../assets/css/chapters.css">
+  <link rel="stylesheet" href="../assets/css/animations.css">
+  <link rel="stylesheet" href="../assets/css/timer.css">
+
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body data-chapter-id="ch12-fourier-transform">
+  <div id="progress-bar"></div>
+
+  <!-- Header -->
+  <header id="main-header">
+    <div class="header-left">
+      <button id="sidebar-toggle" class="icon-btn" aria-label="Toggle navigation drawer" title="Toggle Sidebar (S)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <a href="../index.html" class="brand-logo">
+        <div class="brand-icon">DIP</div>
+        <div class="brand-text">
+          <span class="main">Digital Image Processing</span>
+          <span class="sub">DU DSE-3 Engineering MiniBook</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="header-chapter-title">C12: Fourier Transform &amp; Frequency Domain</div>
+
+    <div class="header-right">
+      <button id="reading-mode-btn" class="icon-btn" aria-label="Toggle reading focus mode" title="Focus Mode (F)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+          <line x1="8" y1="21" x2="16" y2="21"></line>
+          <line x1="12" y1="17" x2="12" y2="21"></line>
+        </svg>
+      </button>
+      <button id="tts-toggle" class="icon-btn" aria-label="Audio Reader" title="Audio Reader">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+        </svg>
+      </button>
+      <button id="theme-toggle" class="icon-btn" aria-label="Cycle theme" title="Theme (T)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="12" cy="12" r="4.5"></circle>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Sidebar Overlay -->
+  <div id="sidebar-overlay"></div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" aria-expanded="true">
+    <div class="sidebar-nav">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">General</div>
+        <a href="../index.html" class="sidebar-link">
+          <span class="link-icon">🏛️</span>
+          <span>Subject Portal</span>
+        </a>
+        <a href="../progress.html" class="sidebar-link">
+          <span class="link-icon">📊</span>
+          <span>Study Dashboard</span>
+        </a>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Current Chapter Sections</div>
+        <a href="#s-12-1" class="sidebar-link"><span class="link-icon">📌</span><span>12.1 Why Leave the Spatial Domain?</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-12-2" class="sidebar-link"><span class="link-icon">📌</span><span>12.2 Spatial Frequency Revisited</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-12-3" class="sidebar-link"><span class="link-icon">📌</span><span>12.3 The 1-D Fourier Transform</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-12-4" class="sidebar-link"><span class="link-icon">📌</span><span>12.4 Why Complex Numbers Appear</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-12-5" class="sidebar-link"><span class="link-icon">📌</span><span>12.5 Magnitude and Phase</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-12-6" class="sidebar-link"><span class="link-icon">📌</span><span>12.6 2-D Fourier Transform</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-12-7" class="sidebar-link"><span class="link-icon">📌</span><span>12.7 2-D Discrete Fourier Transform</span> </a>
+      <a href="#s-12-8" class="sidebar-link"><span class="link-icon">📌</span><span>12.8 Inverse 2-D DFT</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-12-9" class="sidebar-link"><span class="link-icon">📌</span><span>12.9 What Does Each Frequency Mean?</span> </a>
+      <a href="#s-12-10" class="sidebar-link"><span class="link-icon">📌</span><span>12.10 Frequency Domain Visualization</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-12-11" class="sidebar-link"><span class="link-icon">📌</span><span>12.11 DC Component</span> </a>
+      <a href="#s-12-12" class="sidebar-link"><span class="link-icon">📌</span><span>12.12 Worked DC Example</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-12-13" class="sidebar-link"><span class="link-icon">📌</span><span>12.13 Frequency Spectrum and Constant Images</span> </a>
+      <a href="#s-12-14" class="sidebar-link"><span class="link-icon">📌</span><span>12.14 What Does a Smooth Image Look Like?</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-12-15" class="sidebar-link"><span class="link-icon">📌</span><span>12.15 What Does a Fine Texture Look Like?</span> </a>
+      <a href="#s-12-16" class="sidebar-link"><span class="link-icon">📌</span><span>12.16 Orientation in the Fourier Domain</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-12-17" class="sidebar-link"><span class="link-icon">📌</span><span>12.17 Separable 2-D DFT</span> </a>
+      <a href="#s-12-18" class="sidebar-link"><span class="link-icon">📌</span><span>12.18 DFT vs FFT</span> </a>
+      <a href="#s-12-19" class="sidebar-link"><span class="link-icon">📌</span><span>12.19 Complexity</span> </a>
+      <a href="#s-12-20" class="sidebar-link"><span class="link-icon">📌</span><span>12.20 Worked 1-D DFT Example</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-12-21" class="sidebar-link"><span class="link-icon">📌</span><span>12.21 Why Fourier Coefficients Can Be Complex</span> </a>
+      <a href="#s-12-22" class="sidebar-link"><span class="link-icon">📌</span><span>12.22 Centered Spectrum</span> </a>
+      <a href="#s-12-23" class="sidebar-link"><span class="link-icon">📌</span><span>12.23 Radial Distance from the Frequency Origin</span> </a>
+      <a href="#s-12-24" class="sidebar-link"><span class="link-icon">📌</span><span>12.24 Low-Pass Filtering in Frequency Domain</span> </a>
+      <a href="#s-12-25" class="sidebar-link"><span class="link-icon">📌</span><span>12.25 High-Pass Filtering</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-12-26" class="sidebar-link"><span class="link-icon">📌</span><span>12.26 Band-Pass Filtering</span> </a>
+      <a href="#s-12-27" class="sidebar-link"><span class="link-icon">📌</span><span>12.27 Frequency-Domain Pipeline</span> </a>
+      <a href="#s-12-28" class="sidebar-link"><span class="link-icon">📌</span><span>12.28 Multiplication in Frequency Domain</span> </a>
+      <a href="#s-12-29" class="sidebar-link"><span class="link-icon">📌</span><span>12.29 Convolution Theorem</span> </a>
+      <a href="#s-12-30" class="sidebar-link"><span class="link-icon">📌</span><span>12.30 Linear vs Circular Convolution</span> </a>
+      <a href="#s-12-31" class="sidebar-link"><span class="link-icon">📌</span><span>12.31 Why Zero Padding Matters</span> </a>
+      <a href="#s-12-32" class="sidebar-link"><span class="link-icon">📌</span><span>12.32 Frequency-Domain View of Gaussian Smoothing</span> </a>
+      <a href="#s-12-33" class="sidebar-link"><span class="link-icon">📌</span><span>12.33 Frequency-Domain View of Derivatives</span> </a>
+      <a href="#s-12-34" class="sidebar-link"><span class="link-icon">📌</span><span>12.34 Worked Derivative Frequency Intuition</span> </a>
+      <a href="#s-12-35" class="sidebar-link"><span class="link-icon">📌</span><span>12.35 Frequency-Domain View of Integration / Smoothing</span> </a>
+      <a href="#s-12-36" class="sidebar-link"><span class="link-icon">📌</span><span>12.36 Periodic Noise in Frequency Domain</span> </a>
+      <a href="#s-12-37" class="sidebar-link"><span class="link-icon">📌</span><span>12.37 Frequency-Domain Filter Families</span> </a>
+      <a href="#s-12-38" class="sidebar-link"><span class="link-icon">📌</span><span>12.38 Ideal Low-Pass Filter</span> </a>
+      <a href="#s-12-39" class="sidebar-link"><span class="link-icon">📌</span><span>12.39 Why Ideal Filters Can Ring</span> </a>
+      <a href="#s-12-40" class="sidebar-link"><span class="link-icon">📌</span><span>12.40 Butterworth Low-Pass</span> </a>
+      <a href="#s-12-41" class="sidebar-link"><span class="link-icon">📌</span><span>12.41 Gaussian Low-Pass</span> </a>
+      <a href="#s-12-42" class="sidebar-link"><span class="link-icon">📌</span><span>12.42 High-Pass Construction</span> </a>
+      <a href="#s-12-43" class="sidebar-link"><span class="link-icon">📌</span><span>12.43 Worked Low-Pass Filter Example</span> </a>
+      <a href="#s-12-44" class="sidebar-link"><span class="link-icon">📌</span><span>12.44 Frequency Spectrum Magnitude Does Not Equal Image Brightness</span> </a>
+      <a href="#s-12-45" class="sidebar-link"><span class="link-icon">📌</span><span>12.45 Phase and Spatial Structure</span> </a>
+      <a href="#s-12-46" class="sidebar-link"><span class="link-icon">📌</span><span>12.46 A Useful Mental Experiment</span> </a>
+      <a href="#s-12-47" class="sidebar-link"><span class="link-icon">📌</span><span>12.47 Frequency-Domain Image Processing and Padding</span> </a>
+      <a href="#s-12-48" class="sidebar-link"><span class="link-icon">📌</span><span>12.48 Complex Numerical Output</span> </a>
+      <a href="#s-12-49" class="sidebar-link"><span class="link-icon">📌</span><span>12.49 Frequency-Domain Debugging</span> </a>
+      <a href="#s-12-50" class="sidebar-link"><span class="link-icon">📌</span><span>12.50 Spatial vs Frequency Domain</span> </a>
+      <a href="#s-12-51" class="sidebar-link"><span class="link-icon">📌</span><span>12.51 When Should You Use Which Domain?</span> </a>
+      <a href="#s-12-52" class="sidebar-link"><span class="link-icon">📌</span><span>12.52 Worked Conceptual Example — Periodic Interference</span> </a>
+      <a href="#s-12-53" class="sidebar-link"><span class="link-icon">📌</span><span>12.53 Frequency Domain and Downsampling</span> </a>
+      <a href="#s-12-54" class="sidebar-link"><span class="link-icon">📌</span><span>12.54 Sampling Theorem Connection</span> </a>
+      <a href="#s-12-55" class="sidebar-link"><span class="link-icon">📌</span><span>12.55 Spectral Replication Intuition</span> </a>
+      <a href="#s-12-56" class="sidebar-link"><span class="link-icon">📌</span><span>12.56 Why Anti-Aliasing Works</span> </a>
+      <a href="#s-12-57" class="sidebar-link"><span class="link-icon">📌</span><span>12.57 DFT Resolution</span> </a>
+      <a href="#s-12-58" class="sidebar-link"><span class="link-icon">📌</span><span>12.58 Worked Frequency-Bin Example</span> </a>
+      <a href="#s-12-59" class="sidebar-link"><span class="link-icon">📌</span><span>12.59 Spatial-Frequency Units</span> </a>
+      <a href="#s-12-60" class="sidebar-link"><span class="link-icon">📌</span><span>12.60 Zero Frequency Is Relative to the Coordinate Convention</span> </a>
+      <a href="#s-12-61" class="sidebar-link"><span class="link-icon">📌</span><span>12.61 Common Traps</span> </a>
+      <a href="#s-12-62" class="sidebar-link"><span class="link-icon">📌</span><span>12.62 Exam Formula Sheet</span> </a>
+      <a href="#s-12-63" class="sidebar-link"><span class="link-icon">📌</span><span>12.63 Exam-Style Problem — DC Value</span> </a>
+      <a href="#s-12-64" class="sidebar-link"><span class="link-icon">📌</span><span>12.64 Exam-Style Problem — Ideal Low-Pass</span> </a>
+      <a href="#s-12-65" class="sidebar-link"><span class="link-icon">📌</span><span>12.65 Exam-Style Problem — Frequency Bin</span> </a>
+      <a href="#s-12-66" class="sidebar-link"><span class="link-icon">📌</span><span>12.66 Engineering Insight — Think in Representations</span> </a>
+      <a href="#s-12-67" class="sidebar-link"><span class="link-icon">📌</span><span>12.67 Cross-Book Bridges</span> </a>
+      <a href="#s-12-68" class="sidebar-link"><span class="link-icon">📌</span><span>12.68 Quick Recall</span> </a>
+      <a href="#s-12-69" class="sidebar-link"><span class="link-icon">📌</span><span>12.69 Chapter Checkpoint</span> </a>
+      <a href="#s-12-70" class="sidebar-link"><span class="link-icon">📌</span><span>12.70 Unit II Transition</span> </a>
+      <a href="#s-12-71" class="sidebar-link"><span class="link-icon">📌</span><span>12.71 Mathematical Proof: Centering the 2D Discrete Fourier Spectrum</span> </a>
+      </div>
+
+      
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-i">Part I — The Image</div>
+      <a href="ch01-big-picture.html" class="sidebar-link"><span class="link-icon">01</span><span>The Big Picture</span></a>
+      <a href="ch02-image-formation.html" class="sidebar-link"><span class="link-icon">02</span><span>Formation & Acquisition</span></a>
+      <a href="ch03-sampling-quantization.html" class="sidebar-link"><span class="link-icon">03</span><span>Sampling & Quantization</span></a>
+      <a href="ch04-image-representation.html" class="sidebar-link"><span class="link-icon">04</span><span>Pixels, Matrices & Resolution</span></a>
+      <a href="ch05-colour-models-file-formats.html" class="sidebar-link"><span class="link-icon">05</span><span>Colour Models & Formats</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-ii">Part II — Improving the Image</div>
+      <a href="ch06-point-processing.html" class="sidebar-link"><span class="link-icon">06</span><span>Point Processing & Intensity</span></a>
+      <a href="ch07-histograms-equalization.html" class="sidebar-link"><span class="link-icon">07</span><span>Histograms & Equalization</span></a>
+      <a href="ch08-spatial-filtering.html" class="sidebar-link"><span class="link-icon">08</span><span>Spatial Filtering & Convolution</span></a>
+      <a href="ch09-smoothing-noise-reduction.html" class="sidebar-link"><span class="link-icon">09</span><span>Smoothing & Noise Reduction</span></a>
+      <a href="ch10-sharpening-edge-detection.html" class="sidebar-link"><span class="link-icon">10</span><span>Sharpening & Edge Detection</span></a>
+      <a href="ch11-geometric-transforms.html" class="sidebar-link"><span class="link-icon">11</span><span>Geometric Transforms</span></a>
+      <a href="ch12-fourier-transform.html" class="sidebar-link active"><span class="link-icon">12</span><span>Fourier Transform & Frequency</span></a>
+      <a href="ch13-frequency-filtering.html" class="sidebar-link"><span class="link-icon">13</span><span>Frequency-Domain Filtering</span></a>
+      <a href="ch14-image-restoration.html" class="sidebar-link"><span class="link-icon">14</span><span>Restoration & Deblurring</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-iii">Part III — Understanding Content</div>
+      <a href="ch15-segmentation-fundamentals.html" class="sidebar-link"><span class="link-icon">15</span><span>Segmentation Fundamentals</span></a>
+      <a href="ch16-thresholding-otsu.html" class="sidebar-link"><span class="link-icon">16</span><span>Thresholding & Otsu Method</span></a>
+      <a href="ch17-region-segmentation.html" class="sidebar-link"><span class="link-icon">17</span><span>Region-Based Segmentation</span></a>
+      <a href="ch18-mathematical-morphology.html" class="sidebar-link"><span class="link-icon">18</span><span>Mathematical Morphology</span></a>
+      <a href="ch19-features-descriptors.html" class="sidebar-link"><span class="link-icon">19</span><span>Image Features & Descriptors</span></a>
+      <a href="ch20-sift-surf-orb-hog.html" class="sidebar-link"><span class="link-icon">20</span><span>SIFT, SURF, ORB & HOG</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-iv">Part IV — Compressing Images</div>
+      <a href="ch21-compression-entropy.html" class="sidebar-link"><span class="link-icon">21</span><span>Compression & Entropy</span></a>
+      <a href="ch22-lossless-coding.html" class="sidebar-link"><span class="link-icon">22</span><span>Lossless: RLE & Huffman</span></a>
+      <a href="ch23-lossy-dct-jpeg.html" class="sidebar-link"><span class="link-icon">23</span><span>Lossy: DCT & JPEG</span></a>
+      <a href="ch24-wavelets-jpeg2000.html" class="sidebar-link"><span class="link-icon">24</span><span>Wavelets & JPEG 2000</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-v">Part V — Intelligent Vision</div>
+      <a href="ch25-image-classification.html" class="sidebar-link"><span class="link-icon">25</span><span>Image Classification</span></a>
+      <a href="ch26-cnns-image-processing.html" class="sidebar-link"><span class="link-icon">26</span><span>CNNs for Image Processing</span></a>
+      <a href="ch27-modern-vision-architectures.html" class="sidebar-link"><span class="link-icon">27</span><span>Modern Vision Architectures</span></a>
+      <a href="ch28-object-detection-yolo.html" class="sidebar-link"><span class="link-icon">28</span><span>Object Detection: YOLO</span></a>
+      <a href="ch29-image-denoising-autoencoders.html" class="sidebar-link"><span class="link-icon">29</span><span>Image Denoising Autoencoders</span></a>
+      <a href="ch30-video-motion-analysis.html" class="sidebar-link"><span class="link-icon">30</span><span>Video & Motion Analysis</span></a>
+      <a href="ch31-dip-applications-engineering.html" class="sidebar-link"><span class="link-icon">31</span><span>DIP Applications & Ethics</span></a>
+    </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-brand-mark">
+        <div class="mark">DU</div>
+        <div>
+          <strong>DSE-3 MiniBook</strong>
+          <div>University of Delhi</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mandatory Shell Wrapper -->
+  <div id="main-content">
+    <main class="chapter-content">
+      <!-- Chapter Hero -->
+      <div class="chapter-hero">
+        <div class="hero-meta">
+          <span class="part-badge part-ii">Improving the Image</span>
+          <span class="chapter-number">CHAPTER 12</span>
+          <span class="reading-time">⏱️ ~60 min read</span>
+          <span class="tag-badge tag-core">Highest Yield (10-mark guarantee)</span>
+        </div>
+        <h1 class="chapter-title">Fourier Transform &amp; Frequency Domain</h1>
+        <p class="chapter-subtitle">
+          Continuous to 2D Discrete Fourier Transform (DFT), Fourier Spectrum $|F(u,v)|$, Phase Angle, Centering via $(-1)^{x+y}$, 2D Convolution Theorem, and FFT
+        </p>
+
+        <div class="syllabus-anchor">
+          <span class="syllabus-anchor-label">DU Syllabus</span>
+          <span><strong>Fourier Transform & Frequency Domain:</strong> 1D and 2D Discrete Fourier Transform (DFT) and Inverse DFT (IDFT), Fourier spectrum, phase angle, power spectrum, dynamic range compression (log transform of spectrum), frequency domain centering using (-1)^(x+y), properties (periodicity, conjugate symmetry, translation, rotation), 2D Convolution Theorem, and Cooley-Tukey FFT algorithm.</span>
+        </div>
+      </div>
+
+      <!-- In-Page TOC -->
+      <div class="chapter-checklist-card" style="margin-bottom:var(--em-space-8);">
+        <div class="checklist-title">
+          <span>Table of Contents &amp; Visual Section Map</span>
+          <span class="tag-badge tag-math">71 Deep Sections</span>
+        </div>
+        <ul class="part-chapters-list">
+          <li class="part-chapter-item"><a href="#s-12-1"><strong>12.1</strong> Why Leave the Spatial Domain?</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-12-2"><strong>12.2</strong> Spatial Frequency Revisited</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-12-3"><strong>12.3</strong> The 1-D Fourier Transform</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-12-4"><strong>12.4</strong> Why Complex Numbers Appear</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-12-5"><strong>12.5</strong> Magnitude and Phase</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-12-6"><strong>12.6</strong> 2-D Fourier Transform</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-12-7"><strong>12.7</strong> 2-D Discrete Fourier Transform</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-8"><strong>12.8</strong> Inverse 2-D DFT</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-12-9"><strong>12.9</strong> What Does Each Frequency Mean?</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-10"><strong>12.10</strong> Frequency Domain Visualization</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-12-11"><strong>12.11</strong> DC Component</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-12"><strong>12.12</strong> Worked DC Example</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-12-13"><strong>12.13</strong> Frequency Spectrum and Constant Images</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-14"><strong>12.14</strong> What Does a Smooth Image Look Like?</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-12-15"><strong>12.15</strong> What Does a Fine Texture Look Like?</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-16"><strong>12.16</strong> Orientation in the Fourier Domain</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-12-17"><strong>12.17</strong> Separable 2-D DFT</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-18"><strong>12.18</strong> DFT vs FFT</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-19"><strong>12.19</strong> Complexity</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-20"><strong>12.20</strong> Worked 1-D DFT Example</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-12-21"><strong>12.21</strong> Why Fourier Coefficients Can Be Complex</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-22"><strong>12.22</strong> Centered Spectrum</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-23"><strong>12.23</strong> Radial Distance from the Frequency Origin</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-24"><strong>12.24</strong> Low-Pass Filtering in Frequency Domain</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-25"><strong>12.25</strong> High-Pass Filtering</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-12-26"><strong>12.26</strong> Band-Pass Filtering</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-27"><strong>12.27</strong> Frequency-Domain Pipeline</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-28"><strong>12.28</strong> Multiplication in Frequency Domain</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-29"><strong>12.29</strong> Convolution Theorem</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-30"><strong>12.30</strong> Linear vs Circular Convolution</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-31"><strong>12.31</strong> Why Zero Padding Matters</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-32"><strong>12.32</strong> Frequency-Domain View of Gaussian Smoothing</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-33"><strong>12.33</strong> Frequency-Domain View of Derivatives</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-34"><strong>12.34</strong> Worked Derivative Frequency Intuition</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-35"><strong>12.35</strong> Frequency-Domain View of Integration / Smoothing</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-36"><strong>12.36</strong> Periodic Noise in Frequency Domain</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-37"><strong>12.37</strong> Frequency-Domain Filter Families</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-38"><strong>12.38</strong> Ideal Low-Pass Filter</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-39"><strong>12.39</strong> Why Ideal Filters Can Ring</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-40"><strong>12.40</strong> Butterworth Low-Pass</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-41"><strong>12.41</strong> Gaussian Low-Pass</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-42"><strong>12.42</strong> High-Pass Construction</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-43"><strong>12.43</strong> Worked Low-Pass Filter Example</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-44"><strong>12.44</strong> Frequency Spectrum Magnitude Does Not Equal Image Brightness</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-45"><strong>12.45</strong> Phase and Spatial Structure</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-46"><strong>12.46</strong> A Useful Mental Experiment</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-47"><strong>12.47</strong> Frequency-Domain Image Processing and Padding</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-48"><strong>12.48</strong> Complex Numerical Output</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-49"><strong>12.49</strong> Frequency-Domain Debugging</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-50"><strong>12.50</strong> Spatial vs Frequency Domain</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-51"><strong>12.51</strong> When Should You Use Which Domain?</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-52"><strong>12.52</strong> Worked Conceptual Example — Periodic Interference</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-53"><strong>12.53</strong> Frequency Domain and Downsampling</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-54"><strong>12.54</strong> Sampling Theorem Connection</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-55"><strong>12.55</strong> Spectral Replication Intuition</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-56"><strong>12.56</strong> Why Anti-Aliasing Works</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-57"><strong>12.57</strong> DFT Resolution</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-58"><strong>12.58</strong> Worked Frequency-Bin Example</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-59"><strong>12.59</strong> Spatial-Frequency Units</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-60"><strong>12.60</strong> Zero Frequency Is Relative to the Coordinate Convention</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-61"><strong>12.61</strong> Common Traps</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-62"><strong>12.62</strong> Exam Formula Sheet</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-63"><strong>12.63</strong> Exam-Style Problem — DC Value</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-64"><strong>12.64</strong> Exam-Style Problem — Ideal Low-Pass</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-65"><strong>12.65</strong> Exam-Style Problem — Frequency Bin</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-66"><strong>12.66</strong> Engineering Insight — Think in Representations</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-67"><strong>12.67</strong> Cross-Book Bridges</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-68"><strong>12.68</strong> Quick Recall</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-69"><strong>12.69</strong> Chapter Checkpoint</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-70"><strong>12.70</strong> Unit II Transition</a> </li>
+      <li class="part-chapter-item"><a href="#s-12-71"><strong>12.71</strong> Mathematical Proof: Centering the 2D Discrete Fourier Spectrum</a> </li>
+        </ul>
+      </div>
+
+      <div class="concept-hook" style="margin-bottom:var(--em-space-8);"><h1>Chapter 12 — Fourier Transform and the Frequency Domain</h1>
+<blockquote>
+<p><strong>Chapter thesis</strong><br />
+The spatial domain describes image values by location. The frequency domain describes how rapidly those values vary across space. The Fourier transform provides a mathematical change of representation that makes periodic structure, low/high spatial frequencies and many filtering operations easier to analyze.</p>
+</blockquote>
+<p><strong>Part II — Improving the Image</strong></p>
+<blockquote>
+<p><strong>Syllabus anchor:</strong> Unit II explicitly includes Fourier analysis/frequency-domain processing and low-, high- and band-pass filtering. fileciteturn4file0L36-L40</p>
+</blockquote>
+<hr /></div>
+
+      <!-- All Numbered Sections -->
+      
+  <!-- SECTION 12.1: Why Leave the Spatial Domain? -->
+  <section id="s-12-1" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.1</span>
+      <h2>Why Leave the Spatial Domain?</h2>
+      <button class="bookmark-btn" data-id="s-12-1" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose an image contains:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>smooth background
++
+fine texture
++
+periodic interference</code></pre>
+</div></p>
+<p>In the spatial domain these may overlap visually.</p>
+<p>The frequency domain provides another viewpoint:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>slow spatial variation
+→ low frequencies
+
+rapid spatial variation
+→ high frequencies
+
+repeating patterns
+→ structured spectral components</code></pre>
+</div></p>
+<p>This creates a powerful analysis pipeline:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>IMAGE
+  ↓
+FOURIER TRANSFORM
+  ↓
+FREQUENCY SPECTRUM
+  ↓
+ANALYZE / FILTER
+  ↓
+INVERSE FOURIER TRANSFORM
+  ↓
+IMAGE</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.2: Spatial Frequency Revisited -->
+  <section id="s-12-2" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.2</span>
+      <h2>Spatial Frequency Revisited</h2>
+      <button class="bookmark-btn" data-id="s-12-2" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>From C03:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>low spatial frequency
+→ slow variation
+
+high spatial frequency
+→ rapid variation</code></pre>
+</div></p>
+<p>Examples:</p>
+<h3>Low frequency</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>████████
+████████
+▓▓▓▓▓▓▓▓
+░░░░░░░░</code></pre>
+</div></p>
+<h3>High frequency</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>█░█░█░█░
+░█░█░█░█
+█░█░█░█░</code></pre>
+</div></p>
+<p>A real image contains a mixture of spatial frequencies.</p>
+<p>The Fourier transform decomposes that mixture into frequency components.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.3: The 1-D Fourier Transform -->
+  <section id="s-12-3" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.3</span>
+      <h2>The 1-D Fourier Transform</h2>
+      <button class="bookmark-btn" data-id="s-12-3" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For a continuous 1-D signal:</p>
+<p>
+$$
+F(u)
+=
+\int_{-\infty}^{\infty}
+f(x)e^{-i2\pi ux}\,dx
+$$
+</p>
+<p>where:</p>
+<ul>
+<li>$f(x)$ = spatial-domain signal,</li>
+<li>$u$ = frequency variable,</li>
+<li>$i=\sqrt{-1}$.</li>
+</ul>
+<p>The inverse transform is:</p>
+<p>
+$$
+f(x)
+=
+\int_{-\infty}^{\infty}
+F(u)e^{i2\pi ux}\,du
+$$
+</p>
+<p>The transform is therefore a change of representation, not necessarily a loss of information.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.4: Why Complex Numbers Appear -->
+  <section id="s-12-4" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.4</span>
+      <h2>Why Complex Numbers Appear</h2>
+      <button class="bookmark-btn" data-id="s-12-4" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Fourier analysis uses:</p>
+<p>
+$$
+e^{i\theta}
+=
+\cos\theta+i\sin\theta
+$$
+</p>
+<p>via Euler's formula.</p>
+<p>So Fourier coefficients are generally complex.</p>
+<p>A coefficient contains:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>magnitude
++
+phase</code></pre>
+</div></p>
+<p>These two parts encode different information.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.5: Magnitude and Phase -->
+  <section id="s-12-5" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.5</span>
+      <h2>Magnitude and Phase</h2>
+      <button class="bookmark-btn" data-id="s-12-5" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For a complex spectrum:</p>
+<p>
+$$
+F(u)=A(u)+iB(u)
+$$
+</p>
+<p>the magnitude is:</p>
+<p>
+$$
+|F(u)|
+=
+\sqrt{A(u)^2+B(u)^2}
+$$
+</p>
+<p>The phase is:</p>
+<p>
+$$
+\phi(u)
+=
+\operatorname{atan2}(B(u),A(u))
+$$
+</p>
+<p>Therefore:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Fourier coefficient
+→ magnitude
+→ phase</code></pre>
+</div></p>
+<p>A magnitude-only display is not the complete Fourier transform.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.6: 2-D Fourier Transform -->
+  <section id="s-12-6" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.6</span>
+      <h2>2-D Fourier Transform</h2>
+      <button class="bookmark-btn" data-id="s-12-6" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A continuous 2-D Fourier transform can be written:</p>
+<p>
+$$
+F(u,v)
+=
+\int\int
+f(x,y)
+e^{-i2\pi(ux+vy)}
+\,dx\,dy
+$$
+</p>
+<p>The inverse is:</p>
+<p>
+$$
+f(x,y)
+=
+\int\int
+F(u,v)
+e^{i2\pi(ux+vy)}
+\,du\,dv
+$$
+</p>
+<p>For digital images, we use the discrete version.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.7: 2-D Discrete Fourier Transform -->
+  <section id="s-12-7" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.7</span>
+      <h2>2-D Discrete Fourier Transform</h2>
+      <button class="bookmark-btn" data-id="s-12-7" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For an $M\times N$ image:</p>
+<p>
+$$
+F(u,v)
+=
+\sum_{x=0}^{M-1}
+\sum_{y=0}^{N-1}
+f(x,y)
+e^{-i2\pi
+\left(
+\frac{ux}{M}
++
+\frac{vy}{N}
+\right)}
+$$
+</p>
+<p>for:</p>
+<p>
+$$
+u=0,\ldots,M-1
+$$
+</p>
+<p>
+$$
+v=0,\ldots,N-1
+$$
+</p>
+<p>This is the <strong>2-D Discrete Fourier Transform (DFT)</strong>.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.8: Inverse 2-D DFT -->
+  <section id="s-12-8" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.8</span>
+      <h2>Inverse 2-D DFT</h2>
+      <button class="bookmark-btn" data-id="s-12-8" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The inverse is:</p>
+<p>
+$$
+f(x,y)
+=
+\frac{1}{MN}
+\sum_{u=0}^{M-1}
+\sum_{v=0}^{N-1}
+F(u,v)
+e^{i2\pi
+\left(
+\frac{ux}{M}
++
+\frac{vy}{N}
+\right)}
+$$
+</p>
+<p>The factor:</p>
+<p>
+$$
+\frac1{MN}
+$$
+</p>
+<p>appears in this common convention.</p>
+<blockquote>
+<p><strong>Convention note:</strong> Some software/discussions distribute normalization factors differently between forward and inverse transforms. Always follow the chosen convention consistently.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.9: What Does Each Frequency Mean? -->
+  <section id="s-12-9" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.9</span>
+      <h2>What Does Each Frequency Mean?</h2>
+      <button class="bookmark-btn" data-id="s-12-9" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The pair:</p>
+<p>
+$$
+(u,v)
+$$
+</p>
+<p>describes a spatial-frequency component.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>small |u|, |v|
+→ broad / slowly varying patterns
+
+large |u|, |v|
+→ fine / rapidly varying patterns</code></pre>
+</div></p>
+<p>The orientation in the frequency plane also contains information about the orientation of the corresponding spatial pattern.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.10: Frequency Domain Visualization -->
+  <section id="s-12-10" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.10</span>
+      <h2>Frequency Domain Visualization</h2>
+      <button class="bookmark-btn" data-id="s-12-10" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A raw spectrum often has very large values near the origin.</p>
+<p>A common visualization uses:</p>
+<p>
+$$
+D(u,v)=\log\left(1+|F(u,v)|\right)
+$$
+</p>
+<p>This compresses the dynamic range of spectral magnitudes for display.</p>
+<p>It is a visualization transformation.</p>
+<p>It does not mean that the Fourier spectrum itself has been logarithmically altered in the filtering algorithm.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.11: DC Component -->
+  <section id="s-12-11" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.11</span>
+      <h2>DC Component</h2>
+      <button class="bookmark-btn" data-id="s-12-11" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The zero-frequency component is:</p>
+<p>
+$$
+F(0,0)
+$$
+</p>
+<p>It represents the image's average/constant component under the chosen DFT convention.</p>
+<p>For an image:</p>
+<p>
+$$
+F(0,0)
+=
+\sum_x\sum_y f(x,y)
+$$
+</p>
+<p>Therefore:</p>
+<p>
+$$
+\frac{F(0,0)}{MN}
+$$
+</p>
+<p>is the mean image value under this convention.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.12: Worked DC Example -->
+  <section id="s-12-12" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.12</span>
+      <h2>Worked DC Example</h2>
+      <button class="bookmark-btn" data-id="s-12-12" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Consider:</p>
+<p>
+$$
+I=
+\begin{bmatrix}
+10&20\\
+30&40
+\end{bmatrix}
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+F(0,0)
+=
+10+20+30+40
+=
+100
+$$
+</p>
+<p>Image mean:</p>
+<p>
+$$
+\mu=\frac{100}{4}=25
+$$
+</p>
+<p>Therefore:</p>
+<p>
+$$
+\boxed{
+\frac{F(0,0)}{4}=25
+}
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.13: Frequency Spectrum and Constant Images -->
+  <section id="s-12-13" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.13</span>
+      <h2>Frequency Spectrum and Constant Images</h2>
+      <button class="bookmark-btn" data-id="s-12-13" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p>
+$$
+f(x,y)=C
+$$
+</p>
+<p>for every pixel.</p>
+<p>This image contains only a DC/zero-frequency component in the ideal discrete periodic representation.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>constant image
+→ no spatial variation
+→ only zero-frequency energy</code></pre>
+</div></p>
+<p>This is one of the most useful sanity checks for understanding Fourier transforms.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.14: What Does a Smooth Image Look Like? -->
+  <section id="s-12-14" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.14</span>
+      <h2>What Does a Smooth Image Look Like?</h2>
+      <button class="bookmark-btn" data-id="s-12-14" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A smooth image has predominantly low-frequency content.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>spatial image
+████████
+▓▓▓▓▓▓▓▓
+░░░░░░░░
+
+spectrum
+      *
+    ***
+   *****</code></pre>
+</div></p>
+<p>Most energy is concentrated relatively near the low-frequency region.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.15: What Does a Fine Texture Look Like? -->
+  <section id="s-12-15" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.15</span>
+      <h2>What Does a Fine Texture Look Like?</h2>
+      <button class="bookmark-btn" data-id="s-12-15" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Rapid repeated changes produce higher-frequency components.</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image:
+█░█░█░█░█░█
+
+spectrum:
+     •     •
+   •   • •   •</code></pre>
+</div></p>
+<p>The exact spectrum depends on frequency, phase, orientation and boundary effects.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.16: Orientation in the Fourier Domain -->
+  <section id="s-12-16" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.16</span>
+      <h2>Orientation in the Fourier Domain</h2>
+      <button class="bookmark-btn" data-id="s-12-16" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A sinusoidal pattern in one spatial direction produces spectral energy along a related direction in frequency space.</p>
+<p>The spectrum provides information about:</p>
+<ul>
+<li>dominant spatial frequency,</li>
+<li>orientation,</li>
+<li>periodicity.</li>
+</ul>
+<p>This is why periodic noise can be easier to isolate in frequency space.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.17: Separable 2-D DFT -->
+  <section id="s-12-17" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.17</span>
+      <h2>Separable 2-D DFT</h2>
+      <button class="bookmark-btn" data-id="s-12-17" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A 2-D DFT can be computed using successive 1-D transforms.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>rows
+ ↓
+1-D DFT
+ ↓
+columns
+ ↓
+1-D DFT
+ ↓
+2-D DFT</code></pre>
+</div></p>
+<p>This separability is important computationally.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.18: DFT vs FFT -->
+  <section id="s-12-18" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.18</span>
+      <h2>DFT vs FFT</h2>
+      <button class="bookmark-btn" data-id="s-12-18" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>DFT</h3>
+<p>The mathematical transform:</p>
+<p>
+$$
+F(u,v)
+$$
+</p>
+<h3>FFT</h3>
+<p>A family of algorithms for computing the DFT efficiently.</p>
+<p>Therefore:</p>
+<blockquote>
+<p>FFT is not a different transform from the DFT; it is an efficient computation strategy for the DFT under applicable conditions.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.19: Complexity -->
+  <section id="s-12-19" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.19</span>
+      <h2>Complexity</h2>
+      <button class="bookmark-btn" data-id="s-12-19" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A direct 1-D DFT is roughly:</p>
+<p>
+$$
+O(N^2)
+$$
+</p>
+<p>for $N$ samples.</p>
+<p>A typical FFT algorithm can reduce this to approximately:</p>
+<p>
+$$
+O(N\log N)
+$$
+</p>
+<p>under its applicable structure.</p>
+<p>For 2-D images, separability plus efficient 1-D FFTs makes large transforms practical.</p>
+<p>This is why frequency-domain image processing is computationally feasible.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.20: Worked 1-D DFT Example -->
+  <section id="s-12-20" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.20</span>
+      <h2>Worked 1-D DFT Example</h2>
+      <button class="bookmark-btn" data-id="s-12-20" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Consider:</p>
+<p>
+$$
+f=[1,0,1,0]
+$$
+</p>
+<p>For the 4-point DFT:</p>
+<p>
+$$
+F(k)=\sum_{n=0}^{3}f[n]e^{-i2\pi kn/4}
+$$
+</p>
+<h3>$k=0$</h3>
+<p>
+$$
+F(0)=1+0+1+0=2
+$$
+</p>
+<h3>$k=1$</h3>
+<p>
+$$
+F(1)
+=
+1+1e^{-i\pi}
+$$
+</p>
+<p>because the other terms are multiplied by zero.</p>
+<p>Since:</p>
+<p>
+$$
+e^{-i\pi}=-1
+$$
+</p>
+<p>we get:</p>
+<p>
+$$
+F(1)=1-1=0
+$$
+</p>
+<h3>$k=2$</h3>
+<p>
+$$
+F(2)
+=
+1+1e^{-i2\pi}
+$$
+</p>
+<p>and:</p>
+<p>
+$$
+e^{-i2\pi}=1
+$$
+</p>
+<p>so:</p>
+<p>
+$$
+F(2)=2
+$$
+</p>
+<h3>$k=3$</h3>
+<p>Similarly:</p>
+<p>
+$$
+F(3)=0
+$$
+</p>
+<p>Therefore:</p>
+<p>
+$$
+\boxed{F=[2,0,2,0]}
+$$
+</p>
+<p>This makes sense because the original sequence contains a strong alternating pattern.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.21: Why Fourier Coefficients Can Be Complex -->
+  <section id="s-12-21" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.21</span>
+      <h2>Why Fourier Coefficients Can Be Complex</h2>
+      <button class="bookmark-btn" data-id="s-12-21" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The image is real-valued, but the basis functions contain:</p>
+<p>
+$$
+e^{-i\theta}
+$$
+</p>
+<p>Therefore the transform is generally complex.</p>
+<p>For real images, the DFT exhibits conjugate symmetry:</p>
+<p>
+$$
+F(u,v)
+=
+F^*((-u)\bmod M,(-v)\bmod N)
+$$
+</p>
+<p>under the standard DFT indexing convention.</p>
+<p>This means positive/negative frequency components are not independent in the same way they are for arbitrary complex-valued signals.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.22: Centered Spectrum -->
+  <section id="s-12-22" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.22</span>
+      <h2>Centered Spectrum</h2>
+      <button class="bookmark-btn" data-id="s-12-22" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Many visualizations shift the zero-frequency component to the centre.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>raw FFT display
+
+DC
+*
+
+
+centered display
+
+      *
+      ↑
+     DC</code></pre>
+</div></p>
+<p>A common operation is called <strong>FFT shift</strong> or spectrum centering.</p>
+<p>This changes display/index arrangement, not the underlying transform content.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.23: Radial Distance from the Frequency Origin -->
+  <section id="s-12-23" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.23</span>
+      <h2>Radial Distance from the Frequency Origin</h2>
+      <button class="bookmark-btn" data-id="s-12-23" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A radial frequency measure can be written:</p>
+<p>
+$$
+D(u,v)
+=
+\sqrt{
+(u-u_0)^2+(v-v_0)^2
+}
+$$
+</p>
+<p>where $(u_0,v_0)$ is the chosen spectral centre.</p>
+<p>This is useful for defining circular filters:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>small D
+→ low frequency
+
+large D
+→ high frequency</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.24: Low-Pass Filtering in Frequency Domain -->
+  <section id="s-12-24" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.24</span>
+      <h2>Low-Pass Filtering in Frequency Domain</h2>
+      <button class="bookmark-btn" data-id="s-12-24" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A frequency-domain filter is represented by a transfer function:</p>
+<p>
+$$
+H(u,v)
+$$
+</p>
+<p>The filtered spectrum is:</p>
+<p>
+$$
+G(u,v)=H(u,v)F(u,v)
+$$
+</p>
+<p>A low-pass filter preserves low frequencies and suppresses high frequencies.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>FREQUENCY SPECTRUM
+      ↓
+   H(u,v)
+      ↓
+low frequencies kept
+high frequencies reduced</code></pre>
+</div></p>
+<p>This generally produces smoothing in the spatial domain.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.25: High-Pass Filtering -->
+  <section id="s-12-25" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.25</span>
+      <h2>High-Pass Filtering</h2>
+      <button class="bookmark-btn" data-id="s-12-25" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A high-pass filter suppresses low frequencies and preserves/emphasizes higher-frequency components.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>low frequencies
+→ suppressed
+
+high frequencies
+→ preserved/emphasized</code></pre>
+</div></p>
+<p>This tends to highlight:</p>
+<ul>
+<li>edges,</li>
+<li>fine detail,</li>
+<li>rapid intensity changes.</li>
+</ul>
+<p>This connects directly to C10.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.26: Band-Pass Filtering -->
+  <section id="s-12-26" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.26</span>
+      <h2>Band-Pass Filtering</h2>
+      <button class="bookmark-btn" data-id="s-12-26" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A band-pass filter retains a selected frequency band.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>low frequencies
+→ reject
+
+middle band
+→ keep
+
+high frequencies
+→ reject</code></pre>
+</div></p>
+<p>This can be useful for detecting structures associated with a particular spatial scale.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.27: Frequency-Domain Pipeline -->
+  <section id="s-12-27" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.27</span>
+      <h2>Frequency-Domain Pipeline</h2>
+      <button class="bookmark-btn" data-id="s-12-27" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>input image
+    ↓
+optional preprocessing
+    ↓
+DFT / FFT
+    ↓
+spectrum
+    ↓
+design H(u,v)
+    ↓
+multiply:
+G=HF
+    ↓
+inverse DFT / FFT
+    ↓
+real-valued output handling
+    ↓
+display / evaluation</code></pre>
+</div></p>
+<p>C13 develops the filter designs in detail.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.28: Multiplication in Frequency Domain -->
+  <section id="s-12-28" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.28</span>
+      <h2>Multiplication in Frequency Domain</h2>
+      <button class="bookmark-btn" data-id="s-12-28" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The central operation is:</p>
+<p>
+$$
+G(u,v)=H(u,v)F(u,v)
+$$
+</p>
+<p>This is powerful because:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>spatial convolution
+↔
+frequency multiplication</code></pre>
+</div></p>
+<p>under the appropriate Fourier/convolution convention.</p>
+<p>Thus a potentially expensive convolution operation can sometimes be analyzed or implemented through the frequency domain.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.29: Convolution Theorem -->
+  <section id="s-12-29" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.29</span>
+      <h2>Convolution Theorem</h2>
+      <button class="bookmark-btn" data-id="s-12-29" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The convolution theorem states, under standard transform conventions:</p>
+<p>
+$$
+f*h
+\quad\Longleftrightarrow\quad
+FH
+$$
+</p>
+<p>That is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>convolution in spatial domain
+↔
+multiplication in frequency domain</code></pre>
+</div></p>
+<p>and:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>multiplication in spatial domain
+↔
+convolution in frequency domain</code></pre>
+</div></p>
+<p>This is one of the most important bridges in image processing.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.30: Linear vs Circular Convolution -->
+  <section id="s-12-30" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.30</span>
+      <h2>Linear vs Circular Convolution</h2>
+      <button class="bookmark-btn" data-id="s-12-30" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A DFT naturally corresponds to circular convolution when multiplication is performed directly in the transform domain.</p>
+<p>For linear convolution via FFT, suitable zero-padding is generally required.</p>
+<p>This distinction is critical.</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>DFT multiplication
+→ circular convolution relationship
+
+linear convolution desired
+→ appropriate padding / size handling</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.31: Why Zero Padding Matters -->
+  <section id="s-12-31" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.31</span>
+      <h2>Why Zero Padding Matters</h2>
+      <button class="bookmark-btn" data-id="s-12-31" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose an image and filter have finite sizes.</p>
+<p>If the FFT transform size is too small, circular wrap-around can contaminate the result.</p>
+<p>Proper zero-padding can make the circular convolution correspond to the desired linear convolution over the relevant output region.</p>
+<p>The required size depends on the image and kernel dimensions and the implementation convention.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.32: Frequency-Domain View of Gaussian Smoothing -->
+  <section id="s-12-32" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.32</span>
+      <h2>Frequency-Domain View of Gaussian Smoothing</h2>
+      <button class="bookmark-btn" data-id="s-12-32" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A Gaussian in the spatial domain transforms to a Gaussian-like function in the frequency domain.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>spatial Gaussian blur
+↔
+smooth low-pass spectrum</code></pre>
+</div></p>
+<p>This explains why Gaussian smoothing suppresses high frequencies.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.33: Frequency-Domain View of Derivatives -->
+  <section id="s-12-33" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.33</span>
+      <h2>Frequency-Domain View of Derivatives</h2>
+      <button class="bookmark-btn" data-id="s-12-33" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Differentiation has a simple Fourier-domain relationship.</p>
+<p>For a 1-D signal:</p>
+<p>
+$$
+\mathcal{F}
+\left\{
+\frac{df}{dx}
+\right\}
+=
+i2\pi uF(u)
+$$
+</p>
+<p>under the continuous Fourier-transform convention used here.</p>
+<p>Therefore:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>derivative
+→ multiply spectrum by frequency</code></pre>
+</div></p>
+<p>Higher frequencies receive stronger weighting.</p>
+<p>This mathematically explains why differentiation is noise-sensitive.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.34: Worked Derivative Frequency Intuition -->
+  <section id="s-12-34" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.34</span>
+      <h2>Worked Derivative Frequency Intuition</h2>
+      <button class="bookmark-btn" data-id="s-12-34" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose two spectral components have frequencies:</p>
+<p>
+$$
+u_1=1
+$$
+</p>
+<p>and:</p>
+<p>
+$$
+u_2=10
+$$
+</p>
+<p>Derivative magnitude weighting is proportional to:</p>
+<p>
+$$
+|u|
+$$
+</p>
+<p>Therefore the second component receives approximately:</p>
+<p>
+$$
+\frac{10}{1}=10
+$$
+</p>
+<p>times the derivative weighting of the first component, all else equal.</p>
+<p>This explains why high-frequency noise can become prominent after differentiation.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.35: Frequency-Domain View of Integration / Smoothing -->
+  <section id="s-12-35" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.35</span>
+      <h2>Frequency-Domain View of Integration / Smoothing</h2>
+      <button class="bookmark-btn" data-id="s-12-35" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Conversely, a low-pass-like operation reduces high-frequency components.</p>
+<p>So the duality becomes:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>differentiation
+→ high-frequency emphasis
+
+smoothing
+→ high-frequency suppression</code></pre>
+</div></p>
+<p>This ties C09 and C10 directly to the frequency domain.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.36: Periodic Noise in Frequency Domain -->
+  <section id="s-12-36" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.36</span>
+      <h2>Periodic Noise in Frequency Domain</h2>
+      <button class="bookmark-btn" data-id="s-12-36" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose an image contains sinusoidal interference.</p>
+<p>In the spatial domain:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>repeating stripes</code></pre>
+</div></p>
+<p>In the frequency domain:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>distinct spectral peaks</code></pre>
+</div></p>
+<p>This is valuable because the noise can become spatially separated from much of the natural image spectrum.</p>
+<p>A targeted notch filter can then suppress those peaks.</p>
+<p>Notch filtering is introduced fully in C13.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.37: Frequency-Domain Filter Families -->
+  <section id="s-12-37" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.37</span>
+      <h2>Frequency-Domain Filter Families</h2>
+      <button class="bookmark-btn" data-id="s-12-37" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Classical families include:</p>
+<h3>Ideal</h3>
+<p>Sharp cutoff.</p>
+<h3>Butterworth</h3>
+<p>Smoother transition controlled by order.</p>
+<h3>Gaussian</h3>
+<p>Very smooth frequency response.</p>
+<p>They offer different tradeoffs between:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>selectivity
++
+spatial ringing</code></pre>
+</div></p>
+<p>C13 will treat these systematically.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.38: Ideal Low-Pass Filter -->
+  <section id="s-12-38" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.38</span>
+      <h2>Ideal Low-Pass Filter</h2>
+      <button class="bookmark-btn" data-id="s-12-38" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A simple ideal low-pass transfer function is:</p>
+<p>
+$$
+H(u,v)=
+\begin{cases}
+1,&D(u,v)\le D_0\\
+0,&D(u,v)>D_0
+\end{cases}
+$$
+</p>
+<p>where:</p>
+<p>
+$$
+D_0
+$$
+</p>
+<p>is the cutoff frequency.</p>
+<p>It preserves a circular region around the frequency origin.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.39: Why Ideal Filters Can Ring -->
+  <section id="s-12-39" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.39</span>
+      <h2>Why Ideal Filters Can Ring</h2>
+      <button class="bookmark-btn" data-id="s-12-39" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A sharp discontinuity in frequency response can create spatial oscillation artifacts.</p>
+<p>This is related to the Fourier-transform duality between:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>sharp frequency cutoff
+↔
+extended/ringing spatial response</code></pre>
+</div></p>
+<p>A classic consequence is Gibbs-like ringing behaviour around sharp intensity transitions.</p>
+<p>This is one reason smoother filters such as Gaussian or Butterworth are often preferred in practical image processing.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.40: Butterworth Low-Pass -->
+  <section id="s-12-40" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.40</span>
+      <h2>Butterworth Low-Pass</h2>
+      <button class="bookmark-btn" data-id="s-12-40" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A common form is:</p>
+<p>
+$$
+H(u,v)
+=
+\frac{1}{
+1+\left(\frac{D(u,v)}{D_0}\right)^{2n}
+}
+$$
+</p>
+<p>where:</p>
+<ul>
+<li>$D_0$ = cutoff,</li>
+<li>$n$ = filter order.</li>
+</ul>
+<p>Higher $n$ gives a sharper transition.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.41: Gaussian Low-Pass -->
+  <section id="s-12-41" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.41</span>
+      <h2>Gaussian Low-Pass</h2>
+      <button class="bookmark-btn" data-id="s-12-41" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A common form is:</p>
+<p>
+$$
+H(u,v)
+=
+e^{-\frac{D(u,v)^2}{2D_0^2}}
+$$
+</p>
+<p>This provides a smooth frequency response.</p>
+<p>It is closely related to Gaussian spatial smoothing.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.42: High-Pass Construction -->
+  <section id="s-12-42" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.42</span>
+      <h2>High-Pass Construction</h2>
+      <button class="bookmark-btn" data-id="s-12-42" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A simple high-pass complement is:</p>
+<p>
+$$
+H_{HP}(u,v)
+=
+1-H_{LP}(u,v)
+$$
+</p>
+<p>for the corresponding low-pass filter.</p>
+<p>This is a conceptual construction.</p>
+<p>For some applications, high-boost or other specialized filters are preferable.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.43: Worked Low-Pass Filter Example -->
+  <section id="s-12-43" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.43</span>
+      <h2>Worked Low-Pass Filter Example</h2>
+      <button class="bookmark-btn" data-id="s-12-43" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p>
+$$
+D_0=10
+$$
+</p>
+<p>and a frequency location has:</p>
+<p>
+$$
+D=5
+$$
+</p>
+<p>For the ideal low-pass:</p>
+<p>
+$$
+D\le D_0
+$$
+</p>
+<p>so:</p>
+<p>
+$$
+H=1
+$$
+</p>
+<p>For another point:</p>
+<p>
+$$
+D=15
+$$
+</p>
+<p>then:</p>
+<p>
+$$
+H=0
+$$
+</p>
+<p>Thus the ideal filter makes an abrupt decision.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.44: Frequency Spectrum Magnitude Does Not Equal Image Brightness -->
+  <section id="s-12-44" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.44</span>
+      <h2>Frequency Spectrum Magnitude Does Not Equal Image Brightness</h2>
+      <button class="bookmark-btn" data-id="s-12-44" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A common misunderstanding is:</p>
+<blockquote>
+<p>“A bright spot in the spectrum is a bright object in the image.”</p>
+</blockquote>
+<p>False.</p>
+<p>Spectrum brightness usually represents transformed frequency magnitude.</p>
+<p>The spectrum describes:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>how strongly a spatial-frequency component is present</code></pre>
+</div></p>
+<p>not where an object is located in the original image.</p>
+<p>Spatial localization and frequency representation are different viewpoints.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.45: Phase and Spatial Structure -->
+  <section id="s-12-45" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.45</span>
+      <h2>Phase and Spatial Structure</h2>
+      <button class="bookmark-btn" data-id="s-12-45" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Magnitude tells us how strong frequency components are.</p>
+<p>Phase strongly influences where structures occur spatially.</p>
+<p>This is why:</p>
+<blockquote>
+<p>discarding phase can destroy spatial localization information even if the magnitude spectrum remains unchanged.</p>
+</blockquote>
+<p>Phase is therefore not a minor technical detail.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.46: A Useful Mental Experiment -->
+  <section id="s-12-46" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.46</span>
+      <h2>A Useful Mental Experiment</h2>
+      <button class="bookmark-btn" data-id="s-12-46" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Consider two images with similar magnitude spectra but different phase.</p>
+<p>They can have substantially different spatial appearances.</p>
+<p>Therefore:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>magnitude
+→ frequency strength
+
+phase
+→ spatial alignment/structure information</code></pre>
+</div></p>
+<p>This is a conceptual rather than a complete reconstruction theorem, but it is an essential intuition.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.47: Frequency-Domain Image Processing and Padding -->
+  <section id="s-12-47" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.47</span>
+      <h2>Frequency-Domain Image Processing and Padding</h2>
+      <button class="bookmark-btn" data-id="s-12-47" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>FFT-based filtering often includes:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image
+→ pad
+→ transform
+→ shift/inspect
+→ multiply by H
+→ inverse transform
+→ crop</code></pre>
+</div></p>
+<p>Padding can:</p>
+<ul>
+<li>reduce circular wrap-around,</li>
+<li>create a desired output region,</li>
+<li>improve correspondence with linear convolution.</li>
+</ul>
+<p>The correct padding depends on the objective.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.48: Complex Numerical Output -->
+  <section id="s-12-48" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.48</span>
+      <h2>Complex Numerical Output</h2>
+      <button class="bookmark-btn" data-id="s-12-48" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Due to numerical floating-point effects, inverse FFT of a theoretically real image may contain tiny imaginary components:</p>
+<p>
+$$
+2\times10^{-15}i
+$$
+</p>
+<p>These can be safely treated as numerical residuals when appropriate.</p>
+<p>But large imaginary components are a warning that something may be wrong with:</p>
+<ul>
+<li>spectrum modification,</li>
+<li>symmetry,</li>
+<li>transform convention,</li>
+<li>implementation.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.49: Frequency-Domain Debugging -->
+  <section id="s-12-49" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.49</span>
+      <h2>Frequency-Domain Debugging</h2>
+      <button class="bookmark-btn" data-id="s-12-49" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A good implementation should inspect:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>input
+ ↓
+FFT magnitude
+ ↓
+filter H
+ ↓
+filtered spectrum
+ ↓
+inverse FFT
+ ↓
+real output</code></pre>
+</div></p>
+<p>Potential diagnostic clues:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>spectrum looks wrong
+→ transform/centering issue
+
+spectrum correct, output wrong
+→ filter multiplication/inverse issue
+
+output has large imaginary component
+→ symmetry/convention problem</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.50: Spatial vs Frequency Domain -->
+  <section id="s-12-50" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.50</span>
+      <h2>Spatial vs Frequency Domain</h2>
+      <button class="bookmark-btn" data-id="s-12-50" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Feature</th>
+<th>Spatial domain</th>
+<th>Frequency domain</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>representation</td>
+<td>pixels by location</td>
+<td>frequency components</td>
+</tr>
+<tr>
+<td>natural operation</td>
+<td>point/neighbourhood processing</td>
+<td>spectral multiplication</td>
+</tr>
+<tr>
+<td>edge visibility</td>
+<td>explicit locally</td>
+<td>high-frequency energy</td>
+</tr>
+<tr>
+<td>periodic noise</td>
+<td>may be visually mixed</td>
+<td>often isolated peaks</td>
+</tr>
+<tr>
+<td>convolution</td>
+<td>direct local operation</td>
+<td>multiplication</td>
+</tr>
+<tr>
+<td>intuitive geometry</td>
+<td>strong</td>
+<td>weaker</td>
+</tr>
+<tr>
+<td>useful analysis</td>
+<td>local structure</td>
+<td>scale/frequency structure</td>
+</tr>
+</tbody>
+</table></div>
+<p>The domains are complementary.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.51: When Should You Use Which Domain? -->
+  <section id="s-12-51" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.51</span>
+      <h2>When Should You Use Which Domain?</h2>
+      <button class="bookmark-btn" data-id="s-12-51" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Spatial domain</h3>
+<p>Good when:</p>
+<ul>
+<li>neighbourhood is small,</li>
+<li>operation is local,</li>
+<li>geometric context matters,</li>
+<li>simple filtering is sufficient.</li>
+</ul>
+<h3>Frequency domain</h3>
+<p>Good when:</p>
+<ul>
+<li>periodic interference exists,</li>
+<li>large convolution kernels are involved,</li>
+<li>frequency-selective filtering is desired,</li>
+<li>spectral structure is informative.</li>
+</ul>
+<p>The best domain is task-dependent.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.52: Worked Conceptual Example — Periodic Interference -->
+  <section id="s-12-52" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.52</span>
+      <h2>Worked Conceptual Example — Periodic Interference</h2>
+      <button class="bookmark-btn" data-id="s-12-52" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose an image contains:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>building image
++
+horizontal repeating stripes</code></pre>
+</div></p>
+<p>Spatial approach:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>try blur
+→ stripes may weaken
+→ building edges also weaken</code></pre>
+</div></p>
+<p>Frequency approach:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>FFT
+→ identify spectral peaks
+→ notch those frequencies
+→ inverse FFT</code></pre>
+</div></p>
+<p>This can provide more targeted suppression.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.53: Frequency Domain and Downsampling -->
+  <section id="s-12-53" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.53</span>
+      <h2>Frequency Domain and Downsampling</h2>
+      <button class="bookmark-btn" data-id="s-12-53" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>C03 established:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>downsampling
+→ risk of aliasing</code></pre>
+</div></p>
+<p>Frequency domain explains why.</p>
+<p>Before reducing sampling rate:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>high frequencies that exceed the new Nyquist limit
+→ must be attenuated</code></pre>
+</div></p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>source spectrum
+      ↓
+low-pass
+      ↓
+safe bandwidth
+      ↓
+downsample</code></pre>
+</div></p>
+<p>This is a powerful connection across chapters.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.54: Sampling Theorem Connection -->
+  <section id="s-12-54" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.54</span>
+      <h2>Sampling Theorem Connection</h2>
+      <button class="bookmark-btn" data-id="s-12-54" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For a band-limited continuous signal:</p>
+<p>
+$$
+f_s>2f_{\max}
+$$
+</p>
+<p>is the classical ideal sampling condition.</p>
+<p>In the frequency domain, sampling creates spectral replicas separated by the sampling frequency.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>original spectrum
+      ↓
+sampling
+      ↓
+repeated spectral copies</code></pre>
+</div></p>
+<p>If the copies overlap:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>aliasing</code></pre>
+</div></p>
+<p>occurs.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.55: Spectral Replication Intuition -->
+  <section id="s-12-55" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.55</span>
+      <h2>Spectral Replication Intuition</h2>
+      <button class="bookmark-btn" data-id="s-12-55" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Imagine:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>        original
+          ███
+          ███
+
+after sampling:
+
+███       ███       ███
+███       ███       ███</code></pre>
+</div></p>
+<p>As sampling frequency decreases, the copies move closer.</p>
+<p>Eventually they overlap.</p>
+<p>That is the frequency-domain picture of aliasing.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.56: Why Anti-Aliasing Works -->
+  <section id="s-12-56" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.56</span>
+      <h2>Why Anti-Aliasing Works</h2>
+      <button class="bookmark-btn" data-id="s-12-56" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>An anti-alias filter removes frequencies that would overlap after sampling.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>wide source spectrum
+      ↓
+low-pass
+      ↓
+narrow safe spectrum
+      ↓
+sampling
+      ↓
+separated replicas</code></pre>
+</div></p>
+<p>This makes the C03 Nyquist discussion tangible.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.57: DFT Resolution -->
+  <section id="s-12-57" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.57</span>
+      <h2>DFT Resolution</h2>
+      <button class="bookmark-btn" data-id="s-12-57" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For a 1-D sampled signal with $N$ samples and sampling frequency $f_s$, the frequency-bin spacing is:</p>
+<p>
+$$
+\Delta f=\frac{f_s}{N}
+$$
+</p>
+<p>under the standard DFT frequency-grid interpretation.</p>
+<p>Therefore increasing $N$, for a fixed $f_s$, gives finer frequency-bin spacing.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.58: Worked Frequency-Bin Example -->
+  <section id="s-12-58" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.58</span>
+      <h2>Worked Frequency-Bin Example</h2>
+      <button class="bookmark-btn" data-id="s-12-58" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p>
+$$
+f_s=1000\text{ Hz}
+$$
+</p>
+<p>and:</p>
+<p>
+$$
+N=500
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+\Delta f=\frac{1000}{500}
+$$
+</p>
+<p>
+$$
+\boxed{\Delta f=2\text{ Hz}}
+$$
+</p>
+<p>This means adjacent DFT frequency bins are separated by 2 Hz under the chosen interpretation.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.59: Spatial-Frequency Units -->
+  <section id="s-12-59" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.59</span>
+      <h2>Spatial-Frequency Units</h2>
+      <button class="bookmark-btn" data-id="s-12-59" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>In images, frequency may be expressed as:</p>
+<ul>
+<li>cycles/pixel,</li>
+<li>cycles/mm,</li>
+<li>line pairs/mm,</li>
+<li>normalized spatial frequency.</li>
+</ul>
+<p>The unit matters.</p>
+<p>A statement such as:</p>
+<p>
+$$
+0.2\text{ cycles/pixel}
+$$
+</p>
+<p>describes a digital spatial frequency.</p>
+<p>Physical units require knowledge of the physical sampling scale.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.60: Zero Frequency Is Relative to the Coordinate Convention -->
+  <section id="s-12-60" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.60</span>
+      <h2>Zero Frequency Is Relative to the Coordinate Convention</h2>
+      <button class="bookmark-btn" data-id="s-12-60" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Whether the DC term is displayed at the corner or centre depends on the visualization/index arrangement.</p>
+<p>The underlying zero-frequency component is still:</p>
+<p>
+$$
+F(0,0)
+$$
+</p>
+<p>before shifting.</p>
+<p>This matters when writing code that constructs filters.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.61: Common Traps -->
+  <section id="s-12-61" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.61</span>
+      <h2>Common Traps</h2>
+      <button class="bookmark-btn" data-id="s-12-61" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h2>Trap 1 — “FFT is a different transform from DFT.”</h2>
+<p>False.</p>
+<p>FFT is an efficient algorithm for computing the DFT.</p>
+<h2>Trap 2 — “Bright spectrum spot means bright object.”</h2>
+<p>False.</p>
+<p>It indicates strong frequency magnitude.</p>
+<h2>Trap 3 — “Magnitude spectrum contains all spatial information.”</h2>
+<p>Not generally.</p>
+<p>Phase is important.</p>
+<h2>Trap 4 — “Fourier transform only works on periodic images.”</h2>
+<p>False.</p>
+<p>The DFT represents finite sampled signals; periodic extension is inherent in some mathematical interpretations of the DFT.</p>
+<h2>Trap 5 — “Low frequencies mean dark pixels.”</h2>
+<p>False.</p>
+<p>Low frequency means slow spatial variation.</p>
+<h2>Trap 6 — “High-pass filtering only detects edges.”</h2>
+<p>Not exclusively.</p>
+<p>It emphasizes high-frequency content, including texture and noise.</p>
+<h2>Trap 7 — “DFT multiplication always gives linear convolution.”</h2>
+<p>False without appropriate padding/interpretation.</p>
+<h2>Trap 8 — “The inverse FFT output should never contain a tiny imaginary term.”</h2>
+<p>Numerical floating-point effects can produce tiny residual imaginary values.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.62: Exam Formula Sheet -->
+  <section id="s-12-62" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.62</span>
+      <h2>Exam Formula Sheet</h2>
+      <button class="bookmark-btn" data-id="s-12-62" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>2-D DFT</h3>
+<p>
+$$
+\boxed{
+F(u,v)
+=
+\sum_{x=0}^{M-1}
+\sum_{y=0}^{N-1}
+f(x,y)
+e^{-i2\pi
+\left(
+\frac{ux}{M}
++
+\frac{vy}{N}
+\right)}
+}
+$$
+</p>
+<h3>Inverse DFT</h3>
+<p>
+$$
+\boxed{
+f(x,y)
+=
+\frac1{MN}
+\sum_u\sum_v
+F(u,v)
+e^{i2\pi
+\left(
+\frac{ux}{M}
++
+\frac{vy}{N}
+\right)}
+}
+$$
+</p>
+<h3>Magnitude</h3>
+<p>
+$$
+\boxed{
+|F|=\sqrt{\Re(F)^2+\Im(F)^2}
+}
+$$
+</p>
+<h3>Phase</h3>
+<p>
+$$
+\boxed{
+\phi=\operatorname{atan2}
+(\Im F,\Re F)
+}
+$$
+</p>
+<h3>Frequency-domain filtering</h3>
+<p>
+$$
+\boxed{
+G=HF
+}
+$$
+</p>
+<h3>Ideal low-pass</h3>
+<p>
+$$
+\boxed{
+H=
+\begin{cases}
+1,&D\le D_0\\
+0,&D>D_0
+\end{cases}
+}
+$$
+</p>
+<h3>Butterworth low-pass</h3>
+<p>
+$$
+\boxed{
+H=
+\frac{1}{
+1+(D/D_0)^{2n}
+}
+}
+$$
+</p>
+<h3>Gaussian low-pass</h3>
+<p>
+$$
+\boxed{
+H=e^{-D^2/(2D_0^2)}
+}
+$$
+</p>
+<h3>Frequency-bin spacing</h3>
+<p>
+$$
+\boxed{
+\Delta f=\frac{f_s}{N}
+}
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.63: Exam-Style Problem — DC Value -->
+  <section id="s-12-63" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.63</span>
+      <h2>Exam-Style Problem — DC Value</h2>
+      <button class="bookmark-btn" data-id="s-12-63" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Given:</p>
+<p>
+$$
+I=
+\begin{bmatrix}
+2&4\\
+6&8
+\end{bmatrix}
+$$
+</p>
+<p>find $F(0,0)$ and the mean.</p>
+<p>
+$$
+F(0,0)=2+4+6+8=20
+$$
+</p>
+<p>Mean:</p>
+<p>
+$$
+\mu=\frac{20}{4}=5
+$$
+</p>
+<p>Therefore:</p>
+<p>
+$$
+\boxed{F(0,0)=20,\quad\mu=5}
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.64: Exam-Style Problem — Ideal Low-Pass -->
+  <section id="s-12-64" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.64</span>
+      <h2>Exam-Style Problem — Ideal Low-Pass</h2>
+      <button class="bookmark-btn" data-id="s-12-64" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p>
+$$
+D_0=15
+$$
+</p>
+<p>For:</p>
+<p>
+$$
+D=8
+$$
+</p>
+<p>
+$$
+H=1
+$$
+</p>
+<p>For:</p>
+<p>
+$$
+D=20
+$$
+</p>
+<p>
+$$
+H=0
+$$
+</p>
+<p>Therefore the ideal filter passes the first frequency location and rejects the second.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.65: Exam-Style Problem — Frequency Bin -->
+  <section id="s-12-65" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.65</span>
+      <h2>Exam-Style Problem — Frequency Bin</h2>
+      <button class="bookmark-btn" data-id="s-12-65" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A 1-D signal is sampled at:</p>
+<p>
+$$
+f_s=800\text{ Hz}
+$$
+</p>
+<p>with:</p>
+<p>
+$$
+N=400
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+\Delta f=\frac{800}{400}=2\text{ Hz}
+$$
+</p>
+<p>So:</p>
+<p>
+$$
+\boxed{2\text{ Hz}}
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.66: Engineering Insight — Think in Representations -->
+  <section id="s-12-66" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.66</span>
+      <h2>Engineering Insight — Think in Representations</h2>
+      <button class="bookmark-btn" data-id="s-12-66" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A useful DIP habit is to ask:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>What is difficult to see here?</code></pre>
+</div></p>
+<p>Then choose the representation.</p>
+<p>For:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>local blur</code></pre>
+</div></p>
+<p>spatial filtering may be easiest.</p>
+<p>For:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>periodic interference</code></pre>
+</div></p>
+<p>frequency representation may be easier.</p>
+<p>For:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>shape alignment</code></pre>
+</div></p>
+<p>geometric coordinates may be easier.</p>
+<p>This is one of the central engineering ideas of image processing:</p>
+<blockquote>
+<p><strong>Change representation when the next operation becomes easier in another domain.</strong></p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.67: Cross-Book Bridges -->
+  <section id="s-12-67" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.67</span>
+      <h2>Cross-Book Bridges</h2>
+      <button class="bookmark-btn" data-id="s-12-67" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <blockquote>
+<p><strong>C03 BRIDGE</strong><br />
+Sampling theory, aliasing and Nyquist become intuitive through spectral replication.</p>
+<p><strong>C08 BRIDGE</strong><br />
+Spatial convolution corresponds to frequency multiplication under the convolution theorem.</p>
+<p><strong>C09 BRIDGE</strong><br />
+Smoothing suppresses high-frequency variation.</p>
+<p><strong>C10 BRIDGE</strong><br />
+Derivatives emphasize high-frequency components, explaining noise amplification.</p>
+<p><strong>C13 BRIDGE</strong><br />
+Frequency-domain low-, high-, band- and notch-filter designs are developed fully next.</p>
+<p><strong>C14 BRIDGE</strong><br />
+Degradation models such as blur can be represented using frequency responses.</p>
+<p><strong>C21–C24 BRIDGE</strong><br />
+DCT-based compression is conceptually related to transform-domain representation but is not identical to the DFT.</p>
+<p><strong>LAB BRIDGE</strong><br />
+Compute FFT/DFT, visualize magnitude/phase, apply low/high-pass masks and reconstruct the image.</p>
+<p><strong>PRACTICE BRIDGE</strong><br />
+Solve DFT calculations, DC/mean relationships, frequency-bin problems and filter-response reasoning.</p>
+<p><strong>EXAM BRIDGE</strong><br />
+Know the 2-D DFT/IDFT equations, magnitude/phase, DC component, FFT vs DFT, convolution theorem, and frequency-domain filter concepts.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.68: Quick Recall -->
+  <section id="s-12-68" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.68</span>
+      <h2>Quick Recall</h2>
+      <button class="bookmark-btn" data-id="s-12-68" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>SPATIAL DOMAIN
+→ where values occur
+
+FREQUENCY DOMAIN
+→ how rapidly values vary
+
+DFT
+→ discrete frequency representation
+
+FFT
+→ efficient DFT computation
+
+MAGNITUDE
+→ strength of frequency component
+
+PHASE
+→ spatial alignment/structure information
+
+LOW-PASS
+→ suppress high frequencies
+
+HIGH-PASS
+→ suppress low frequencies
+
+G=HF
+→ frequency-domain filtering</code></pre>
+</div></p>
+<p>Core rule:</p>
+<blockquote>
+<p><strong>Frequency describes variation across space; it does not directly describe object location.</strong></p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.69: Chapter Checkpoint -->
+  <section id="s-12-69" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.69</span>
+      <h2>Chapter Checkpoint</h2>
+      <button class="bookmark-btn" data-id="s-12-69" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <ol>
+<li>Why is a frequency-domain representation useful?</li>
+<li>Define spatial frequency.</li>
+<li>Write the 2-D DFT equation.</li>
+<li>Write the inverse DFT equation.</li>
+<li>What are magnitude and phase?</li>
+<li>What does the DC component represent?</li>
+<li>Calculate the DC component and mean for a small matrix.</li>
+<li>Explain why the DFT is complex-valued.</li>
+<li>Differentiate DFT and FFT.</li>
+<li>What is spectrum centering?</li>
+<li>Explain low-, high- and band-pass filtering.</li>
+<li>State the convolution theorem.</li>
+<li>Why is zero-padding important in FFT-based linear convolution?</li>
+<li>Why can ideal frequency filters cause ringing?</li>
+<li>Why are periodic noise patterns often easier to detect in the frequency domain?</li>
+<li>Explain spectral replication and aliasing.</li>
+<li>Calculate DFT frequency-bin spacing.</li>
+<li>Why is phase important?</li>
+<li>Why does differentiation emphasize high frequencies?</li>
+<li>What is the difference between spatial-domain and frequency-domain processing?</li>
+</ol>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 12.70: Unit II Transition -->
+  <section id="s-12-70" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.70</span>
+      <h2>Unit II Transition</h2>
+      <button class="bookmark-btn" data-id="s-12-70" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The full conceptual flow is now:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>C06
+INTENSITY
+   ↓
+C07
+HISTOGRAM
+   ↓
+C08
+NEIGHBOURHOOD
+   ↓
+C09
+NOISE
+   ↓
+C10
+DERIVATIVES / EDGES
+   ↓
+C11
+GEOMETRY
+   ↓
+C12
+FREQUENCY REPRESENTATION</code></pre>
+</div></p>
+<p>Next:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>C13
+FREQUENCY-DOMAIN FILTERING
+   ↓
+C14
+IMAGE RESTORATION + DEBLURRING</code></pre>
+</div></p>
+<p>The key shift is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>C12
+understand the spectrum
+
+C13
+design operations on the spectrum
+
+C14
+use a degradation model to recover a better estimate</code></pre>
+</div></p>
+    </div>
+  </section>
+
+  <!-- SECTION 12.71: Mathematical Proof: Centering the 2D Discrete Fourier Spectrum -->
+  <section id="s-12-71" class="section-block">
+    <div class="section-header">
+      <span class="section-num">12.71</span>
+      <h2>Mathematical Proof: Centering the 2D Discrete Fourier Spectrum</h2>
+      <button class="bookmark-btn" data-id="s-12-71" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>The Spectrum Centering Theorem</h3>
+<p>In the standard 2D DFT formulation, the DC frequency component $F(0, 0)$ is situated at the top-left corner $(0, 0)$ of the $M \times N$ discrete grid.
+To display the spectrum with zero frequency shifted to the optical center $(M/2, N/2)$, the input image must be multiplied spatially by $(-1)^{x+y}$ before computing the DFT:
+
+$$\mathcal{F}\left\{ f(x, y) \cdot (-1)^{x+y} \right\} = F\left(u - \frac{M}{2}, v - \frac{N}{2}\right)$$
+</p>
+<h3>Formal Mathematical Proof</h3>
+<p>Recall Euler's identity:
+
+$$e^{j\pi} = \cos(\pi) + j\sin(\pi) = -1$$
+
+Therefore:
+
+$$(-1)^{x+y} = (-1)^x (-1)^y = (e^{j\pi})^x (e^{j\pi})^y = e^{j\pi x} e^{j\pi y} = e^{j 2\pi \left( \frac{x}{2} + \frac{y}{2} \right)}$$
+
+Multiplying numerator and denominator by $M$ and $N$ respectively:
+
+$$(-1)^{x+y} = e^{j 2\pi \left( \frac{x \cdot (M/2)}{M} + \frac{y \cdot (N/2)}{N} \right)}$$
+</p>
+<p>Now evaluate the 2D DFT of the modified image $g(x, y) = f(x, y) (-1)^{x+y}$:
+
+$$G(u, v) = \sum_{x=0}^{M-1} \sum_{y=0}^{N-1} g(x, y) e^{-j 2\pi \left( \frac{ux}{M} + \frac{vy}{N} \right)}$$
+
+Substituting $g(x, y) = f(x, y) e^{j 2\pi \left( \frac{x(M/2)}{M} + \frac{y(N/2)}{N} \right)}$:
+
+$$G(u, v) = \sum_{x=0}^{M-1} \sum_{y=0}^{N-1} f(x, y) e^{-j 2\pi \left( \frac{ux}{M} + \frac{vy}{N} \right)} e^{j 2\pi \left( \frac{(M/2)x}{M} + \frac{(N/2)y}{N} \right)}$$
+
+Combining exponential exponents:
+
+$$G(u, v) = \sum_{x=0}^{M-1} \sum_{y=0}^{N-1} f(x, y) e^{-j 2\pi \left( \frac{(u - M/2)x}{M} + \frac{(v - N/2)y}{N} \right)}$$
+
+By definition of the 2D DFT:
+
+$$G(u, v) = F\left(u - \frac{M}{2}, v - \frac{N}{2}\right)$$
+
+This completes the proof. Centering places the dominant low-frequency energy in the center of the visual display, surrounded symmetrically by radial high-frequency spectral components.</p>
+    </div>
+  </section>
+
+      <!-- Chapter End Package -->
+      <section class="chapter-end-package">
+        <div class="chapter-nav-grid">
+          <a href="ch11-geometric-transforms.html" class="chapter-nav-card">
+            <div class="chapter-nav-dir">← Previous</div>
+            <div class="chapter-nav-title">← Ch 11 — Geometric Transformations</div>
+          </a>
+          <a href="ch13-frequency-filtering.html" class="chapter-nav-card next">
+            <div class="chapter-nav-dir">Next →</div>
+            <div class="chapter-nav-title">Next: Ch 13 — Frequency-Domain Filtering →</div>
+          </a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- FLOATING TTS PANEL (SAFE MANUAL MODE ONLY) -->
+  <div id="tts-panel" style="position:fixed; bottom:20px; right:20px; background:var(--em-surface-1); border:1px solid var(--em-border); border-radius:var(--em-radius-md); padding:12px 16px; box-shadow:var(--sh-lg); z-index:var(--z-float); display:none; gap:10px; align-items:center;">
+    <button class="icon-btn" id="tts-play" title="Play / Pause" style="background:var(--em-accent); color:#fff; border-radius:50%; width:36px; height:36px;">▶</button>
+    <button class="icon-btn" id="tts-stop" title="Stop">⏹</button>
+    <div style="font-size:0.75rem; color:var(--em-text-muted);">
+      <span id="tts-status">Ready</span> · <span id="tts-rate-label">1.0x</span>
+    </div>
+  </div>
+
+  <script src="../assets/js/state.js"></script>
+  <script src="../assets/js/core.js"></script>
+  <script src="../assets/js/tts.js"></script>
+  <script src="../assets/js/glossary.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: document.documentElement.getAttribute('data-theme') === 'light' ? 'default' : 'dark'
+      });
+    });
+  </script>
+</body>
+</html>

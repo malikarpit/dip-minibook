@@ -1,0 +1,2868 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Arpit">
+  <meta name="description" content="Chapter 30: Video Processing &amp; Motion Analysis — Digital Image Processing MiniBook. Video as Spatiotemporal Volume $I(x,y,t)$, Optical Flow Constraint Equation, Aperture Problem, Lucas-Kanade Dense &amp; Sparse Solutions, Background Subtraction, and OpenCV Tracking (Lab 10)">
+  <title>C30: Video Processing &amp; Motion Analysis | DIP MiniBook 📷 Arpit</title>
+
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <link rel="stylesheet" href="../assets/css/chapters.css">
+  <link rel="stylesheet" href="../assets/css/animations.css">
+  <link rel="stylesheet" href="../assets/css/timer.css">
+
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body data-chapter-id="ch30-video-motion-analysis">
+  <div id="progress-bar"></div>
+
+  <!-- Header -->
+  <header id="main-header">
+    <div class="header-left">
+      <button id="sidebar-toggle" class="icon-btn" aria-label="Toggle navigation drawer" title="Toggle Sidebar (S)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <a href="../index.html" class="brand-logo">
+        <div class="brand-icon">DIP</div>
+        <div class="brand-text">
+          <span class="main">Digital Image Processing</span>
+          <span class="sub">DU DSE-3 Engineering MiniBook</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="header-chapter-title">C30: Video Processing &amp; Motion Analysis</div>
+
+    <div class="header-right">
+      <button id="reading-mode-btn" class="icon-btn" aria-label="Toggle reading focus mode" title="Focus Mode (F)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+          <line x1="8" y1="21" x2="16" y2="21"></line>
+          <line x1="12" y1="17" x2="12" y2="21"></line>
+        </svg>
+      </button>
+      <button id="tts-toggle" class="icon-btn" aria-label="Audio Reader" title="Audio Reader">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+        </svg>
+      </button>
+      <button id="theme-toggle" class="icon-btn" aria-label="Cycle theme" title="Theme (T)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="12" cy="12" r="4.5"></circle>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Sidebar Overlay -->
+  <div id="sidebar-overlay"></div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" aria-expanded="true">
+    <div class="sidebar-nav">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">General</div>
+        <a href="../index.html" class="sidebar-link">
+          <span class="link-icon">🏛️</span>
+          <span>Subject Portal</span>
+        </a>
+        <a href="../progress.html" class="sidebar-link">
+          <span class="link-icon">📊</span>
+          <span>Study Dashboard</span>
+        </a>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Current Chapter Sections</div>
+        <a href="#s-30-1" class="sidebar-link"><span class="link-icon">📌</span><span>30.1 Why This Chapter Exists</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-30-2" class="sidebar-link"><span class="link-icon">📌</span><span>30.2 Learning Contract</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-30-3" class="sidebar-link"><span class="link-icon">📌</span><span>30.3 Video Is a Sequence of Frames</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-30-4" class="sidebar-link"><span class="link-icon">📌</span><span>30.4 Spatial vs Temporal Information</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-30-5" class="sidebar-link"><span class="link-icon">📌</span><span>30.5 Frame Rate</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-30-6" class="sidebar-link"><span class="link-icon">📌</span><span>30.6 Temporal Sampling</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-30-7" class="sidebar-link"><span class="link-icon">📌</span><span>30.7 Video Data Shape</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-30-8" class="sidebar-link"><span class="link-icon">📌</span><span>30.8 Video Processing Pipeline</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-30-9" class="sidebar-link"><span class="link-icon">📌</span><span>30.9 Frame Differencing</span> </a>
+      <a href="#s-30-10" class="sidebar-link"><span class="link-icon">📌</span><span>30.10 Thresholding the Difference</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-30-11" class="sidebar-link"><span class="link-icon">📌</span><span>30.11 Worked Frame-Difference Example</span> </a>
+      <a href="#s-30-12" class="sidebar-link"><span class="link-icon">📌</span><span>30.12 Motion Detection vs Tracking</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-30-13" class="sidebar-link"><span class="link-icon">📌</span><span>30.13 Background Subtraction</span> </a>
+      <a href="#s-30-14" class="sidebar-link"><span class="link-icon">📌</span><span>30.14 Motion Vector</span> </a>
+      <a href="#s-30-15" class="sidebar-link"><span class="link-icon">📌</span><span>30.15 Optical Flow</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-30-16" class="sidebar-link"><span class="link-icon">📌</span><span>30.16 Brightness Constancy Assumption</span> </a>
+      <a href="#s-30-17" class="sidebar-link"><span class="link-icon">📌</span><span>30.17 Deriving the Optical-Flow Constraint</span> </a>
+      <a href="#s-30-18" class="sidebar-link"><span class="link-icon">📌</span><span>30.18 Meaning of the Variables</span> </a>
+      <a href="#s-30-19" class="sidebar-link"><span class="link-icon">📌</span><span>30.19 Why One Equation Is Not Enough</span> </a>
+      <a href="#s-30-20" class="sidebar-link"><span class="link-icon">📌</span><span>30.20 Aperture Problem</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-30-21" class="sidebar-link"><span class="link-icon">📌</span><span>30.21 Sparse vs Dense Optical Flow</span> </a>
+      <a href="#s-30-22" class="sidebar-link"><span class="link-icon">📌</span><span>30.22 Lucas–Kanade — Conceptual Introduction</span> </a>
+      <a href="#s-30-23" class="sidebar-link"><span class="link-icon">📌</span><span>30.23 Lucas–Kanade Matrix Form</span> </a>
+      <a href="#s-30-24" class="sidebar-link"><span class="link-icon">📌</span><span>30.24 Why the Local Window Helps</span> </a>
+      <a href="#s-30-25" class="sidebar-link"><span class="link-icon">📌</span><span>30.25 Farnebäck — Conceptual Introduction</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-30-26" class="sidebar-link"><span class="link-icon">📌</span><span>30.26 Optical Flow Visualization</span> </a>
+      <a href="#s-30-27" class="sidebar-link"><span class="link-icon">📌</span><span>30.27 Motion Magnitude</span> </a>
+      <a href="#s-30-28" class="sidebar-link"><span class="link-icon">📌</span><span>30.28 Motion Direction</span> </a>
+      <a href="#s-30-29" class="sidebar-link"><span class="link-icon">📌</span><span>30.29 Optical Flow Does Not Equal Physical Velocity</span> </a>
+      <a href="#s-30-30" class="sidebar-link"><span class="link-icon">📌</span><span>30.30 Camera Motion</span> </a>
+      <a href="#s-30-31" class="sidebar-link"><span class="link-icon">📌</span><span>30.31 Lighting Changes</span> </a>
+      <a href="#s-30-32" class="sidebar-link"><span class="link-icon">📌</span><span>30.32 Occlusion</span> </a>
+      <a href="#s-30-33" class="sidebar-link"><span class="link-icon">📌</span><span>30.33 Motion Blur</span> </a>
+      <a href="#s-30-34" class="sidebar-link"><span class="link-icon">📌</span><span>30.34 YOLO + Tracking</span> </a>
+      <a href="#s-30-35" class="sidebar-link"><span class="link-icon">📌</span><span>30.35 Feature Tracking with Optical Flow</span> </a>
+      <a href="#s-30-36" class="sidebar-link"><span class="link-icon">📌</span><span>30.36 OpenCV Lucas–Kanade Example</span> </a>
+      <a href="#s-30-37" class="sidebar-link"><span class="link-icon">📌</span><span>30.37 Why Detect Features First?</span> </a>
+      <a href="#s-30-38" class="sidebar-link"><span class="link-icon">📌</span><span>30.38 Feature Quality</span> </a>
+      <a href="#s-30-39" class="sidebar-link"><span class="link-icon">📌</span><span>30.39 Dense Optical Flow Example</span> </a>
+      <a href="#s-30-40" class="sidebar-link"><span class="link-icon">📌</span><span>30.40 Converting Flow to Magnitude and Angle</span> </a>
+      <a href="#s-30-41" class="sidebar-link"><span class="link-icon">📌</span><span>30.41 Optical Flow Practical Pipeline</span> </a>
+      <a href="#s-30-42" class="sidebar-link"><span class="link-icon">📌</span><span>30.42 Tracking an Object&#x27;s Average Motion</span> </a>
+      <a href="#s-30-43" class="sidebar-link"><span class="link-icon">📌</span><span>30.43 Why Average Flow Can Fail</span> </a>
+      <a href="#s-30-44" class="sidebar-link"><span class="link-icon">📌</span><span>30.44 Motion Segmentation</span> </a>
+      <a href="#s-30-45" class="sidebar-link"><span class="link-icon">📌</span><span>30.45 Temporal Smoothing</span> </a>
+      <a href="#s-30-46" class="sidebar-link"><span class="link-icon">📌</span><span>30.46 Frame Skipping</span> </a>
+      <a href="#s-30-47" class="sidebar-link"><span class="link-icon">📌</span><span>30.47 Real-Time Motion Analysis</span> </a>
+      <a href="#s-30-48" class="sidebar-link"><span class="link-icon">📌</span><span>30.48 Video Processing Applications</span> </a>
+      <a href="#s-30-49" class="sidebar-link"><span class="link-icon">📌</span><span>30.49 Healthcare Connection</span> </a>
+      <a href="#s-30-50" class="sidebar-link"><span class="link-icon">📌</span><span>30.50 Surveillance Connection</span> </a>
+      <a href="#s-30-51" class="sidebar-link"><span class="link-icon">📌</span><span>30.51 Motion Analysis vs Optical Flow</span> </a>
+      <a href="#s-30-52" class="sidebar-link"><span class="link-icon">📌</span><span>30.52 Common Traps</span> </a>
+      <a href="#s-30-53" class="sidebar-link"><span class="link-icon">📌</span><span>30.53 Exam Lens</span> </a>
+      <a href="#s-30-54" class="sidebar-link"><span class="link-icon">📌</span><span>30.54 Numerical Practice — Optical Flow</span> </a>
+      <a href="#s-30-55" class="sidebar-link"><span class="link-icon">📌</span><span>30.55 Numerical Practice — Motion Magnitude</span> </a>
+      <a href="#s-30-56" class="sidebar-link"><span class="link-icon">📌</span><span>30.56 Chapter Checkpoint</span> </a>
+      <a href="#s-30-57" class="sidebar-link"><span class="link-icon">📌</span><span>30.57 One-Page Recall Sheet</span> </a>
+      <a href="#s-30-58" class="sidebar-link"><span class="link-icon">📌</span><span>30.58 Practical 10 — Motion Tracking in Video</span> </a>
+      <a href="#s-30-59" class="sidebar-link"><span class="link-icon">📌</span><span>30.59 Practical Improvement — Detection + Tracking</span> </a>
+      <a href="#s-30-60" class="sidebar-link"><span class="link-icon">📌</span><span>30.60 Cross-Book Links</span> </a>
+      <a href="#s-30-61" class="sidebar-link"><span class="link-icon">📌</span><span>30.61 Final Chapter Summary</span> </a>
+      <a href="#s-30-62" class="sidebar-link"><span class="link-icon">📌</span><span>30.62 Worked Example — 10-Mark University Model Answer: Optical Flow Equation &amp; Lucas-Kanade Solution</span> </a>
+      <a href="#s-30-63" class="sidebar-link"><span class="link-icon">📌</span><span>30.63 Practical Lab 10: Complete Motion Tracking Pipeline in OpenCV</span> </a>
+      </div>
+
+      
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-i">Part I — The Image</div>
+      <a href="ch01-big-picture.html" class="sidebar-link"><span class="link-icon">01</span><span>The Big Picture</span></a>
+      <a href="ch02-image-formation.html" class="sidebar-link"><span class="link-icon">02</span><span>Formation & Acquisition</span></a>
+      <a href="ch03-sampling-quantization.html" class="sidebar-link"><span class="link-icon">03</span><span>Sampling & Quantization</span></a>
+      <a href="ch04-image-representation.html" class="sidebar-link"><span class="link-icon">04</span><span>Pixels, Matrices & Resolution</span></a>
+      <a href="ch05-colour-models-file-formats.html" class="sidebar-link"><span class="link-icon">05</span><span>Colour Models & Formats</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-ii">Part II — Improving the Image</div>
+      <a href="ch06-point-processing.html" class="sidebar-link"><span class="link-icon">06</span><span>Point Processing & Intensity</span></a>
+      <a href="ch07-histograms-equalization.html" class="sidebar-link"><span class="link-icon">07</span><span>Histograms & Equalization</span></a>
+      <a href="ch08-spatial-filtering.html" class="sidebar-link"><span class="link-icon">08</span><span>Spatial Filtering & Convolution</span></a>
+      <a href="ch09-smoothing-noise-reduction.html" class="sidebar-link"><span class="link-icon">09</span><span>Smoothing & Noise Reduction</span></a>
+      <a href="ch10-sharpening-edge-detection.html" class="sidebar-link"><span class="link-icon">10</span><span>Sharpening & Edge Detection</span></a>
+      <a href="ch11-geometric-transforms.html" class="sidebar-link"><span class="link-icon">11</span><span>Geometric Transforms</span></a>
+      <a href="ch12-fourier-transform.html" class="sidebar-link"><span class="link-icon">12</span><span>Fourier Transform & Frequency</span></a>
+      <a href="ch13-frequency-filtering.html" class="sidebar-link"><span class="link-icon">13</span><span>Frequency-Domain Filtering</span></a>
+      <a href="ch14-image-restoration.html" class="sidebar-link"><span class="link-icon">14</span><span>Restoration & Deblurring</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-iii">Part III — Understanding Content</div>
+      <a href="ch15-segmentation-fundamentals.html" class="sidebar-link"><span class="link-icon">15</span><span>Segmentation Fundamentals</span></a>
+      <a href="ch16-thresholding-otsu.html" class="sidebar-link"><span class="link-icon">16</span><span>Thresholding & Otsu Method</span></a>
+      <a href="ch17-region-segmentation.html" class="sidebar-link"><span class="link-icon">17</span><span>Region-Based Segmentation</span></a>
+      <a href="ch18-mathematical-morphology.html" class="sidebar-link"><span class="link-icon">18</span><span>Mathematical Morphology</span></a>
+      <a href="ch19-features-descriptors.html" class="sidebar-link"><span class="link-icon">19</span><span>Image Features & Descriptors</span></a>
+      <a href="ch20-sift-surf-orb-hog.html" class="sidebar-link"><span class="link-icon">20</span><span>SIFT, SURF, ORB & HOG</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-iv">Part IV — Compressing Images</div>
+      <a href="ch21-compression-entropy.html" class="sidebar-link"><span class="link-icon">21</span><span>Compression & Entropy</span></a>
+      <a href="ch22-lossless-coding.html" class="sidebar-link"><span class="link-icon">22</span><span>Lossless: RLE & Huffman</span></a>
+      <a href="ch23-lossy-dct-jpeg.html" class="sidebar-link"><span class="link-icon">23</span><span>Lossy: DCT & JPEG</span></a>
+      <a href="ch24-wavelets-jpeg2000.html" class="sidebar-link"><span class="link-icon">24</span><span>Wavelets & JPEG 2000</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-v">Part V — Intelligent Vision</div>
+      <a href="ch25-image-classification.html" class="sidebar-link"><span class="link-icon">25</span><span>Image Classification</span></a>
+      <a href="ch26-cnns-image-processing.html" class="sidebar-link"><span class="link-icon">26</span><span>CNNs for Image Processing</span></a>
+      <a href="ch27-modern-vision-architectures.html" class="sidebar-link"><span class="link-icon">27</span><span>Modern Vision Architectures</span></a>
+      <a href="ch28-object-detection-yolo.html" class="sidebar-link"><span class="link-icon">28</span><span>Object Detection: YOLO</span></a>
+      <a href="ch29-image-denoising-autoencoders.html" class="sidebar-link"><span class="link-icon">29</span><span>Image Denoising Autoencoders</span></a>
+      <a href="ch30-video-motion-analysis.html" class="sidebar-link active"><span class="link-icon">30</span><span>Video & Motion Analysis</span></a>
+      <a href="ch31-dip-applications-engineering.html" class="sidebar-link"><span class="link-icon">31</span><span>DIP Applications & Ethics</span></a>
+    </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-brand-mark">
+        <div class="mark">DU</div>
+        <div>
+          <strong>DSE-3 MiniBook</strong>
+          <div>University of Delhi</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mandatory Shell Wrapper -->
+  <div id="main-content">
+    <main class="chapter-content">
+      <!-- Chapter Hero -->
+      <div class="chapter-hero">
+        <div class="hero-meta">
+          <span class="part-badge part-v">Intelligent Vision</span>
+          <span class="chapter-number">CHAPTER 30</span>
+          <span class="reading-time">⏱️ ~60 min read</span>
+          <span class="tag-badge tag-core">Highest Yield (10-mark guarantee)</span>
+        </div>
+        <h1 class="chapter-title">Video Processing &amp; Motion Analysis</h1>
+        <p class="chapter-subtitle">
+          Video as Spatiotemporal Volume $I(x,y,t)$, Optical Flow Constraint Equation, Aperture Problem, Lucas-Kanade Dense &amp; Sparse Solutions, Background Subtraction, and OpenCV Tracking (Lab 10)
+        </p>
+
+        <div class="syllabus-anchor">
+          <span class="syllabus-anchor-label">DU Syllabus</span>
+          <span><strong>Introduction to Video Processing & Motion Analysis:</strong> Video representation as 3D spatiotemporal volume, frame differencing, background subtraction (Gaussian Mixture Models MOG2), optical flow brightness constancy assumption, Optical Flow Constraint Equation ($I_x u + I_y v + I_t = 0$), aperture problem, Lucas-Kanade optical flow method, and Practical 10 implementation.</span>
+        </div>
+      </div>
+
+      <!-- In-Page TOC -->
+      <div class="chapter-checklist-card" style="margin-bottom:var(--em-space-8);">
+        <div class="checklist-title">
+          <span>Table of Contents &amp; Visual Section Map</span>
+          <span class="tag-badge tag-math">63 Deep Sections</span>
+        </div>
+        <ul class="part-chapters-list">
+          <li class="part-chapter-item"><a href="#s-30-1"><strong>30.1</strong> Why This Chapter Exists</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-30-2"><strong>30.2</strong> Learning Contract</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-30-3"><strong>30.3</strong> Video Is a Sequence of Frames</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-30-4"><strong>30.4</strong> Spatial vs Temporal Information</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-30-5"><strong>30.5</strong> Frame Rate</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-30-6"><strong>30.6</strong> Temporal Sampling</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-30-7"><strong>30.7</strong> Video Data Shape</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-30-8"><strong>30.8</strong> Video Processing Pipeline</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-30-9"><strong>30.9</strong> Frame Differencing</a> </li>
+      <li class="part-chapter-item"><a href="#s-30-10"><strong>30.10</strong> Thresholding the Difference</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-30-11"><strong>30.11</strong> Worked Frame-Difference Example</a> </li>
+      <li class="part-chapter-item"><a href="#s-30-12"><strong>30.12</strong> Motion Detection vs Tracking</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-30-13"><strong>30.13</strong> Background Subtraction</a> </li>
+      <li class="part-chapter-item"><a href="#s-30-14"><strong>30.14</strong> Motion Vector</a> </li>
+      <li class="part-chapter-item"><a href="#s-30-15"><strong>30.15</strong> Optical Flow</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-30-16"><strong>30.16</strong> Brightness Constancy Assumption</a> </li>
+      <li class="part-chapter-item"><a href="#s-30-17"><strong>30.17</strong> Deriving the Optical-Flow Constraint</a> </li>
+      <li class="part-chapter-item"><a href="#s-30-18"><strong>30.18</strong> Meaning of the Variables</a> </li>
+      <li class="part-chapter-item"><a href="#s-30-19"><strong>30.19</strong> Why One Equation Is Not Enough</a> </li>
+      <li class="part-chapter-item"><a href="#s-30-20"><strong>30.20</strong> Aperture Problem</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-30-21"><strong>30.21</strong> Sparse vs Dense Optical Flow</a> </li>
+      <li class="part-chapter-item"><a href="#s-30-22"><strong>30.22</strong> Lucas–Kanade — Conceptual Introduction</a> </li>
+      <li class="part-chapter-item"><a href="#s-30-23"><strong>30.23</strong> Lucas–Kanade Matrix Form</a> </li>
+      <li class="part-chapter-item"><a href="#s-30-24"><strong>30.24</strong> Why the Local Window Helps</a> </li>
+      <li class="part-chapter-item"><a href="#s-30-25"><strong>30.25</strong> Farnebäck — Conceptual Introduction</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-30-26"><strong>30.26</strong> Optical Flow Visualization</a> </li>
+      <li class="part-chapter-item"><a href="#s-30-27"><strong>30.27</strong> Motion Magnitude</a> </li>
+      <li class="part-chapter-item"><a href="#s-30-28"><strong>30.28</strong> Motion Direction</a> </li>
+      <li class="part-chapter-item"><a href="#s-30-29"><strong>30.29</strong> Optical Flow Does Not Equal Physical Velocity</a> </li>
+      <li class="part-chapter-item"><a href="#s-30-30"><strong>30.30</strong> Camera Motion</a> </li>
+      <li class="part-chapter-item"><a href="#s-30-31"><strong>30.31</strong> Lighting Changes</a> </li>
+      <li class="part-chapter-item"><a href="#s-30-32"><strong>30.32</strong> Occlusion</a> </li>
+      <li class="part-chapter-item"><a href="#s-30-33"><strong>30.33</strong> Motion Blur</a> </li>
+      <li class="part-chapter-item"><a href="#s-30-34"><strong>30.34</strong> YOLO + Tracking</a> </li>
+      <li class="part-chapter-item"><a href="#s-30-35"><strong>30.35</strong> Feature Tracking with Optical Flow</a> </li>
+      <li class="part-chapter-item"><a href="#s-30-36"><strong>30.36</strong> OpenCV Lucas–Kanade Example</a> </li>
+      <li class="part-chapter-item"><a href="#s-30-37"><strong>30.37</strong> Why Detect Features First?</a> </li>
+      <li class="part-chapter-item"><a href="#s-30-38"><strong>30.38</strong> Feature Quality</a> </li>
+      <li class="part-chapter-item"><a href="#s-30-39"><strong>30.39</strong> Dense Optical Flow Example</a> </li>
+      <li class="part-chapter-item"><a href="#s-30-40"><strong>30.40</strong> Converting Flow to Magnitude and Angle</a> </li>
+      <li class="part-chapter-item"><a href="#s-30-41"><strong>30.41</strong> Optical Flow Practical Pipeline</a> </li>
+      <li class="part-chapter-item"><a href="#s-30-42"><strong>30.42</strong> Tracking an Object&#x27;s Average Motion</a> </li>
+      <li class="part-chapter-item"><a href="#s-30-43"><strong>30.43</strong> Why Average Flow Can Fail</a> </li>
+      <li class="part-chapter-item"><a href="#s-30-44"><strong>30.44</strong> Motion Segmentation</a> </li>
+      <li class="part-chapter-item"><a href="#s-30-45"><strong>30.45</strong> Temporal Smoothing</a> </li>
+      <li class="part-chapter-item"><a href="#s-30-46"><strong>30.46</strong> Frame Skipping</a> </li>
+      <li class="part-chapter-item"><a href="#s-30-47"><strong>30.47</strong> Real-Time Motion Analysis</a> </li>
+      <li class="part-chapter-item"><a href="#s-30-48"><strong>30.48</strong> Video Processing Applications</a> </li>
+      <li class="part-chapter-item"><a href="#s-30-49"><strong>30.49</strong> Healthcare Connection</a> </li>
+      <li class="part-chapter-item"><a href="#s-30-50"><strong>30.50</strong> Surveillance Connection</a> </li>
+      <li class="part-chapter-item"><a href="#s-30-51"><strong>30.51</strong> Motion Analysis vs Optical Flow</a> </li>
+      <li class="part-chapter-item"><a href="#s-30-52"><strong>30.52</strong> Common Traps</a> </li>
+      <li class="part-chapter-item"><a href="#s-30-53"><strong>30.53</strong> Exam Lens</a> </li>
+      <li class="part-chapter-item"><a href="#s-30-54"><strong>30.54</strong> Numerical Practice — Optical Flow</a> </li>
+      <li class="part-chapter-item"><a href="#s-30-55"><strong>30.55</strong> Numerical Practice — Motion Magnitude</a> </li>
+      <li class="part-chapter-item"><a href="#s-30-56"><strong>30.56</strong> Chapter Checkpoint</a> </li>
+      <li class="part-chapter-item"><a href="#s-30-57"><strong>30.57</strong> One-Page Recall Sheet</a> </li>
+      <li class="part-chapter-item"><a href="#s-30-58"><strong>30.58</strong> Practical 10 — Motion Tracking in Video</a> </li>
+      <li class="part-chapter-item"><a href="#s-30-59"><strong>30.59</strong> Practical Improvement — Detection + Tracking</a> </li>
+      <li class="part-chapter-item"><a href="#s-30-60"><strong>30.60</strong> Cross-Book Links</a> </li>
+      <li class="part-chapter-item"><a href="#s-30-61"><strong>30.61</strong> Final Chapter Summary</a> </li>
+      <li class="part-chapter-item"><a href="#s-30-62"><strong>30.62</strong> Worked Example — 10-Mark University Model Answer: Optical Flow Equation &amp; Lucas-Kanade Solution</a> </li>
+      <li class="part-chapter-item"><a href="#s-30-63"><strong>30.63</strong> Practical Lab 10: Complete Motion Tracking Pipeline in OpenCV</a> </li>
+        </ul>
+      </div>
+
+      <div class="concept-hook" style="margin-bottom:var(--em-space-8);"><h1>C30 — Video Processing and Motion Analysis</h1>
+<blockquote>
+<p><strong>Chapter thesis:</strong> Video processing extends image processing into the temporal dimension, allowing systems to detect, estimate, and track motion by comparing information across successive frames.</p>
+</blockquote>
+<hr /></div>
+
+      <!-- All Numbered Sections -->
+      
+  <!-- SECTION 30.1: Why This Chapter Exists -->
+  <section id="s-30-1" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.1</span>
+      <h2>Why This Chapter Exists</h2>
+      <button class="bookmark-btn" data-id="s-30-1" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A single image gives a spatial snapshot.</p>
+<p>A video provides:</p>
+<p>
+$$
+\boxed{\text{space}+\text{time}}
+$$
+</p>
+<p>The university syllabus explicitly requires:</p>
+<ul>
+<li>Introduction to Video Processing;</li>
+<li>Motion Analysis.</li>
+</ul>
+<p>The tenth practical requires:</p>
+<blockquote>
+<p><strong>Motion Tracking in Video — Implement motion tracking using optical flow.</strong> fileciteturn4file0L48-L52 fileciteturn4file0L82-L86</p>
+</blockquote>
+<p>This chapter therefore focuses on the transition:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image
+→ sequence of images
+→ temporal change
+→ motion information
+→ tracking / interpretation</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.2: Learning Contract -->
+  <section id="s-30-2" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.2</span>
+      <h2>Learning Contract</h2>
+      <button class="bookmark-btn" data-id="s-30-2" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>After this chapter, you should be able to:</p>
+<ul>
+<li>define a digital video as a sequence of frames;</li>
+<li>explain frame rate and temporal sampling;</li>
+<li>distinguish spatial resolution from temporal resolution;</li>
+<li>explain video as a 3-D/4-D data structure depending on channel convention;</li>
+<li>distinguish frame differencing, background subtraction, motion detection and tracking;</li>
+<li>explain motion vectors conceptually;</li>
+<li>explain optical flow;</li>
+<li>state the optical-flow constraint equation;</li>
+<li>explain the brightness-constancy assumption;</li>
+<li>explain the aperture problem;</li>
+<li>distinguish sparse and dense optical flow;</li>
+<li>describe common optical-flow algorithms at an introductory level;</li>
+<li>implement simple optical-flow motion visualization in OpenCV;</li>
+<li>interpret motion vectors;</li>
+<li>connect YOLO detection to tracking;</li>
+<li>identify common motion-analysis failure modes.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.3: Video Is a Sequence of Frames -->
+  <section id="s-30-3" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.3</span>
+      <h2>Video Is a Sequence of Frames</h2>
+      <button class="bookmark-btn" data-id="s-30-3" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A video can be represented as:</p>
+<p>
+$$
+I(x,y,t)
+$$
+</p>
+<p>where:</p>
+<ul>
+<li>$x$ = horizontal position;</li>
+<li>$y$ = vertical position;</li>
+<li>$t$ = time/frame index.</li>
+</ul>
+<p>Thus:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Frame 1
+Frame 2
+Frame 3
+...
+Frame N</code></pre>
+</div></p>
+<p>Each frame is an image.</p>
+<p>The new dimension is time.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.4: Spatial vs Temporal Information -->
+  <section id="s-30-4" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.4</span>
+      <h2>Spatial vs Temporal Information</h2>
+      <button class="bookmark-btn" data-id="s-30-4" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Spatial</h3>
+<p>Variation across:</p>
+<p>
+$$
+x,y.
+$$
+</p>
+<h3>Temporal</h3>
+<p>Variation across:</p>
+<p>
+$$
+t.
+$$
+</p>
+<p>A moving object changes its location over time.</p>
+<p>Therefore motion can be inferred from:</p>
+<p>
+$$
+I(x,y,t)
+\quad\text{and}\quad
+I(x,y,t+\Delta t).
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.5: Frame Rate -->
+  <section id="s-30-5" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.5</span>
+      <h2>Frame Rate</h2>
+      <button class="bookmark-btn" data-id="s-30-5" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Frame rate is commonly measured in frames per second:</p>
+<p>
+$$
+FPS=
+\frac{\text{number of frames}}{\text{seconds}}.
+$$
+</p>
+<p>For example:</p>
+<p>
+$$
+30\text{ FPS}
+$$
+</p>
+<p>means approximately 30 frames are captured/displayed each second.</p>
+<p>Higher temporal sampling can capture faster changes more smoothly.</p>
+<p>But it can also increase:</p>
+<ul>
+<li>storage;</li>
+<li>processing;</li>
+<li>transmission requirements.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.6: Temporal Sampling -->
+  <section id="s-30-6" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.6</span>
+      <h2>Temporal Sampling</h2>
+      <button class="bookmark-btn" data-id="s-30-6" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A high-speed movement may be under-sampled at a low frame rate.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>fast motion
+↓
+few sampled frames
+↓
+large apparent jumps</code></pre>
+</div></p>
+<p>At a higher frame rate:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>fast motion
+↓
+more temporal samples
+↓
+smaller frame-to-frame displacement</code></pre>
+</div></p>
+<p>This is analogous to spatial sampling from C03, but now the sampling axis is time.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.7: Video Data Shape -->
+  <section id="s-30-7" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.7</span>
+      <h2>Video Data Shape</h2>
+      <button class="bookmark-btn" data-id="s-30-7" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A grayscale video can be represented conceptually as:</p>
+<p>
+$$
+T\times H\times W.
+$$
+</p>
+<p>An RGB video can be:</p>
+<p>
+$$
+T\times H\times W\times3.
+$$
+</p>
+<p>For a batch of videos:</p>
+<p>
+$$
+B\times T\times H\times W\times C.
+$$
+</p>
+<p>The exact tensor ordering depends on the software framework.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.8: Video Processing Pipeline -->
+  <section id="s-30-8" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.8</span>
+      <h2>Video Processing Pipeline</h2>
+      <button class="bookmark-btn" data-id="s-30-8" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A generic system is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>video stream
+   ↓
+frame capture
+   ↓
+frame preprocessing
+   ↓
+motion / feature analysis
+   ↓
+detection / segmentation / optical flow
+   ↓
+temporal interpretation
+   ↓
+tracking / event decision
+   ↓
+output</code></pre>
+</div></p>
+<p>Different systems use different subsets of these stages.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.9: Frame Differencing -->
+  <section id="s-30-9" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.9</span>
+      <h2>Frame Differencing</h2>
+      <button class="bookmark-btn" data-id="s-30-9" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>One of the simplest motion-detection methods is frame differencing.</p>
+<p>Given two grayscale frames:</p>
+<p>
+$$
+I_t(x,y)
+$$
+</p>
+<p>and:</p>
+<p>
+$$
+I_{t-1}(x,y),
+$$
+</p>
+<p>calculate:</p>
+<p>
+$$
+D(x,y)
+=
+|I_t(x,y)-I_{t-1}(x,y)|.
+$$
+</p>
+<p>Large values indicate significant pixel change.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.10: Thresholding the Difference -->
+  <section id="s-30-10" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.10</span>
+      <h2>Thresholding the Difference</h2>
+      <button class="bookmark-btn" data-id="s-30-10" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A binary motion mask can be:</p>
+<p>
+$$
+M(x,y)=
+\begin{cases}
+1,&D(x,y)>T\\
+0,&D(x,y)\le T
+\end{cases}
+$$
+</p>
+<p>where $T$ is a threshold.</p>
+<p>This converts change into a binary motion region.</p>
+<p>The approach is simple but sensitive to:</p>
+<ul>
+<li>camera motion;</li>
+<li>illumination change;</li>
+<li>noise;</li>
+<li>shadows.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.11: Worked Frame-Difference Example -->
+  <section id="s-30-11" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.11</span>
+      <h2>Worked Frame-Difference Example</h2>
+      <button class="bookmark-btn" data-id="s-30-11" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p>
+$$
+I_{t-1}(x,y)=100
+$$
+</p>
+<p>and:</p>
+<p>
+$$
+I_t(x,y)=130.
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+D=|130-100|=30.
+$$
+</p>
+<p>If:</p>
+<p>
+$$
+T=20,
+$$
+</p>
+<p>then:</p>
+<p>
+$$
+D>T
+$$
+</p>
+<p>and the pixel is marked as changed.</p>
+<p>If:</p>
+<p>
+$$
+T=40,
+$$
+</p>
+<p>it is not marked.</p>
+<p>Thus threshold selection controls sensitivity.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.12: Motion Detection vs Tracking -->
+  <section id="s-30-12" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.12</span>
+      <h2>Motion Detection vs Tracking</h2>
+      <button class="bookmark-btn" data-id="s-30-12" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Motion detection</h3>
+<p>Answers:</p>
+<blockquote>
+<p>Where did something change?</p>
+</blockquote>
+<h3>Tracking</h3>
+<p>Answers:</p>
+<blockquote>
+<p>Where is the same moving object over time?</p>
+</blockquote>
+<p>A binary motion mask does not automatically establish object identity.</p>
+<p>Tracking requires temporal association.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.13: Background Subtraction -->
+  <section id="s-30-13" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.13</span>
+      <h2>Background Subtraction</h2>
+      <button class="bookmark-btn" data-id="s-30-13" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>If the camera is stationary, a background model can be used.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>current frame
+      ↓
+compare with background
+      ↓
+foreground mask</code></pre>
+</div></p>
+<p>This can isolate moving objects from a relatively stable scene.</p>
+<p>But it can struggle with:</p>
+<ul>
+<li>dynamic backgrounds;</li>
+<li>lighting changes;</li>
+<li>camera motion;</li>
+<li>shadows.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.14: Motion Vector -->
+  <section id="s-30-14" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.14</span>
+      <h2>Motion Vector</h2>
+      <button class="bookmark-btn" data-id="s-30-14" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A motion vector describes displacement:</p>
+<p>
+$$
+\mathbf{v}
+=
+(u,v)
+$$
+</p>
+<p>where:</p>
+<ul>
+<li>$u$ = horizontal displacement;</li>
+<li>$v$ = vertical displacement.</li>
+</ul>
+<p>Example:</p>
+<p>
+$$
+\mathbf{v}=(4,-2)
+$$
+</p>
+<p>means approximately:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>4 pixels right
+2 pixels up</code></pre>
+</div></p>
+<p>under the selected coordinate convention.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.15: Optical Flow -->
+  <section id="s-30-15" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.15</span>
+      <h2>Optical Flow</h2>
+      <button class="bookmark-btn" data-id="s-30-15" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Optical flow estimates apparent motion of image structures between frames.</p>
+<p>It is often represented as a vector field:</p>
+<p>
+$$
+\mathbf{v}(x,y)
+=
+(u(x,y),v(x,y)).
+$$
+</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Frame t
+   ↓
+optical-flow estimation
+   ↓
+vector field
+   ↓
+motion interpretation</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.16: Brightness Constancy Assumption -->
+  <section id="s-30-16" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.16</span>
+      <h2>Brightness Constancy Assumption</h2>
+      <button class="bookmark-btn" data-id="s-30-16" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A classical starting assumption is that the brightness of a moving point remains approximately constant over a small time interval.</p>
+<p>Suppose:</p>
+<p>
+$$
+I(x,y,t)
+$$
+</p>
+<p>tracks a moving point.</p>
+<p>Then:</p>
+<p>
+$$
+I(x,y,t)
+\approx
+I(x+dx,y+dy,t+dt).
+$$
+</p>
+<p>This assumption allows a motion relationship to be derived.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.17: Deriving the Optical-Flow Constraint -->
+  <section id="s-30-17" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.17</span>
+      <h2>Deriving the Optical-Flow Constraint</h2>
+      <button class="bookmark-btn" data-id="s-30-17" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Start with:</p>
+<p>
+$$
+I(x,y,t)
+=
+I(x+dx,y+dy,t+dt).
+$$
+</p>
+<p>Apply a first-order Taylor expansion:</p>
+<p>
+$$
+I(x+dx,y+dy,t+dt)
+\approx
+I
++
+I_xdx
++
+I_ydy
++
+I_tdt.
+$$
+</p>
+<p>Therefore:</p>
+<p>
+$$
+I_xdx+I_ydy+I_tdt=0.
+$$
+</p>
+<p>Divide by $dt$:</p>
+<p>
+$$
+\boxed{
+I_xu+I_yv+I_t=0
+}
+$$
+</p>
+<p>where:</p>
+<p>
+$$
+u=\frac{dx}{dt},\qquad
+v=\frac{dy}{dt}.
+$$
+</p>
+<p>This is the <strong>optical-flow constraint equation</strong>.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.18: Meaning of the Variables -->
+  <section id="s-30-18" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.18</span>
+      <h2>Meaning of the Variables</h2>
+      <button class="bookmark-btn" data-id="s-30-18" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>
+$$
+I_x
+$$
+</p>
+<p>= spatial intensity gradient in the x direction.</p>
+<p>
+$$
+I_y
+$$
+</p>
+<p>= spatial intensity gradient in the y direction.</p>
+<p>
+$$
+I_t
+$$
+</p>
+<p>= temporal intensity change.</p>
+<p>
+$$
+u,v
+$$
+</p>
+<p>= optical-flow velocity components.</p>
+<p>So:</p>
+<p>
+$$
+I_xu+I_yv+I_t=0
+$$
+</p>
+<p>states that under the brightness-constancy approximation, the observed intensity change is related to image motion.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.19: Why One Equation Is Not Enough -->
+  <section id="s-30-19" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.19</span>
+      <h2>Why One Equation Is Not Enough</h2>
+      <button class="bookmark-btn" data-id="s-30-19" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Unknowns:</p>
+<p>
+$$
+u,v.
+$$
+</p>
+<p>One equation contains two unknowns.</p>
+<p>Therefore the equation alone cannot uniquely determine motion.</p>
+<p>This is the basis of the <strong>aperture problem</strong>.</p>
+<p>Additional assumptions or constraints are needed.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.20: Aperture Problem -->
+  <section id="s-30-20" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.20</span>
+      <h2>Aperture Problem</h2>
+      <button class="bookmark-btn" data-id="s-30-20" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Imagine a long straight edge.</p>
+<p>You may detect motion perpendicular to the edge more reliably than motion along the edge.</p>
+<p>For example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>──────────────
+──────────────</code></pre>
+</div></p>
+<p>A small local window may not contain enough information to determine the full 2-D motion.</p>
+<p>Thus:</p>
+<blockquote>
+<p><strong>Local image information can be insufficient to uniquely determine 2-D motion.</strong></p>
+</blockquote>
+<p>Optical-flow algorithms add spatial smoothness, feature structure, or other constraints to solve the problem.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.21: Sparse vs Dense Optical Flow -->
+  <section id="s-30-21" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.21</span>
+      <h2>Sparse vs Dense Optical Flow</h2>
+      <button class="bookmark-btn" data-id="s-30-21" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Sparse</h3>
+<p>Estimate flow at selected points/features.</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>•       →
+      •
+  •      ↓</code></pre>
+</div></p>
+<p>Advantages:</p>
+<ul>
+<li>less computation;</li>
+<li>useful for tracking distinctive points.</li>
+</ul>
+<h3>Dense</h3>
+<p>Estimate flow for many/all pixels.</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>→ → → ↓ ↘
+→ → ↓ ↓ ↘
+→ ↓ ↓ ↘ →</code></pre>
+</div></p>
+<p>Advantages:</p>
+<ul>
+<li>rich motion field;</li>
+<li>useful for motion visualization and scene analysis.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.22: Lucas–Kanade — Conceptual Introduction -->
+  <section id="s-30-22" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.22</span>
+      <h2>Lucas–Kanade — Conceptual Introduction</h2>
+      <button class="bookmark-btn" data-id="s-30-22" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Lucas–Kanade is a classical sparse/dense-local optical-flow approach.</p>
+<p>The basic assumption is that nearby pixels have similar motion.</p>
+<p>A local window provides multiple equations:</p>
+<p>
+$$
+I_xu+I_yv=-I_t.
+$$
+</p>
+<p>The equations can be organized as:</p>
+<p>
+$$
+A\mathbf{v}=\mathbf{b}
+$$
+</p>
+<p>where:</p>
+<p>
+$$
+\mathbf{v}=
+\begin{bmatrix}
+u\\v
+\end{bmatrix}.
+$$
+</p>
+<p>A least-squares solution can estimate the motion.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.23: Lucas–Kanade Matrix Form -->
+  <section id="s-30-23" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.23</span>
+      <h2>Lucas–Kanade Matrix Form</h2>
+      <button class="bookmark-btn" data-id="s-30-23" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For a local window with $n$ pixels:</p>
+<p>
+$$
+A=
+\begin{bmatrix}
+I_{x1} & I_{y1}\\
+I_{x2} & I_{y2}\\
+\vdots & \vdots\\
+I_{xn} & I_{yn}
+\end{bmatrix}
+$$
+</p>
+<p>and:</p>
+<p>
+$$
+\mathbf{b}=
+\begin{bmatrix}
+-I_{t1}\\
+-I_{t2}\\
+\vdots\\
+-I_{tn}
+\end{bmatrix}.
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+A\mathbf{v}=\mathbf{b}.
+$$
+</p>
+<p>A least-squares estimate is:</p>
+<p>
+$$
+\boxed{
+\mathbf{v}
+=
+(A^TA)^{-1}A^T\mathbf{b}
+}
+$$
+</p>
+<p>when the inverse exists and the conditioning is suitable.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.24: Why the Local Window Helps -->
+  <section id="s-30-24" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.24</span>
+      <h2>Why the Local Window Helps</h2>
+      <button class="bookmark-btn" data-id="s-30-24" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>One pixel gives:</p>
+<p>
+$$
+I_xu+I_yv=-I_t.
+$$
+</p>
+<p>Many nearby pixels give multiple equations.</p>
+<p>That can make:</p>
+<p>
+$$
+u,v
+$$
+</p>
+<p>estimable.</p>
+<p>The assumption is that the local region shares approximately the same motion.</p>
+<p>This is a powerful but imperfect assumption.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.25: Farnebäck — Conceptual Introduction -->
+  <section id="s-30-25" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.25</span>
+      <h2>Farnebäck — Conceptual Introduction</h2>
+      <button class="bookmark-btn" data-id="s-30-25" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Farnebäck optical flow is a dense optical-flow method based on local polynomial representations of image neighbourhoods.</p>
+<p>At a university introductory level, remember:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Lucas–Kanade
+→ local point/window-based estimation
+
+Farnebäck
+→ dense flow estimation</code></pre>
+</div></p>
+<p>The practical can use OpenCV's available implementation without requiring a full derivation of the underlying polynomial model.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.26: Optical Flow Visualization -->
+  <section id="s-30-26" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.26</span>
+      <h2>Optical Flow Visualization</h2>
+      <button class="bookmark-btn" data-id="s-30-26" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A useful visualization is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image frame
++
+arrows representing motion vectors</code></pre>
+</div></p>
+<p>For example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>object →→→→
+      ↗
+   ↗</code></pre>
+</div></p>
+<p>Vector direction indicates motion direction.</p>
+<p>Vector magnitude indicates estimated displacement/speed over the selected time interval.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.27: Motion Magnitude -->
+  <section id="s-30-27" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.27</span>
+      <h2>Motion Magnitude</h2>
+      <button class="bookmark-btn" data-id="s-30-27" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Given:</p>
+<p>
+$$
+\mathbf{v}=(u,v),
+$$
+</p>
+<p>the magnitude is:</p>
+<p>
+$$
+|\mathbf{v}|
+=
+\sqrt{u^2+v^2}.
+$$
+</p>
+<p>Example:</p>
+<p>
+$$
+u=3,\quad v=4.
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+|\mathbf{v}|
+=
+\sqrt{3^2+4^2}
+=
+\sqrt{25}
+=
+\boxed5.
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.28: Motion Direction -->
+  <section id="s-30-28" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.28</span>
+      <h2>Motion Direction</h2>
+      <button class="bookmark-btn" data-id="s-30-28" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The direction angle can be represented as:</p>
+<p>
+$$
+\theta=
+\operatorname{atan2}(v,u).
+$$
+</p>
+<p>For:</p>
+<p>
+$$
+(u,v)=(1,1),
+$$
+</p>
+<p>the direction is approximately:</p>
+<p>
+$$
+45^\circ
+$$
+</p>
+<p>under the mathematical coordinate convention.</p>
+<p>Image-coordinate y direction may point downward, so visualization code must handle coordinate conventions carefully.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.29: Optical Flow Does Not Equal Physical Velocity -->
+  <section id="s-30-29" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.29</span>
+      <h2>Optical Flow Does Not Equal Physical Velocity</h2>
+      <button class="bookmark-btn" data-id="s-30-29" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>An image-space vector such as:</p>
+<p>
+$$
+(5,0)
+$$
+</p>
+<p>means approximately 5 pixels of apparent horizontal displacement over the selected time interval.</p>
+<p>It does not automatically mean:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>5 metres/second</code></pre>
+</div></p>
+<p>To infer physical velocity, additional scene geometry, calibration, depth and timing information are needed.</p>
+<p>This is an important engineering distinction.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.30: Camera Motion -->
+  <section id="s-30-30" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.30</span>
+      <h2>Camera Motion</h2>
+      <button class="bookmark-btn" data-id="s-30-30" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Optical flow can be generated by:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>object motion
++
+camera motion
++
+both</code></pre>
+</div></p>
+<p>If the camera moves, the background can produce large flow.</p>
+<p>Therefore a system may need:</p>
+<ul>
+<li>camera stabilization;</li>
+<li>background modeling;</li>
+<li>global-motion estimation;</li>
+<li>inertial information;</li>
+<li>geometric compensation.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.31: Lighting Changes -->
+  <section id="s-30-31" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.31</span>
+      <h2>Lighting Changes</h2>
+      <button class="bookmark-btn" data-id="s-30-31" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Brightness constancy can fail when illumination changes.</p>
+<p>Example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>same object
+before light change → dark
+after light change  → bright</code></pre>
+</div></p>
+<p>Pixel intensities change even without object motion.</p>
+<p>Thus:</p>
+<p>
+$$
+I_t\neq0
+$$
+</p>
+<p>does not necessarily imply object motion.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.32: Occlusion -->
+  <section id="s-30-32" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.32</span>
+      <h2>Occlusion</h2>
+      <button class="bookmark-btn" data-id="s-30-32" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>An object may disappear behind another object.</p>
+<p>Optical flow cannot always maintain a continuous correspondence through the occluded region.</p>
+<p>Tracking systems must therefore reason about:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>appearance
++
+motion
++
+visibility
++
+identity</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.33: Motion Blur -->
+  <section id="s-30-33" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.33</span>
+      <h2>Motion Blur</h2>
+      <button class="bookmark-btn" data-id="s-30-33" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Fast motion can blur objects.</p>
+<p>This makes feature localization and correspondence more difficult.</p>
+<p>The system may observe:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>sharp object
+→ blurred region</code></pre>
+</div></p>
+<p>rather than a simple translated copy.</p>
+<p>This connects motion analysis to image-formation and restoration ideas from earlier chapters.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.34: YOLO + Tracking -->
+  <section id="s-30-34" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.34</span>
+      <h2>YOLO + Tracking</h2>
+      <button class="bookmark-btn" data-id="s-30-34" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>C28 detects objects.</p>
+<p>C30 can maintain temporal information.</p>
+<p>A practical system can combine:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>frame
+ ↓
+YOLO detection
+ ↓
+boxes
+ ↓
+tracker
+ ↓
+object identity
+ ↓
+trajectory</code></pre>
+</div></p>
+<p>or:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>frame
+ ↓
+feature points
+ ↓
+optical flow
+ ↓
+motion estimates</code></pre>
+</div></p>
+<p>These are related but distinct strategies.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.35: Feature Tracking with Optical Flow -->
+  <section id="s-30-35" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.35</span>
+      <h2>Feature Tracking with Optical Flow</h2>
+      <button class="bookmark-btn" data-id="s-30-35" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose selected feature points are:</p>
+<p>
+$$
+P_t=
+\{p_1,p_2,\ldots,p_n\}.
+$$
+</p>
+<p>Optical flow estimates:</p>
+<p>
+$$
+p_i(t+\Delta t)
+$$
+</p>
+<p>from their previous positions.</p>
+<p>Then trajectories can be constructed:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>p(t0)
+ ↓
+p(t1)
+ ↓
+p(t2)
+ ↓
+p(t3)</code></pre>
+</div></p>
+<p>This turns local motion vectors into temporal tracks.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.36: OpenCV Lucas–Kanade Example -->
+  <section id="s-30-36" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.36</span>
+      <h2>OpenCV Lucas–Kanade Example</h2>
+      <button class="bookmark-btn" data-id="s-30-36" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A common educational implementation is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>python</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>from __future__ import annotations
+
+import cv2
+import numpy as np
+
+
+cap = cv2.VideoCapture(&quot;input.mp4&quot;)
+
+if not cap.isOpened():
+    raise RuntimeError(&quot;Could not open the video.&quot;)
+
+feature_params = dict(
+    maxCorners=100,
+    qualityLevel=0.3,
+    minDistance=7,
+    blockSize=7,
+)
+
+lk_params = dict(
+    winSize=(15, 15),
+    maxLevel=2,
+    criteria=(
+        cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT,
+        10,
+        0.03,
+    ),
+)
+
+ok, first_frame = cap.read()
+if not ok:
+    cap.release()
+    raise RuntimeError(&quot;Could not read the first frame.&quot;)
+
+old_gray = cv2.cvtColor(
+    first_frame,
+    cv2.COLOR_BGR2GRAY,
+)
+
+old_points = cv2.goodFeaturesToTrack(
+    old_gray,
+    mask=None,
+    **feature_params,
+)
+
+while True:
+    ok, frame = cap.read()
+    if not ok:
+        break
+
+    frame_gray = cv2.cvtColor(
+        frame,
+        cv2.COLOR_BGR2GRAY,
+    )
+
+    if old_points is not None:
+        new_points, status, _ = cv2.calcOpticalFlowPyrLK(
+            old_gray,
+            frame_gray,
+            old_points,
+            None,
+            **lk_params,
+        )
+
+        if new_points is not None:
+            valid_new = new_points[status == 1]
+            valid_old = old_points[status == 1]
+
+            for (x1, y1), (x2, y2) in zip(valid_old, valid_new):
+                cv2.arrowedLine(
+                    frame,
+                    (int(x1), int(y1)),
+                    (int(x2), int(y2)),
+                    (255, 255, 255),
+                    1,
+                    tipLength=0.25,
+                )
+
+            old_points = valid_new.reshape(-1, 1, 2)
+
+    old_gray = frame_gray
+
+    cv2.imshow(&quot;Optical Flow&quot;, frame)
+
+    if cv2.waitKey(1) &amp; 0xFF == ord(&quot;q&quot;):
+        break
+
+cap.release()
+cv2.destroyAllWindows()</code></pre>
+</div></p>
+<p>This is a practical Lucas–Kanade feature-tracking demonstration.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.37: Why Detect Features First? -->
+  <section id="s-30-37" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.37</span>
+      <h2>Why Detect Features First?</h2>
+      <button class="bookmark-btn" data-id="s-30-37" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Lucas–Kanade tracking is commonly applied to selected points rather than blindly tracking every pixel.</p>
+<p>Therefore:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>frame
+→ detect good feature points
+→ track those points
+→ visualize trajectories</code></pre>
+</div></p>
+<p>Feature selection improves the usefulness of sparse tracking.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.38: Feature Quality -->
+  <section id="s-30-38" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.38</span>
+      <h2>Feature Quality</h2>
+      <button class="bookmark-btn" data-id="s-30-38" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Good tracking points tend to have strong spatial structure.</p>
+<p>A flat region:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>██████████
+██████████</code></pre>
+</div></p>
+<p>contains little directional information.</p>
+<p>A corner:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>█████.....
+█████.....
+█████.....
+.....     
+.....</code></pre>
+</div></p>
+<p>provides stronger local constraints.</p>
+<p>This connects optical flow to feature detection from C19/C20.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.39: Dense Optical Flow Example -->
+  <section id="s-30-39" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.39</span>
+      <h2>Dense Optical Flow Example</h2>
+      <button class="bookmark-btn" data-id="s-30-39" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>OpenCV also provides dense-flow methods.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>python</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>flow = cv2.calcOpticalFlowFarneback(
+    previous_gray,
+    current_gray,
+    None,
+    0.5,
+    3,
+    15,
+    3,
+    5,
+    1.2,
+    0,
+)</code></pre>
+</div></p>
+<p>The result contains approximately:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>flow[..., 0] → horizontal displacement
+flow[..., 1] → vertical displacement</code></pre>
+</div></p>
+<p>Parameter meanings depend on the API and should be documented in the practical.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.40: Converting Flow to Magnitude and Angle -->
+  <section id="s-30-40" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.40</span>
+      <h2>Converting Flow to Magnitude and Angle</h2>
+      <button class="bookmark-btn" data-id="s-30-40" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>python</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>magnitude, angle = cv2.cartToPolar(
+    flow[..., 0],
+    flow[..., 1],
+)</code></pre>
+</div></p>
+<p>Then:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>magnitude
+→ how much apparent motion
+
+angle
+→ direction</code></pre>
+</div></p>
+<p>A visualization can map the vector field into arrows or colour-coded direction/magnitude displays.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.41: Optical Flow Practical Pipeline -->
+  <section id="s-30-41" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.41</span>
+      <h2>Optical Flow Practical Pipeline</h2>
+      <button class="bookmark-btn" data-id="s-30-41" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For the university practical:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Video
+ ↓
+Read first frame
+ ↓
+Convert to grayscale
+ ↓
+Choose feature points / use dense flow
+ ↓
+Read next frame
+ ↓
+Estimate optical flow
+ ↓
+Filter invalid/poor tracks
+ ↓
+Compute displacement
+ ↓
+Visualize vectors
+ ↓
+Repeat for next frame</code></pre>
+</div></p>
+<p>The practical requirement specifically names optical flow, so the experiment should make the temporal correspondence visible rather than merely run a prebuilt tracker. fileciteturn4file0L82-L86</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.42: Tracking an Object&#x27;s Average Motion -->
+  <section id="s-30-42" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.42</span>
+      <h2>Tracking an Object&#x27;s Average Motion</h2>
+      <button class="bookmark-btn" data-id="s-30-42" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose a set of feature points inside an object produces vectors:</p>
+<p>
+$$
+(2,1),\quad
+(3,2),\quad
+(1,2),\quad
+(2,1).
+$$
+</p>
+<p>Mean horizontal motion:</p>
+<p>
+$$
+\bar u=
+\frac{2+3+1+2}{4}
+=
+2.
+$$
+</p>
+<p>Mean vertical motion:</p>
+<p>
+$$
+\bar v=
+\frac{1+2+2+1}{4}
+=
+1.5.
+$$
+</p>
+<p>Thus average motion is approximately:</p>
+<p>
+$$
+\boxed{(2,\ 1.5)}.
+$$
+</p>
+<p>This can be used as a simple object-motion estimate when the selected points belong to the same rigid moving region.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.43: Why Average Flow Can Fail -->
+  <section id="s-30-43" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.43</span>
+      <h2>Why Average Flow Can Fail</h2>
+      <button class="bookmark-btn" data-id="s-30-43" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>If the feature points include:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>object
++
+background</code></pre>
+</div></p>
+<p>the mean vector mixes different motions.</p>
+<p>Likewise, for a rotating object, different points can move in different directions.</p>
+<p>Therefore motion statistics should be computed over meaningful regions or tracked objects.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.44: Motion Segmentation -->
+  <section id="s-30-44" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.44</span>
+      <h2>Motion Segmentation</h2>
+      <button class="bookmark-btn" data-id="s-30-44" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A motion field can be converted into regions.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>flow magnitude
+      ↓
+threshold
+      ↓
+motion mask
+      ↓
+connected components
+      ↓
+moving regions</code></pre>
+</div></p>
+<p>This connects motion analysis to segmentation.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.45: Temporal Smoothing -->
+  <section id="s-30-45" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.45</span>
+      <h2>Temporal Smoothing</h2>
+      <button class="bookmark-btn" data-id="s-30-45" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Frame-by-frame measurements can fluctuate.</p>
+<p>A system may smooth motion estimates over time:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>raw:
+2.1, 2.8, 1.7, 3.0, ...
+
+smoothed:
+2.2, 2.3, 2.4, ...</code></pre>
+</div></p>
+<p>Temporal filtering can improve stability but can also introduce lag.</p>
+<p>Thus:</p>
+<p>
+$$
+\boxed{\text{stability} \leftrightarrow \text{responsiveness}}
+$$
+</p>
+<p>is another engineering trade-off.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.46: Frame Skipping -->
+  <section id="s-30-46" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.46</span>
+      <h2>Frame Skipping</h2>
+      <button class="bookmark-btn" data-id="s-30-46" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A system can estimate motion between:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>t and t+1</code></pre>
+</div></p>
+<p>or:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>t and t+2</code></pre>
+</div></p>
+<p>Larger time gaps can produce larger apparent displacement, potentially making correspondence more difficult.</p>
+<p>Smaller gaps give smaller movement but require more processing.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.47: Real-Time Motion Analysis -->
+  <section id="s-30-47" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.47</span>
+      <h2>Real-Time Motion Analysis</h2>
+      <button class="bookmark-btn" data-id="s-30-47" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A real-time pipeline must process frames fast enough.</p>
+<p>If input rate is:</p>
+<p>
+$$
+30\text{ FPS}
+$$
+</p>
+<p>and the algorithm processes only:</p>
+<p>
+$$
+10\text{ FPS},
+$$
+</p>
+<p>frames accumulate or are dropped depending on system design.</p>
+<p>Therefore real-time design may require:</p>
+<ul>
+<li>lower resolution;</li>
+<li>fewer tracked points;</li>
+<li>smaller search windows;</li>
+<li>frame skipping;</li>
+<li>hardware acceleration;</li>
+<li>lightweight algorithms.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.48: Video Processing Applications -->
+  <section id="s-30-48" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.48</span>
+      <h2>Video Processing Applications</h2>
+      <button class="bookmark-btn" data-id="s-30-48" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The syllabus specifically mentions motion analysis, and video processing has applications such as:</p>
+<ul>
+<li>surveillance;</li>
+<li>traffic monitoring;</li>
+<li>sports analysis;</li>
+<li>human motion understanding;</li>
+<li>robotics;</li>
+<li>industrial monitoring.</li>
+</ul>
+<p>These should be treated as application contexts rather than a replacement for the underlying motion-analysis concepts.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.49: Healthcare Connection -->
+  <section id="s-30-49" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.49</span>
+      <h2>Healthcare Connection</h2>
+      <button class="bookmark-btn" data-id="s-30-49" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Video or motion analysis can support applications such as:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>patient movement
+gait analysis
+rehabilitation monitoring</code></pre>
+</div></p>
+<p>But such applications require careful validation.</p>
+<p>Image/video measurements can be affected by:</p>
+<ul>
+<li>camera placement;</li>
+<li>occlusion;</li>
+<li>lighting;</li>
+<li>calibration;</li>
+<li>subject variation.</li>
+</ul>
+<p>The existence of a computer-vision output does not automatically make it clinically valid.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.50: Surveillance Connection -->
+  <section id="s-30-50" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.50</span>
+      <h2>Surveillance Connection</h2>
+      <button class="bookmark-btn" data-id="s-30-50" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A simplified surveillance pipeline may be:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>camera
+ ↓
+video frames
+ ↓
+motion detection
+ ↓
+object detection
+ ↓
+tracking
+ ↓
+event rule
+ ↓
+alert / recording</code></pre>
+</div></p>
+<p>This integrates:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>C28 detection
++
+C30 temporal analysis</code></pre>
+</div></p>
+<p>It also introduces practical issues such as privacy, false alarms and camera motion.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.51: Motion Analysis vs Optical Flow -->
+  <section id="s-30-51" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.51</span>
+      <h2>Motion Analysis vs Optical Flow</h2>
+      <button class="bookmark-btn" data-id="s-30-51" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Optical flow is one technique for motion estimation.</p>
+<p>Motion analysis is broader.</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Motion analysis
+├── frame difference
+├── background subtraction
+├── optical flow
+├── feature tracking
+├── object tracking
+└── trajectory analysis</code></pre>
+</div></p>
+<p>Thus:</p>
+<p>
+$$
+\boxed{\text{optical flow} \subset \text{motion analysis}}
+$$
+</p>
+<p>This distinction is useful in exams and system design.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.52: Common Traps -->
+  <section id="s-30-52" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.52</span>
+      <h2>Common Traps</h2>
+      <button class="bookmark-btn" data-id="s-30-52" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="trap-box"><div class="trap-title"><span>⚠️</span> Trap 1 — Difference between frames always means object motion.</div>
+
+False.
+
+It can also be caused by illumination, sensor noise or camera motion.
+
+</div>
+
+<div class="trap-box"><div class="trap-title"><span>⚠️</span> Trap 2 — Optical flow gives real-world speed directly.</div>
+
+False.
+
+It gives image-space apparent motion unless additional geometry/calibration is available.
+
+</div>
+
+<div class="trap-box"><div class="trap-title"><span>⚠️</span> Trap 3 — Every pixel has a unique reliable flow vector.</div>
+
+False.
+
+Textureless regions, occlusion and ambiguity make estimation difficult.
+
+</div>
+
+<div class="trap-box"><div class="trap-title"><span>⚠️</span> Trap 4 — Tracking and detection are the same.</div>
+
+False.
+
+Detection finds objects; tracking links observations over time.
+
+</div>
+
+<div class="trap-box"><div class="trap-title"><span>⚠️</span> Trap 5 — Brightness constancy always holds.</div>
+
+False.
+
+Lighting and appearance changes can violate it.
+
+</div>
+
+<div class="trap-box"><div class="trap-title"><span>⚠️</span> Trap 6 — More frames always improve tracking.</div>
+
+Not necessarily. More temporal samples increase compute and storage; frame spacing also matters.
+
+</div>
+
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.53: Exam Lens -->
+  <section id="s-30-53" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.53</span>
+      <h2>Exam Lens</h2>
+      <button class="bookmark-btn" data-id="s-30-53" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h2>2-mark questions</h2>
+<p><strong>What is video processing?</strong><br />
+Processing a temporal sequence of image frames to extract, enhance, interpret or transform spatial and temporal information.</p>
+<p><strong>Define optical flow.</strong><br />
+The estimated apparent motion of image structures represented as vectors across an image.</p>
+<p><strong>Write the optical-flow constraint equation.</strong></p>
+<p>
+$$
+\boxed{I_xu+I_yv+I_t=0}
+$$
+</p>
+<hr />
+<h1>54. 5-Mark Question</h1>
+<h3>Explain optical flow.</h3>
+<p>Recommended structure:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>successive frames
+→ brightness-constancy assumption
+→ image gradients
+→ optical-flow constraint
+→ motion vectors
+→ sparse/dense flow
+→ interpretation</code></pre>
+</div></p>
+<p>Mention the aperture problem.</p>
+<hr />
+<h1>55. 10-Mark Question</h1>
+<h3>Explain video motion analysis using optical flow.</h3>
+<p>Include:</p>
+<ol>
+<li>video/frame concept;</li>
+<li>temporal dimension;</li>
+<li>frame differencing;</li>
+<li>motion detection;</li>
+<li>brightness constancy;</li>
+<li>derivation of constraint equation;</li>
+<li>aperture problem;</li>
+<li>sparse vs dense flow;</li>
+<li>feature tracking;</li>
+<li>visualization;</li>
+<li>practical implementation;</li>
+<li>limitations.</li>
+</ol>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.54: Numerical Practice — Optical Flow -->
+  <section id="s-30-54" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.54</span>
+      <h2>Numerical Practice — Optical Flow</h2>
+      <button class="bookmark-btn" data-id="s-30-54" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Given:</p>
+<p>
+$$
+I_x=2,\quad
+I_y=3,\quad
+I_t=-5.
+$$
+</p>
+<p>The optical-flow constraint is:</p>
+<p>
+$$
+2u+3v-5=0.
+$$
+</p>
+<p>Therefore:</p>
+<p>
+$$
+2u+3v=5.
+$$
+</p>
+<p>There are infinitely many $(u,v)$ pairs satisfying this equation.</p>
+<p>This demonstrates why another constraint is required to determine unique 2-D motion.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.55: Numerical Practice — Motion Magnitude -->
+  <section id="s-30-55" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.55</span>
+      <h2>Numerical Practice — Motion Magnitude</h2>
+      <button class="bookmark-btn" data-id="s-30-55" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Given:</p>
+<p>
+$$
+(u,v)=(6,8),
+$$
+</p>
+<p>calculate:</p>
+<p>
+$$
+|\mathbf v|
+=
+\sqrt{6^2+8^2}
+=
+\sqrt{100}
+=
+\boxed{10}.
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.56: Chapter Checkpoint -->
+  <section id="s-30-56" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.56</span>
+      <h2>Chapter Checkpoint</h2>
+      <button class="bookmark-btn" data-id="s-30-56" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Q1</h3>
+<p>Why is video different from a sequence of unrelated images?</p>
+<h3>Q2</h3>
+<p>What is the difference between motion detection and tracking?</p>
+<h3>Q3</h3>
+<p>Derive:</p>
+<p>
+$$
+I_xu+I_yv+I_t=0.
+$$
+</p>
+<h3>Q4</h3>
+<p>Why does the optical-flow equation alone not uniquely determine $u$ and $v$?</p>
+<h3>Q5</h3>
+<p>What is the difference between sparse and dense optical flow?</p>
+<h3>Q6</h3>
+<p>Why can camera movement create optical flow?</p>
+<h3>Q7</h3>
+<p>Why is optical flow not automatically physical object velocity?</p>
+<h3>Q8</h3>
+<p>How can YOLO detections be combined with tracking?</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.57: One-Page Recall Sheet -->
+  <section id="s-30-57" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.57</span>
+      <h2>One-Page Recall Sheet</h2>
+      <button class="bookmark-btn" data-id="s-30-57" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>VIDEO
+│
+├── Frame sequence
+│   └── I(x,y,t)
+│
+├── Temporal change
+│   ├── frame difference
+│   └── background subtraction
+│
+├── Motion
+│   └── optical flow
+│        I_x u + I_y v + I_t = 0
+│
+├── Optical flow
+│   ├── sparse
+│   └── dense
+│
+├── Tracking
+│   └── link observations over time
+│
+└── Applications
+    ├── surveillance
+    ├── traffic
+    ├── sports
+    ├── robotics
+    └── monitoring</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.58: Practical 10 — Motion Tracking in Video -->
+  <section id="s-30-58" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.58</span>
+      <h2>Practical 10 — Motion Tracking in Video</h2>
+      <button class="bookmark-btn" data-id="s-30-58" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The university practical requires:</p>
+<blockquote>
+<p><strong>Implement motion tracking using optical flow.</strong> fileciteturn4file0L82-L86</p>
+</blockquote>
+<p>A strong experiment should include:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>1. Load video/webcam
+2. Read first frame
+3. Convert to grayscale
+4. Detect trackable feature points
+5. Read next frame
+6. Estimate optical flow
+7. Reject invalid tracks
+8. Draw motion vectors
+9. Repeat
+10. Save/display result
+11. Measure processing speed
+12. Interpret failure cases</code></pre>
+</div></p>
+<h3>Evidence to collect</h3>
+<div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Evidence</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Original frame</td>
+<td>Baseline</td>
+</tr>
+<tr>
+<td>Feature points</td>
+<td>Show what is tracked</td>
+</tr>
+<tr>
+<td>Vector overlay</td>
+<td>Show motion</td>
+</tr>
+<tr>
+<td>Multiple frames</td>
+<td>Show temporal change</td>
+</tr>
+<tr>
+<td>Trajectory</td>
+<td>Show tracking over time</td>
+</tr>
+<tr>
+<td>FPS</td>
+<td>Quantify processing</td>
+</tr>
+<tr>
+<td>Failure frame</td>
+<td>Understand limitations</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.59: Practical Improvement — Detection + Tracking -->
+  <section id="s-30-59" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.59</span>
+      <h2>Practical Improvement — Detection + Tracking</h2>
+      <button class="bookmark-btn" data-id="s-30-59" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A richer engineering extension is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>YOLO
+ ↓
+object boxes
+ ↓
+select features inside each box
+ ↓
+optical flow
+ ↓
+object motion estimate
+ ↓
+trajectory</code></pre>
+</div></p>
+<p>This demonstrates integration between C28 and C30.</p>
+<p>It is an extension of the minimum practical, not a replacement for understanding optical flow itself.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.60: Cross-Book Links -->
+  <section id="s-30-60" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.60</span>
+      <h2>Cross-Book Links</h2>
+      <button class="bookmark-btn" data-id="s-30-60" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Layer</th>
+<th>Connection</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MAIN</td>
+<td>C30 explains video and motion concepts</td>
+</tr>
+<tr>
+<td>MATH</td>
+<td>Optical-flow constraint, vector magnitude, least squares</td>
+</tr>
+<tr>
+<td>LAB</td>
+<td>Practical 10 — optical-flow motion tracking</td>
+</tr>
+<tr>
+<td>CODE</td>
+<td>OpenCV Lucas–Kanade/Farnebäck-style workflows</td>
+</tr>
+<tr>
+<td>EXAM</td>
+<td>Video basics, optical flow, equation, sparse/dense</td>
+</tr>
+<tr>
+<td>PRACTICE</td>
+<td>Flow calculations, interpretation, debugging</td>
+</tr>
+<tr>
+<td>RESOURCE</td>
+<td>Course computer-vision references</td>
+</tr>
+<tr>
+<td>ASSETS</td>
+<td>Frame sequence, optical-flow vectors, trajectories</td>
+</tr>
+<tr>
+<td>MASTER</td>
+<td>Integrates C28 detection with temporal analysis</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 30.61: Final Chapter Summary -->
+  <section id="s-30-61" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.61</span>
+      <h2>Final Chapter Summary</h2>
+      <button class="bookmark-btn" data-id="s-30-61" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Video adds a time axis:</p>
+<p>
+$$
+\boxed{
+I(x,y,t)
+}
+$$
+</p>
+<p>Motion analysis compares how image information changes across $t$.</p>
+<p>The foundational equation is:</p>
+<p>
+$$
+\boxed{
+I_xu+I_yv+I_t=0
+}
+$$
+</p>
+<p>but one equation cannot uniquely determine two motion components, leading to the aperture problem and the need for additional assumptions.</p>
+<p>The practical pipeline is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>video
+→ frames
+→ feature points / dense pixels
+→ optical flow
+→ motion vectors
+→ trajectories / interpretation</code></pre>
+</div></p>
+<p>The major distinction to retain is:</p>
+<p>
+$$
+\boxed{
+\text{Detection finds objects}
+}
+$$
+</p>
+<p>
+$$
+\boxed{
+\text{Tracking links objects/points across time}
+}
+$$
+</p>
+<p>The university syllabus explicitly requires video processing and motion analysis, while Practical 10 specifically requires optical-flow motion tracking. fileciteturn4file0L48-L52 fileciteturn4file0L82-L86</p>
+<p>This completes the main technical content leading into the final applications chapter.</p>
+<hr />
+<p><strong>Next chapter:</strong> C31 — DIP Applications, Engineering Context and Responsible Use</p>
+    </div>
+  </section>
+
+  <!-- SECTION 30.62: Worked Example — 10-Mark University Model Answer: Optical Flow Equation &amp; Lucas-Kanade Solution -->
+  <section id="s-30-62" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.62</span>
+      <h2>Worked Example — 10-Mark University Model Answer: Optical Flow Equation &amp; Lucas-Kanade Solution</h2>
+      <button class="bookmark-btn" data-id="s-30-62" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Problem Statement</h3>
+<p>In video motion analysis and object tracking, motion between consecutive frames $I(x,y,t)$ and $I(x,y,t+\Delta t)$ is modeled by the 2D apparent velocity vector $v = [u, v]^T = \left[ \frac{dx}{dt}, \frac{dy}{dt} \right]^T$.
+1. State the <strong>Brightness Constancy Assumption</strong> and derive the fundamental <strong>Optical Flow Constraint Equation</strong> using first-order Taylor series expansion.
+2. Explain why a single equation with two unknowns $(u, v)$ leads to the <strong>Aperture Problem</strong>.
+3. Formulate the <strong>Lucas-Kanade method</strong>: state its key spatial coherence assumption and derive the normal equations in matrix form $A^T A v = A^T b$.
+4. Under what conditions is the Lucas-Kanade system invertible and reliable? Connect this directly to the Harris Corner spatial structure matrix.
+5. In a $3 \times 3$ window centered at pixel $(x_0, y_0)$, the evaluated spatio-temporal derivatives yield the following sums:
+   
+$$\sum I_x^2 = 25, \qquad \sum I_y^2 = 16, \qquad \sum I_x I_y = 5, \qquad \sum I_x I_t = -30, \qquad \sum I_y I_t = -14$$
+
+   Compute the exact apparent velocity vector $[u, v]^T$.</p>
+<h3>Step-by-Step Mathematical Solution</h3>
+<div class="worked-example">
+  <div class="worked-example-header">
+    <span class="worked-example-title">Numerical Examination Trace</span>
+    <span class="tag-badge tag-exam">10-MARK UNIVERSITY MODEL ANSWER</span>
+  </div>
+  <p><strong>1. Derivation of the Optical Flow Constraint Equation:</strong><br>
+  - <strong>Brightness Constancy Assumption:</strong> The intensity of a physical scene point remains constant as it moves over a small time increment $\Delta t$:
+    
+$$I(x + \Delta x, y + \Delta y, t + \Delta t) = I(x, y, t)$$
+
+  - Expanding the left-hand side in a first-order Taylor series around $(x, y, t)$:
+    
+$$I(x + \Delta x, y + \Delta y, t + \Delta t) \approx I(x, y, t) + \frac{\partial I}{\partial x} \Delta x + \frac{\partial I}{\partial y} \Delta y + \frac{\partial I}{\partial t} \Delta t$$
+
+  - Substituting into the constancy equation:
+    
+$$I(x, y, t) + I_x \Delta x + I_y \Delta y + I_t \Delta t = I(x, y, t) \implies I_x \Delta x + I_y \Delta y + I_t \Delta t = 0$$
+
+  - Dividing throughout by $\Delta t$ and taking the limit as $\Delta t \to 0$:
+    
+$$I_x \frac{dx}{dt} + I_y \frac{dy}{dt} + I_t = 0 \iff \mathbf{I_x u + I_y v + I_t = 0} \iff \nabla I^T \mathbf{v} = -I_t$$
+
+  where $I_x, I_y$ are spatial intensity gradients, $I_t$ is temporal frame difference, and $u, v$ are optical flow velocity components.</p>
+
+  <p><strong>2. The Aperture Problem:</strong><br>
+  At any single pixel, the optical flow constraint is a single linear scalar equation in two unknowns $(u, v)$. This means we can only determine the velocity component <strong>parallel to the image gradient</strong> (normal flow $v_\perp$). The velocity component orthogonal to the gradient (tangential flow $v_\parallel$) is completely undetectable through a narrow local aperture (e.g. observing an edge through a small circle cannot distinguish diagonal motion from vertical motion).</p>
+
+  <p><strong>3. Lucas-Kanade Matrix Formulation:</strong><br>
+  - <strong>Spatial Coherence Assumption:</strong> Lucas-Kanade assumes that velocity $v = [u, v]^T$ is constant across a small local window of $n$ pixels (e.g. $3 \times 3$ window, $n = 9$).<br>
+  - For $n$ pixels $p_1, p_2, \dots, p_n$, this yields an overdetermined system of $n$ equations:
+    
+$$\begin{bmatrix} I_x(p_1) & I_y(p_1) \\ I_x(p_2) & I_y(p_2) \\ \vdots & \vdots \\ I_x(p_n) & I_y(p_n) \end{bmatrix} \begin{bmatrix} u \\ v \end{bmatrix} = - \begin{bmatrix} I_t(p_1) \\ I_t(p_2) \\ \vdots \\ I_t(p_n) \end{bmatrix} \iff A \mathbf{v} = b$$
+
+  - Solving via the standard Least Squares Normal Equations:
+    
+$$A^T A \mathbf{v} = A^T b \implies \begin{bmatrix} \sum I_x^2 & \sum I_x I_y \\ \sum I_x I_y & \sum I_y^2 \end{bmatrix} \begin{bmatrix} u \\ v \end{bmatrix} = - \begin{bmatrix} \sum I_x I_t \\ \sum I_y I_t \end{bmatrix}$$
+</p>
+
+  <p><strong>4. Invertibility Condition and Harris Corner Connection:</strong><br>
+  The system has a unique, stable solution if and only if the matrix $M = A^T A$ is non-singular and well-conditioned:
+  - Both eigenvalues $\lambda_1, \lambda_2$ of $M$ must be strictly positive and sufficiently large ($\lambda_1 \ge \lambda_2 > \epsilon$).<br>
+  - Notice that $M = \begin{bmatrix} \sum I_x^2 & \sum I_x I_y \\ \sum I_x I_y & \sum I_y^2 \end{bmatrix}$ is <strong>identical to the Harris Corner structure tensor</strong>!
+  - <strong>Physical Meaning:</strong> Optical flow can be solved reliably at corners and textured regions (where gradients exist in multiple directions). It fails on flat regions ($\lambda_1 \approx \lambda_2 \approx 0$) and along straight edges ($\lambda_1 \gg \lambda_2 \approx 0$).</p>
+
+  <p><strong>5. Numerical Computation of Apparent Velocity:</strong><br>
+  Given:
+  
+$$M = A^T A = \begin{bmatrix} 25 & 5 \\ 5 & 16 \end{bmatrix}, \qquad A^T b = - \begin{bmatrix} -30 \\ -14 \end{bmatrix} = \begin{bmatrix} 30 \\ 14 \end{bmatrix}$$
+
+  - Determinant of $M$:
+    
+$$\det(M) = (25 \times 16) - (5 \times 5) = 400 - 25 = \mathbf{375}$$
+
+    Since $\det(M) = 375 \neq 0$, the matrix is invertible.
+  - Matrix inverse $M^{-1}$:
+    
+$$M^{-1} = \frac{1}{375} \begin{bmatrix} 16 & -5 \\ -5 & 25 \end{bmatrix}$$
+
+  - Solving for velocity $\mathbf{v} = [u, v]^T$:
+    
+$$\begin{bmatrix} u \\ v \end{bmatrix} = \frac{1}{375} \begin{bmatrix} 16 & -5 \\ -5 & 25 \end{bmatrix} \begin{bmatrix} 30 \\ 14 \end{bmatrix} = \frac{1}{375} \begin{bmatrix} (16 \times 30) + (-5 \times 14) \\ (-5 \times 30) + (25 \times 14) \end{bmatrix}$$
+
+    
+$$u = \frac{480 - 70}{375} = \frac{410}{375} \approx \mathbf{+1.0933 \text{ pixels/frame}}$$
+
+    
+$$v = \frac{-150 + 350}{375} = \frac{200}{375} \approx \mathbf{+0.5333 \text{ pixels/frame}}$$
+
+  The feature is moving rightward at $1.09$ px/frame and downward at $0.53$ px/frame.</p>
+</div>
+    </div>
+  </section>
+
+  <!-- SECTION 30.63: Practical Lab 10: Complete Motion Tracking Pipeline in OpenCV -->
+  <section id="s-30-63" class="section-block">
+    <div class="section-header">
+      <span class="section-num">30.63</span>
+      <h2>Practical Lab 10: Complete Motion Tracking Pipeline in OpenCV</h2>
+      <button class="bookmark-btn" data-id="s-30-63" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>python</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>import cv2
+import numpy as np
+
+# Shi-Tomasi Corner Detector Parameters
+feature_params = dict(maxCorners=100, qualityLevel=0.3, minDistance=7, blockSize=7)
+
+# Lucas-Kanade Optical Flow Parameters
+lk_params = dict(winSize=(15, 15), maxLevel=2,
+                 criteria=(cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 10, 0.03))
+
+# Initialize Camera Stream or Video Capture
+cap = cv2.VideoCapture(0)
+
+# Read First Frame and Find Good Tracking Features
+ret, old_frame = cap.read()
+old_gray = cv2.cvtColor(old_frame, cv2.COLOR_BGR2GRAY)
+p0 = cv2.goodFeaturesToTrack(old_gray, mask=None, **feature_params)
+
+# Create Canvas Mask for Drawing Tracking Trajectories
+mask = np.zeros_like(old_frame)
+
+while True:
+    ret, frame = cap.read()
+    if not ret: break
+    frame_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+    # Calculate Optical Flow via Lucas-Kanade
+    p1, st, err = cv2.calcOpticalFlowPyrLK(old_gray, frame_gray, p0, None, **lk_params)
+
+    # Select Valid Tracking Points
+    if p1 is not None:
+        good_new = p1[st == 1]
+        good_old = p0[st == 1]
+
+        # Draw Motion Vectors / Trajectory Trails
+        for i, (new, old) in enumerate(zip(good_new, good_old)):
+            a, b = new.ravel().astype(int)
+            c, d = old.ravel().astype(int)
+            mask = cv2.line(mask, (a, b), (c, d), (0, 255, 0), 2)
+            frame = cv2.circle(frame, (a, b), 5, (0, 0, 255), -1)
+
+        img = cv2.add(frame, mask)
+        cv2.imshow(&#x27;DIP Lab 10 - Lucas-Kanade Optical Flow Tracking&#x27;, img)
+
+    # Update Previous Frame and Points
+    old_gray = frame_gray.copy()
+    p0 = good_new.reshape(-1, 1, 2)
+
+    if cv2.waitKey(30) &amp; 0xFF == 27: break
+
+cap.release()
+cv2.destroyAllWindows()</code></pre>
+</div></p>
+    </div>
+  </section>
+
+      <!-- Chapter End Package -->
+      <section class="chapter-end-package">
+        <div class="chapter-nav-grid">
+          <a href="ch29-image-denoising-autoencoders.html" class="chapter-nav-card">
+            <div class="chapter-nav-dir">← Previous</div>
+            <div class="chapter-nav-title">← Ch 29 — Image Denoising with Autoencoders</div>
+          </a>
+          <a href="ch31-dip-applications-engineering.html" class="chapter-nav-card next">
+            <div class="chapter-nav-dir">Next →</div>
+            <div class="chapter-nav-title">Next: Ch 31 — DIP Applications & Engineering Context →</div>
+          </a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- FLOATING TTS PANEL (SAFE MANUAL MODE ONLY) -->
+  <div id="tts-panel" style="position:fixed; bottom:20px; right:20px; background:var(--em-surface-1); border:1px solid var(--em-border); border-radius:var(--em-radius-md); padding:12px 16px; box-shadow:var(--sh-lg); z-index:var(--z-float); display:none; gap:10px; align-items:center;">
+    <button class="icon-btn" id="tts-play" title="Play / Pause" style="background:var(--em-accent); color:#fff; border-radius:50%; width:36px; height:36px;">▶</button>
+    <button class="icon-btn" id="tts-stop" title="Stop">⏹</button>
+    <div style="font-size:0.75rem; color:var(--em-text-muted);">
+      <span id="tts-status">Ready</span> · <span id="tts-rate-label">1.0x</span>
+    </div>
+  </div>
+
+  <script src="../assets/js/state.js"></script>
+  <script src="../assets/js/core.js"></script>
+  <script src="../assets/js/tts.js"></script>
+  <script src="../assets/js/glossary.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: document.documentElement.getAttribute('data-theme') === 'light' ? 'default' : 'dark'
+      });
+    });
+  </script>
+</body>
+</html>

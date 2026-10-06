@@ -1,0 +1,2861 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Arpit">
+  <meta name="description" content="Chapter 26: Convolutional Neural Networks for Image Processing — Digital Image Processing MiniBook. From 2D Spatial Filtering to Learnable Kernels, Receptive Fields, Stride &amp; Padding Mathematics, Activation Functions (ReLU, LeakyReLU), Pooling Layers, and Feature Tensor Volumes">
+  <title>C26: Convolutional Neural Networks for Image Processing | DIP MiniBook 📷 Arpit</title>
+
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <link rel="stylesheet" href="../assets/css/chapters.css">
+  <link rel="stylesheet" href="../assets/css/animations.css">
+  <link rel="stylesheet" href="../assets/css/timer.css">
+
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body data-chapter-id="ch26-cnns-image-processing">
+  <div id="progress-bar"></div>
+
+  <!-- Header -->
+  <header id="main-header">
+    <div class="header-left">
+      <button id="sidebar-toggle" class="icon-btn" aria-label="Toggle navigation drawer" title="Toggle Sidebar (S)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <a href="../index.html" class="brand-logo">
+        <div class="brand-icon">DIP</div>
+        <div class="brand-text">
+          <span class="main">Digital Image Processing</span>
+          <span class="sub">DU DSE-3 Engineering MiniBook</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="header-chapter-title">C26: Convolutional Neural Networks for Image Processing</div>
+
+    <div class="header-right">
+      <button id="reading-mode-btn" class="icon-btn" aria-label="Toggle reading focus mode" title="Focus Mode (F)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+          <line x1="8" y1="21" x2="16" y2="21"></line>
+          <line x1="12" y1="17" x2="12" y2="21"></line>
+        </svg>
+      </button>
+      <button id="tts-toggle" class="icon-btn" aria-label="Audio Reader" title="Audio Reader">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+        </svg>
+      </button>
+      <button id="theme-toggle" class="icon-btn" aria-label="Cycle theme" title="Theme (T)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="12" cy="12" r="4.5"></circle>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Sidebar Overlay -->
+  <div id="sidebar-overlay"></div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" aria-expanded="true">
+    <div class="sidebar-nav">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">General</div>
+        <a href="../index.html" class="sidebar-link">
+          <span class="link-icon">🏛️</span>
+          <span>Subject Portal</span>
+        </a>
+        <a href="../progress.html" class="sidebar-link">
+          <span class="link-icon">📊</span>
+          <span>Study Dashboard</span>
+        </a>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Current Chapter Sections</div>
+        <a href="#s-26-1" class="sidebar-link"><span class="link-icon">📌</span><span>26.1 Why This Chapter Exists</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-26-2" class="sidebar-link"><span class="link-icon">📌</span><span>26.2 Learning Contract</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-26-3" class="sidebar-link"><span class="link-icon">📌</span><span>26.3 CNN in One Picture</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-26-4" class="sidebar-link"><span class="link-icon">📌</span><span>26.4 Why Ordinary Dense Networks Are Awkward for Images</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-26-5" class="sidebar-link"><span class="link-icon">📌</span><span>26.5 Local Connectivity</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-26-6" class="sidebar-link"><span class="link-icon">📌</span><span>26.6 Parameter Sharing</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-26-7" class="sidebar-link"><span class="link-icon">📌</span><span>26.7 Convolution vs Correlation — Important Engineering Caveat</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-26-8" class="sidebar-link"><span class="link-icon">📌</span><span>26.8 A Single CNN Filter</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-26-9" class="sidebar-link"><span class="link-icon">📌</span><span>26.9 Feature Map</span> </a>
+      <a href="#s-26-10" class="sidebar-link"><span class="link-icon">📌</span><span>26.10 Multiple Filters</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-26-11" class="sidebar-link"><span class="link-icon">📌</span><span>26.11 Multi-Channel Convolution</span> </a>
+      <a href="#s-26-12" class="sidebar-link"><span class="link-icon">📌</span><span>26.12 Parameter Count Formula</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-26-13" class="sidebar-link"><span class="link-icon">📌</span><span>26.13 Stride</span> </a>
+      <a href="#s-26-14" class="sidebar-link"><span class="link-icon">📌</span><span>26.14 Padding</span> </a>
+      <a href="#s-26-15" class="sidebar-link"><span class="link-icon">📌</span><span>26.15 Convolution Output Size</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-26-16" class="sidebar-link"><span class="link-icon">📌</span><span>26.16 Worked Output-Size Example</span> </a>
+      <a href="#s-26-17" class="sidebar-link"><span class="link-icon">📌</span><span>26.17 Same-Padding Example</span> </a>
+      <a href="#s-26-18" class="sidebar-link"><span class="link-icon">📌</span><span>26.18 Activation Functions</span> </a>
+      <a href="#s-26-19" class="sidebar-link"><span class="link-icon">📌</span><span>26.19 Why Nonlinearity Matters</span> </a>
+      <a href="#s-26-20" class="sidebar-link"><span class="link-icon">📌</span><span>26.20 Pooling</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-26-21" class="sidebar-link"><span class="link-icon">📌</span><span>26.21 Why Pooling Is Used</span> </a>
+      <a href="#s-26-22" class="sidebar-link"><span class="link-icon">📌</span><span>26.22 Pooling Output Size</span> </a>
+      <a href="#s-26-23" class="sidebar-link"><span class="link-icon">📌</span><span>26.23 Tensor Shape Is a Core Skill</span> </a>
+      <a href="#s-26-24" class="sidebar-link"><span class="link-icon">📌</span><span>26.24 Flattening</span> </a>
+      <a href="#s-26-25" class="sidebar-link"><span class="link-icon">📌</span><span>26.25 Dense Classification Layer</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-26-26" class="sidebar-link"><span class="link-icon">📌</span><span>26.26 Why CNNs Are Parameter-Efficient</span> </a>
+      <a href="#s-26-27" class="sidebar-link"><span class="link-icon">📌</span><span>26.27 Hierarchical Feature Learning</span> </a>
+      <a href="#s-26-28" class="sidebar-link"><span class="link-icon">📌</span><span>26.28 CNNs vs Classical DIP Filters</span> </a>
+      <a href="#s-26-29" class="sidebar-link"><span class="link-icon">📌</span><span>26.29 Forward Pass</span> </a>
+      <a href="#s-26-30" class="sidebar-link"><span class="link-icon">📌</span><span>26.30 Loss Function</span> </a>
+      <a href="#s-26-31" class="sidebar-link"><span class="link-icon">📌</span><span>26.31 Softmax</span> </a>
+      <a href="#s-26-32" class="sidebar-link"><span class="link-icon">📌</span><span>26.32 A Stable Softmax Implementation</span> </a>
+      <a href="#s-26-33" class="sidebar-link"><span class="link-icon">📌</span><span>26.33 Training</span> </a>
+      <a href="#s-26-34" class="sidebar-link"><span class="link-icon">📌</span><span>26.34 Backpropagation — Conceptual View</span> </a>
+      <a href="#s-26-35" class="sidebar-link"><span class="link-icon">📌</span><span>26.35 Learning Rate</span> </a>
+      <a href="#s-26-36" class="sidebar-link"><span class="link-icon">📌</span><span>26.36 Epoch and Batch</span> </a>
+      <a href="#s-26-37" class="sidebar-link"><span class="link-icon">📌</span><span>26.37 CNN Training Loop</span> </a>
+      <a href="#s-26-38" class="sidebar-link"><span class="link-icon">📌</span><span>26.38 Training vs Inference</span> </a>
+      <a href="#s-26-39" class="sidebar-link"><span class="link-icon">📌</span><span>26.39 MNIST Tensor Pipeline</span> </a>
+      <a href="#s-26-40" class="sidebar-link"><span class="link-icon">📌</span><span>26.40 Complete Keras MNIST Example</span> </a>
+      <a href="#s-26-41" class="sidebar-link"><span class="link-icon">📌</span><span>26.41 Why `sparse_categorical_crossentropy`?</span> </a>
+      <a href="#s-26-42" class="sidebar-link"><span class="link-icon">📌</span><span>26.42 Predicting One Image</span> </a>
+      <a href="#s-26-43" class="sidebar-link"><span class="link-icon">📌</span><span>26.43 Confusion Matrix in Python</span> </a>
+      <a href="#s-26-44" class="sidebar-link"><span class="link-icon">📌</span><span>26.44 Error Inspection</span> </a>
+      <a href="#s-26-45" class="sidebar-link"><span class="link-icon">📌</span><span>26.45 Visualizing Feature Maps</span> </a>
+      <a href="#s-26-46" class="sidebar-link"><span class="link-icon">📌</span><span>26.46 Why CNN Convolution Is Powerful</span> </a>
+      <a href="#s-26-47" class="sidebar-link"><span class="link-icon">📌</span><span>26.47 Receptive Field</span> </a>
+      <a href="#s-26-48" class="sidebar-link"><span class="link-icon">📌</span><span>26.48 Pooling and Receptive Field</span> </a>
+      <a href="#s-26-49" class="sidebar-link"><span class="link-icon">📌</span><span>26.49 CNN Hyperparameters</span> </a>
+      <a href="#s-26-50" class="sidebar-link"><span class="link-icon">📌</span><span>26.50 CNN Design Trade-offs</span> </a>
+      <a href="#s-26-51" class="sidebar-link"><span class="link-icon">📌</span><span>26.51 Overfitting in CNNs</span> </a>
+      <a href="#s-26-52" class="sidebar-link"><span class="link-icon">📌</span><span>26.52 Data Augmentation</span> </a>
+      <a href="#s-26-53" class="sidebar-link"><span class="link-icon">📌</span><span>26.53 CNNs Do Not Eliminate Preprocessing</span> </a>
+      <a href="#s-26-54" class="sidebar-link"><span class="link-icon">📌</span><span>26.54 Classical DIP → CNN Integration</span> </a>
+      <a href="#s-26-55" class="sidebar-link"><span class="link-icon">📌</span><span>26.55 Exam Lens</span> </a>
+      <a href="#s-26-56" class="sidebar-link"><span class="link-icon">📌</span><span>26.56 Numerical Practice — Output Shape</span> </a>
+      <a href="#s-26-57" class="sidebar-link"><span class="link-icon">📌</span><span>26.57 Numerical Practice — Parameter Count</span> </a>
+      <a href="#s-26-58" class="sidebar-link"><span class="link-icon">📌</span><span>26.58 Numerical Practice — Pooling</span> </a>
+      <a href="#s-26-59" class="sidebar-link"><span class="link-icon">📌</span><span>26.59 Chapter Checkpoint</span> </a>
+      <a href="#s-26-60" class="sidebar-link"><span class="link-icon">📌</span><span>26.60 One-Page Recall Sheet</span> </a>
+      <a href="#s-26-61" class="sidebar-link"><span class="link-icon">📌</span><span>26.61 Cross-Book Links</span> </a>
+      <a href="#s-26-62" class="sidebar-link"><span class="link-icon">📌</span><span>26.62 Final Chapter Summary</span> </a>
+      <a href="#s-26-63" class="sidebar-link"><span class="link-icon">📌</span><span>26.63 Worked Example — 10-Mark University Model Answer: CNN Layer Dimensions, Receptive Fields &amp; Parameter Counts</span> </a>
+      <a href="#s-26-64" class="sidebar-link"><span class="link-icon">📌</span><span>26.64 Convolutional Mechanics Architecture Diagram</span> </a>
+      </div>
+
+      
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-i">Part I — The Image</div>
+      <a href="ch01-big-picture.html" class="sidebar-link"><span class="link-icon">01</span><span>The Big Picture</span></a>
+      <a href="ch02-image-formation.html" class="sidebar-link"><span class="link-icon">02</span><span>Formation & Acquisition</span></a>
+      <a href="ch03-sampling-quantization.html" class="sidebar-link"><span class="link-icon">03</span><span>Sampling & Quantization</span></a>
+      <a href="ch04-image-representation.html" class="sidebar-link"><span class="link-icon">04</span><span>Pixels, Matrices & Resolution</span></a>
+      <a href="ch05-colour-models-file-formats.html" class="sidebar-link"><span class="link-icon">05</span><span>Colour Models & Formats</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-ii">Part II — Improving the Image</div>
+      <a href="ch06-point-processing.html" class="sidebar-link"><span class="link-icon">06</span><span>Point Processing & Intensity</span></a>
+      <a href="ch07-histograms-equalization.html" class="sidebar-link"><span class="link-icon">07</span><span>Histograms & Equalization</span></a>
+      <a href="ch08-spatial-filtering.html" class="sidebar-link"><span class="link-icon">08</span><span>Spatial Filtering & Convolution</span></a>
+      <a href="ch09-smoothing-noise-reduction.html" class="sidebar-link"><span class="link-icon">09</span><span>Smoothing & Noise Reduction</span></a>
+      <a href="ch10-sharpening-edge-detection.html" class="sidebar-link"><span class="link-icon">10</span><span>Sharpening & Edge Detection</span></a>
+      <a href="ch11-geometric-transforms.html" class="sidebar-link"><span class="link-icon">11</span><span>Geometric Transforms</span></a>
+      <a href="ch12-fourier-transform.html" class="sidebar-link"><span class="link-icon">12</span><span>Fourier Transform & Frequency</span></a>
+      <a href="ch13-frequency-filtering.html" class="sidebar-link"><span class="link-icon">13</span><span>Frequency-Domain Filtering</span></a>
+      <a href="ch14-image-restoration.html" class="sidebar-link"><span class="link-icon">14</span><span>Restoration & Deblurring</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-iii">Part III — Understanding Content</div>
+      <a href="ch15-segmentation-fundamentals.html" class="sidebar-link"><span class="link-icon">15</span><span>Segmentation Fundamentals</span></a>
+      <a href="ch16-thresholding-otsu.html" class="sidebar-link"><span class="link-icon">16</span><span>Thresholding & Otsu Method</span></a>
+      <a href="ch17-region-segmentation.html" class="sidebar-link"><span class="link-icon">17</span><span>Region-Based Segmentation</span></a>
+      <a href="ch18-mathematical-morphology.html" class="sidebar-link"><span class="link-icon">18</span><span>Mathematical Morphology</span></a>
+      <a href="ch19-features-descriptors.html" class="sidebar-link"><span class="link-icon">19</span><span>Image Features & Descriptors</span></a>
+      <a href="ch20-sift-surf-orb-hog.html" class="sidebar-link"><span class="link-icon">20</span><span>SIFT, SURF, ORB & HOG</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-iv">Part IV — Compressing Images</div>
+      <a href="ch21-compression-entropy.html" class="sidebar-link"><span class="link-icon">21</span><span>Compression & Entropy</span></a>
+      <a href="ch22-lossless-coding.html" class="sidebar-link"><span class="link-icon">22</span><span>Lossless: RLE & Huffman</span></a>
+      <a href="ch23-lossy-dct-jpeg.html" class="sidebar-link"><span class="link-icon">23</span><span>Lossy: DCT & JPEG</span></a>
+      <a href="ch24-wavelets-jpeg2000.html" class="sidebar-link"><span class="link-icon">24</span><span>Wavelets & JPEG 2000</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-v">Part V — Intelligent Vision</div>
+      <a href="ch25-image-classification.html" class="sidebar-link"><span class="link-icon">25</span><span>Image Classification</span></a>
+      <a href="ch26-cnns-image-processing.html" class="sidebar-link active"><span class="link-icon">26</span><span>CNNs for Image Processing</span></a>
+      <a href="ch27-modern-vision-architectures.html" class="sidebar-link"><span class="link-icon">27</span><span>Modern Vision Architectures</span></a>
+      <a href="ch28-object-detection-yolo.html" class="sidebar-link"><span class="link-icon">28</span><span>Object Detection: YOLO</span></a>
+      <a href="ch29-image-denoising-autoencoders.html" class="sidebar-link"><span class="link-icon">29</span><span>Image Denoising Autoencoders</span></a>
+      <a href="ch30-video-motion-analysis.html" class="sidebar-link"><span class="link-icon">30</span><span>Video & Motion Analysis</span></a>
+      <a href="ch31-dip-applications-engineering.html" class="sidebar-link"><span class="link-icon">31</span><span>DIP Applications & Ethics</span></a>
+    </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-brand-mark">
+        <div class="mark">DU</div>
+        <div>
+          <strong>DSE-3 MiniBook</strong>
+          <div>University of Delhi</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mandatory Shell Wrapper -->
+  <div id="main-content">
+    <main class="chapter-content">
+      <!-- Chapter Hero -->
+      <div class="chapter-hero">
+        <div class="hero-meta">
+          <span class="part-badge part-v">Intelligent Vision</span>
+          <span class="chapter-number">CHAPTER 26</span>
+          <span class="reading-time">⏱️ ~60 min read</span>
+          <span class="tag-badge tag-core">Highest Yield (10-mark guarantee)</span>
+        </div>
+        <h1 class="chapter-title">Convolutional Neural Networks for Image Processing</h1>
+        <p class="chapter-subtitle">
+          From 2D Spatial Filtering to Learnable Kernels, Receptive Fields, Stride &amp; Padding Mathematics, Activation Functions (ReLU, LeakyReLU), Pooling Layers, and Feature Tensor Volumes
+        </p>
+
+        <div class="syllabus-anchor">
+          <span class="syllabus-anchor-label">DU Syllabus</span>
+          <span><strong>Convolutional Neural Networks:</strong> Connection between spatial domain filtering and CNNs, 2D convolution layers, parameter sharing, receptive field calculation, stride and padding formulas ($W_{out} = \lfloor(W-K+2P)/S\rfloor+1$), activation functions (Sigmoid, Tanh, ReLU, Leaky ReLU), pooling layers (max, average, global average pooling), and feature map volume transformations.</span>
+        </div>
+      </div>
+
+      <!-- In-Page TOC -->
+      <div class="chapter-checklist-card" style="margin-bottom:var(--em-space-8);">
+        <div class="checklist-title">
+          <span>Table of Contents &amp; Visual Section Map</span>
+          <span class="tag-badge tag-math">64 Deep Sections</span>
+        </div>
+        <ul class="part-chapters-list">
+          <li class="part-chapter-item"><a href="#s-26-1"><strong>26.1</strong> Why This Chapter Exists</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-26-2"><strong>26.2</strong> Learning Contract</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-26-3"><strong>26.3</strong> CNN in One Picture</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-26-4"><strong>26.4</strong> Why Ordinary Dense Networks Are Awkward for Images</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-26-5"><strong>26.5</strong> Local Connectivity</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-26-6"><strong>26.6</strong> Parameter Sharing</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-26-7"><strong>26.7</strong> Convolution vs Correlation — Important Engineering Caveat</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-26-8"><strong>26.8</strong> A Single CNN Filter</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-26-9"><strong>26.9</strong> Feature Map</a> </li>
+      <li class="part-chapter-item"><a href="#s-26-10"><strong>26.10</strong> Multiple Filters</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-26-11"><strong>26.11</strong> Multi-Channel Convolution</a> </li>
+      <li class="part-chapter-item"><a href="#s-26-12"><strong>26.12</strong> Parameter Count Formula</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-26-13"><strong>26.13</strong> Stride</a> </li>
+      <li class="part-chapter-item"><a href="#s-26-14"><strong>26.14</strong> Padding</a> </li>
+      <li class="part-chapter-item"><a href="#s-26-15"><strong>26.15</strong> Convolution Output Size</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-26-16"><strong>26.16</strong> Worked Output-Size Example</a> </li>
+      <li class="part-chapter-item"><a href="#s-26-17"><strong>26.17</strong> Same-Padding Example</a> </li>
+      <li class="part-chapter-item"><a href="#s-26-18"><strong>26.18</strong> Activation Functions</a> </li>
+      <li class="part-chapter-item"><a href="#s-26-19"><strong>26.19</strong> Why Nonlinearity Matters</a> </li>
+      <li class="part-chapter-item"><a href="#s-26-20"><strong>26.20</strong> Pooling</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-26-21"><strong>26.21</strong> Why Pooling Is Used</a> </li>
+      <li class="part-chapter-item"><a href="#s-26-22"><strong>26.22</strong> Pooling Output Size</a> </li>
+      <li class="part-chapter-item"><a href="#s-26-23"><strong>26.23</strong> Tensor Shape Is a Core Skill</a> </li>
+      <li class="part-chapter-item"><a href="#s-26-24"><strong>26.24</strong> Flattening</a> </li>
+      <li class="part-chapter-item"><a href="#s-26-25"><strong>26.25</strong> Dense Classification Layer</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-26-26"><strong>26.26</strong> Why CNNs Are Parameter-Efficient</a> </li>
+      <li class="part-chapter-item"><a href="#s-26-27"><strong>26.27</strong> Hierarchical Feature Learning</a> </li>
+      <li class="part-chapter-item"><a href="#s-26-28"><strong>26.28</strong> CNNs vs Classical DIP Filters</a> </li>
+      <li class="part-chapter-item"><a href="#s-26-29"><strong>26.29</strong> Forward Pass</a> </li>
+      <li class="part-chapter-item"><a href="#s-26-30"><strong>26.30</strong> Loss Function</a> </li>
+      <li class="part-chapter-item"><a href="#s-26-31"><strong>26.31</strong> Softmax</a> </li>
+      <li class="part-chapter-item"><a href="#s-26-32"><strong>26.32</strong> A Stable Softmax Implementation</a> </li>
+      <li class="part-chapter-item"><a href="#s-26-33"><strong>26.33</strong> Training</a> </li>
+      <li class="part-chapter-item"><a href="#s-26-34"><strong>26.34</strong> Backpropagation — Conceptual View</a> </li>
+      <li class="part-chapter-item"><a href="#s-26-35"><strong>26.35</strong> Learning Rate</a> </li>
+      <li class="part-chapter-item"><a href="#s-26-36"><strong>26.36</strong> Epoch and Batch</a> </li>
+      <li class="part-chapter-item"><a href="#s-26-37"><strong>26.37</strong> CNN Training Loop</a> </li>
+      <li class="part-chapter-item"><a href="#s-26-38"><strong>26.38</strong> Training vs Inference</a> </li>
+      <li class="part-chapter-item"><a href="#s-26-39"><strong>26.39</strong> MNIST Tensor Pipeline</a> </li>
+      <li class="part-chapter-item"><a href="#s-26-40"><strong>26.40</strong> Complete Keras MNIST Example</a> </li>
+      <li class="part-chapter-item"><a href="#s-26-41"><strong>26.41</strong> Why `sparse_categorical_crossentropy`?</a> </li>
+      <li class="part-chapter-item"><a href="#s-26-42"><strong>26.42</strong> Predicting One Image</a> </li>
+      <li class="part-chapter-item"><a href="#s-26-43"><strong>26.43</strong> Confusion Matrix in Python</a> </li>
+      <li class="part-chapter-item"><a href="#s-26-44"><strong>26.44</strong> Error Inspection</a> </li>
+      <li class="part-chapter-item"><a href="#s-26-45"><strong>26.45</strong> Visualizing Feature Maps</a> </li>
+      <li class="part-chapter-item"><a href="#s-26-46"><strong>26.46</strong> Why CNN Convolution Is Powerful</a> </li>
+      <li class="part-chapter-item"><a href="#s-26-47"><strong>26.47</strong> Receptive Field</a> </li>
+      <li class="part-chapter-item"><a href="#s-26-48"><strong>26.48</strong> Pooling and Receptive Field</a> </li>
+      <li class="part-chapter-item"><a href="#s-26-49"><strong>26.49</strong> CNN Hyperparameters</a> </li>
+      <li class="part-chapter-item"><a href="#s-26-50"><strong>26.50</strong> CNN Design Trade-offs</a> </li>
+      <li class="part-chapter-item"><a href="#s-26-51"><strong>26.51</strong> Overfitting in CNNs</a> </li>
+      <li class="part-chapter-item"><a href="#s-26-52"><strong>26.52</strong> Data Augmentation</a> </li>
+      <li class="part-chapter-item"><a href="#s-26-53"><strong>26.53</strong> CNNs Do Not Eliminate Preprocessing</a> </li>
+      <li class="part-chapter-item"><a href="#s-26-54"><strong>26.54</strong> Classical DIP → CNN Integration</a> </li>
+      <li class="part-chapter-item"><a href="#s-26-55"><strong>26.55</strong> Exam Lens</a> </li>
+      <li class="part-chapter-item"><a href="#s-26-56"><strong>26.56</strong> Numerical Practice — Output Shape</a> </li>
+      <li class="part-chapter-item"><a href="#s-26-57"><strong>26.57</strong> Numerical Practice — Parameter Count</a> </li>
+      <li class="part-chapter-item"><a href="#s-26-58"><strong>26.58</strong> Numerical Practice — Pooling</a> </li>
+      <li class="part-chapter-item"><a href="#s-26-59"><strong>26.59</strong> Chapter Checkpoint</a> </li>
+      <li class="part-chapter-item"><a href="#s-26-60"><strong>26.60</strong> One-Page Recall Sheet</a> </li>
+      <li class="part-chapter-item"><a href="#s-26-61"><strong>26.61</strong> Cross-Book Links</a> </li>
+      <li class="part-chapter-item"><a href="#s-26-62"><strong>26.62</strong> Final Chapter Summary</a> </li>
+      <li class="part-chapter-item"><a href="#s-26-63"><strong>26.63</strong> Worked Example — 10-Mark University Model Answer: CNN Layer Dimensions, Receptive Fields &amp; Parameter Counts</a> </li>
+      <li class="part-chapter-item"><a href="#s-26-64"><strong>26.64</strong> Convolutional Mechanics Architecture Diagram</a> </li>
+        </ul>
+      </div>
+
+      <div class="concept-hook" style="margin-bottom:var(--em-space-8);"><h1>C26 — Convolutional Neural Networks</h1>
+<blockquote>
+<p><strong>Chapter thesis:</strong> A CNN learns spatially structured image representations by applying learned local filters, combining feature maps through nonlinear transformations and pooling, and using the resulting hierarchy for tasks such as image classification.</p>
+</blockquote>
+<hr /></div>
+
+      <!-- All Numbered Sections -->
+      
+  <!-- SECTION 26.1: Why This Chapter Exists -->
+  <section id="s-26-1" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.1</span>
+      <h2>Why This Chapter Exists</h2>
+      <button class="bookmark-btn" data-id="s-26-1" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The University syllabus explicitly requires an:</p>
+<blockquote>
+<p><strong>Introduction to Convolutional Neural Networks (CNNs)</strong></p>
+</blockquote>
+<p>and the practical component requires:</p>
+<blockquote>
+<p><strong>CNN-based handwritten digit classification using the MNIST dataset.</strong> fileciteturn4file0L48-L52 fileciteturn4file0L76-L80</p>
+</blockquote>
+<p>This makes CNNs a core Unit IV topic.</p>
+<p>The most important conceptual bridge is from earlier DIP:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>C08
+fixed / human-designed convolution kernel
+            ↓
+C26
+learned convolution kernel</code></pre>
+</div></p>
+<p>The mathematics of convolution is familiar.</p>
+<p>What changes is:</p>
+<blockquote>
+<p><strong>The kernel values are learned from data.</strong></p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.2: Learning Contract -->
+  <section id="s-26-2" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.2</span>
+      <h2>Learning Contract</h2>
+      <button class="bookmark-btn" data-id="s-26-2" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>After this chapter, you should be able to:</p>
+<ul>
+<li>explain what a CNN is;</li>
+<li>explain why CNNs are suitable for images;</li>
+<li>connect CNN convolution to classical spatial filtering;</li>
+<li>explain kernels, feature maps, stride and padding;</li>
+<li>calculate output dimensions for a convolution/pooling layer;</li>
+<li>explain nonlinear activation functions;</li>
+<li>explain pooling;</li>
+<li>trace tensor shapes through a CNN;</li>
+<li>distinguish parameters from activations;</li>
+<li>explain flattening and dense classification layers;</li>
+<li>explain softmax and cross-entropy at an introductory level;</li>
+<li>explain the forward pass and training loop;</li>
+<li>describe backpropagation conceptually;</li>
+<li>build a basic MNIST CNN in TensorFlow/Keras;</li>
+<li>evaluate and inspect classification errors.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.3: CNN in One Picture -->
+  <section id="s-26-3" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.3</span>
+      <h2>CNN in One Picture</h2>
+      <button class="bookmark-btn" data-id="s-26-3" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A typical CNN classifier can be represented as:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Input image
+    │
+    ▼
+Convolution
+    │
+    ▼
+Activation
+    │
+    ▼
+Pooling
+    │
+    ▼
+Convolution
+    │
+    ▼
+Activation
+    │
+    ▼
+Pooling
+    │
+    ▼
+Feature representation
+    │
+    ▼
+Classifier
+    │
+    ▼
+Class scores / probabilities</code></pre>
+</div></p>
+<p>A deeper network repeats these ideas several times.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.4: Why Ordinary Dense Networks Are Awkward for Images -->
+  <section id="s-26-4" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.4</span>
+      <h2>Why Ordinary Dense Networks Are Awkward for Images</h2>
+      <button class="bookmark-btn" data-id="s-26-4" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose an image has:</p>
+<p>
+$$
+224\times224\times3
+$$
+</p>
+<p>values.</p>
+<p>Flattening gives:</p>
+<p>
+$$
+224\times224\times3
+=
+150{,}528
+$$
+</p>
+<p>input values.</p>
+<p>A dense layer with 1000 neurons would require approximately:</p>
+<p>
+$$
+150{,}528\times1000
+=
+150{,}528{,}000
+$$
+</p>
+<p>weights, before biases.</p>
+<p>A CNN instead uses <strong>local connectivity</strong> and <strong>parameter sharing</strong>.</p>
+<p>The same learned filter can scan across many image locations.</p>
+<p>This drastically changes the parameterization.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.5: Local Connectivity -->
+  <section id="s-26-5" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.5</span>
+      <h2>Local Connectivity</h2>
+      <button class="bookmark-btn" data-id="s-26-5" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Edges and patterns are often local.</p>
+<p>A small filter might inspect a neighbourhood such as:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>[x x x]
+[x x x]
+[x x x]</code></pre>
+</div></p>
+<p>rather than the entire image at once.</p>
+<p>A CNN therefore builds local evidence and gradually combines it into larger structures.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.6: Parameter Sharing -->
+  <section id="s-26-6" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.6</span>
+      <h2>Parameter Sharing</h2>
+      <button class="bookmark-btn" data-id="s-26-6" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose a 3×3 filter is learned.</p>
+<p>Its nine weights can be applied at many positions:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image
+ ↓
+filter at position 1
+filter at position 2
+filter at position 3
+...</code></pre>
+</div></p>
+<p>The same weights are reused.</p>
+<p>This is called <strong>parameter sharing</strong>.</p>
+<p>It provides two key benefits:</p>
+<ul>
+<li>fewer parameters;</li>
+<li>a feature can be detected at different spatial locations.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.7: Convolution vs Correlation — Important Engineering Caveat -->
+  <section id="s-26-7" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.7</span>
+      <h2>Convolution vs Correlation — Important Engineering Caveat</h2>
+      <button class="bookmark-btn" data-id="s-26-7" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>In mathematical signal processing, convolution traditionally includes kernel reversal.</p>
+<p>Many deep-learning libraries implement what is mathematically closer to <strong>cross-correlation</strong> while calling the operation convolution.</p>
+<p>For example, a framework computes:</p>
+<p>
+$$
+y(i,j)
+=
+\sum_{m,n}
+x(i+m,j+n)w(m,n)
+$$
+</p>
+<p>without explicitly flipping $w$.</p>
+<p>This distinction usually does not prevent CNN learning because the filters are learned.</p>
+<p>For this chapter:</p>
+<blockquote>
+<p>Use “convolution” as the standard deep-learning term, but know that many implementations actually perform cross-correlation.</p>
+</blockquote>
+<p>This is an important bridge from C08.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.8: A Single CNN Filter -->
+  <section id="s-26-8" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.8</span>
+      <h2>A Single CNN Filter</h2>
+      <button class="bookmark-btn" data-id="s-26-8" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Consider a grayscale image region:</p>
+<p>
+$$
+X=
+\begin{bmatrix}
+1&2&0\\
+0&1&3\\
+2&0&1
+\end{bmatrix}
+$$
+</p>
+<p>and kernel:</p>
+<p>
+$$
+K=
+\begin{bmatrix}
+1&0&-1\\
+1&0&-1\\
+1&0&-1
+\end{bmatrix}.
+$$
+</p>
+<p>The local response is:</p>
+<p>
+$$
+1(1)+2(0)+0(-1)
+$$
+</p>
+<p>
+$$
++0(1)+1(0)+3(-1)
+$$
+</p>
+<p>
+$$
++2(1)+0(0)+1(-1).
+$$
+</p>
+<p>Therefore:</p>
+<p>
+$$
+1-3+2-1=-1.
+$$
+</p>
+<p>The output value measures the response of this local pattern to the filter.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.9: Feature Map -->
+  <section id="s-26-9" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.9</span>
+      <h2>Feature Map</h2>
+      <button class="bookmark-btn" data-id="s-26-9" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>As the same filter is moved across the image, one output value is produced at each valid position.</p>
+<p>The resulting matrix is a <strong>feature map</strong>.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image
+  ↓
+same learned filter everywhere
+  ↓
+feature map</code></pre>
+</div></p>
+<p>One filter produces one feature map.</p>
+<p>Multiple filters produce multiple feature maps.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.10: Multiple Filters -->
+  <section id="s-26-10" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.10</span>
+      <h2>Multiple Filters</h2>
+      <button class="bookmark-btn" data-id="s-26-10" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose a convolution layer has:</p>
+<p>
+$$
+C_{\text{out}}=32
+$$
+</p>
+<p>filters.</p>
+<p>For a single-channel image:</p>
+<p>
+$$
+3\times3
+$$
+</p>
+<p>kernels produce 32 feature maps.</p>
+<p>The layer output therefore has:</p>
+<p>
+$$
+H'\times W'\times32
+$$
+</p>
+<p>for channels-last representation.</p>
+<p>Each channel corresponds to one learned pattern detector.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.11: Multi-Channel Convolution -->
+  <section id="s-26-11" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.11</span>
+      <h2>Multi-Channel Convolution</h2>
+      <button class="bookmark-btn" data-id="s-26-11" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For an RGB input:</p>
+<p>
+$$
+H\times W\times3,
+$$
+</p>
+<p>a 3×3 convolution with 32 output channels has weights shaped approximately as:</p>
+<p>
+$$
+3\times3\times3\times32
+$$
+</p>
+<p>for channels-last conceptual notation.</p>
+<p>The number of kernel weights is:</p>
+<p>
+$$
+3\times3\times3\times32
+=
+864.
+$$
+</p>
+<p>With one bias per output channel:</p>
+<p>
+$$
+864+32=896
+$$
+</p>
+<p>trainable parameters.</p>
+<p>This illustrates parameter sharing and structured connectivity.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.12: Parameter Count Formula -->
+  <section id="s-26-12" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.12</span>
+      <h2>Parameter Count Formula</h2>
+      <button class="bookmark-btn" data-id="s-26-12" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For a 2-D convolution layer:</p>
+<p>
+$$
+P=
+K_hK_wC_{\text{in}}C_{\text{out}}+C_{\text{out}}
+$$
+</p>
+<p>where:</p>
+<ul>
+<li>$K_h$ = kernel height;</li>
+<li>$K_w$ = kernel width;</li>
+<li>$C_{\text{in}}$ = input channels;</li>
+<li>$C_{\text{out}}$ = output channels.</li>
+</ul>
+<div class="worked-example"><div class="worked-example-header"><span class="worked-example-title"><span>🧮</span> Worked Example</span><span class="tag-badge tag-exam">NUMERICAL WORKTHROUGH</span></div>
+
+
+$$
+K_h=3,\quad K_w=3,\quad C_{\text{in}}=1,\quad C_{\text{out}}=32.
+$$
+
+
+Then:
+
+
+$$
+P=3\times3\times1\times32+32
+$$
+
+
+
+$$
+=288+32
+$$
+
+
+
+$$
+=\boxed{320}.
+$$
+
+
+</div>
+
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.13: Stride -->
+  <section id="s-26-13" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.13</span>
+      <h2>Stride</h2>
+      <button class="bookmark-btn" data-id="s-26-13" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><strong>Stride</strong> determines how far the filter moves at each step.</p>
+<p>For stride:</p>
+<p>
+$$
+S=1
+$$
+</p>
+<p>the filter moves one pixel at a time.</p>
+<p>For:</p>
+<p>
+$$
+S=2
+$$
+</p>
+<p>it skips every second position.</p>
+<p>Larger stride generally reduces spatial output dimensions.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.14: Padding -->
+  <section id="s-26-14" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.14</span>
+      <h2>Padding</h2>
+      <button class="bookmark-btn" data-id="s-26-14" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Padding adds values around the input border.</p>
+<p>A common choice is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>zero padding</code></pre>
+</div></p>
+<p>but other padding modes exist.</p>
+<p>Padding allows control over spatial size and boundary handling.</p>
+<p>Two common conceptual cases:</p>
+<h3>Valid</h3>
+<p>No padding.</p>
+<h3>Same</h3>
+<p>Padding is selected so the output spatial dimensions can be maintained at a desired relationship to the input, especially with stride 1.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.15: Convolution Output Size -->
+  <section id="s-26-15" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.15</span>
+      <h2>Convolution Output Size</h2>
+      <button class="bookmark-btn" data-id="s-26-15" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For one spatial dimension:</p>
+<p>
+$$
+H_{\text{out}}
+=
+\left\lfloor
+\frac{H+2P-D(K-1)-1}{S}
++1
+\right\rfloor
+$$
+</p>
+<p>where:</p>
+<ul>
+<li>$H$ = input size;</li>
+<li>$K$ = kernel size;</li>
+<li>$P$ = padding;</li>
+<li>$S$ = stride;</li>
+<li>$D$ = dilation.</li>
+</ul>
+<p>For the common case:</p>
+<p>
+$$
+D=1,
+$$
+</p>
+<p>this becomes:</p>
+<p>
+$$
+H_{\text{out}}
+=
+\left\lfloor
+\frac{H+2P-K}{S}
++1
+\right\rfloor.
+$$
+</p>
+<p>Width uses the analogous equation.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.16: Worked Output-Size Example -->
+  <section id="s-26-16" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.16</span>
+      <h2>Worked Output-Size Example</h2>
+      <button class="bookmark-btn" data-id="s-26-16" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Input:</p>
+<p>
+$$
+28\times28
+$$
+</p>
+<p>Kernel:</p>
+<p>
+$$
+3\times3
+$$
+</p>
+<p>Stride:</p>
+<p>
+$$
+1
+$$
+</p>
+<p>Padding:</p>
+<p>
+$$
+0.
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+H_{\text{out}}
+=
+\frac{28-3}{1}+1
+=
+26.
+$$
+</p>
+<p>So:</p>
+<p>
+$$
+\boxed{26\times26}
+$$
+</p>
+<p>is the spatial output.</p>
+<p>If the layer has 32 filters:</p>
+<p>
+$$
+\boxed{26\times26\times32}.
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.17: Same-Padding Example -->
+  <section id="s-26-17" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.17</span>
+      <h2>Same-Padding Example</h2>
+      <button class="bookmark-btn" data-id="s-26-17" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p>
+$$
+H=28,\quad K=3,\quad S=1.
+$$
+</p>
+<p>With one-pixel padding:</p>
+<p>
+$$
+P=1.
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+H_{\text{out}}
+=
+\frac{28+2(1)-3}{1}+1
+=
+28.
+$$
+</p>
+<p>Thus:</p>
+<p>
+$$
+\boxed{28\times28}
+$$
+</p>
+<p>is preserved spatially.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.18: Activation Functions -->
+  <section id="s-26-18" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.18</span>
+      <h2>Activation Functions</h2>
+      <button class="bookmark-btn" data-id="s-26-18" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A convolution produces linear responses.</p>
+<p>CNNs introduce nonlinear activation functions.</p>
+<p>A common choice is ReLU:</p>
+<p>
+$$
+\operatorname{ReLU}(x)=\max(0,x).
+$$
+</p>
+<p>Therefore:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>x &lt; 0 → 0
+x &gt; 0 → x</code></pre>
+</div></p>
+<p>Example:</p>
+<p>
+$$
+[-2,-1,0,2,5]
+$$
+</p>
+<p>becomes:</p>
+<p>
+$$
+[0,0,0,2,5].
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.19: Why Nonlinearity Matters -->
+  <section id="s-26-19" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.19</span>
+      <h2>Why Nonlinearity Matters</h2>
+      <button class="bookmark-btn" data-id="s-26-19" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>If every layer only performed a linear operation, a deep stack could collapse into another linear transformation.</p>
+<p>Nonlinearity allows the network to represent more complex relationships.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>linear filter
+→ nonlinear activation
+→ another linear filter
+→ nonlinear activation
+→ complex function</code></pre>
+</div></p>
+<p>ReLU is therefore more than an arbitrary formula.</p>
+<p>It is part of the representational power of the network.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.20: Pooling -->
+  <section id="s-26-20" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.20</span>
+      <h2>Pooling</h2>
+      <button class="bookmark-btn" data-id="s-26-20" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Pooling reduces spatial resolution while retaining selected information.</p>
+<p>A common operation is max pooling.</p>
+<p>For a 2×2 region:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>1 7
+3 4</code></pre>
+</div></p>
+<p>max pooling produces:</p>
+<p>
+$$
+7.
+$$
+</p>
+<p>For:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>5 2
+1 3</code></pre>
+</div></p>
+<p>it produces:</p>
+<p>
+$$
+5.
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.21: Why Pooling Is Used -->
+  <section id="s-26-21" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.21</span>
+      <h2>Why Pooling Is Used</h2>
+      <button class="bookmark-btn" data-id="s-26-21" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Pooling can:</p>
+<ul>
+<li>reduce spatial dimensions;</li>
+<li>reduce computation;</li>
+<li>provide some local invariance;</li>
+<li>summarize local activations.</li>
+</ul>
+<p>But it can also remove spatial detail.</p>
+<p>Modern architectures do not all use traditional max pooling at every stage.</p>
+<p>For this introductory syllabus topic, understand the concept and trade-off.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.22: Pooling Output Size -->
+  <section id="s-26-22" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.22</span>
+      <h2>Pooling Output Size</h2>
+      <button class="bookmark-btn" data-id="s-26-22" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For a 2×2 pool with stride 2:</p>
+<p>
+$$
+28\times28
+$$
+</p>
+<p>becomes approximately:</p>
+<p>
+$$
+14\times14.
+$$
+</p>
+<p>If there are 32 channels:</p>
+<p>
+$$
+28\times28\times32
+$$
+</p>
+<p>becomes:</p>
+<p>
+$$
+14\times14\times32.
+$$
+</p>
+<p>The number of channels stays the same under ordinary spatial pooling.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.23: Tensor Shape Is a Core Skill -->
+  <section id="s-26-23" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.23</span>
+      <h2>Tensor Shape Is a Core Skill</h2>
+      <button class="bookmark-btn" data-id="s-26-23" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Input:       28 × 28 × 1
+Conv 32:     28 × 28 × 32
+Pool 2×2:    14 × 14 × 32
+Conv 64:     14 × 14 × 64
+Pool 2×2:     7 ×  7 × 64</code></pre>
+</div></p>
+<p>Flattening gives:</p>
+<p>
+$$
+7\times7\times64
+=
+3136
+$$
+</p>
+<p>features.</p>
+<p>This is the bridge into a dense classifier.</p>
+<p>Shape tracing is one of the most practical CNN debugging skills.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.24: Flattening -->
+  <section id="s-26-24" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.24</span>
+      <h2>Flattening</h2>
+      <button class="bookmark-btn" data-id="s-26-24" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose the final convolutional representation is:</p>
+<p>
+$$
+7\times7\times64.
+$$
+</p>
+<p>Flattening converts it into one vector:</p>
+<p>
+$$
+\mathbf{x}\in\mathbb{R}^{3136}.
+$$
+</p>
+<p>The spatial grid is no longer represented as separate dimensions in that vector, but the values came from spatial feature maps.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.25: Dense Classification Layer -->
+  <section id="s-26-25" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.25</span>
+      <h2>Dense Classification Layer</h2>
+      <button class="bookmark-btn" data-id="s-26-25" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A dense layer maps the flattened feature vector to class scores.</p>
+<p>For:</p>
+<p>
+$$
+3136
+$$
+</p>
+<p>inputs and:</p>
+<p>
+$$
+128
+$$
+</p>
+<p>neurons:</p>
+<p>
+$$
+3136\times128+128
+$$
+</p>
+<p>parameters.</p>
+<p>Calculate:</p>
+<p>
+$$
+401{,}408+128
+$$
+</p>
+<p>
+$$
+=\boxed{401{,}536}.
+$$
+</p>
+<p>This can be much larger than an earlier convolution layer.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.26: Why CNNs Are Parameter-Efficient -->
+  <section id="s-26-26" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.26</span>
+      <h2>Why CNNs Are Parameter-Efficient</h2>
+      <button class="bookmark-btn" data-id="s-26-26" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Compare two conceptual approaches.</p>
+<h3>Dense</h3>
+<p>Each neuron sees every pixel.</p>
+<h3>CNN</h3>
+<p>A filter sees a small local region and reuses the same weights across positions.</p>
+<p>This provides:</p>
+<p>
+$$
+\boxed{\text{local connectivity + parameter sharing}}
+$$
+</p>
+<p>which is central to the CNN architecture.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.27: Hierarchical Feature Learning -->
+  <section id="s-26-27" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.27</span>
+      <h2>Hierarchical Feature Learning</h2>
+      <button class="bookmark-btn" data-id="s-26-27" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>One of the most useful mental models is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Early layers
+→ edges / local contrasts
+
+Middle layers
+→ textures / motifs / parts
+
+Later layers
+→ combinations of parts / class evidence</code></pre>
+</div></p>
+<p>This is a conceptual description, not a guarantee that every channel corresponds neatly to a human-interpretable object part.</p>
+<p>The representations are learned from data.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.28: CNNs vs Classical DIP Filters -->
+  <section id="s-26-28" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.28</span>
+      <h2>CNNs vs Classical DIP Filters</h2>
+      <button class="bookmark-btn" data-id="s-26-28" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>This bridge should be remembered.</p>
+<h3>Classical filter</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>kernel = designed by engineer</code></pre>
+</div></p>
+<p>Example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Sobel
+Gaussian
+Laplacian</code></pre>
+</div></p>
+<h3>CNN filter</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>kernel = learned from training data</code></pre>
+</div></p>
+<p>The mathematical operation resembles convolution/cross-correlation, but the filter values are optimized automatically.</p>
+<p>This is why earlier DIP material is not discarded when learning CNNs.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.29: Forward Pass -->
+  <section id="s-26-29" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.29</span>
+      <h2>Forward Pass</h2>
+      <button class="bookmark-btn" data-id="s-26-29" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A simplified forward pass is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>input image
+ ↓
+Conv
+ ↓
+ReLU
+ ↓
+Pooling
+ ↓
+Conv
+ ↓
+ReLU
+ ↓
+Pooling
+ ↓
+Flatten
+ ↓
+Dense
+ ↓
+class scores</code></pre>
+</div></p>
+<p>The network computes an output without changing its weights.</p>
+<p>This is <strong>inference</strong> or the forward computation stage.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.30: Loss Function -->
+  <section id="s-26-30" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.30</span>
+      <h2>Loss Function</h2>
+      <button class="bookmark-btn" data-id="s-26-30" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For multiclass classification, cross-entropy is a common loss.</p>
+<p>For target class $y$:</p>
+<p>
+$$
+L=-\log(p_y).
+$$
+</p>
+<p>Example:</p>
+<p>If the correct class receives:</p>
+<p>
+$$
+p_y=0.9,
+$$
+</p>
+<p>then:</p>
+<p>
+$$
+L=-\log(0.9)\approx0.1053.
+$$
+</p>
+<p>If:</p>
+<p>
+$$
+p_y=0.1,
+$$
+</p>
+<p>then:</p>
+<p>
+$$
+L=-\log(0.1)\approx2.3026.
+$$
+</p>
+<p>The network is penalized much more strongly when it assigns low probability to the correct class.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.31: Softmax -->
+  <section id="s-26-31" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.31</span>
+      <h2>Softmax</h2>
+      <button class="bookmark-btn" data-id="s-26-31" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Given logits:</p>
+<p>
+$$
+z_1,\ldots,z_K,
+$$
+</p>
+<p>softmax gives:</p>
+<p>
+$$
+p_i=
+\frac{e^{z_i}}
+{\sum_{j=1}^{K}e^{z_j}}.
+$$
+</p>
+<p>The probabilities satisfy:</p>
+<p>
+$$
+p_i\ge0
+$$
+</p>
+<p>and:</p>
+<p>
+$$
+\sum_i p_i=1.
+$$
+</p>
+<p>For MNIST:</p>
+<p>
+$$
+K=10.
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.32: A Stable Softmax Implementation -->
+  <section id="s-26-32" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.32</span>
+      <h2>A Stable Softmax Implementation</h2>
+      <button class="bookmark-btn" data-id="s-26-32" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Directly computing:</p>
+<p>
+$$
+e^{z_i}
+$$
+</p>
+<p>can overflow for large values.</p>
+<p>A common stable calculation subtracts:</p>
+<p>
+$$
+m=\max_i z_i
+$$
+</p>
+<p>before exponentiation:</p>
+<p>
+$$
+p_i=
+\frac{e^{z_i-m}}
+{\sum_j e^{z_j-m}}.
+$$
+</p>
+<p>Subtracting the same value from every logit does not change the resulting softmax probabilities.</p>
+<p>This is an implementation detail worth knowing.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.33: Training -->
+  <section id="s-26-33" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.33</span>
+      <h2>Training</h2>
+      <button class="bookmark-btn" data-id="s-26-33" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Training repeatedly performs:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>batch of images
+      ↓
+forward pass
+      ↓
+predictions
+      ↓
+loss
+      ↓
+backpropagation
+      ↓
+parameter update</code></pre>
+</div></p>
+<p>Repeat for many batches and epochs.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.34: Backpropagation — Conceptual View -->
+  <section id="s-26-34" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.34</span>
+      <h2>Backpropagation — Conceptual View</h2>
+      <button class="bookmark-btn" data-id="s-26-34" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Backpropagation computes how the loss changes with respect to model parameters.</p>
+<p>For parameter $\theta$:</p>
+<p>
+$$
+\frac{\partial L}{\partial\theta}
+$$
+</p>
+<p>is the gradient of the loss with respect to that parameter.</p>
+<p>An optimizer uses these gradients to update parameters.</p>
+<p>A simple gradient-descent update is:</p>
+<p>
+$$
+\theta_{\text{new}}
+=
+\theta_{\text{old}}
+-
+\eta
+\frac{\partial L}{\partial\theta}
+$$
+</p>
+<p>where $\eta$ is the learning rate.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.35: Learning Rate -->
+  <section id="s-26-35" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.35</span>
+      <h2>Learning Rate</h2>
+      <button class="bookmark-btn" data-id="s-26-35" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The learning rate controls the step size.</p>
+<p>Too small:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>training may be very slow</code></pre>
+</div></p>
+<p>Too large:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>training can become unstable</code></pre>
+</div></p>
+<p>The correct value depends on architecture, optimizer, data and training setup.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.36: Epoch and Batch -->
+  <section id="s-26-36" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.36</span>
+      <h2>Epoch and Batch</h2>
+      <button class="bookmark-btn" data-id="s-26-36" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Batch</h3>
+<p>A group of training examples processed together.</p>
+<h3>Epoch</h3>
+<p>One complete pass through the training dataset.</p>
+<p>Example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>60,000 training images
+batch size = 128</code></pre>
+</div></p>
+<p>means one epoch contains many batches.</p>
+<p>The exact number is approximately:</p>
+<p>
+$$
+\left\lceil\frac{60{,}000}{128}\right\rceil.
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.37: CNN Training Loop -->
+  <section id="s-26-37" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.37</span>
+      <h2>CNN Training Loop</h2>
+      <button class="bookmark-btn" data-id="s-26-37" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>for each epoch:
+    for each batch:
+        predictions = model(batch)
+        loss = compare(predictions, labels)
+        gradients = backpropagate(loss)
+        optimizer.update(parameters)</code></pre>
+</div></p>
+<p>Validation is then performed without updating weights.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.38: Training vs Inference -->
+  <section id="s-26-38" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.38</span>
+      <h2>Training vs Inference</h2>
+      <button class="bookmark-btn" data-id="s-26-38" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Training</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>input
+→ prediction
+→ loss
+→ gradients
+→ update parameters</code></pre>
+</div></p>
+<h3>Inference</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>input
+→ prediction</code></pre>
+</div></p>
+<p>No parameter update is intended during ordinary inference.</p>
+<p>This distinction becomes important when saving/deploying a trained model.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.39: MNIST Tensor Pipeline -->
+  <section id="s-26-39" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.39</span>
+      <h2>MNIST Tensor Pipeline</h2>
+      <button class="bookmark-btn" data-id="s-26-39" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The university practical specifies MNIST and TensorFlow/Keras. fileciteturn4file0L76-L80</p>
+<p>A typical channels-last pipeline is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>raw MNIST image
+28 × 28
+
+      ↓ add channel dimension
+
+28 × 28 × 1
+
+      ↓ batch
+
+B × 28 × 28 × 1
+
+      ↓ CNN
+
+B × 7 × 7 × 64
+
+      ↓ flatten
+
+B × 3136
+
+      ↓ dense
+
+B × 128
+
+      ↓ output
+
+B × 10</code></pre>
+</div></p>
+<p>Exact intermediate shapes depend on architecture choices.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.40: Complete Keras MNIST Example -->
+  <section id="s-26-40" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.40</span>
+      <h2>Complete Keras MNIST Example</h2>
+      <button class="bookmark-btn" data-id="s-26-40" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>python</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>from __future__ import annotations
+
+import numpy as np
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras import layers
+
+
+# ---------------------------------------------------------
+# 1. Load data
+# ---------------------------------------------------------
+(x_train, y_train), (x_test, y_test) = keras.datasets.mnist.load_data()
+
+# ---------------------------------------------------------
+# 2. Normalize to [0, 1]
+# ---------------------------------------------------------
+x_train = x_train.astype(&quot;float32&quot;) / 255.0
+x_test = x_test.astype(&quot;float32&quot;) / 255.0
+
+# Add channel dimension: H x W -&gt; H x W x 1
+x_train = x_train[..., np.newaxis]
+x_test = x_test[..., np.newaxis]
+
+# ---------------------------------------------------------
+# 3. Build CNN
+# ---------------------------------------------------------
+model = keras.Sequential([
+    layers.Input(shape=(28, 28, 1)),
+
+    layers.Conv2D(32, (3, 3), padding=&quot;same&quot;, activation=&quot;relu&quot;),
+    layers.MaxPooling2D((2, 2)),
+
+    layers.Conv2D(64, (3, 3), padding=&quot;same&quot;, activation=&quot;relu&quot;),
+    layers.MaxPooling2D((2, 2)),
+
+    layers.Flatten(),
+    layers.Dense(128, activation=&quot;relu&quot;),
+    layers.Dense(10, activation=&quot;softmax&quot;),
+])
+
+# ---------------------------------------------------------
+# 4. Compile
+# ---------------------------------------------------------
+model.compile(
+    optimizer=&quot;adam&quot;,
+    loss=&quot;sparse_categorical_crossentropy&quot;,
+    metrics=[&quot;accuracy&quot;],
+)
+
+# ---------------------------------------------------------
+# 5. Inspect architecture
+# ---------------------------------------------------------
+model.summary()
+
+# ---------------------------------------------------------
+# 6. Train
+# ---------------------------------------------------------
+history = model.fit(
+    x_train,
+    y_train,
+    validation_split=0.1,
+    epochs=5,
+    batch_size=128,
+)
+
+# ---------------------------------------------------------
+# 7. Evaluate
+# ---------------------------------------------------------
+test_loss, test_accuracy = model.evaluate(
+    x_test,
+    y_test,
+    verbose=0,
+)
+
+print(f&quot;Test loss: {test_loss:.4f}&quot;)
+print(f&quot;Test accuracy: {test_accuracy:.4f}&quot;)
+
+# ---------------------------------------------------------
+# 8. Inference
+# ---------------------------------------------------------
+sample = x_test[:1]
+prediction = model.predict(sample, verbose=0)
+
+predicted_class = int(np.argmax(prediction[0]))
+actual_class = int(y_test[0])
+
+print(&quot;Predicted:&quot;, predicted_class)
+print(&quot;Actual:&quot;, actual_class)</code></pre>
+</div></p>
+<p>This is an educational baseline. Exact accuracy depends on implementation details, environment, training duration and randomness.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.41: Why `sparse_categorical_crossentropy`? -->
+  <section id="s-26-41" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.41</span>
+      <h2>Why `sparse_categorical_crossentropy`?</h2>
+      <button class="bookmark-btn" data-id="s-26-41" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>MNIST labels are integer class IDs:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>0, 1, 2, ..., 9</code></pre>
+</div></p>
+<p>rather than one-hot vectors.</p>
+<p>Therefore sparse categorical cross-entropy is a convenient match.</p>
+<p>If labels were represented as one-hot vectors such as:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>[0,0,0,0,0,0,0,1,0,0]</code></pre>
+</div></p>
+<p>then a categorical cross-entropy formulation would be appropriate.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.42: Predicting One Image -->
+  <section id="s-26-42" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.42</span>
+      <h2>Predicting One Image</h2>
+      <button class="bookmark-btn" data-id="s-26-42" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>python</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>prediction = model.predict(x_test[:1], verbose=0)
+
+probs = prediction[0]
+predicted_digit = int(np.argmax(probs))
+
+print(&quot;Probabilities:&quot;, probs)
+print(&quot;Predicted digit:&quot;, predicted_digit)</code></pre>
+</div></p>
+<p>A good practical exercise is to print the complete probability vector rather than only the predicted class.</p>
+<p>That lets you inspect ambiguity.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.43: Confusion Matrix in Python -->
+  <section id="s-26-43" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.43</span>
+      <h2>Confusion Matrix in Python</h2>
+      <button class="bookmark-btn" data-id="s-26-43" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>python</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>from sklearn.metrics import confusion_matrix
+
+probs = model.predict(x_test, verbose=0)
+predictions = np.argmax(probs, axis=1)
+
+cm = confusion_matrix(y_test, predictions)
+
+print(cm)</code></pre>
+</div></p>
+<p>The diagonal corresponds to correct predictions.</p>
+<p>Off-diagonal entries reveal confusions.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.44: Error Inspection -->
+  <section id="s-26-44" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.44</span>
+      <h2>Error Inspection</h2>
+      <button class="bookmark-btn" data-id="s-26-44" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>python</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>wrong = np.where(predictions != y_test)[0]
+
+for idx in wrong[:10]:
+    print(
+        &quot;Index:&quot;, idx,
+        &quot;Actual:&quot;, int(y_test[idx]),
+        &quot;Predicted:&quot;, int(predictions[idx]),
+    )</code></pre>
+</div></p>
+<p>A stronger lab should also visualize selected incorrect examples.</p>
+<p>This turns:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>model score</code></pre>
+</div></p>
+<p>into:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>model behaviour</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.45: Visualizing Feature Maps -->
+  <section id="s-26-45" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.45</span>
+      <h2>Visualizing Feature Maps</h2>
+      <button class="bookmark-btn" data-id="s-26-45" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Feature maps can be inspected to understand what different learned filters respond to.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>input
+ ↓
+Conv layer
+ ↓
+channels 0...31
+ ↓
+feature maps</code></pre>
+</div></p>
+<p>An engineering caution:</p>
+<blockquote>
+<p>A feature map should not automatically be interpreted as a single human concept such as “vertical edges.” Some learned channels are distributed, mixed, or task-specific.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.46: Why CNN Convolution Is Powerful -->
+  <section id="s-26-46" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.46</span>
+      <h2>Why CNN Convolution Is Powerful</h2>
+      <button class="bookmark-btn" data-id="s-26-46" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A CNN learns:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>where a local pattern occurs
++
+how strongly it occurs</code></pre>
+</div></p>
+<p>because the same filter is applied across the image.</p>
+<p>This creates a form of spatial reuse.</p>
+<p>Later layers combine lower-level activations to detect more complex patterns.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.47: Receptive Field -->
+  <section id="s-26-47" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.47</span>
+      <h2>Receptive Field</h2>
+      <button class="bookmark-btn" data-id="s-26-47" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A neuron's <strong>receptive field</strong> is the region of the original image that can influence its activation.</p>
+<p>With stacked convolution and pooling layers, the receptive field grows.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>early neuron
+→ small image neighbourhood
+
+deeper neuron
+→ larger image region</code></pre>
+</div></p>
+<p>This helps a deep CNN move from local patterns toward larger-scale structures.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.48: Pooling and Receptive Field -->
+  <section id="s-26-48" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.48</span>
+      <h2>Pooling and Receptive Field</h2>
+      <button class="bookmark-btn" data-id="s-26-48" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Pooling reduces spatial resolution while increasing the effective receptive field of later units.</p>
+<p>For example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>28×28
+ ↓ pool
+14×14
+ ↓ pool
+7×7</code></pre>
+</div></p>
+<p>A later activation can correspond to a larger region of the original image than an early activation.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.49: CNN Hyperparameters -->
+  <section id="s-26-49" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.49</span>
+      <h2>CNN Hyperparameters</h2>
+      <button class="bookmark-btn" data-id="s-26-49" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Important choices include:</p>
+<div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Number of filters</td>
+<td>Output feature-map count</td>
+</tr>
+<tr>
+<td>Kernel size</td>
+<td>Local pattern size</td>
+</tr>
+<tr>
+<td>Stride</td>
+<td>Movement step</td>
+</tr>
+<tr>
+<td>Padding</td>
+<td>Border handling/output size</td>
+</tr>
+<tr>
+<td>Activation</td>
+<td>Nonlinear transformation</td>
+</tr>
+<tr>
+<td>Pool size</td>
+<td>Local aggregation size</td>
+</tr>
+<tr>
+<td>Learning rate</td>
+<td>Update step scale</td>
+</tr>
+<tr>
+<td>Batch size</td>
+<td>Samples per update</td>
+</tr>
+<tr>
+<td>Epochs</td>
+<td>Dataset passes</td>
+</tr>
+</tbody>
+</table></div>
+<p>Not every architecture uses every parameter in the same way.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.50: CNN Design Trade-offs -->
+  <section id="s-26-50" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.50</span>
+      <h2>CNN Design Trade-offs</h2>
+      <button class="bookmark-btn" data-id="s-26-50" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>More filters</h3>
+<p>Can increase representation capacity.</p>
+<p>But:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>more parameters
+→ more computation</code></pre>
+</div></p>
+<h3>Larger kernels</h3>
+<p>Larger local context.</p>
+<p>But:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>more parameters / compute</code></pre>
+</div></p>
+<h3>More layers</h3>
+<p>Potentially richer hierarchical representation.</p>
+<p>But:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>training complexity
++
+memory
++
+optimization difficulty</code></pre>
+</div></p>
+<p>The appropriate design depends on the task.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.51: Overfitting in CNNs -->
+  <section id="s-26-51" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.51</span>
+      <h2>Overfitting in CNNs</h2>
+      <button class="bookmark-btn" data-id="s-26-51" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>CNNs can overfit.</p>
+<p>Typical warning sign:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>training accuracy ↑
+validation accuracy stops improving</code></pre>
+</div></p>
+<p>or:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>training loss ↓
+validation loss ↑</code></pre>
+</div></p>
+<p>Potential responses:</p>
+<ul>
+<li>data augmentation;</li>
+<li>regularization;</li>
+<li>dropout;</li>
+<li>early stopping;</li>
+<li>more data;</li>
+<li>architecture changes.</li>
+</ul>
+<p>These are engineering tools rather than guaranteed fixes.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.52: Data Augmentation -->
+  <section id="s-26-52" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.52</span>
+      <h2>Data Augmentation</h2>
+      <button class="bookmark-btn" data-id="s-26-52" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Augmentation creates additional training variation.</p>
+<p>For suitable tasks:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>original
+→ slight shift
+→ rotation
+→ crop
+→ brightness variation</code></pre>
+</div></p>
+<p>But augmentation must preserve the label.</p>
+<p>For handwritten digits, arbitrary transformations may alter the identity of the digit.</p>
+<p>Therefore:</p>
+<blockquote>
+<p><strong>Augmentation should reflect realistic variation, not random distortion.</strong></p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.53: CNNs Do Not Eliminate Preprocessing -->
+  <section id="s-26-53" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.53</span>
+      <h2>CNNs Do Not Eliminate Preprocessing</h2>
+      <button class="bookmark-btn" data-id="s-26-53" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A common misconception is:</p>
+<blockquote>
+<p>“CNNs can take anything exactly as it is.”</p>
+</blockquote>
+<p>Real systems still need careful handling of:</p>
+<ul>
+<li>image size;</li>
+<li>channels;</li>
+<li>numeric ranges;</li>
+<li>missing values;</li>
+<li>normalization;</li>
+<li>orientation;</li>
+<li>train/inference consistency.</li>
+</ul>
+<p>Good models cannot compensate for every data pipeline error.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.54: Classical DIP → CNN Integration -->
+  <section id="s-26-54" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.54</span>
+      <h2>Classical DIP → CNN Integration</h2>
+      <button class="bookmark-btn" data-id="s-26-54" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The conceptual journey is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Sobel / Gaussian / Laplacian
+        ↓
+hand-designed spatial filters
+
+DCT / frequency representation
+        ↓
+engineered transform
+
+SIFT / HOG
+        ↓
+hand-designed descriptors
+
+CNN
+        ↓
+learned filters + learned representation</code></pre>
+</div></p>
+<p>CNNs do not make earlier DIP topics irrelevant.</p>
+<p>They provide a learned alternative to part of the manually designed representation pipeline.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.55: Exam Lens -->
+  <section id="s-26-55" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.55</span>
+      <h2>Exam Lens</h2>
+      <button class="bookmark-btn" data-id="s-26-55" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h2>2-mark questions</h2>
+<p><strong>Define CNN.</strong><br />
+A neural architecture designed to process structured grid data such as images using local connectivity, shared filters, nonlinearities and hierarchical feature extraction.</p>
+<p><strong>What is a feature map?</strong><br />
+The spatial output generated when a convolutional filter responds across an input.</p>
+<p><strong>What is parameter sharing?</strong><br />
+Using the same filter weights at multiple spatial locations.</p>
+<hr />
+<h2>5-mark question</h2>
+<h3>Explain CNN architecture.</h3>
+<p>Use:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>input
+→ convolution
+→ activation
+→ pooling
+→ deeper convolution
+→ flatten / global representation
+→ dense layer
+→ output</code></pre>
+</div></p>
+<p>Then explain the role of each stage.</p>
+<hr />
+<h2>10-mark question</h2>
+<h3>Explain CNN-based image classification.</h3>
+<p>Recommended answer:</p>
+<ol>
+<li>image/tensor input;</li>
+<li>convolution;</li>
+<li>learned kernels;</li>
+<li>feature maps;</li>
+<li>activation;</li>
+<li>pooling;</li>
+<li>repeated feature extraction;</li>
+<li>flattening;</li>
+<li>classifier;</li>
+<li>softmax;</li>
+<li>loss;</li>
+<li>forward pass;</li>
+<li>backpropagation;</li>
+<li>parameter update;</li>
+<li>evaluation.</li>
+</ol>
+<p>For the course practical, connect the answer to MNIST. fileciteturn4file0L76-L80</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.56: Numerical Practice — Output Shape -->
+  <section id="s-26-56" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.56</span>
+      <h2>Numerical Practice — Output Shape</h2>
+      <button class="bookmark-btn" data-id="s-26-56" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Input:</p>
+<p>
+$$
+32\times32\times3
+$$
+</p>
+<p>Convolution:</p>
+<ul>
+<li>kernel $5\times5$</li>
+<li>stride $1$</li>
+<li>padding $0$</li>
+<li>16 filters</li>
+</ul>
+<p>Spatial output:</p>
+<p>
+$$
+32-5+1=28.
+$$
+</p>
+<p>Therefore:</p>
+<p>
+$$
+\boxed{28\times28\times16}.
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.57: Numerical Practice — Parameter Count -->
+  <section id="s-26-57" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.57</span>
+      <h2>Numerical Practice — Parameter Count</h2>
+      <button class="bookmark-btn" data-id="s-26-57" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For:</p>
+<p>
+$$
+3\times3,
+\quad C_{\text{in}}=3,
+\quad C_{\text{out}}=16
+$$
+</p>
+<p>parameters:</p>
+<p>
+$$
+3\times3\times3\times16+16
+$$
+</p>
+<p>
+$$
+=432+16
+$$
+</p>
+<p>
+$$
+=\boxed{448}.
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.58: Numerical Practice — Pooling -->
+  <section id="s-26-58" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.58</span>
+      <h2>Numerical Practice — Pooling</h2>
+      <button class="bookmark-btn" data-id="s-26-58" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Input:</p>
+<p>
+$$
+28\times28\times32
+$$
+</p>
+<p>2×2 max pooling, stride 2:</p>
+<p>
+$$
+14\times14\times32.
+$$
+</p>
+<p>Number of values before:</p>
+<p>
+$$
+28\times28\times32=25{,}088.
+$$
+</p>
+<p>After:</p>
+<p>
+$$
+14\times14\times32=6{,}272.
+$$
+</p>
+<p>So the number of spatial activation values is reduced by a factor of:</p>
+<p>
+$$
+\boxed{4}.
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.59: Chapter Checkpoint -->
+  <section id="s-26-59" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.59</span>
+      <h2>Chapter Checkpoint</h2>
+      <button class="bookmark-btn" data-id="s-26-59" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Q1</h3>
+<p>Why can the same CNN filter detect a pattern in different image locations?</p>
+<h3>Q2</h3>
+<p>For an input of $28\times28\times1$, a 3×3 valid convolution with 32 filters and stride 1 produces what shape?</p>
+<h3>Q3</h3>
+<p>How many trainable parameters does that layer contain?</p>
+<h3>Q4</h3>
+<p>Why is ReLU inserted between learned linear operations?</p>
+<h3>Q5</h3>
+<p>What is the difference between training and inference?</p>
+<h3>Q6</h3>
+<p>Where does the learning of filter values happen?</p>
+<h3>Q7</h3>
+<p>Why can pooling reduce computation but also remove detail?</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.60: One-Page Recall Sheet -->
+  <section id="s-26-60" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.60</span>
+      <h2>One-Page Recall Sheet</h2>
+      <button class="bookmark-btn" data-id="s-26-60" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>CNN
+│
+├── Input image tensor
+│
+├── Convolution
+│   ├── local connectivity
+│   ├── shared kernels
+│   └── feature maps
+│
+├── ReLU
+│   └── nonlinearity
+│
+├── Pooling
+│   └── spatial reduction
+│
+├── Deeper layers
+│   └── hierarchical representation
+│
+├── Flatten / global representation
+│
+├── Dense classifier
+│
+├── Softmax
+│   └── class probabilities
+│
+└── Training
+    ├── loss
+    ├── backpropagation
+    └── optimizer update</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.61: Cross-Book Links -->
+  <section id="s-26-61" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.61</span>
+      <h2>Cross-Book Links</h2>
+      <button class="bookmark-btn" data-id="s-26-61" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Layer</th>
+<th>Connection</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MAIN</td>
+<td>C26 explains the CNN architecture</td>
+</tr>
+<tr>
+<td>MATH</td>
+<td>Convolution, output dimensions, parameter count, softmax, loss</td>
+</tr>
+<tr>
+<td>LAB</td>
+<td>Practical 8 — MNIST classification</td>
+</tr>
+<tr>
+<td>CODE</td>
+<td>TensorFlow/Keras implementation</td>
+</tr>
+<tr>
+<td>EXAM</td>
+<td>CNN architecture, convolution, pooling, training</td>
+</tr>
+<tr>
+<td>PRACTICE</td>
+<td>Shape tracing, parameter counts, architecture reasoning</td>
+</tr>
+<tr>
+<td>RESOURCE</td>
+<td>Deep-learning/computer-vision references listed by the course</td>
+</tr>
+<tr>
+<td>ASSETS</td>
+<td>CNN pipeline, tensor shapes, feature-map illustrations</td>
+</tr>
+<tr>
+<td>MASTER</td>
+<td>Dependency into C27 VGG/ResNet and C28 YOLO</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 26.62: Final Chapter Summary -->
+  <section id="s-26-62" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.62</span>
+      <h2>Final Chapter Summary</h2>
+      <button class="bookmark-btn" data-id="s-26-62" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A CNN replaces much of the manually designed image feature pipeline with a learned hierarchy:</p>
+<p>
+$$
+\boxed{
+\text{pixels}
+\rightarrow
+\text{learned local filters}
+\rightarrow
+\text{feature maps}
+\rightarrow
+\text{hierarchical representation}
+\rightarrow
+\text{class decision}
+}
+$$
+</p>
+<p>The three concepts to remember most strongly are:</p>
+<p>
+$$
+\boxed{\text{local connectivity}}
+$$
+</p>
+<p>
+$$
+\boxed{\text{parameter sharing}}
+$$
+</p>
+<p>
+$$
+\boxed{\text{learned hierarchical features}}
+$$
+</p>
+<p>The practical requirement turns these ideas into a complete system:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>MNIST
+→ preprocessing
+→ CNN
+→ training
+→ testing
+→ prediction
+→ error analysis</code></pre>
+</div></p>
+<p>The university syllabus identifies CNNs as a Unit IV topic and explicitly requires MNIST-based CNN classification as Practical 8. fileciteturn4file0L48-L52 fileciteturn4file0L76-L80</p>
+<hr />
+<p><strong>Next chapter:</strong> C27 — VGG and ResNet</p>
+    </div>
+  </section>
+
+  <!-- SECTION 26.63: Worked Example — 10-Mark University Model Answer: CNN Layer Dimensions, Receptive Fields &amp; Parameter Counts -->
+  <section id="s-26-63" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.63</span>
+      <h2>Worked Example — 10-Mark University Model Answer: CNN Layer Dimensions, Receptive Fields &amp; Parameter Counts</h2>
+      <button class="bookmark-btn" data-id="s-26-63" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Problem Statement</h3>
+<p>A Convolutional Neural Network processes input colour images of spatial dimension $W_{in} \times H_{in} \times C_{in} = 224 \times 224 \times 3$. The initial feature extraction block consists of the following consecutive stages:
+- <strong>Layer 1 (Conv1):</strong> 64 filters of size $7 \times 7$, stride $S = 2$, padding $P = 3$.
+- <strong>Layer 2 (BatchNorm + ReLU):</strong> Non-linear point activation.
+- <strong>Layer 3 (MaxPool1):</strong> Max pooling window of size $3 \times 3$, stride $S = 2$, padding $P = 1$.
+- <strong>Layer 4 (Conv2):</strong> 128 filters of size $3 \times 3$, stride $S = 1$, padding $P = 1$.
+1. State the fundamental formula determining the output spatial dimensions $(W_{out}, H_{out})$ of a 2D convolution or pooling layer.
+2. Calculate the exact output feature tensor shape $[B, C, H, W]$ after Conv1, MaxPool1, and Conv2 (assuming batch size $B = 16$).
+3. Compute the total number of learnable parameters (weights and biases) in Layer 1 (Conv1) and Layer 4 (Conv2).
+4. Contrast the parameter count of Conv1 with an equivalent fully-connected (dense) layer operating on the flattened $224 \times 224 \times 3$ input to produce 64 outputs.
+5. Compute the effective receptive field ($RF$) of a neuron in Conv2 with respect to the original input image.</p>
+<h3>Step-by-Step Mathematical Solution</h3>
+<div class="worked-example">
+  <div class="worked-example-header">
+    <span class="worked-example-title">Numerical Examination Trace</span>
+    <span class="tag-badge tag-exam">10-MARK UNIVERSITY MODEL ANSWER</span>
+  </div>
+  <p><strong>1. Output Spatial Dimension Formula:</strong><br>
+  For an input spatial dimension $W$, filter kernel size $K$, zero-padding $P$, and stride $S$:
+  
+$$W_{out} = \left\lfloor \frac{W - K + 2P}{S} \right\rfloor + 1$$
+
+  This formula applies independently to width and height.</p>
+
+  <p><strong>2. Step-by-Step Tensor Dimensional Tracking:</strong><br>
+  - <strong>Input:</strong> Shape $[16, 3, 224, 224]$.<br>
+  - <strong>Layer 1 (Conv1: $K=7, S=2, P=3, C_{out}=64$):</strong>
+    
+$$W_{1} = \left\lfloor \frac{224 - 7 + 2(3)}{2} \right\rfloor + 1 = \left\lfloor \frac{224 - 7 + 6}{2} \right\rfloor + 1 = \left\lfloor \frac{223}{2} \right\rfloor + 1 = 111 + 1 = 112$$
+
+    Feature map tensor shape after Conv1: $\mathbf{[16, 64, 112, 112]}$.<br>
+  - <strong>Layer 2 (BatchNorm + ReLU):</strong> Pointwise operations; preserves spatial dimensions and channels exactly: $\mathbf{[16, 64, 112, 112]}$.<br>
+  - <strong>Layer 3 (MaxPool1: $K=3, S=2, P=1$):</strong>
+    
+$$W_{3} = \left\lfloor \frac{112 - 3 + 2(1)}{2} \right\rfloor + 1 = \left\lfloor \frac{111}{2} \right\rfloor + 1 = 55 + 1 = 56$$
+
+    Feature map tensor shape after MaxPool1: $\mathbf{[16, 64, 56, 56]}$.<br>
+  - <strong>Layer 4 (Conv2: $K=3, S=1, P=1, C_{out}=128$):</strong>
+    
+$$W_{4} = \left\lfloor \frac{56 - 3 + 2(1)}{1} \right\rfloor + 1 = \left\lfloor \frac{55}{1} \right\rfloor + 1 = 55 + 1 = 56$$
+
+    Feature map tensor shape after Conv2: $\mathbf{[16, 128, 56, 56]}$.</p>
+
+  <p><strong>3. Learnable Parameter Count Calculations:</strong><br>
+  For a convolutional layer with $C_{in}$ input channels, $C_{out}$ filters of size $K \times K$:
+  
+$$\text{Parameters} = C_{out} \times (K \times K \times C_{in} + 1)$$
+
+  where $+1$ accounts for the per-filter scalar bias.<br>
+  - <strong>Conv1:</strong> $C_{in} = 3, C_{out} = 64, K = 7$:
+    
+$$\text{Params}_{\text{Conv1}} = 64 \times (7 \times 7 \times 3 + 1) = 64 \times (147 + 1) = 64 \times 148 = \mathbf{9,472 \text{ parameters}}$$
+
+  - <strong>Conv2:</strong> $C_{in} = 64, C_{out} = 128, K = 3$:
+    
+$$\text{Params}_{\text{Conv2}} = 128 \times (3 \times 3 \times 64 + 1) = 128 \times (576 + 1) = 128 \times 577 = \mathbf{73,856 \text{ parameters}}$$
+</p>
+
+  <p><strong>4. Comparison with Fully Connected Layer:</strong><br>
+  If the input were flattened into a 1D vector of dimension $N = 224 \times 224 \times 3 = 150,528$, a fully connected dense layer producing 64 outputs would require:
+  
+$$\text{Params}_{\text{Dense}} = (150,528 \times 64) + 64 = 9,633,792 + 64 = \mathbf{9,633,856 \text{ parameters}}$$
+
+  
+$$\text{Reduction Factor} = \frac{9,633,856}{9,472} \approx \mathbf{1,017 \times \text{ fewer parameters!}}$$
+
+  This dramatic efficiency demonstrates the power of <strong>parameter sharing</strong> and <strong>local receptive fields</strong> in convolutional layers.</p>
+
+  <p><strong>5. Effective Receptive Field ($RF$) Derivation:</strong><br>
+  Receptive field propagates recursively according to: $RF_{out} = RF_{in} + (K - 1) \times J_{in}$, where $J_{in}$ is the cumulative stride.<br>
+  - Input: $RF_0 = 1, J_0 = 1$.<br>
+  - Conv1 ($K=7, S=2$): $RF_1 = 1 + (7 - 1) \times 1 = 7$. Cumulative stride $J_1 = 1 \times 2 = 2$.<br>
+  - MaxPool1 ($K=3, S=2$): $RF_2 = 7 + (3 - 1) \times 2 = 7 + 4 = 11$. Cumulative stride $J_2 = 2 \times 2 = 4$.<br>
+  - Conv2 ($K=3, S=1$): $RF_3 = 11 + (3 - 1) \times 4 = 11 + 8 = \mathbf{19 \times 19 \text{ pixels}}$.<br>
+  Each feature vector in Conv2 looks at a $19 \times 19$ patch in the original pristine image.</p>
+</div>
+    </div>
+  </section>
+
+  <!-- SECTION 26.64: Convolutional Mechanics Architecture Diagram -->
+  <section id="s-26-64" class="section-block">
+    <div class="section-header">
+      <span class="section-num">26.64</span>
+      <h2>Convolutional Mechanics Architecture Diagram</h2>
+      <button class="bookmark-btn" data-id="s-26-64" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="diagram-box"><div class="mermaid">
+graph LR
+    Input["Input Image<br>[3, 224, 224]"] --> Conv1["Conv 7x7, s=2, p=3<br>64 Kernels"]
+    Conv1 --> Feat1["Feature Map<br>[64, 112, 112]"]
+    Feat1 --> Pool1["MaxPool 3x3, s=2<br>Downsampling"]
+    Pool1 --> Feat2["Feature Map<br>[64, 56, 56]"]
+    Feat2 --> Conv2["Conv 3x3, s=1, p=1<br>128 Kernels"]
+    Conv2 --> Feat3["Deep Feature Tensor<br>[128, 56, 56]"]
+</div></div></p>
+    </div>
+  </section>
+
+      <!-- Chapter End Package -->
+      <section class="chapter-end-package">
+        <div class="chapter-nav-grid">
+          <a href="ch25-image-classification.html" class="chapter-nav-card">
+            <div class="chapter-nav-dir">← Previous</div>
+            <div class="chapter-nav-title">← Ch 25 — Image Classification</div>
+          </a>
+          <a href="ch27-modern-vision-architectures.html" class="chapter-nav-card next">
+            <div class="chapter-nav-dir">Next →</div>
+            <div class="chapter-nav-title">Next: Ch 27 — Modern Vision Architectures (VGG & ResNet) →</div>
+          </a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- FLOATING TTS PANEL (SAFE MANUAL MODE ONLY) -->
+  <div id="tts-panel" style="position:fixed; bottom:20px; right:20px; background:var(--em-surface-1); border:1px solid var(--em-border); border-radius:var(--em-radius-md); padding:12px 16px; box-shadow:var(--sh-lg); z-index:var(--z-float); display:none; gap:10px; align-items:center;">
+    <button class="icon-btn" id="tts-play" title="Play / Pause" style="background:var(--em-accent); color:#fff; border-radius:50%; width:36px; height:36px;">▶</button>
+    <button class="icon-btn" id="tts-stop" title="Stop">⏹</button>
+    <div style="font-size:0.75rem; color:var(--em-text-muted);">
+      <span id="tts-status">Ready</span> · <span id="tts-rate-label">1.0x</span>
+    </div>
+  </div>
+
+  <script src="../assets/js/state.js"></script>
+  <script src="../assets/js/core.js"></script>
+  <script src="../assets/js/tts.js"></script>
+  <script src="../assets/js/glossary.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: document.documentElement.getAttribute('data-theme') === 'light' ? 'default' : 'dark'
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,3186 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Arpit">
+  <meta name="description" content="Chapter 20: Local Feature Detectors (SIFT, SURF, ORB &amp; HOG) — Digital Image Processing MiniBook. Harris Corner Autocorrelation Matrix, SIFT 4-Stage Architecture (DoG Scale-Space, Hessian Filtering, 128-D Descriptors), SURF Integral Box Filters, FAST/ORB Binary Descriptors, and HOG Pedestrian Detection">
+  <title>C20: Local Feature Detectors (SIFT, SURF, ORB &amp; HOG) | DIP MiniBook 📷 Arpit</title>
+
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <link rel="stylesheet" href="../assets/css/chapters.css">
+  <link rel="stylesheet" href="../assets/css/animations.css">
+  <link rel="stylesheet" href="../assets/css/timer.css">
+
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body data-chapter-id="ch20-sift-surf-orb-hog">
+  <div id="progress-bar"></div>
+
+  <!-- Header -->
+  <header id="main-header">
+    <div class="header-left">
+      <button id="sidebar-toggle" class="icon-btn" aria-label="Toggle navigation drawer" title="Toggle Sidebar (S)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <a href="../index.html" class="brand-logo">
+        <div class="brand-icon">DIP</div>
+        <div class="brand-text">
+          <span class="main">Digital Image Processing</span>
+          <span class="sub">DU DSE-3 Engineering MiniBook</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="header-chapter-title">C20: Local Feature Detectors (SIFT, SURF, ORB &amp; HOG)</div>
+
+    <div class="header-right">
+      <button id="reading-mode-btn" class="icon-btn" aria-label="Toggle reading focus mode" title="Focus Mode (F)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+          <line x1="8" y1="21" x2="16" y2="21"></line>
+          <line x1="12" y1="17" x2="12" y2="21"></line>
+        </svg>
+      </button>
+      <button id="tts-toggle" class="icon-btn" aria-label="Audio Reader" title="Audio Reader">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+        </svg>
+      </button>
+      <button id="theme-toggle" class="icon-btn" aria-label="Cycle theme" title="Theme (T)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="12" cy="12" r="4.5"></circle>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Sidebar Overlay -->
+  <div id="sidebar-overlay"></div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" aria-expanded="true">
+    <div class="sidebar-nav">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">General</div>
+        <a href="../index.html" class="sidebar-link">
+          <span class="link-icon">🏛️</span>
+          <span>Subject Portal</span>
+        </a>
+        <a href="../progress.html" class="sidebar-link">
+          <span class="link-icon">📊</span>
+          <span>Study Dashboard</span>
+        </a>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Current Chapter Sections</div>
+        <a href="#s-20-1" class="sidebar-link"><span class="link-icon">📌</span><span>20.1 Why a Dedicated Method Chapter?</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-20-2" class="sidebar-link"><span class="link-icon">📌</span><span>20.2 Four Different Design Philosophies</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-20-3" class="sidebar-link"><span class="link-icon">📌</span><span>20.3 SIFT Pipeline</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-20-4" class="sidebar-link"><span class="link-icon">📌</span><span>20.4 SIFT Scale Space</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-20-5" class="sidebar-link"><span class="link-icon">📌</span><span>20.5 Why Use Difference of Gaussians?</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-20-6" class="sidebar-link"><span class="link-icon">📌</span><span>20.6 SIFT Keypoint Candidate Detection</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-20-7" class="sidebar-link"><span class="link-icon">📌</span><span>20.7 Why Scale Matters</span> </a>
+      <a href="#s-20-8" class="sidebar-link"><span class="link-icon">📌</span><span>20.8 Low-Contrast Point Rejection</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-20-9" class="sidebar-link"><span class="link-icon">📌</span><span>20.9 Edge-Like Point Rejection</span> </a>
+      <a href="#s-20-10" class="sidebar-link"><span class="link-icon">📌</span><span>20.10 SIFT Orientation Assignment</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-20-11" class="sidebar-link"><span class="link-icon">📌</span><span>20.11 Rotation Robustness</span> </a>
+      <a href="#s-20-12" class="sidebar-link"><span class="link-icon">📌</span><span>20.12 SIFT Descriptor Geometry</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-20-13" class="sidebar-link"><span class="link-icon">📌</span><span>20.13 Why Use Histograms Instead of Raw Pixels?</span> </a>
+      <a href="#s-20-14" class="sidebar-link"><span class="link-icon">📌</span><span>20.14 SIFT Descriptor Normalization</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-20-15" class="sidebar-link"><span class="link-icon">📌</span><span>20.15 SIFT Matching</span> </a>
+      <a href="#s-20-16" class="sidebar-link"><span class="link-icon">📌</span><span>20.16 SIFT Strengths</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-20-17" class="sidebar-link"><span class="link-icon">📌</span><span>20.17 SIFT Limitations</span> </a>
+      <a href="#s-20-18" class="sidebar-link"><span class="link-icon">📌</span><span>20.18 SURF Pipeline</span> </a>
+      <a href="#s-20-19" class="sidebar-link"><span class="link-icon">📌</span><span>20.19 SURF Hessian Matrix</span> </a>
+      <a href="#s-20-20" class="sidebar-link"><span class="link-icon">📌</span><span>20.20 Why Hessian Determinant Detects Blobs</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-20-21" class="sidebar-link"><span class="link-icon">📌</span><span>20.21 Box-Filter Approximation</span> </a>
+      <a href="#s-20-22" class="sidebar-link"><span class="link-icon">📌</span><span>20.22 Integral Image Definition</span> </a>
+      <a href="#s-20-23" class="sidebar-link"><span class="link-icon">📌</span><span>20.23 Why Integral Images Matter</span> </a>
+      <a href="#s-20-24" class="sidebar-link"><span class="link-icon">📌</span><span>20.24 SURF Orientation</span> </a>
+      <a href="#s-20-25" class="sidebar-link"><span class="link-icon">📌</span><span>20.25 SURF Descriptor</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-20-26" class="sidebar-link"><span class="link-icon">📌</span><span>20.26 SURF Matching</span> </a>
+      <a href="#s-20-27" class="sidebar-link"><span class="link-icon">📌</span><span>20.27 SURF Strengths</span> </a>
+      <a href="#s-20-28" class="sidebar-link"><span class="link-icon">📌</span><span>20.28 SURF Limitations</span> </a>
+      <a href="#s-20-29" class="sidebar-link"><span class="link-icon">📌</span><span>20.29 ORB Pipeline</span> </a>
+      <a href="#s-20-30" class="sidebar-link"><span class="link-icon">📌</span><span>20.30 FAST Corner Detector</span> </a>
+      <a href="#s-20-31" class="sidebar-link"><span class="link-icon">📌</span><span>20.31 FAST Is Not the Same as Harris</span> </a>
+      <a href="#s-20-32" class="sidebar-link"><span class="link-icon">📌</span><span>20.32 ORB Orientation</span> </a>
+      <a href="#s-20-33" class="sidebar-link"><span class="link-icon">📌</span><span>20.33 BRIEF Binary Test</span> </a>
+      <a href="#s-20-34" class="sidebar-link"><span class="link-icon">📌</span><span>20.34 Why Binary Descriptors Are Fast</span> </a>
+      <a href="#s-20-35" class="sidebar-link"><span class="link-icon">📌</span><span>20.35 Worked ORB Matching</span> </a>
+      <a href="#s-20-36" class="sidebar-link"><span class="link-icon">📌</span><span>20.36 ORB and Scale</span> </a>
+      <a href="#s-20-37" class="sidebar-link"><span class="link-icon">📌</span><span>20.37 ORB Strengths</span> </a>
+      <a href="#s-20-38" class="sidebar-link"><span class="link-icon">📌</span><span>20.38 ORB Limitations</span> </a>
+      <a href="#s-20-39" class="sidebar-link"><span class="link-icon">📌</span><span>20.39 HOG Pipeline</span> </a>
+      <a href="#s-20-40" class="sidebar-link"><span class="link-icon">📌</span><span>20.40 HOG Gradient Calculation</span> </a>
+      <a href="#s-20-41" class="sidebar-link"><span class="link-icon">📌</span><span>20.41 Orientation Binning</span> </a>
+      <a href="#s-20-42" class="sidebar-link"><span class="link-icon">📌</span><span>20.42 Cells</span> </a>
+      <a href="#s-20-43" class="sidebar-link"><span class="link-icon">📌</span><span>20.43 Blocks</span> </a>
+      <a href="#s-20-44" class="sidebar-link"><span class="link-icon">📌</span><span>20.44 HOG Normalization</span> </a>
+      <a href="#s-20-45" class="sidebar-link"><span class="link-icon">📌</span><span>20.45 Why HOG Represents Shape</span> </a>
+      <a href="#s-20-46" class="sidebar-link"><span class="link-icon">📌</span><span>20.46 HOG Strengths</span> </a>
+      <a href="#s-20-47" class="sidebar-link"><span class="link-icon">📌</span><span>20.47 HOG Limitations</span> </a>
+      <a href="#s-20-48" class="sidebar-link"><span class="link-icon">📌</span><span>20.48 SIFT vs SURF vs ORB vs HOG — Core Table</span> </a>
+      <a href="#s-20-49" class="sidebar-link"><span class="link-icon">📌</span><span>20.49 Method Selection</span> </a>
+      <a href="#s-20-50" class="sidebar-link"><span class="link-icon">📌</span><span>20.50 Feature Pipeline for Image Registration</span> </a>
+      <a href="#s-20-51" class="sidebar-link"><span class="link-icon">📌</span><span>20.51 Feature Pipeline for Object Recognition</span> </a>
+      <a href="#s-20-52" class="sidebar-link"><span class="link-icon">📌</span><span>20.52 HOG + Classifier Pipeline</span> </a>
+      <a href="#s-20-53" class="sidebar-link"><span class="link-icon">📌</span><span>20.53 Matching Thresholds</span> </a>
+      <a href="#s-20-54" class="sidebar-link"><span class="link-icon">📌</span><span>20.54 RANSAC Integration</span> </a>
+      <a href="#s-20-55" class="sidebar-link"><span class="link-icon">📌</span><span>20.55 Worked Inlier Decision</span> </a>
+      <a href="#s-20-56" class="sidebar-link"><span class="link-icon">📌</span><span>20.56 Descriptor Matching Complexity</span> </a>
+      <a href="#s-20-57" class="sidebar-link"><span class="link-icon">📌</span><span>20.57 Binary vs Floating Descriptors</span> </a>
+      <a href="#s-20-58" class="sidebar-link"><span class="link-icon">📌</span><span>20.58 Descriptor Dimensionality</span> </a>
+      <a href="#s-20-59" class="sidebar-link"><span class="link-icon">📌</span><span>20.59 Feature Detector Thresholds</span> </a>
+      <a href="#s-20-60" class="sidebar-link"><span class="link-icon">📌</span><span>20.60 Feature Scale and Image Resolution</span> </a>
+      <a href="#s-20-61" class="sidebar-link"><span class="link-icon">📌</span><span>20.61 Feature Robustness Test Matrix</span> </a>
+      <a href="#s-20-62" class="sidebar-link"><span class="link-icon">📌</span><span>20.62 Practical SIFT vs ORB Experiment</span> </a>
+      <a href="#s-20-63" class="sidebar-link"><span class="link-icon">📌</span><span>20.63 Practical HOG Experiment</span> </a>
+      <a href="#s-20-64" class="sidebar-link"><span class="link-icon">📌</span><span>20.64 Common Traps</span> </a>
+      <a href="#s-20-65" class="sidebar-link"><span class="link-icon">📌</span><span>20.65 Exam Formula Sheet</span> </a>
+      <a href="#s-20-66" class="sidebar-link"><span class="link-icon">📌</span><span>20.66 Exam-Style Problem — DoG</span> </a>
+      <a href="#s-20-67" class="sidebar-link"><span class="link-icon">📌</span><span>20.67 Exam-Style Problem — Hessian Determinant</span> </a>
+      <a href="#s-20-68" class="sidebar-link"><span class="link-icon">📌</span><span>20.68 Exam-Style Problem — Hamming</span> </a>
+      <a href="#s-20-69" class="sidebar-link"><span class="link-icon">📌</span><span>20.69 Exam-Style Problem — Descriptor Ratio</span> </a>
+      <a href="#s-20-70" class="sidebar-link"><span class="link-icon">📌</span><span>20.70 Engineering Insight — Match Quality Is a Pipeline Property</span> </a>
+      <a href="#s-20-71" class="sidebar-link"><span class="link-icon">📌</span><span>20.71 Cross-Book Bridges</span> </a>
+      <a href="#s-20-72" class="sidebar-link"><span class="link-icon">📌</span><span>20.72 Quick Recall</span> </a>
+      <a href="#s-20-73" class="sidebar-link"><span class="link-icon">📌</span><span>20.73 Chapter Checkpoint</span> </a>
+      <a href="#s-20-74" class="sidebar-link"><span class="link-icon">📌</span><span>20.74 Part III Completion Gate</span> </a>
+      <a href="#s-20-75" class="sidebar-link"><span class="link-icon">📌</span><span>20.75 Transition to Part IV</span> </a>
+      <a href="#s-20-76" class="sidebar-link"><span class="link-icon">📌</span><span>20.76 Worked Example — 10-Mark University Model Answer: Harris Corner Response Matrix</span> </a>
+      <a href="#s-20-77" class="sidebar-link"><span class="link-icon">📌</span><span>20.77 SIFT 128-Dimensional Keypoint Descriptor Architectural Blueprint</span> </a>
+      </div>
+
+      
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-i">Part I — The Image</div>
+      <a href="ch01-big-picture.html" class="sidebar-link"><span class="link-icon">01</span><span>The Big Picture</span></a>
+      <a href="ch02-image-formation.html" class="sidebar-link"><span class="link-icon">02</span><span>Formation & Acquisition</span></a>
+      <a href="ch03-sampling-quantization.html" class="sidebar-link"><span class="link-icon">03</span><span>Sampling & Quantization</span></a>
+      <a href="ch04-image-representation.html" class="sidebar-link"><span class="link-icon">04</span><span>Pixels, Matrices & Resolution</span></a>
+      <a href="ch05-colour-models-file-formats.html" class="sidebar-link"><span class="link-icon">05</span><span>Colour Models & Formats</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-ii">Part II — Improving the Image</div>
+      <a href="ch06-point-processing.html" class="sidebar-link"><span class="link-icon">06</span><span>Point Processing & Intensity</span></a>
+      <a href="ch07-histograms-equalization.html" class="sidebar-link"><span class="link-icon">07</span><span>Histograms & Equalization</span></a>
+      <a href="ch08-spatial-filtering.html" class="sidebar-link"><span class="link-icon">08</span><span>Spatial Filtering & Convolution</span></a>
+      <a href="ch09-smoothing-noise-reduction.html" class="sidebar-link"><span class="link-icon">09</span><span>Smoothing & Noise Reduction</span></a>
+      <a href="ch10-sharpening-edge-detection.html" class="sidebar-link"><span class="link-icon">10</span><span>Sharpening & Edge Detection</span></a>
+      <a href="ch11-geometric-transforms.html" class="sidebar-link"><span class="link-icon">11</span><span>Geometric Transforms</span></a>
+      <a href="ch12-fourier-transform.html" class="sidebar-link"><span class="link-icon">12</span><span>Fourier Transform & Frequency</span></a>
+      <a href="ch13-frequency-filtering.html" class="sidebar-link"><span class="link-icon">13</span><span>Frequency-Domain Filtering</span></a>
+      <a href="ch14-image-restoration.html" class="sidebar-link"><span class="link-icon">14</span><span>Restoration & Deblurring</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-iii">Part III — Understanding Content</div>
+      <a href="ch15-segmentation-fundamentals.html" class="sidebar-link"><span class="link-icon">15</span><span>Segmentation Fundamentals</span></a>
+      <a href="ch16-thresholding-otsu.html" class="sidebar-link"><span class="link-icon">16</span><span>Thresholding & Otsu Method</span></a>
+      <a href="ch17-region-segmentation.html" class="sidebar-link"><span class="link-icon">17</span><span>Region-Based Segmentation</span></a>
+      <a href="ch18-mathematical-morphology.html" class="sidebar-link"><span class="link-icon">18</span><span>Mathematical Morphology</span></a>
+      <a href="ch19-features-descriptors.html" class="sidebar-link"><span class="link-icon">19</span><span>Image Features & Descriptors</span></a>
+      <a href="ch20-sift-surf-orb-hog.html" class="sidebar-link active"><span class="link-icon">20</span><span>SIFT, SURF, ORB & HOG</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-iv">Part IV — Compressing Images</div>
+      <a href="ch21-compression-entropy.html" class="sidebar-link"><span class="link-icon">21</span><span>Compression & Entropy</span></a>
+      <a href="ch22-lossless-coding.html" class="sidebar-link"><span class="link-icon">22</span><span>Lossless: RLE & Huffman</span></a>
+      <a href="ch23-lossy-dct-jpeg.html" class="sidebar-link"><span class="link-icon">23</span><span>Lossy: DCT & JPEG</span></a>
+      <a href="ch24-wavelets-jpeg2000.html" class="sidebar-link"><span class="link-icon">24</span><span>Wavelets & JPEG 2000</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-v">Part V — Intelligent Vision</div>
+      <a href="ch25-image-classification.html" class="sidebar-link"><span class="link-icon">25</span><span>Image Classification</span></a>
+      <a href="ch26-cnns-image-processing.html" class="sidebar-link"><span class="link-icon">26</span><span>CNNs for Image Processing</span></a>
+      <a href="ch27-modern-vision-architectures.html" class="sidebar-link"><span class="link-icon">27</span><span>Modern Vision Architectures</span></a>
+      <a href="ch28-object-detection-yolo.html" class="sidebar-link"><span class="link-icon">28</span><span>Object Detection: YOLO</span></a>
+      <a href="ch29-image-denoising-autoencoders.html" class="sidebar-link"><span class="link-icon">29</span><span>Image Denoising Autoencoders</span></a>
+      <a href="ch30-video-motion-analysis.html" class="sidebar-link"><span class="link-icon">30</span><span>Video & Motion Analysis</span></a>
+      <a href="ch31-dip-applications-engineering.html" class="sidebar-link"><span class="link-icon">31</span><span>DIP Applications & Ethics</span></a>
+    </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-brand-mark">
+        <div class="mark">DU</div>
+        <div>
+          <strong>DSE-3 MiniBook</strong>
+          <div>University of Delhi</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mandatory Shell Wrapper -->
+  <div id="main-content">
+    <main class="chapter-content">
+      <!-- Chapter Hero -->
+      <div class="chapter-hero">
+        <div class="hero-meta">
+          <span class="part-badge part-iii">Understanding Content</span>
+          <span class="chapter-number">CHAPTER 20</span>
+          <span class="reading-time">⏱️ ~60 min read</span>
+          <span class="tag-badge tag-core">Highest Yield (10-mark guarantee)</span>
+        </div>
+        <h1 class="chapter-title">Local Feature Detectors (SIFT, SURF, ORB &amp; HOG)</h1>
+        <p class="chapter-subtitle">
+          Harris Corner Autocorrelation Matrix, SIFT 4-Stage Architecture (DoG Scale-Space, Hessian Filtering, 128-D Descriptors), SURF Integral Box Filters, FAST/ORB Binary Descriptors, and HOG Pedestrian Detection
+        </p>
+
+        <div class="syllabus-anchor">
+          <span class="syllabus-anchor-label">DU Syllabus</span>
+          <span><strong>Local Feature Detection & Description:</strong> Moravec and Harris corner detector, corner response function, SIFT (Scale Invariant Feature Transform, DoG octave pyramids, keypoint localization, orientation assignment, 128-D descriptor), SURF (Speeded-Up Robust Features, integral images, box filters), FAST corner test, ORB (Oriented FAST and Rotated BRIEF), and HOG (Histogram of Oriented Gradients).</span>
+        </div>
+      </div>
+
+      <!-- In-Page TOC -->
+      <div class="chapter-checklist-card" style="margin-bottom:var(--em-space-8);">
+        <div class="checklist-title">
+          <span>Table of Contents &amp; Visual Section Map</span>
+          <span class="tag-badge tag-math">77 Deep Sections</span>
+        </div>
+        <ul class="part-chapters-list">
+          <li class="part-chapter-item"><a href="#s-20-1"><strong>20.1</strong> Why a Dedicated Method Chapter?</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-20-2"><strong>20.2</strong> Four Different Design Philosophies</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-20-3"><strong>20.3</strong> SIFT Pipeline</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-20-4"><strong>20.4</strong> SIFT Scale Space</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-20-5"><strong>20.5</strong> Why Use Difference of Gaussians?</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-20-6"><strong>20.6</strong> SIFT Keypoint Candidate Detection</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-20-7"><strong>20.7</strong> Why Scale Matters</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-8"><strong>20.8</strong> Low-Contrast Point Rejection</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-20-9"><strong>20.9</strong> Edge-Like Point Rejection</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-10"><strong>20.10</strong> SIFT Orientation Assignment</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-20-11"><strong>20.11</strong> Rotation Robustness</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-12"><strong>20.12</strong> SIFT Descriptor Geometry</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-20-13"><strong>20.13</strong> Why Use Histograms Instead of Raw Pixels?</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-14"><strong>20.14</strong> SIFT Descriptor Normalization</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-20-15"><strong>20.15</strong> SIFT Matching</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-16"><strong>20.16</strong> SIFT Strengths</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-20-17"><strong>20.17</strong> SIFT Limitations</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-18"><strong>20.18</strong> SURF Pipeline</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-19"><strong>20.19</strong> SURF Hessian Matrix</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-20"><strong>20.20</strong> Why Hessian Determinant Detects Blobs</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-20-21"><strong>20.21</strong> Box-Filter Approximation</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-22"><strong>20.22</strong> Integral Image Definition</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-23"><strong>20.23</strong> Why Integral Images Matter</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-24"><strong>20.24</strong> SURF Orientation</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-25"><strong>20.25</strong> SURF Descriptor</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-20-26"><strong>20.26</strong> SURF Matching</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-27"><strong>20.27</strong> SURF Strengths</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-28"><strong>20.28</strong> SURF Limitations</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-29"><strong>20.29</strong> ORB Pipeline</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-30"><strong>20.30</strong> FAST Corner Detector</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-31"><strong>20.31</strong> FAST Is Not the Same as Harris</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-32"><strong>20.32</strong> ORB Orientation</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-33"><strong>20.33</strong> BRIEF Binary Test</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-34"><strong>20.34</strong> Why Binary Descriptors Are Fast</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-35"><strong>20.35</strong> Worked ORB Matching</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-36"><strong>20.36</strong> ORB and Scale</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-37"><strong>20.37</strong> ORB Strengths</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-38"><strong>20.38</strong> ORB Limitations</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-39"><strong>20.39</strong> HOG Pipeline</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-40"><strong>20.40</strong> HOG Gradient Calculation</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-41"><strong>20.41</strong> Orientation Binning</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-42"><strong>20.42</strong> Cells</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-43"><strong>20.43</strong> Blocks</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-44"><strong>20.44</strong> HOG Normalization</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-45"><strong>20.45</strong> Why HOG Represents Shape</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-46"><strong>20.46</strong> HOG Strengths</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-47"><strong>20.47</strong> HOG Limitations</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-48"><strong>20.48</strong> SIFT vs SURF vs ORB vs HOG — Core Table</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-49"><strong>20.49</strong> Method Selection</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-50"><strong>20.50</strong> Feature Pipeline for Image Registration</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-51"><strong>20.51</strong> Feature Pipeline for Object Recognition</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-52"><strong>20.52</strong> HOG + Classifier Pipeline</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-53"><strong>20.53</strong> Matching Thresholds</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-54"><strong>20.54</strong> RANSAC Integration</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-55"><strong>20.55</strong> Worked Inlier Decision</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-56"><strong>20.56</strong> Descriptor Matching Complexity</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-57"><strong>20.57</strong> Binary vs Floating Descriptors</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-58"><strong>20.58</strong> Descriptor Dimensionality</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-59"><strong>20.59</strong> Feature Detector Thresholds</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-60"><strong>20.60</strong> Feature Scale and Image Resolution</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-61"><strong>20.61</strong> Feature Robustness Test Matrix</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-62"><strong>20.62</strong> Practical SIFT vs ORB Experiment</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-63"><strong>20.63</strong> Practical HOG Experiment</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-64"><strong>20.64</strong> Common Traps</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-65"><strong>20.65</strong> Exam Formula Sheet</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-66"><strong>20.66</strong> Exam-Style Problem — DoG</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-67"><strong>20.67</strong> Exam-Style Problem — Hessian Determinant</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-68"><strong>20.68</strong> Exam-Style Problem — Hamming</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-69"><strong>20.69</strong> Exam-Style Problem — Descriptor Ratio</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-70"><strong>20.70</strong> Engineering Insight — Match Quality Is a Pipeline Property</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-71"><strong>20.71</strong> Cross-Book Bridges</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-72"><strong>20.72</strong> Quick Recall</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-73"><strong>20.73</strong> Chapter Checkpoint</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-74"><strong>20.74</strong> Part III Completion Gate</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-75"><strong>20.75</strong> Transition to Part IV</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-76"><strong>20.76</strong> Worked Example — 10-Mark University Model Answer: Harris Corner Response Matrix</a> </li>
+      <li class="part-chapter-item"><a href="#s-20-77"><strong>20.77</strong> SIFT 128-Dimensional Keypoint Descriptor Architectural Blueprint</a> </li>
+        </ul>
+      </div>
+
+      <div class="concept-hook" style="margin-bottom:var(--em-space-8);"><h1>Chapter 20 — SIFT, SURF, ORB and HOG</h1>
+<blockquote>
+<p><strong>Chapter thesis</strong><br />
+Classical feature methods solve different versions of the same representation problem: <strong>find useful local or dense image structure, encode it compactly, and make the resulting representation useful for matching or recognition</strong>. SIFT emphasizes robust scale-space local descriptors, SURF emphasizes efficient Hessian-based approximations, ORB emphasizes fast binary matching, and HOG emphasizes dense gradient-based shape information.</p>
+</blockquote>
+<p><strong>Part III — Understanding Image Content</strong><br />
+<strong>Syllabus anchor:</strong> Unit III explicitly names SIFT, SURF and HOG, while ORB is included as a modern practical extension of the classical local-feature family. fileciteturn4file0L41-L45</p>
+<hr /></div>
+
+      <!-- All Numbered Sections -->
+      
+  <!-- SECTION 20.1: Why a Dedicated Method Chapter? -->
+  <section id="s-20-1" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.1</span>
+      <h2>Why a Dedicated Method Chapter?</h2>
+      <button class="bookmark-btn" data-id="s-20-1" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>C19 established:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>feature
+keypoint
+descriptor
+matching</code></pre>
+</div></p>
+<p>Now we need to understand the actual algorithms.</p>
+<p>The most useful comparison is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>SIFT
+→ robust local feature
+
+SURF
+→ efficient classical local feature
+
+ORB
+→ fast binary local feature
+
+HOG
+→ dense gradient/shape descriptor</code></pre>
+</div></p>
+<p>They should not be judged using one single metric.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.2: Four Different Design Philosophies -->
+  <section id="s-20-2" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.2</span>
+      <h2>Four Different Design Philosophies</h2>
+      <button class="bookmark-btn" data-id="s-20-2" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Method</th>
+<th>Main design idea</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SIFT</td>
+<td>robustness through scale-space + orientation-normalized gradient descriptor</td>
+</tr>
+<tr>
+<td>SURF</td>
+<td>speed through Hessian approximation + integral images</td>
+</tr>
+<tr>
+<td>ORB</td>
+<td>speed/compactness through FAST + binary BRIEF</td>
+</tr>
+<tr>
+<td>HOG</td>
+<td>shape representation through dense local gradient histograms</td>
+</tr>
+</tbody>
+</table></div>
+<p>This is the first comparison to remember.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.3: SIFT Pipeline -->
+  <section id="s-20-3" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.3</span>
+      <h2>SIFT Pipeline</h2>
+      <button class="bookmark-btn" data-id="s-20-3" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>INPUT IMAGE
+     ↓
+Gaussian scale space
+     ↓
+Difference of Gaussians
+     ↓
+scale-space extrema
+     ↓
+keypoint localization/refinement
+     ↓
+low-contrast / unstable-point filtering
+     ↓
+orientation assignment
+     ↓
+local gradient histograms
+     ↓
+descriptor normalization
+     ↓
+128-D descriptor</code></pre>
+</div></p>
+<p>The power of SIFT comes from the fact that detection and description are designed as one coherent representation system.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.4: SIFT Scale Space -->
+  <section id="s-20-4" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.4</span>
+      <h2>SIFT Scale Space</h2>
+      <button class="bookmark-btn" data-id="s-20-4" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The Gaussian-smoothed image at scale $\sigma$:</p>
+<p>
+$$
+L(x,y,\sigma)
+=
+G(x,y,\sigma)*I(x,y)
+$$
+</p>
+<p>with:</p>
+<p>
+$$
+G(x,y,\sigma)
+=
+\frac{1}{2\pi\sigma^2}
+e^{-\frac{x^2+y^2}{2\sigma^2}}
+$$
+</p>
+<p>As $\sigma$ increases:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>fine detail disappears
+→ larger-scale structures dominate</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.5: Why Use Difference of Gaussians? -->
+  <section id="s-20-5" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.5</span>
+      <h2>Why Use Difference of Gaussians?</h2>
+      <button class="bookmark-btn" data-id="s-20-5" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>SIFT forms:</p>
+<p>
+$$
+D(x,y,\sigma)
+=
+L(x,y,k\sigma)-L(x,y,\sigma)
+$$
+</p>
+<p>This approximates scale-normalized Laplacian behaviour and allows efficient detection of extrema across space and scale.</p>
+<p>The important conceptual role is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>compare neighbouring scales
+→ identify structures distinctive at a particular scale</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.6: SIFT Keypoint Candidate Detection -->
+  <section id="s-20-6" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.6</span>
+      <h2>SIFT Keypoint Candidate Detection</h2>
+      <button class="bookmark-btn" data-id="s-20-6" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Each point is compared with neighbouring points in:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>current scale
+previous scale
+next scale</code></pre>
+</div></p>
+<p>A local maximum/minimum becomes a candidate.</p>
+<p>This produces:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>position
++
+scale</code></pre>
+</div></p>
+<p>for each candidate.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.7: Why Scale Matters -->
+  <section id="s-20-7" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.7</span>
+      <h2>Why Scale Matters</h2>
+      <button class="bookmark-btn" data-id="s-20-7" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose a logo is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>large in Image A
+small in Image B</code></pre>
+</div></p>
+<p>A single fixed-size detector may fail.</p>
+<p>SIFT searches across multiple scales.</p>
+<p>Therefore the same physical structure can potentially produce corresponding keypoints at different image sizes.</p>
+<p>This is the origin of scale robustness.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.8: Low-Contrast Point Rejection -->
+  <section id="s-20-8" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.8</span>
+      <h2>Low-Contrast Point Rejection</h2>
+      <button class="bookmark-btn" data-id="s-20-8" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A candidate with very weak response may be unstable.</p>
+<p>Therefore SIFT rejects sufficiently low-contrast points.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>strong distinct structure
+→ keep
+
+weak/noisy structure
+→ reject</code></pre>
+</div></p>
+<p>This improves descriptor reliability.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.9: Edge-Like Point Rejection -->
+  <section id="s-20-9" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.9</span>
+      <h2>Edge-Like Point Rejection</h2>
+      <button class="bookmark-btn" data-id="s-20-9" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A strong DoG response can come from an elongated edge.</p>
+<p>But points on an edge are often poorly localized along the edge direction.</p>
+<p>SIFT uses local curvature information to reject unstable edge-like candidates.</p>
+<p>The exact test is derived from the Hessian of the local DoG approximation.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.10: SIFT Orientation Assignment -->
+  <section id="s-20-10" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.10</span>
+      <h2>SIFT Orientation Assignment</h2>
+      <button class="bookmark-btn" data-id="s-20-10" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For each keypoint, compute local gradients.</p>
+<p>Magnitude:</p>
+<p>
+$$
+m=
+\sqrt{G_x^2+G_y^2}
+$$
+</p>
+<p>Orientation:</p>
+<p>
+$$
+\theta=
+\operatorname{atan2}(G_y,G_x)
+$$
+</p>
+<p>Nearby gradients vote into an orientation histogram.</p>
+<p>The dominant orientation becomes the keypoint's local reference direction.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.11: Rotation Robustness -->
+  <section id="s-20-11" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.11</span>
+      <h2>Rotation Robustness</h2>
+      <button class="bookmark-btn" data-id="s-20-11" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The local descriptor is constructed relative to the assigned dominant orientation.</p>
+<p>Therefore if:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image rotates</code></pre>
+</div></p>
+<p>the local coordinate frame rotates too.</p>
+<p>This allows corresponding descriptors to remain comparable.</p>
+<p>Rotation robustness is therefore built into the <strong>coordinate normalization</strong>, not merely into a later matching trick.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.12: SIFT Descriptor Geometry -->
+  <section id="s-20-12" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.12</span>
+      <h2>SIFT Descriptor Geometry</h2>
+      <button class="bookmark-btn" data-id="s-20-12" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Around the keypoint:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>16 × 16-like local support
+        ↓
+4 × 4 cells
+        ↓
+8 orientation bins</code></pre>
+</div></p>
+<p>So:</p>
+<p>
+$$
+4\times4\times8=128
+$$
+</p>
+<p>dimensions.</p>
+<p>Each cell stores a histogram of gradient orientations weighted by gradient magnitude and spatial contribution.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.13: Why Use Histograms Instead of Raw Pixels? -->
+  <section id="s-20-13" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.13</span>
+      <h2>Why Use Histograms Instead of Raw Pixels?</h2>
+      <button class="bookmark-btn" data-id="s-20-13" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Raw pixel values are sensitive to:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>small translations
+brightness changes
+local noise</code></pre>
+</div></p>
+<p>Gradient histograms summarize local shape structure more robustly.</p>
+<p>Therefore:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>raw pixels
+→ derivatives
+→ orientation distribution</code></pre>
+</div></p>
+<p>is a purposeful abstraction.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.14: SIFT Descriptor Normalization -->
+  <section id="s-20-14" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.14</span>
+      <h2>SIFT Descriptor Normalization</h2>
+      <button class="bookmark-btn" data-id="s-20-14" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Let:</p>
+<p>
+$$
+d_i
+$$
+</p>
+<p>be descriptor components.</p>
+<p>L2 normalization:</p>
+<p>
+$$
+\hat{\mathbf d}
+=
+\frac{\mathbf d}
+{\sqrt{\sum_i d_i^2}}
+$$
+</p>
+<p>The original SIFT pipeline also clips unusually large values and renormalizes, reducing sensitivity to illumination-related changes.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.15: SIFT Matching -->
+  <section id="s-20-15" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.15</span>
+      <h2>SIFT Matching</h2>
+      <button class="bookmark-btn" data-id="s-20-15" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Given:</p>
+<p>
+$$
+d_A,d_B
+$$
+</p>
+<p>use Euclidean distance:</p>
+<p>
+$$
+d_E=
+\sqrt{\sum_i(d_{A,i}-d_{B,i})^2}
+$$
+</p>
+<p>The nearest neighbour is a candidate match.</p>
+<p>Then use a ratio test:</p>
+<p>
+$$
+\frac{d_1}{d_2}<r
+$$
+</p>
+<p>to reject ambiguous matches.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.16: SIFT Strengths -->
+  <section id="s-20-16" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.16</span>
+      <h2>SIFT Strengths</h2>
+      <button class="bookmark-btn" data-id="s-20-16" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>SIFT is valuable when:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>scale changes matter
+rotation changes matter
+local matching matters
+moderate viewpoint changes exist</code></pre>
+</div></p>
+<p>It produces relatively distinctive descriptors.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.17: SIFT Limitations -->
+  <section id="s-20-17" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.17</span>
+      <h2>SIFT Limitations</h2>
+      <button class="bookmark-btn" data-id="s-20-17" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Potential limitations include:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>computational cost
+larger descriptor storage
+sensitivity to extreme viewpoint/illumination changes
+weak performance in textureless scenes</code></pre>
+</div></p>
+<p>It is robust, not magic.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.18: SURF Pipeline -->
+  <section id="s-20-18" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.18</span>
+      <h2>SURF Pipeline</h2>
+      <button class="bookmark-btn" data-id="s-20-18" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A conceptual SURF pipeline is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>INPUT
+ ↓
+integral image
+ ↓
+Hessian response across scales
+ ↓
+scale-space keypoints
+ ↓
+orientation estimation
+ ↓
+wavelet-response descriptor
+ ↓
+matching</code></pre>
+</div></p>
+<p>SURF's central engineering idea is efficient approximation.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.19: SURF Hessian Matrix -->
+  <section id="s-20-19" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.19</span>
+      <h2>SURF Hessian Matrix</h2>
+      <button class="bookmark-btn" data-id="s-20-19" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>At point $(x,y)$:</p>
+<p>
+$$
+H(x,y,\sigma)=
+\begin{bmatrix}
+L_{xx}&L_{xy}\\
+L_{xy}&L_{yy}
+\end{bmatrix}
+$$
+</p>
+<p>The determinant:</p>
+<p>
+$$
+\det(H)
+=
+L_{xx}L_{yy}-L_{xy}^2
+$$
+</p>
+<p>is used as a blob-like interest response.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.20: Why Hessian Determinant Detects Blobs -->
+  <section id="s-20-20" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.20</span>
+      <h2>Why Hessian Determinant Detects Blobs</h2>
+      <button class="bookmark-btn" data-id="s-20-20" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A blob-like structure has substantial second-order variation in multiple directions.</p>
+<p>Thus:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Lxx strong
+Lyy strong
+cross-term controlled
+→ strong determinant</code></pre>
+</div></p>
+<p>The detector can identify distinctive scale-dependent structures.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.21: Box-Filter Approximation -->
+  <section id="s-20-21" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.21</span>
+      <h2>Box-Filter Approximation</h2>
+      <button class="bookmark-btn" data-id="s-20-21" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>SURF approximates derivatives with box filters.</p>
+<p>The integral image then allows these rectangular sums to be calculated efficiently.</p>
+<p>This is the computational trick:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>complex derivative convolution
+→ box approximation
+→ integral-image sum
+→ faster response</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.22: Integral Image Definition -->
+  <section id="s-20-22" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.22</span>
+      <h2>Integral Image Definition</h2>
+      <button class="bookmark-btn" data-id="s-20-22" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For grayscale image $I$:</p>
+<p>
+$$
+S(x,y)
+=
+\sum_{i=0}^{x}
+\sum_{j=0}^{y}
+I(i,j)
+$$
+</p>
+<p>For a rectangle:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>A ───── B
+│       │
+│ RECT  │
+│       │
+C ───── D</code></pre>
+</div></p>
+<p>the sum can be computed from four integral-image values:</p>
+<p>
+$$
+S(D)-S(B)-S(C)+S(A)
+$$
+</p>
+<p>with coordinate indexing adjusted appropriately.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.23: Why Integral Images Matter -->
+  <section id="s-20-23" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.23</span>
+      <h2>Why Integral Images Matter</h2>
+      <button class="bookmark-btn" data-id="s-20-23" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A rectangle sum can then be computed in approximately constant time regardless of rectangle area.</p>
+<p>This is extremely useful for repeated box-filter evaluation.</p>
+<p>The broader algorithmic lesson is:</p>
+<blockquote>
+<p>Precompute cumulative information when many repeated structured queries are required.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.24: SURF Orientation -->
+  <section id="s-20-24" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.24</span>
+      <h2>SURF Orientation</h2>
+      <button class="bookmark-btn" data-id="s-20-24" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>SURF estimates local orientation using Haar-wavelet responses in a neighbourhood.</p>
+<p>The dominant directional response defines the keypoint orientation.</p>
+<p>The descriptor is then expressed relative to that orientation.</p>
+<p>Thus SURF also seeks rotation robustness.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.25: SURF Descriptor -->
+  <section id="s-20-25" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.25</span>
+      <h2>SURF Descriptor</h2>
+      <button class="bookmark-btn" data-id="s-20-25" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A common SURF descriptor divides the local neighbourhood into subregions and summarizes:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Haar x response
+Haar y response
+|Haar x|
+|Haar y|</code></pre>
+</div></p>
+<p>For each subregion, these statistics are aggregated.</p>
+<p>A widely used standard SURF descriptor variant has 64 dimensions, with an extended 128-dimensional variant.</p>
+<blockquote>
+<p><strong>Important:</strong> Descriptor length depends on the selected SURF variant.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.26: SURF Matching -->
+  <section id="s-20-26" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.26</span>
+      <h2>SURF Matching</h2>
+      <button class="bookmark-btn" data-id="s-20-26" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Because the descriptor is floating-point:</p>
+<p>
+$$
+L_2
+$$
+</p>
+<p>distance is a natural comparison metric.</p>
+<p>The same general matching workflow can be used:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>nearest neighbour
+→ ratio test
+→ geometric verification</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.27: SURF Strengths -->
+  <section id="s-20-27" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.27</span>
+      <h2>SURF Strengths</h2>
+      <button class="bookmark-btn" data-id="s-20-27" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>efficient classical detector
+good scale handling
+orientation robustness
+smaller common descriptor than classic SIFT</code></pre>
+</div></p>
+<p>The exact speed advantage depends on implementation/hardware.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.28: SURF Limitations -->
+  <section id="s-20-28" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.28</span>
+      <h2>SURF Limitations</h2>
+      <button class="bookmark-btn" data-id="s-20-28" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Potential limitations:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>less commonly available in some modern libraries
+patent/history considerations affected practical use
+not necessarily best under every transformation</code></pre>
+</div></p>
+<p>For a university course, the important conceptual contribution is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Hessian
++
+integral image
++
+efficient local descriptor</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.29: ORB Pipeline -->
+  <section id="s-20-29" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.29</span>
+      <h2>ORB Pipeline</h2>
+      <button class="bookmark-btn" data-id="s-20-29" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>ORB means:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Oriented FAST
++
+Rotated BRIEF</code></pre>
+</div></p>
+<p>Pipeline:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image
+ ↓
+FAST keypoints
+ ↓
+orientation estimation
+ ↓
+rotate BRIEF sampling pattern
+ ↓
+binary descriptor
+ ↓
+Hamming matching</code></pre>
+</div></p>
+<p>It is designed for speed and compact representation.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.30: FAST Corner Detector -->
+  <section id="s-20-30" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.30</span>
+      <h2>FAST Corner Detector</h2>
+      <button class="bookmark-btn" data-id="s-20-30" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For candidate pixel $p$, inspect pixels on a circle around it.</p>
+<p>Classical FAST determines whether enough contiguous circle pixels are significantly:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>brighter than centre
+or
+darker than centre</code></pre>
+</div></p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>ring of neighbours
++
+centre
+→
+corner decision</code></pre>
+</div></p>
+<p>This is efficient because it uses intensity comparisons rather than heavier matrix calculations.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.31: FAST Is Not the Same as Harris -->
+  <section id="s-20-31" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.31</span>
+      <h2>FAST Is Not the Same as Harris</h2>
+      <button class="bookmark-btn" data-id="s-20-31" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Harris</th>
+<th>FAST</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>structure tensor</td>
+<td>circle intensity test</td>
+</tr>
+<tr>
+<td>derivative-based</td>
+<td>comparison-based</td>
+</tr>
+<tr>
+<td>algebraically richer</td>
+<td>very fast</td>
+</tr>
+<tr>
+<td>corner response score</td>
+<td>decision/test</td>
+</tr>
+<tr>
+<td>different robustness/cost tradeoff</td>
+<td>efficient real-time candidate detector</td>
+</tr>
+</tbody>
+</table></div>
+<p>Both are corner-detection approaches, but their design philosophies differ.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.32: ORB Orientation -->
+  <section id="s-20-32" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.32</span>
+      <h2>ORB Orientation</h2>
+      <button class="bookmark-btn" data-id="s-20-32" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>FAST gives location but does not by itself provide a robust orientation.</p>
+<p>ORB estimates orientation from local intensity moments.</p>
+<p>A centroid-like vector is used to determine the direction of the local patch.</p>
+<p>The BRIEF sampling pattern is then rotated accordingly.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.33: BRIEF Binary Test -->
+  <section id="s-20-33" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.33</span>
+      <h2>BRIEF Binary Test</h2>
+      <button class="bookmark-btn" data-id="s-20-33" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For sampled points $p,q$:</p>
+<p>
+$$
+\tau(p,q)=
+\begin{cases}
+1,&I(p)<I(q)\\
+0,&I(p)\ge I(q)
+\end{cases}
+$$
+</p>
+<p>Repeat for many pairs:</p>
+<p>
+$$
+\mathbf b=
+[\tau_1,\tau_2,\ldots,\tau_N]
+$$
+</p>
+<p>The descriptor is:</p>
+<p>
+$$
+\boxed{\mathbf b\in\{0,1\}^N}
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.34: Why Binary Descriptors Are Fast -->
+  <section id="s-20-34" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.34</span>
+      <h2>Why Binary Descriptors Are Fast</h2>
+      <button class="bookmark-btn" data-id="s-20-34" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A binary descriptor can be stored compactly.</p>
+<p>Comparison can use bitwise operations and popcount:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>descriptor A
+XOR
+descriptor B
+ ↓
+count 1s
+ ↓
+Hamming distance</code></pre>
+</div></p>
+<p>This can be extremely efficient.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.35: Worked ORB Matching -->
+  <section id="s-20-35" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.35</span>
+      <h2>Worked ORB Matching</h2>
+      <button class="bookmark-btn" data-id="s-20-35" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A:</p>
+<p>
+$$
+10110010
+$$
+</p>
+<p>B:</p>
+<p>
+$$
+10011011
+$$
+</p>
+<p>XOR:</p>
+<p>
+$$
+00101001
+$$
+</p>
+<p>Number of ones:</p>
+<p>
+$$
+3
+$$
+</p>
+<p>Therefore:</p>
+<p>
+$$
+\boxed{d_H=3}
+$$
+</p>
+<p>This demonstrates the computational simplicity of binary matching.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.36: ORB and Scale -->
+  <section id="s-20-36" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.36</span>
+      <h2>ORB and Scale</h2>
+      <button class="bookmark-btn" data-id="s-20-36" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>ORB is rotation-aware, but it is not as fully scale-invariant as SIFT's explicit scale-space design.</p>
+<p>An ORB pipeline can use image pyramids to improve scale robustness.</p>
+<p>Still:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>SIFT
+→ stronger explicit scale-space strategy
+
+ORB
+→ faster, more compact</code></pre>
+</div></p>
+<p>This is the appropriate conceptual tradeoff.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.37: ORB Strengths -->
+  <section id="s-20-37" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.37</span>
+      <h2>ORB Strengths</h2>
+      <button class="bookmark-btn" data-id="s-20-37" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>fast
+compact
+binary matching
+good for real-time systems
+easy to integrate into many practical pipelines</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.38: ORB Limitations -->
+  <section id="s-20-38" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.38</span>
+      <h2>ORB Limitations</h2>
+      <button class="bookmark-btn" data-id="s-20-38" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Potential weaknesses:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>less robust than SIFT under large scale/viewpoint changes
+binary descriptors can be less distinctive in repetitive textures
+performance depends on detector parameters</code></pre>
+</div></p>
+<p>Again, benchmark results depend on the actual data.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.39: HOG Pipeline -->
+  <section id="s-20-39" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.39</span>
+      <h2>HOG Pipeline</h2>
+      <button class="bookmark-btn" data-id="s-20-39" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>HOG is fundamentally different from the keypoint-centric methods.</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image
+ ↓
+optional normalization
+ ↓
+gradient calculation
+ ↓
+cell orientation histograms
+ ↓
+block grouping
+ ↓
+block normalization
+ ↓
+concatenate
+ ↓
+feature vector</code></pre>
+</div></p>
+<p>It is typically computed over a dense image region rather than around sparse keypoints.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.40: HOG Gradient Calculation -->
+  <section id="s-20-40" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.40</span>
+      <h2>HOG Gradient Calculation</h2>
+      <button class="bookmark-btn" data-id="s-20-40" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Given:</p>
+<p>
+$$
+G_x,\quad G_y
+$$
+</p>
+<p>compute:</p>
+<p>
+$$
+m=
+\sqrt{G_x^2+G_y^2}
+$$
+</p>
+<p>and:</p>
+<p>
+$$
+\theta=
+\operatorname{atan2}(G_y,G_x)
+$$
+</p>
+<p>The magnitude supplies the vote weight.</p>
+<p>The orientation determines the histogram bin.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.41: Orientation Binning -->
+  <section id="s-20-41" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.41</span>
+      <h2>Orientation Binning</h2>
+      <button class="bookmark-btn" data-id="s-20-41" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose the descriptor uses:</p>
+<p>
+$$
+9
+$$
+</p>
+<p>orientation bins over a chosen angular range.</p>
+<p>Each pixel contributes to nearby bins according to its orientation and magnitude.</p>
+<p>Some implementations use interpolation between bins.</p>
+<p>The exact binning convention should be documented.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.42: Cells -->
+  <section id="s-20-42" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.42</span>
+      <h2>Cells</h2>
+      <button class="bookmark-btn" data-id="s-20-42" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The image is divided into small cells.</p>
+<p>For example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>8 × 8 pixels per cell</code></pre>
+</div></p>
+<p>might be used in a common configuration.</p>
+<p>Each cell produces an orientation histogram.</p>
+<p>The exact cell size is a parameter, not a universal requirement.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.43: Blocks -->
+  <section id="s-20-43" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.43</span>
+      <h2>Blocks</h2>
+      <button class="bookmark-btn" data-id="s-20-43" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Cells are grouped into blocks.</p>
+<p>For example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>2 × 2 cells per block</code></pre>
+</div></p>
+<p>A block concatenates its cell histograms and normalizes them.</p>
+<p>Overlapping blocks improve local normalization.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.44: HOG Normalization -->
+  <section id="s-20-44" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.44</span>
+      <h2>HOG Normalization</h2>
+      <button class="bookmark-btn" data-id="s-20-44" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For vector $v$, an L2-type normalization can be:</p>
+<p>
+$$
+v'=
+\frac{v}
+{\sqrt{\|v\|_2^2+\epsilon^2}}
+$$
+</p>
+<p>This reduces sensitivity to local illumination/contrast changes.</p>
+<p>Other normalization choices exist.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.45: Why HOG Represents Shape -->
+  <section id="s-20-45" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.45</span>
+      <h2>Why HOG Represents Shape</h2>
+      <button class="bookmark-btn" data-id="s-20-45" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Consider a person's silhouette.</p>
+<p>The silhouette contains:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>vertical boundaries
+horizontal boundaries
+diagonal boundaries</code></pre>
+</div></p>
+<p>These create characteristic gradient orientation patterns.</p>
+<p>HOG turns those patterns into a vector.</p>
+<p>Therefore:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>shape
+→ gradients
+→ orientation statistics
+→ descriptor</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.46: HOG Strengths -->
+  <section id="s-20-46" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.46</span>
+      <h2>HOG Strengths</h2>
+      <button class="bookmark-btn" data-id="s-20-46" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>strong shape representation
+interpretable
+dense
+works well with simple classifiers</code></pre>
+</div></p>
+<p>It was historically very important in classical object detection before deep neural networks became dominant.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.47: HOG Limitations -->
+  <section id="s-20-47" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.47</span>
+      <h2>HOG Limitations</h2>
+      <button class="bookmark-btn" data-id="s-20-47" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>not inherently scale invariant
+not inherently rotation invariant
+can become high-dimensional
+depends strongly on cell/block parameters
+less effective for large viewpoint variation</code></pre>
+</div></p>
+<p>It should be thought of as a shape/gradient descriptor, not a complete object-recognition system.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.48: SIFT vs SURF vs ORB vs HOG — Core Table -->
+  <section id="s-20-48" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.48</span>
+      <h2>SIFT vs SURF vs ORB vs HOG — Core Table</h2>
+      <button class="bookmark-btn" data-id="s-20-48" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Aspect</th>
+<th>SIFT</th>
+<th>SURF</th>
+<th>ORB</th>
+<th>HOG</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>detector style</td>
+<td>DoG scale-space</td>
+<td>Hessian</td>
+<td>FAST</td>
+<td>dense gradient</td>
+</tr>
+<tr>
+<td>keypoint-centric</td>
+<td>yes</td>
+<td>yes</td>
+<td>yes</td>
+<td>no</td>
+</tr>
+<tr>
+<td>scale strategy</td>
+<td>strong</td>
+<td>strong</td>
+<td>limited/pyramid-dependent</td>
+<td>not inherent</td>
+</tr>
+<tr>
+<td>orientation strategy</td>
+<td>dominant gradient</td>
+<td>wavelet response</td>
+<td>intensity moments</td>
+<td>histogram orientation</td>
+</tr>
+<tr>
+<td>descriptor</td>
+<td>gradient histogram</td>
+<td>wavelet statistics</td>
+<td>binary comparisons</td>
+<td>gradient histograms</td>
+</tr>
+<tr>
+<td>descriptor type</td>
+<td>float</td>
+<td>float</td>
+<td>binary</td>
+<td>float</td>
+</tr>
+<tr>
+<td>common distance</td>
+<td>L2</td>
+<td>L2</td>
+<td>Hamming</td>
+<td>L2-like</td>
+</tr>
+<tr>
+<td>main strength</td>
+<td>robust local matching</td>
+<td>efficient robust local features</td>
+<td>speed</td>
+<td>shape</td>
+</tr>
+<tr>
+<td>typical computation</td>
+<td>heavier</td>
+<td>moderate</td>
+<td>fast</td>
+<td>moderate/high</td>
+</tr>
+<tr>
+<td>matching style</td>
+<td>local correspondence</td>
+<td>local correspondence</td>
+<td>local correspondence</td>
+<td>typically feature+classifier</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.49: Method Selection -->
+  <section id="s-20-49" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.49</span>
+      <h2>Method Selection</h2>
+      <button class="bookmark-btn" data-id="s-20-49" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Use SIFT when:</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>robust local matching
+scale variation
+rotation
+moderate viewpoint changes</code></pre>
+</div></p>
+<p>are important.</p>
+<h3>Use SURF when:</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>classical Hessian-style features
++
+efficient approximation</code></pre>
+</div></p>
+<p>are desired.</p>
+<h3>Use ORB when:</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>speed
++
+compact binary descriptors
++
+real-time matching</code></pre>
+</div></p>
+<p>matter.</p>
+<h3>Use HOG when:</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>object shape
++
+dense gradient structure</code></pre>
+</div></p>
+<p>are the main signal.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.50: Feature Pipeline for Image Registration -->
+  <section id="s-20-50" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.50</span>
+      <h2>Feature Pipeline for Image Registration</h2>
+      <button class="bookmark-btn" data-id="s-20-50" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A robust classical registration workflow:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>IMAGE A                      IMAGE B
+   ↓                            ↓
+detect keypoints              detect keypoints
+   ↓                            ↓
+compute descriptors           compute descriptors
+   ↓                            ↓
+          MATCH
+             ↓
+       ratio / distance test
+             ↓
+       geometric verification
+             ↓
+       estimate transform
+             ↓
+          warp image
+             ↓
+         aligned result</code></pre>
+</div></p>
+<p>C11 supplies the transformation machinery.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.51: Feature Pipeline for Object Recognition -->
+  <section id="s-20-51" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.51</span>
+      <h2>Feature Pipeline for Object Recognition</h2>
+      <button class="bookmark-btn" data-id="s-20-51" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A classical pipeline can be:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>training images
+ ↓
+feature extraction
+ ↓
+descriptor database
+ ↓
+
+query image
+ ↓
+feature extraction
+ ↓
+descriptor matching
+ ↓
+evidence aggregation
+ ↓
+object hypothesis</code></pre>
+</div></p>
+<p>A classifier can replace or complement the matching stage.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.52: HOG + Classifier Pipeline -->
+  <section id="s-20-52" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.52</span>
+      <h2>HOG + Classifier Pipeline</h2>
+      <button class="bookmark-btn" data-id="s-20-52" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Historically common structure:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image
+ ↓
+resize
+ ↓
+HOG
+ ↓
+feature vector
+ ↓
+linear SVM / other classifier
+ ↓
+class / detection</code></pre>
+</div></p>
+<p>The feature descriptor alone is not the final decision model.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.53: Matching Thresholds -->
+  <section id="s-20-53" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.53</span>
+      <h2>Matching Thresholds</h2>
+      <button class="bookmark-btn" data-id="s-20-53" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For descriptor matching, a threshold can be applied:</p>
+<p>
+$$
+d<\tau
+$$
+</p>
+<p>But a raw distance threshold is sensitive to:</p>
+<ul>
+<li>descriptor normalization,</li>
+<li>image content,</li>
+<li>descriptor family.</li>
+</ul>
+<p>Ratio tests and geometric validation can be more robust.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.54: RANSAC Integration -->
+  <section id="s-20-54" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.54</span>
+      <h2>RANSAC Integration</h2>
+      <button class="bookmark-btn" data-id="s-20-54" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose we have matches:</p>
+<p>
+$$
+(p_i,p_i')
+$$
+</p>
+<p>Estimate transformation $T$.</p>
+<p>RANSAC chooses:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>minimal sample
+→ model
+→ count inliers
+→ repeat</code></pre>
+</div></p>
+<p>A match is an inlier if:</p>
+<p>
+$$
+\|p_i'-T(p_i)\|<\epsilon
+$$
+</p>
+<p>under the chosen geometric model and error metric.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.55: Worked Inlier Decision -->
+  <section id="s-20-55" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.55</span>
+      <h2>Worked Inlier Decision</h2>
+      <button class="bookmark-btn" data-id="s-20-55" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p>
+$$
+e_i=2.4
+$$
+</p>
+<p>and:</p>
+<p>
+$$
+\epsilon=3
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+2.4<3
+$$
+</p>
+<p>so:</p>
+<p>
+$$
+\boxed{\text{inlier}}
+$$
+</p>
+<p>If:</p>
+<p>
+$$
+e_i=7
+$$
+</p>
+<p>then:</p>
+<p>
+$$
+\boxed{\text{outlier}}
+$$
+</p>
+<p>under this criterion.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.56: Descriptor Matching Complexity -->
+  <section id="s-20-56" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.56</span>
+      <h2>Descriptor Matching Complexity</h2>
+      <button class="bookmark-btn" data-id="s-20-56" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>N descriptors in A
+M descriptors in B</code></pre>
+</div></p>
+<p>A naive all-pairs comparison requires approximately:</p>
+<p>
+$$
+O(NM)
+$$
+</p>
+<p>distance calculations.</p>
+<p>This can become expensive.</p>
+<p>Therefore practical systems use:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>k-d trees
+FLANN-like approximate search
+LSH / binary matching structures
+specialized nearest-neighbour indexes</code></pre>
+</div></p>
+<p>depending on descriptor type.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.57: Binary vs Floating Descriptors -->
+  <section id="s-20-57" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.57</span>
+      <h2>Binary vs Floating Descriptors</h2>
+      <button class="bookmark-btn" data-id="s-20-57" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Property</th>
+<th>Floating</th>
+<th>Binary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>examples</td>
+<td>SIFT, SURF, HOG</td>
+<td>ORB</td>
+</tr>
+<tr>
+<td>comparison</td>
+<td>L2/cosine-like depending on design</td>
+<td>Hamming</td>
+</tr>
+<tr>
+<td>storage</td>
+<td>larger</td>
+<td>compact</td>
+</tr>
+<tr>
+<td>matching</td>
+<td>arithmetic-heavy</td>
+<td>bit operations</td>
+</tr>
+<tr>
+<td>discriminative structure</td>
+<td>richer continuous values</td>
+<td>binary pattern</td>
+</tr>
+</tbody>
+</table></div>
+<p>This is a systems-level tradeoff.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.58: Descriptor Dimensionality -->
+  <section id="s-20-58" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.58</span>
+      <h2>Descriptor Dimensionality</h2>
+      <button class="bookmark-btn" data-id="s-20-58" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Higher dimension can mean:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>more representational capacity</code></pre>
+</div></p>
+<p>but also:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>more memory
+more computation
+possible redundancy</code></pre>
+</div></p>
+<p>So:</p>
+<blockquote>
+<p>Descriptor dimension is a design parameter, not a quality score.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.59: Feature Detector Thresholds -->
+  <section id="s-20-59" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.59</span>
+      <h2>Feature Detector Thresholds</h2>
+      <button class="bookmark-btn" data-id="s-20-59" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Detector parameters influence:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>number of keypoints
+stability
+computation
+matching quality</code></pre>
+</div></p>
+<p>A low threshold:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>more features
++
+more weak/noisy points</code></pre>
+</div></p>
+<p>A high threshold:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>fewer features
++
+potentially stronger points</code></pre>
+</div></p>
+<p>This is a recurring detection tradeoff.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.60: Feature Scale and Image Resolution -->
+  <section id="s-20-60" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.60</span>
+      <h2>Feature Scale and Image Resolution</h2>
+      <button class="bookmark-btn" data-id="s-20-60" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A feature method cannot recover structure that sampling or blur has destroyed.</p>
+<p>For example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>fine texture
+→ downsample
+→ feature disappears</code></pre>
+</div></p>
+<p>This connects C03/C09/C14 directly to C19/C20.</p>
+<p>Feature extraction is constrained by image formation and preprocessing.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.61: Feature Robustness Test Matrix -->
+  <section id="s-20-61" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.61</span>
+      <h2>Feature Robustness Test Matrix</h2>
+      <button class="bookmark-btn" data-id="s-20-61" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A useful lab test changes one condition at a time:</p>
+<div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Condition</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>translation</td>
+<td>shift by 20 px</td>
+</tr>
+<tr>
+<td>rotation</td>
+<td>+30°</td>
+</tr>
+<tr>
+<td>scale</td>
+<td>0.5× / 2×</td>
+</tr>
+<tr>
+<td>blur</td>
+<td>Gaussian blur</td>
+</tr>
+<tr>
+<td>brightness</td>
+<td>darker/brighter</td>
+</tr>
+<tr>
+<td>noise</td>
+<td>additive noise</td>
+</tr>
+<tr>
+<td>compression</td>
+<td>stronger JPEG</td>
+</tr>
+<tr>
+<td>viewpoint</td>
+<td>perspective change</td>
+</tr>
+</tbody>
+</table></div>
+<p>Measure:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>detected features
+repeatable features
+matches
+correct matches
+inliers
+runtime</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.62: Practical SIFT vs ORB Experiment -->
+  <section id="s-20-62" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.62</span>
+      <h2>Practical SIFT vs ORB Experiment</h2>
+      <button class="bookmark-btn" data-id="s-20-62" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Use:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Image A
+Image B = rotated + scaled version</code></pre>
+</div></p>
+<p>Run both.</p>
+<p>Record:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>SIFT:
+keypoints
+descriptor size
+good matches
+inliers
+runtime
+
+ORB:
+same measurements</code></pre>
+</div></p>
+<p>Then compare:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>robustness
+speed
+memory
+matching precision</code></pre>
+</div></p>
+<p>This produces engineering evidence instead of relying on “SIFT is better” claims.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.63: Practical HOG Experiment -->
+  <section id="s-20-63" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.63</span>
+      <h2>Practical HOG Experiment</h2>
+      <button class="bookmark-btn" data-id="s-20-63" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Take two visually distinguishable shape categories.</p>
+<p>Vary:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>cell size
+block size
+orientation bins</code></pre>
+</div></p>
+<p>Then train the same simple classifier.</p>
+<p>Record:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>feature dimension
+training time
+validation accuracy
+confusion matrix</code></pre>
+</div></p>
+<p>This shows how descriptor geometry affects classification.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.64: Common Traps -->
+  <section id="s-20-64" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.64</span>
+      <h2>Common Traps</h2>
+      <button class="bookmark-btn" data-id="s-20-64" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h2>Trap 1 — “SIFT, SURF, ORB and HOG are interchangeable.”</h2>
+<p>False.</p>
+<p>They have different detector/descriptor philosophies.</p>
+<h2>Trap 2 — “HOG detects keypoints.”</h2>
+<p>Not in the usual dense-grid formulation.</p>
+<h2>Trap 3 — “ORB is simply a smaller SIFT.”</h2>
+<p>False.</p>
+<p>It uses a fundamentally different binary descriptor and detector.</p>
+<h2>Trap 4 — “SURF is exactly the same as SIFT but faster.”</h2>
+<p>False.</p>
+<p>The detector and descriptor design differ.</p>
+<h2>Trap 5 — “All descriptors should use Euclidean distance.”</h2>
+<p>False.</p>
+<p>Binary descriptors such as ORB are naturally compared with Hamming distance.</p>
+<h2>Trap 6 — “More keypoints always improve registration.”</h2>
+<p>False.</p>
+<p>Incorrect or unstable matches can increase outliers.</p>
+<h2>Trap 7 — “A descriptor match proves the object is present.”</h2>
+<p>False.</p>
+<p>Matching should be validated geometrically and/or semantically.</p>
+<h2>Trap 8 — “HOG is rotation invariant.”</h2>
+<p>False in its standard form.</p>
+<h2>Trap 9 — “Scale-space guarantees perfect scale invariance.”</h2>
+<p>False.</p>
+<p>Sampling, blur, parameter ranges and viewpoint limits still matter.</p>
+<h2>Trap 10 — “A feature detector works equally well on every image.”</h2>
+<p>False.</p>
+<p>Textureless, repetitive, blurred or saturated images can be difficult.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.65: Exam Formula Sheet -->
+  <section id="s-20-65" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.65</span>
+      <h2>Exam Formula Sheet</h2>
+      <button class="bookmark-btn" data-id="s-20-65" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Gaussian scale space</h3>
+<p>
+$$
+\boxed{
+L(x,y,\sigma)=G(x,y,\sigma)*I(x,y)
+}
+$$
+</p>
+<h3>DoG</h3>
+<p>
+$$
+\boxed{
+D(x,y,\sigma)=
+L(x,y,k\sigma)-L(x,y,\sigma)
+}
+$$
+</p>
+<h3>Gradient magnitude</h3>
+<p>
+$$
+\boxed{
+m=
+\sqrt{G_x^2+G_y^2}
+}
+$$
+</p>
+<h3>Gradient orientation</h3>
+<p>
+$$
+\boxed{
+\theta=
+\operatorname{atan2}(G_y,G_x)
+}
+$$
+</p>
+<h3>Hessian determinant</h3>
+<p>
+$$
+\boxed{
+\det(H)=L_{xx}L_{yy}-L_{xy}^2
+}
+$$
+</p>
+<h3>Hamming distance</h3>
+<p>
+$$
+\boxed{
+d_H=
+\sum_i
+\mathbf1[a_i\ne b_i]
+}
+$$
+</p>
+<h3>L2 distance</h3>
+<p>
+$$
+\boxed{
+d_2=
+\sqrt{\sum_i(a_i-b_i)^2}
+}
+$$
+</p>
+<h3>Ratio test</h3>
+<p>
+$$
+\boxed{
+d_1/d_2<r
+}
+$$
+</p>
+<h3>Reprojection error</h3>
+<p>
+$$
+\boxed{
+e=\|p'-T(p)\|
+}
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.66: Exam-Style Problem — DoG -->
+  <section id="s-20-66" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.66</span>
+      <h2>Exam-Style Problem — DoG</h2>
+      <button class="bookmark-btn" data-id="s-20-66" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p>
+$$
+L(x,y,\sigma)=40
+$$
+</p>
+<p>and:</p>
+<p>
+$$
+L(x,y,k\sigma)=55
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+D=55-40
+$$
+</p>
+<p>
+$$
+\boxed{15}
+$$
+</p>
+<p>The positive DoG response indicates a stronger response at the larger scale under the chosen ordering.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.67: Exam-Style Problem — Hessian Determinant -->
+  <section id="s-20-67" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.67</span>
+      <h2>Exam-Style Problem — Hessian Determinant</h2>
+      <button class="bookmark-btn" data-id="s-20-67" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Given:</p>
+<p>
+$$
+L_{xx}=5
+$$
+</p>
+<p>
+$$
+L_{yy}=4
+$$
+</p>
+<p>
+$$
+L_{xy}=1
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+\det(H)
+=
+(5)(4)-(1)^2
+$$
+</p>
+<p>
+$$
+=20-1
+$$
+</p>
+<p>
+$$
+\boxed{19}
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.68: Exam-Style Problem — Hamming -->
+  <section id="s-20-68" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.68</span>
+      <h2>Exam-Style Problem — Hamming</h2>
+      <button class="bookmark-btn" data-id="s-20-68" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Descriptor A:</p>
+<p>
+$$
+10101010
+$$
+</p>
+<p>Descriptor B:</p>
+<p>
+$$
+11100011
+$$
+</p>
+<p>Compare bits.</p>
+<p>Differences occur at positions:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>2
+4
+5
+7</code></pre>
+</div></p>
+<p>Therefore:</p>
+<p>
+$$
+\boxed{d_H=4}
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.69: Exam-Style Problem — Descriptor Ratio -->
+  <section id="s-20-69" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.69</span>
+      <h2>Exam-Style Problem — Descriptor Ratio</h2>
+      <button class="bookmark-btn" data-id="s-20-69" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Best:</p>
+<p>
+$$
+d_1=12
+$$
+</p>
+<p>Second best:</p>
+<p>
+$$
+d_2=30
+$$
+</p>
+<p>Ratio threshold:</p>
+<p>
+$$
+r=0.5
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+\frac{12}{30}=0.4
+$$
+</p>
+<p>Since:</p>
+<p>
+$$
+0.4<0.5
+$$
+</p>
+<p>the match passes.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.70: Engineering Insight — Match Quality Is a Pipeline Property -->
+  <section id="s-20-70" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.70</span>
+      <h2>Engineering Insight — Match Quality Is a Pipeline Property</h2>
+      <button class="bookmark-btn" data-id="s-20-70" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A poor matching result may come from:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>bad image quality
+→ bad keypoints
+→ bad descriptors
+→ ambiguous nearest neighbours
+→ insufficient geometric verification</code></pre>
+</div></p>
+<p>Therefore debugging only the final matcher can miss the true problem.</p>
+<p>Inspect:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image
+→ keypoints
+→ descriptors
+→ candidate matches
+→ filtered matches
+→ geometric inliers</code></pre>
+</div></p>
+<p>This is the feature equivalent of inspecting intermediate filter outputs in C08–C14.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.71: Cross-Book Bridges -->
+  <section id="s-20-71" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.71</span>
+      <h2>Cross-Book Bridges</h2>
+      <button class="bookmark-btn" data-id="s-20-71" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <blockquote>
+<p><strong>C03 BRIDGE</strong><br />
+Sampling determines whether feature-scale information is actually available.</p>
+<p><strong>C09 BRIDGE</strong><br />
+Noise can create unstable keypoints and alter gradient descriptors.</p>
+<p><strong>C10 BRIDGE</strong><br />
+Gradient magnitude/orientation are the mathematical foundation of HOG and SIFT.</p>
+<p><strong>C11 BRIDGE</strong><br />
+Feature correspondences can estimate affine/homography transformations for registration.</p>
+<p><strong>C17–C18 BRIDGE</strong><br />
+Segmentation/morphology can define ROIs before feature extraction.</p>
+<p><strong>C25 BRIDGE</strong><br />
+Feature vectors can become inputs to classical image classifiers.</p>
+<p><strong>C28 BRIDGE</strong><br />
+Deep detectors learn feature representations automatically rather than using only hand-crafted descriptors.</p>
+<p><strong>C30 BRIDGE</strong><br />
+Stable keypoints can be tracked across video frames.</p>
+<p><strong>LAB BRIDGE</strong><br />
+Implement SIFT/ORB matching, HOG extraction and geometric verification; record runtime and inliers.</p>
+<p><strong>PRACTICE BRIDGE</strong><br />
+Solve DoG/Hessian/gradient/Hamming/L2/ratio-test calculations and compare algorithm design tradeoffs.</p>
+<p><strong>EXAM BRIDGE</strong><br />
+Be able to explain SIFT, SURF, ORB and HOG pipelines, descriptor types, matching metrics and strengths/limitations.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.72: Quick Recall -->
+  <section id="s-20-72" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.72</span>
+      <h2>Quick Recall</h2>
+      <button class="bookmark-btn" data-id="s-20-72" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>SIFT
+→ DoG
+→ scale
+→ orientation
+→ gradient descriptor
+→ 128-D
+
+SURF
+→ Hessian
+→ integral image
+→ Haar responses
+
+ORB
+→ FAST
+→ orientation
+→ rotated BRIEF
+→ binary
+→ Hamming
+
+HOG
+→ gradient
+→ cells
+→ orientation histograms
+→ block normalization
+→ shape descriptor</code></pre>
+</div></p>
+<p>Core comparison:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>SIFT
+→ robustness
+
+SURF
+→ efficient classical robustness
+
+ORB
+→ speed + binary compactness
+
+HOG
+→ dense shape representation</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.73: Chapter Checkpoint -->
+  <section id="s-20-73" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.73</span>
+      <h2>Chapter Checkpoint</h2>
+      <button class="bookmark-btn" data-id="s-20-73" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <ol>
+<li>Outline the SIFT pipeline.</li>
+<li>Why does SIFT use scale space?</li>
+<li>Write the Gaussian scale-space equation.</li>
+<li>Explain the Difference-of-Gaussians.</li>
+<li>Why does SIFT assign a dominant orientation?</li>
+<li>Why is the classic SIFT descriptor 128-dimensional?</li>
+<li>Explain SIFT descriptor normalization.</li>
+<li>Outline SURF.</li>
+<li>What is the Hessian determinant?</li>
+<li>Why do integral images speed rectangular filtering?</li>
+<li>Explain FAST corner detection conceptually.</li>
+<li>What does ORB add to FAST and BRIEF?</li>
+<li>Why is Hamming distance suitable for ORB?</li>
+<li>Describe the HOG pipeline.</li>
+<li>Explain HOG cells and blocks.</li>
+<li>Compare SIFT, SURF, ORB and HOG.</li>
+<li>Why is geometric verification needed after descriptor matching?</li>
+<li>Explain the ratio test.</li>
+<li>Design an experiment comparing SIFT and ORB.</li>
+<li>Design an experiment studying HOG parameter effects.</li>
+</ol>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.74: Part III Completion Gate -->
+  <section id="s-20-74" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.74</span>
+      <h2>Part III Completion Gate</h2>
+      <button class="bookmark-btn" data-id="s-20-74" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Part III now forms a complete progression:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>C15
+SEGMENTATION FUNDAMENTALS
+        ↓
+C16
+THRESHOLDING
+        ↓
+C17
+REGION-BASED SEGMENTATION
+        ↓
+C18
+MATHEMATICAL MORPHOLOGY
+        ↓
+C19
+FEATURES + DESCRIPTORS
+        ↓
+C20
+SIFT / SURF / ORB / HOG</code></pre>
+</div></p>
+<p>The intellectual movement is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>pixel
+→ label
+→ connected region
+→ shape
+→ feature
+→ descriptor
+→ correspondence</code></pre>
+</div></p>
+<p>That is the classical computer-vision bridge from image processing to recognition.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 20.75: Transition to Part IV -->
+  <section id="s-20-75" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.75</span>
+      <h2>Transition to Part IV</h2>
+      <button class="bookmark-btn" data-id="s-20-75" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Part III asks:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>How can we understand or represent image content?</code></pre>
+</div></p>
+<p>Part IV changes the optimization objective:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>How can we represent image information using fewer bits?</code></pre>
+</div></p>
+<p>The next sequence is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>C21
+IMAGE COMPRESSION FUNDAMENTALS
+        ↓
+C22
+ENTROPY + RLE + HUFFMAN
+        ↓
+C23
+TRANSFORM CODING + DCT
+        ↓
+C24
+JPEG END TO END</code></pre>
+</div></p>
+<p>The central transition is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>understand image information
+→
+measure redundancy
+→
+encode efficiently
+→
+compress deliberately</code></pre>
+</div></p>
+    </div>
+  </section>
+
+  <!-- SECTION 20.76: Worked Example — 10-Mark University Model Answer: Harris Corner Response Matrix -->
+  <section id="s-20-76" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.76</span>
+      <h2>Worked Example — 10-Mark University Model Answer: Harris Corner Response Matrix</h2>
+      <button class="bookmark-btn" data-id="s-20-76" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Problem Statement</h3>
+<p>The local spatial derivative products across an image patch produce the following $2 \times 2$ Harris autocorrelation matrix (structure tensor):
+
+$$M = \sum_{(x, y) \in W} w(x, y) \begin{bmatrix} I_x^2 & I_x I_y \\ I_x I_y & I_y^2 \end{bmatrix} = \begin{bmatrix} 24 & 6 \\ 6 & 16 \end{bmatrix}$$
+
+1. Formulate the Taylor series derivation of the local auto-correlation function $E(u, v)$ for a spatial shift $(u, v)$.
+2. Explain the physical significance of the eigenvalues $\lambda_1, \lambda_2$ of matrix $M$.
+3. Compute the determinant $\det(M)$ and trace $\text{Tr}(M)$.
+4. Calculate the Harris corner response measure $R = \det(M) - k (\text{Tr}(M))^2$ with empirical parameter $k = 0.04$, and classify the underlying image feature.</p>
+<h3>Step-by-Step Mathematical Solution</h3>
+<div class="worked-example">
+  <div class="worked-example-header">
+    <span class="worked-example-title">Numerical Examination Trace</span>
+    <span class="tag-badge tag-exam">10-MARK UNIVERSITY MODEL ANSWER</span>
+  </div>
+  <p><strong>1. Shift Auto-Correlation Derivation:</strong><br>
+  The change in intensity produced by a small shift $(u, v)$ weighted by window $w(x, y)$ is:
+  
+$$E(u, v) = \sum_{x, y} w(x, y) [I(x+u, y+v) - I(x, y)]^2$$
+
+  Approximating $I(x+u, y+v)$ via first-order 2D Taylor series:
+  
+$$I(x+u, y+v) \approx I(x, y) + u I_x(x, y) + v I_y(x, y)$$
+
+  
+$$E(u, v) \approx \sum_{x, y} w(x, y) [u I_x + v I_y]^2 = \begin{bmatrix} u & v \end{bmatrix} M \begin{bmatrix} u \\ v \end{bmatrix}$$
+
+  where $M$ is the symmetric positive semi-definite structure tensor.</p>
+
+  <p><strong>2. Physical Significance of Eigenvalues $\lambda_1, \lambda_2$:</strong><br>
+  The eigenvalues of $M$ represent the principal curvatures of the local auto-correlation surface:<br>
+  - $\lambda_1 \approx 0, \ \lambda_2 \approx 0 \implies$ <strong>Flat Region:</strong> No significant gradient in any direction.<br>
+  - $\lambda_1 \gg \lambda_2 \approx 0 \text{ (or vice versa)} \implies$ <strong>Edge:</strong> Strong gradient perpendicular to edge, zero gradient along edge.<br>
+  - $\lambda_1 \gg 0 \text{ and } \lambda_2 \gg 0 \implies$ <strong>Corner:</strong> Strong intensity variations in all spatial directions.</p>
+
+  <p><strong>3. Matrix Determinant and Trace:</strong><br>
+  Given $M = \begin{bmatrix} 24 & 6 \\ 6 & 16 \end{bmatrix}$:<br>
+  
+$$\det(M) = (24 \times 16) - (6 \times 6) = 384 - 36 = \mathbf{348}$$
+
+  
+$$\text{Tr}(M) = 24 + 16 = \mathbf{40}$$
+</p>
+
+  <p><strong>4. Harris Corner Response $R$:</strong><br>
+  
+$$R = \det(M) - k [\text{Tr}(M)]^2 = 348 - 0.04(40)^2$$
+
+  
+$$R = 348 - 0.04(1600) = 348 - 64 = \mathbf{+284}$$
+
+  
+$$\because R = +284 > 0 \implies \text{Classified as a Distinct Corner Feature}$$
+
+  Because $R$ is strongly positive, the local patch contains significant gradient energy in multiple orthogonal directions, making it an ideal anchor keypoint for image matching.</p>
+</div>
+    </div>
+  </section>
+
+  <!-- SECTION 20.77: SIFT 128-Dimensional Keypoint Descriptor Architectural Blueprint -->
+  <section id="s-20-77" class="section-block">
+    <div class="section-header">
+      <span class="section-num">20.77</span>
+      <h2>SIFT 128-Dimensional Keypoint Descriptor Architectural Blueprint</h2>
+      <button class="bookmark-btn" data-id="s-20-77" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap">
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th>SIFT Pipeline Stage</th>
+        <th>Mathematical Formulation</th>
+        <th>Invariance Achieved</th>
+        <th>Engineering Significance</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>1. Scale-Space Extrema</strong></td>
+        <td>$D(x, y, \sigma) = (G(x, y, k\sigma) - G(x, y, \sigma)) * I(x, y)$</td>
+        <td><strong>Scale Invariance</strong></td>
+        <td>Approximates scale-normalized Laplacian $\sigma^2 \nabla^2 G$ efficiently via DoG octaves.</td>
+      </tr>
+      <tr>
+        <td><strong>2. Sub-Pixel Localization &amp; Edge Rejection</strong></td>
+        <td>$\hat{x} = -H^{-1} \frac{\partial D}{\partial x}$, Hessian ratio $\frac{\text{Tr}(H)^2}{\det(H)} < \frac{(r+1)^2}{r}$ ($r=10$)</td>
+        <td><strong>Contrast &amp; Edge Noise Invariance</strong></td>
+        <td>Discards low-contrast keypoints ($|D(\hat{x})| < 0.03$) and unstable 1D edge ridges.</td>
+      </tr>
+      <tr>
+        <td><strong>3. Orientation Assignment</strong></td>
+        <td>$\theta = \arctan \frac{L(x, y+1) - L(x, y-1)}{L(x+1, y) - L(x-1, y)}$, 36-bin orientation histogram</td>
+        <td><strong>Rotation Invariance</strong></td>
+        <td>Assigns canonical orientation corresponding to peak gradient direction.</td>
+      </tr>
+      <tr>
+        <td><strong>4. 128-D Feature Descriptor</strong></td>
+        <td>$16 \times 16$ pixel window $\to 4 \times 4$ subregions $\to 8$ orientation bins each ($4 \times 4 \times 8 = 128$)</td>
+        <td><strong>Illumination &amp; 3D Viewpoint Robustness</strong></td>
+        <td>Normalized to unit length $\|\mathbf{v}\|=1$, clipped at 0.2, and re-normalized.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+    </div>
+  </section>
+
+      <!-- Chapter End Package -->
+      <section class="chapter-end-package">
+        <div class="chapter-nav-grid">
+          <a href="ch19-features-descriptors.html" class="chapter-nav-card">
+            <div class="chapter-nav-dir">← Previous</div>
+            <div class="chapter-nav-title">← Ch 19 — Image Features & Descriptors</div>
+          </a>
+          <a href="ch21-compression-entropy.html" class="chapter-nav-card next">
+            <div class="chapter-nav-dir">Next →</div>
+            <div class="chapter-nav-title">Next: Ch 21 — Compression & Entropy →</div>
+          </a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- FLOATING TTS PANEL (SAFE MANUAL MODE ONLY) -->
+  <div id="tts-panel" style="position:fixed; bottom:20px; right:20px; background:var(--em-surface-1); border:1px solid var(--em-border); border-radius:var(--em-radius-md); padding:12px 16px; box-shadow:var(--sh-lg); z-index:var(--z-float); display:none; gap:10px; align-items:center;">
+    <button class="icon-btn" id="tts-play" title="Play / Pause" style="background:var(--em-accent); color:#fff; border-radius:50%; width:36px; height:36px;">▶</button>
+    <button class="icon-btn" id="tts-stop" title="Stop">⏹</button>
+    <div style="font-size:0.75rem; color:var(--em-text-muted);">
+      <span id="tts-status">Ready</span> · <span id="tts-rate-label">1.0x</span>
+    </div>
+  </div>
+
+  <script src="../assets/js/state.js"></script>
+  <script src="../assets/js/core.js"></script>
+  <script src="../assets/js/tts.js"></script>
+  <script src="../assets/js/glossary.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: document.documentElement.getAttribute('data-theme') === 'light' ? 'default' : 'dark'
+      });
+    });
+  </script>
+</body>
+</html>

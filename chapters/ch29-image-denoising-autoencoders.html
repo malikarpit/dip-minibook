@@ -1,0 +1,2072 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Arpit">
+  <meta name="description" content="Chapter 29: Image Denoising with Autoencoders — Digital Image Processing MiniBook. Encoder-Decoder Architecture, Latent Bottleneck Representation $z$, Convolutional Autoencoders (CAE), Transpose Convolutions, Gaussian &amp; Impulsive Corruption, and Reconstruction Loss">
+  <title>C29: Image Denoising with Autoencoders | DIP MiniBook 📷 Arpit</title>
+
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <link rel="stylesheet" href="../assets/css/chapters.css">
+  <link rel="stylesheet" href="../assets/css/animations.css">
+  <link rel="stylesheet" href="../assets/css/timer.css">
+
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body data-chapter-id="ch29-image-denoising-autoencoders">
+  <div id="progress-bar"></div>
+
+  <!-- Header -->
+  <header id="main-header">
+    <div class="header-left">
+      <button id="sidebar-toggle" class="icon-btn" aria-label="Toggle navigation drawer" title="Toggle Sidebar (S)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <a href="../index.html" class="brand-logo">
+        <div class="brand-icon">DIP</div>
+        <div class="brand-text">
+          <span class="main">Digital Image Processing</span>
+          <span class="sub">DU DSE-3 Engineering MiniBook</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="header-chapter-title">C29: Image Denoising with Autoencoders</div>
+
+    <div class="header-right">
+      <button id="reading-mode-btn" class="icon-btn" aria-label="Toggle reading focus mode" title="Focus Mode (F)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+          <line x1="8" y1="21" x2="16" y2="21"></line>
+          <line x1="12" y1="17" x2="12" y2="21"></line>
+        </svg>
+      </button>
+      <button id="tts-toggle" class="icon-btn" aria-label="Audio Reader" title="Audio Reader">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+        </svg>
+      </button>
+      <button id="theme-toggle" class="icon-btn" aria-label="Cycle theme" title="Theme (T)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="12" cy="12" r="4.5"></circle>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Sidebar Overlay -->
+  <div id="sidebar-overlay"></div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" aria-expanded="true">
+    <div class="sidebar-nav">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">General</div>
+        <a href="../index.html" class="sidebar-link">
+          <span class="link-icon">🏛️</span>
+          <span>Subject Portal</span>
+        </a>
+        <a href="../progress.html" class="sidebar-link">
+          <span class="link-icon">📊</span>
+          <span>Study Dashboard</span>
+        </a>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Current Chapter Sections</div>
+        <a href="#s-29-1" class="sidebar-link"><span class="link-icon">📌</span><span>29.1 Why This Chapter Exists</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-29-2" class="sidebar-link"><span class="link-icon">📌</span><span>29.2 Learning Contract</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-29-3" class="sidebar-link"><span class="link-icon">📌</span><span>29.3 What Is an Autoencoder?</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-29-4" class="sidebar-link"><span class="link-icon">📌</span><span>29.4 Ordinary Autoencoder</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-29-5" class="sidebar-link"><span class="link-icon">📌</span><span>29.5 Denoising Autoencoder</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-29-6" class="sidebar-link"><span class="link-icon">📌</span><span>29.6 Why This Works</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-29-7" class="sidebar-link"><span class="link-icon">📌</span><span>29.7 Denoising Pipeline</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-29-8" class="sidebar-link"><span class="link-icon">📌</span><span>29.8 Encoder</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-29-9" class="sidebar-link"><span class="link-icon">📌</span><span>29.9 Decoder</span> </a>
+      <a href="#s-29-10" class="sidebar-link"><span class="link-icon">📌</span><span>29.10 Latent Representation</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-29-11" class="sidebar-link"><span class="link-icon">📌</span><span>29.11 Reconstruction Loss</span> </a>
+      <a href="#s-29-12" class="sidebar-link"><span class="link-icon">📌</span><span>29.12 Worked MSE Example</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-29-13" class="sidebar-link"><span class="link-icon">📌</span><span>29.13 Other Reconstruction Losses</span> </a>
+      <a href="#s-29-14" class="sidebar-link"><span class="link-icon">📌</span><span>29.14 Convolutional Autoencoder</span> </a>
+      <a href="#s-29-15" class="sidebar-link"><span class="link-icon">📌</span><span>29.15 Tensor Shape Example</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-29-16" class="sidebar-link"><span class="link-icon">📌</span><span>29.16 Why the Encoder Compresses</span> </a>
+      <a href="#s-29-17" class="sidebar-link"><span class="link-icon">📌</span><span>29.17 Denoising as a Learned Prior</span> </a>
+      <a href="#s-29-18" class="sidebar-link"><span class="link-icon">📌</span><span>29.18 Noise Model Matters</span> </a>
+      <a href="#s-29-19" class="sidebar-link"><span class="link-icon">📌</span><span>29.19 Synthetic Noise for Training</span> </a>
+      <a href="#s-29-20" class="sidebar-link"><span class="link-icon">📌</span><span>29.20 Worked Noise Example</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-29-21" class="sidebar-link"><span class="link-icon">📌</span><span>29.21 Why Over-Smoothing Can Occur</span> </a>
+      <a href="#s-29-22" class="sidebar-link"><span class="link-icon">📌</span><span>29.22 Autoencoder vs Classical Filter</span> </a>
+      <a href="#s-29-23" class="sidebar-link"><span class="link-icon">📌</span><span>29.23 Autoencoder vs CNN Classifier</span> </a>
+      <a href="#s-29-24" class="sidebar-link"><span class="link-icon">📌</span><span>29.24 Training Target Matters</span> </a>
+      <a href="#s-29-25" class="sidebar-link"><span class="link-icon">📌</span><span>29.25 Keras Denoising Autoencoder</span> </a>
+      <a href="#s-29-26" class="sidebar-link"><span class="link-icon">📌</span><span>29.26 Generating Noisy Training Data</span> </a>
+      <a href="#s-29-27" class="sidebar-link"><span class="link-icon">📌</span><span>29.27 Inference</span> </a>
+      <a href="#s-29-28" class="sidebar-link"><span class="link-icon">📌</span><span>29.28 Practical Visualization</span> </a>
+      <a href="#s-29-29" class="sidebar-link"><span class="link-icon">📌</span><span>29.29 Denoising Evaluation</span> </a>
+      <a href="#s-29-30" class="sidebar-link"><span class="link-icon">📌</span><span>29.30 PSNR Comparison</span> </a>
+      <a href="#s-29-31" class="sidebar-link"><span class="link-icon">📌</span><span>29.31 Failure Mode — Distribution Shift</span> </a>
+      <a href="#s-29-32" class="sidebar-link"><span class="link-icon">📌</span><span>29.32 Failure Mode — Hallucinated Detail</span> </a>
+      <a href="#s-29-33" class="sidebar-link"><span class="link-icon">📌</span><span>29.33 Failure Mode — Edge Loss</span> </a>
+      <a href="#s-29-34" class="sidebar-link"><span class="link-icon">📌</span><span>29.34 Engineering Comparison</span> </a>
+      <a href="#s-29-35" class="sidebar-link"><span class="link-icon">📌</span><span>29.35 Autoencoder Architecture Variants</span> </a>
+      <a href="#s-29-36" class="sidebar-link"><span class="link-icon">📌</span><span>29.36 Why a Bottleneck Does Not Guarantee Perfect Compression</span> </a>
+      <a href="#s-29-37" class="sidebar-link"><span class="link-icon">📌</span><span>29.37 Exam Lens</span> </a>
+      <a href="#s-29-38" class="sidebar-link"><span class="link-icon">📌</span><span>29.38 Numerical Practice</span> </a>
+      <a href="#s-29-39" class="sidebar-link"><span class="link-icon">📌</span><span>29.39 Chapter Checkpoint</span> </a>
+      <a href="#s-29-40" class="sidebar-link"><span class="link-icon">📌</span><span>29.40 One-Page Recall Sheet</span> </a>
+      <a href="#s-29-41" class="sidebar-link"><span class="link-icon">📌</span><span>29.41 Cross-Book Links</span> </a>
+      <a href="#s-29-42" class="sidebar-link"><span class="link-icon">📌</span><span>29.42 Final Chapter Summary</span> </a>
+      <a href="#s-29-43" class="sidebar-link"><span class="link-icon">📌</span><span>29.43 Worked Example — 10-Mark University Model Answer: Convolutional Autoencoder Denoising &amp; Loss Formulations</span> </a>
+      <a href="#s-29-44" class="sidebar-link"><span class="link-icon">📌</span><span>29.44 Denoising Autoencoder Information Flow</span> </a>
+      </div>
+
+      
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-i">Part I — The Image</div>
+      <a href="ch01-big-picture.html" class="sidebar-link"><span class="link-icon">01</span><span>The Big Picture</span></a>
+      <a href="ch02-image-formation.html" class="sidebar-link"><span class="link-icon">02</span><span>Formation & Acquisition</span></a>
+      <a href="ch03-sampling-quantization.html" class="sidebar-link"><span class="link-icon">03</span><span>Sampling & Quantization</span></a>
+      <a href="ch04-image-representation.html" class="sidebar-link"><span class="link-icon">04</span><span>Pixels, Matrices & Resolution</span></a>
+      <a href="ch05-colour-models-file-formats.html" class="sidebar-link"><span class="link-icon">05</span><span>Colour Models & Formats</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-ii">Part II — Improving the Image</div>
+      <a href="ch06-point-processing.html" class="sidebar-link"><span class="link-icon">06</span><span>Point Processing & Intensity</span></a>
+      <a href="ch07-histograms-equalization.html" class="sidebar-link"><span class="link-icon">07</span><span>Histograms & Equalization</span></a>
+      <a href="ch08-spatial-filtering.html" class="sidebar-link"><span class="link-icon">08</span><span>Spatial Filtering & Convolution</span></a>
+      <a href="ch09-smoothing-noise-reduction.html" class="sidebar-link"><span class="link-icon">09</span><span>Smoothing & Noise Reduction</span></a>
+      <a href="ch10-sharpening-edge-detection.html" class="sidebar-link"><span class="link-icon">10</span><span>Sharpening & Edge Detection</span></a>
+      <a href="ch11-geometric-transforms.html" class="sidebar-link"><span class="link-icon">11</span><span>Geometric Transforms</span></a>
+      <a href="ch12-fourier-transform.html" class="sidebar-link"><span class="link-icon">12</span><span>Fourier Transform & Frequency</span></a>
+      <a href="ch13-frequency-filtering.html" class="sidebar-link"><span class="link-icon">13</span><span>Frequency-Domain Filtering</span></a>
+      <a href="ch14-image-restoration.html" class="sidebar-link"><span class="link-icon">14</span><span>Restoration & Deblurring</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-iii">Part III — Understanding Content</div>
+      <a href="ch15-segmentation-fundamentals.html" class="sidebar-link"><span class="link-icon">15</span><span>Segmentation Fundamentals</span></a>
+      <a href="ch16-thresholding-otsu.html" class="sidebar-link"><span class="link-icon">16</span><span>Thresholding & Otsu Method</span></a>
+      <a href="ch17-region-segmentation.html" class="sidebar-link"><span class="link-icon">17</span><span>Region-Based Segmentation</span></a>
+      <a href="ch18-mathematical-morphology.html" class="sidebar-link"><span class="link-icon">18</span><span>Mathematical Morphology</span></a>
+      <a href="ch19-features-descriptors.html" class="sidebar-link"><span class="link-icon">19</span><span>Image Features & Descriptors</span></a>
+      <a href="ch20-sift-surf-orb-hog.html" class="sidebar-link"><span class="link-icon">20</span><span>SIFT, SURF, ORB & HOG</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-iv">Part IV — Compressing Images</div>
+      <a href="ch21-compression-entropy.html" class="sidebar-link"><span class="link-icon">21</span><span>Compression & Entropy</span></a>
+      <a href="ch22-lossless-coding.html" class="sidebar-link"><span class="link-icon">22</span><span>Lossless: RLE & Huffman</span></a>
+      <a href="ch23-lossy-dct-jpeg.html" class="sidebar-link"><span class="link-icon">23</span><span>Lossy: DCT & JPEG</span></a>
+      <a href="ch24-wavelets-jpeg2000.html" class="sidebar-link"><span class="link-icon">24</span><span>Wavelets & JPEG 2000</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-v">Part V — Intelligent Vision</div>
+      <a href="ch25-image-classification.html" class="sidebar-link"><span class="link-icon">25</span><span>Image Classification</span></a>
+      <a href="ch26-cnns-image-processing.html" class="sidebar-link"><span class="link-icon">26</span><span>CNNs for Image Processing</span></a>
+      <a href="ch27-modern-vision-architectures.html" class="sidebar-link"><span class="link-icon">27</span><span>Modern Vision Architectures</span></a>
+      <a href="ch28-object-detection-yolo.html" class="sidebar-link"><span class="link-icon">28</span><span>Object Detection: YOLO</span></a>
+      <a href="ch29-image-denoising-autoencoders.html" class="sidebar-link active"><span class="link-icon">29</span><span>Image Denoising Autoencoders</span></a>
+      <a href="ch30-video-motion-analysis.html" class="sidebar-link"><span class="link-icon">30</span><span>Video & Motion Analysis</span></a>
+      <a href="ch31-dip-applications-engineering.html" class="sidebar-link"><span class="link-icon">31</span><span>DIP Applications & Ethics</span></a>
+    </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-brand-mark">
+        <div class="mark">DU</div>
+        <div>
+          <strong>DSE-3 MiniBook</strong>
+          <div>University of Delhi</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mandatory Shell Wrapper -->
+  <div id="main-content">
+    <main class="chapter-content">
+      <!-- Chapter Hero -->
+      <div class="chapter-hero">
+        <div class="hero-meta">
+          <span class="part-badge part-v">Intelligent Vision</span>
+          <span class="chapter-number">CHAPTER 29</span>
+          <span class="reading-time">⏱️ ~50 min read</span>
+          <span class="tag-badge tag-core">Highest Yield (10-mark guarantee)</span>
+        </div>
+        <h1 class="chapter-title">Image Denoising with Autoencoders</h1>
+        <p class="chapter-subtitle">
+          Encoder-Decoder Architecture, Latent Bottleneck Representation $z$, Convolutional Autoencoders (CAE), Transpose Convolutions, Gaussian &amp; Impulsive Corruption, and Reconstruction Loss
+        </p>
+
+        <div class="syllabus-anchor">
+          <span class="syllabus-anchor-label">DU Syllabus</span>
+          <span><strong>Image Denoising using Autoencoders:</strong> Unsupervised visual learning, encoder-decoder architecture, latent space representation, Convolutional Autoencoder (CAE), upsampling via transposed convolution, artificial noise injection (Gaussian, salt-and-pepper), mean squared error reconstruction loss, and comparison with spatial domain filtering methods.</span>
+        </div>
+      </div>
+
+      <!-- In-Page TOC -->
+      <div class="chapter-checklist-card" style="margin-bottom:var(--em-space-8);">
+        <div class="checklist-title">
+          <span>Table of Contents &amp; Visual Section Map</span>
+          <span class="tag-badge tag-math">44 Deep Sections</span>
+        </div>
+        <ul class="part-chapters-list">
+          <li class="part-chapter-item"><a href="#s-29-1"><strong>29.1</strong> Why This Chapter Exists</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-29-2"><strong>29.2</strong> Learning Contract</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-29-3"><strong>29.3</strong> What Is an Autoencoder?</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-29-4"><strong>29.4</strong> Ordinary Autoencoder</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-29-5"><strong>29.5</strong> Denoising Autoencoder</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-29-6"><strong>29.6</strong> Why This Works</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-29-7"><strong>29.7</strong> Denoising Pipeline</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-29-8"><strong>29.8</strong> Encoder</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-29-9"><strong>29.9</strong> Decoder</a> </li>
+      <li class="part-chapter-item"><a href="#s-29-10"><strong>29.10</strong> Latent Representation</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-29-11"><strong>29.11</strong> Reconstruction Loss</a> </li>
+      <li class="part-chapter-item"><a href="#s-29-12"><strong>29.12</strong> Worked MSE Example</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-29-13"><strong>29.13</strong> Other Reconstruction Losses</a> </li>
+      <li class="part-chapter-item"><a href="#s-29-14"><strong>29.14</strong> Convolutional Autoencoder</a> </li>
+      <li class="part-chapter-item"><a href="#s-29-15"><strong>29.15</strong> Tensor Shape Example</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-29-16"><strong>29.16</strong> Why the Encoder Compresses</a> </li>
+      <li class="part-chapter-item"><a href="#s-29-17"><strong>29.17</strong> Denoising as a Learned Prior</a> </li>
+      <li class="part-chapter-item"><a href="#s-29-18"><strong>29.18</strong> Noise Model Matters</a> </li>
+      <li class="part-chapter-item"><a href="#s-29-19"><strong>29.19</strong> Synthetic Noise for Training</a> </li>
+      <li class="part-chapter-item"><a href="#s-29-20"><strong>29.20</strong> Worked Noise Example</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-29-21"><strong>29.21</strong> Why Over-Smoothing Can Occur</a> </li>
+      <li class="part-chapter-item"><a href="#s-29-22"><strong>29.22</strong> Autoencoder vs Classical Filter</a> </li>
+      <li class="part-chapter-item"><a href="#s-29-23"><strong>29.23</strong> Autoencoder vs CNN Classifier</a> </li>
+      <li class="part-chapter-item"><a href="#s-29-24"><strong>29.24</strong> Training Target Matters</a> </li>
+      <li class="part-chapter-item"><a href="#s-29-25"><strong>29.25</strong> Keras Denoising Autoencoder</a> </li>
+      <li class="part-chapter-item"><a href="#s-29-26"><strong>29.26</strong> Generating Noisy Training Data</a> </li>
+      <li class="part-chapter-item"><a href="#s-29-27"><strong>29.27</strong> Inference</a> </li>
+      <li class="part-chapter-item"><a href="#s-29-28"><strong>29.28</strong> Practical Visualization</a> </li>
+      <li class="part-chapter-item"><a href="#s-29-29"><strong>29.29</strong> Denoising Evaluation</a> </li>
+      <li class="part-chapter-item"><a href="#s-29-30"><strong>29.30</strong> PSNR Comparison</a> </li>
+      <li class="part-chapter-item"><a href="#s-29-31"><strong>29.31</strong> Failure Mode — Distribution Shift</a> </li>
+      <li class="part-chapter-item"><a href="#s-29-32"><strong>29.32</strong> Failure Mode — Hallucinated Detail</a> </li>
+      <li class="part-chapter-item"><a href="#s-29-33"><strong>29.33</strong> Failure Mode — Edge Loss</a> </li>
+      <li class="part-chapter-item"><a href="#s-29-34"><strong>29.34</strong> Engineering Comparison</a> </li>
+      <li class="part-chapter-item"><a href="#s-29-35"><strong>29.35</strong> Autoencoder Architecture Variants</a> </li>
+      <li class="part-chapter-item"><a href="#s-29-36"><strong>29.36</strong> Why a Bottleneck Does Not Guarantee Perfect Compression</a> </li>
+      <li class="part-chapter-item"><a href="#s-29-37"><strong>29.37</strong> Exam Lens</a> </li>
+      <li class="part-chapter-item"><a href="#s-29-38"><strong>29.38</strong> Numerical Practice</a> </li>
+      <li class="part-chapter-item"><a href="#s-29-39"><strong>29.39</strong> Chapter Checkpoint</a> </li>
+      <li class="part-chapter-item"><a href="#s-29-40"><strong>29.40</strong> One-Page Recall Sheet</a> </li>
+      <li class="part-chapter-item"><a href="#s-29-41"><strong>29.41</strong> Cross-Book Links</a> </li>
+      <li class="part-chapter-item"><a href="#s-29-42"><strong>29.42</strong> Final Chapter Summary</a> </li>
+      <li class="part-chapter-item"><a href="#s-29-43"><strong>29.43</strong> Worked Example — 10-Mark University Model Answer: Convolutional Autoencoder Denoising &amp; Loss Formulations</a> </li>
+      <li class="part-chapter-item"><a href="#s-29-44"><strong>29.44</strong> Denoising Autoencoder Information Flow</a> </li>
+        </ul>
+      </div>
+
+      <div class="concept-hook" style="margin-bottom:var(--em-space-8);"><h1>C29 — Image Denoising with Autoencoders</h1>
+<blockquote>
+<p><strong>Chapter thesis:</strong> A denoising autoencoder learns to map a corrupted image to a cleaner reconstruction by compressing and reconstructing visual information through a learned latent representation.</p>
+</blockquote>
+<hr /></div>
+
+      <!-- All Numbered Sections -->
+      
+  <!-- SECTION 29.1: Why This Chapter Exists -->
+  <section id="s-29-1" class="section-block">
+    <div class="section-header">
+      <span class="section-num">29.1</span>
+      <h2>Why This Chapter Exists</h2>
+      <button class="bookmark-btn" data-id="s-29-1" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Earlier chapters treated denoising primarily as an engineered filtering problem:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>noisy image
+→ designed filter
+→ cleaner image</code></pre>
+</div></p>
+<p>C29 introduces a learned approach:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>noisy image
+→ encoder
+→ latent representation
+→ decoder
+→ reconstructed clean image</code></pre>
+</div></p>
+<p>The university syllabus specifically requires:</p>
+<blockquote>
+<p><strong>Image Denoising using Autoencoders.</strong> fileciteturn4file0L48-L52</p>
+</blockquote>
+<p>The important transition is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>hand-designed restoration rule
+          ↓
+learned reconstruction function</code></pre>
+</div></p>
+<p>The goal is not to claim that autoencoders always outperform classical filters. The goal is to understand when and how a learned denoising system can work.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 29.2: Learning Contract -->
+  <section id="s-29-2" class="section-block">
+    <div class="section-header">
+      <span class="section-num">29.2</span>
+      <h2>Learning Contract</h2>
+      <button class="bookmark-btn" data-id="s-29-2" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>After this chapter, you should be able to:</p>
+<ul>
+<li>define an autoencoder;</li>
+<li>distinguish encoder, latent representation and decoder;</li>
+<li>explain reconstruction as the learning objective;</li>
+<li>distinguish an ordinary autoencoder from a denoising autoencoder;</li>
+<li>explain the noisy-input/clean-target training setup;</li>
+<li>calculate simple reconstruction loss values;</li>
+<li>explain convolutional autoencoder structure;</li>
+<li>trace tensor shapes through encoder and decoder stages;</li>
+<li>explain why bottlenecks can encourage compact representations;</li>
+<li>explain the effect of the latent representation;</li>
+<li>understand training and inference for image denoising;</li>
+<li>implement a simple denoising autoencoder;</li>
+<li>compare learned denoising with classical filtering;</li>
+<li>identify failure modes such as over-smoothing and distribution mismatch.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 29.3: What Is an Autoencoder? -->
+  <section id="s-29-3" class="section-block">
+    <div class="section-header">
+      <span class="section-num">29.3</span>
+      <h2>What Is an Autoencoder?</h2>
+      <button class="bookmark-btn" data-id="s-29-3" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>An autoencoder learns a reconstruction function.</p>
+<p>The structure is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>input
+  ↓
+encoder
+  ↓
+latent representation
+  ↓
+decoder
+  ↓
+reconstruction</code></pre>
+</div></p>
+<p>Let:</p>
+<p>
+$$
+x
+$$
+</p>
+<p>be the input.</p>
+<p>The encoder is:</p>
+<p>
+$$
+z=f_{\theta}(x)
+$$
+</p>
+<p>and the decoder is:</p>
+<p>
+$$
+\hat{x}=g_{\phi}(z).
+$$
+</p>
+<p>Therefore:</p>
+<p>
+$$
+\boxed{
+\hat{x}=g_{\phi}(f_{\theta}(x))
+}
+$$
+</p>
+<p>The training objective is to make:</p>
+<p>
+$$
+\hat{x}\approx x.
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 29.4: Ordinary Autoencoder -->
+  <section id="s-29-4" class="section-block">
+    <div class="section-header">
+      <span class="section-num">29.4</span>
+      <h2>Ordinary Autoencoder</h2>
+      <button class="bookmark-btn" data-id="s-29-4" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For a conventional autoencoder:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>clean image
+→ encoder
+→ latent
+→ decoder
+→ clean reconstruction</code></pre>
+</div></p>
+<p>The target is usually the same image used as input.</p>
+<p>The model learns:</p>
+<p>
+$$
+x\rightarrow\hat{x}.
+$$
+</p>
+<p>The reconstruction loss measures how closely the output matches the input.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 29.5: Denoising Autoencoder -->
+  <section id="s-29-5" class="section-block">
+    <div class="section-header">
+      <span class="section-num">29.5</span>
+      <h2>Denoising Autoencoder</h2>
+      <button class="bookmark-btn" data-id="s-29-5" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A denoising autoencoder changes the learning task:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>clean image
+    │
+    ├────► add corruption/noise
+    │           │
+    │           ▼
+    │       noisy image
+    │           │
+    │           ▼
+    │        encoder
+    │           ↓
+    │         latent
+    │           ↓
+    │        decoder
+    │           ↓
+    │      reconstructed
+    │           │
+    └───────────┘
+       compare with
+       clean target</code></pre>
+</div></p>
+<p>Formally:</p>
+<p>
+$$
+x_{\text{clean}}
+\rightarrow
+\tilde{x}_{\text{noisy}}
+$$
+</p>
+<p>and the model learns:</p>
+<p>
+$$
+g_{\phi}(f_{\theta}(\tilde{x}))
+\approx
+x.
+$$
+</p>
+<p>The crucial distinction is:</p>
+<blockquote>
+<p><strong>The input is noisy; the target is clean.</strong></p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 29.6: Why This Works -->
+  <section id="s-29-6" class="section-block">
+    <div class="section-header">
+      <span class="section-num">29.6</span>
+      <h2>Why This Works</h2>
+      <button class="bookmark-btn" data-id="s-29-6" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose the network sees many examples of:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>clean image + noise</code></pre>
+</div></p>
+<p>with the corresponding clean target.</p>
+<p>It can learn statistical regularities such as:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>stable structure
+vs.
+random corruption</code></pre>
+</div></p>
+<p>The network does not simply “know what noise is.” It learns from the training distribution.</p>
+<p>Therefore the quality of denoising strongly depends on:</p>
+<ul>
+<li>noise model;</li>
+<li>training data;</li>
+<li>image domain;</li>
+<li>architecture;</li>
+<li>loss;</li>
+<li>optimization;</li>
+<li>deployment distribution.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 29.7: Denoising Pipeline -->
+  <section id="s-29-7" class="section-block">
+    <div class="section-header">
+      <span class="section-num">29.7</span>
+      <h2>Denoising Pipeline</h2>
+      <button class="bookmark-btn" data-id="s-29-7" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The complete training workflow is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>clean training images
+        ↓
+noise/corruption generation
+        ↓
+noisy training images
+        ↓
+encoder
+        ↓
+latent representation
+        ↓
+decoder
+        ↓
+reconstructed clean images
+        ↓
+loss against clean targets
+        ↓
+backpropagation
+        ↓
+parameter update</code></pre>
+</div></p>
+<p>At inference:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>new noisy image
+      ↓
+trained denoising autoencoder
+      ↓
+cleaner reconstruction</code></pre>
+</div></p>
+<p>No clean target is needed during inference.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 29.8: Encoder -->
+  <section id="s-29-8" class="section-block">
+    <div class="section-header">
+      <span class="section-num">29.8</span>
+      <h2>Encoder</h2>
+      <button class="bookmark-btn" data-id="s-29-8" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The encoder maps an image into a latent representation:</p>
+<p>
+$$
+z=f_{\theta}(x).
+$$
+</p>
+<p>It can use convolution, activation and downsampling operations:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image
+ ↓
+Conv
+ ↓
+ReLU
+ ↓
+Downsample
+ ↓
+Conv
+ ↓
+ReLU
+ ↓
+latent feature maps</code></pre>
+</div></p>
+<p>The representation generally has fewer spatial degrees of freedom than the original image.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 29.9: Decoder -->
+  <section id="s-29-9" class="section-block">
+    <div class="section-header">
+      <span class="section-num">29.9</span>
+      <h2>Decoder</h2>
+      <button class="bookmark-btn" data-id="s-29-9" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The decoder maps the latent representation back into image space:</p>
+<p>
+$$
+\hat{x}=g_{\phi}(z).
+$$
+</p>
+<p>A convolutional decoder can use:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>latent
+ ↓
+upsampling / transpose convolution
+ ↓
+activation
+ ↓
+upsampling
+ ↓
+reconstruction</code></pre>
+</div></p>
+<p>Its goal is to recreate the target image at the desired resolution.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 29.10: Latent Representation -->
+  <section id="s-29-10" class="section-block">
+    <div class="section-header">
+      <span class="section-num">29.10</span>
+      <h2>Latent Representation</h2>
+      <button class="bookmark-btn" data-id="s-29-10" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The latent variable:</p>
+<p>
+$$
+z
+$$
+</p>
+<p>is a learned intermediate representation.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>input image
+████████████████
+        ↓
+     encoder
+        ↓
+   compact features
+        ↓
+     decoder
+        ↓
+reconstructed image
+████████████████</code></pre>
+</div></p>
+<p>A bottleneck may force the network to retain information that is useful for reconstruction.</p>
+<p>However:</p>
+<blockquote>
+<p><strong>A small latent tensor does not automatically guarantee that it contains only “important” semantic information.</strong></p>
+</blockquote>
+<p>The learned representation depends on the objective and architecture.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 29.11: Reconstruction Loss -->
+  <section id="s-29-11" class="section-block">
+    <div class="section-header">
+      <span class="section-num">29.11</span>
+      <h2>Reconstruction Loss</h2>
+      <button class="bookmark-btn" data-id="s-29-11" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A common choice for image reconstruction is mean squared error:</p>
+<p>
+$$
+MSE=
+\frac{1}{N}
+\sum_{i=1}^{N}
+(x_i-\hat{x}_i)^2.
+$$
+</p>
+<p>For an image:</p>
+<p>
+$$
+L=
+\frac{1}{HWC}
+\sum_{h,w,c}
+(x_{h,w,c}-\hat{x}_{h,w,c})^2.
+$$
+</p>
+<p>This gives the network a quantitative target.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 29.12: Worked MSE Example -->
+  <section id="s-29-12" class="section-block">
+    <div class="section-header">
+      <span class="section-num">29.12</span>
+      <h2>Worked MSE Example</h2>
+      <button class="bookmark-btn" data-id="s-29-12" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose a four-pixel clean target is:</p>
+<p>
+$$
+x=
+[10,20,30,40]
+$$
+</p>
+<p>and reconstruction is:</p>
+<p>
+$$
+\hat{x}=
+[11,18,33,39].
+$$
+</p>
+<p>Errors:</p>
+<p>
+$$
+[-1,2,-3,1].
+$$
+</p>
+<p>Squared errors:</p>
+<p>
+$$
+[1,4,9,1].
+$$
+</p>
+<p>Therefore:</p>
+<p>
+$$
+MSE=
+\frac{1+4+9+1}{4}
+=
+\frac{15}{4}
+=
+\boxed{3.75}.
+$$
+</p>
+<p>Lower MSE means the reconstruction is numerically closer under this particular loss.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 29.13: Other Reconstruction Losses -->
+  <section id="s-29-13" class="section-block">
+    <div class="section-header">
+      <span class="section-num">29.13</span>
+      <h2>Other Reconstruction Losses</h2>
+      <button class="bookmark-btn" data-id="s-29-13" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>MSE is not the only possibility.</p>
+<p>A denoising system can use alternatives such as:</p>
+<ul>
+<li>mean absolute error;</li>
+<li>perceptual losses;</li>
+<li>task-specific losses;</li>
+<li>combinations of losses.</li>
+</ul>
+<p>For a university introduction, MSE is a useful starting point because it is easy to understand and calculate.</p>
+<p>Do not assume that lowest MSE always means best perceptual image quality.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 29.14: Convolutional Autoencoder -->
+  <section id="s-29-14" class="section-block">
+    <div class="section-header">
+      <span class="section-num">29.14</span>
+      <h2>Convolutional Autoencoder</h2>
+      <button class="bookmark-btn" data-id="s-29-14" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For images, fully connected autoencoders are often inefficient because they ignore spatial structure.</p>
+<p>A convolutional autoencoder preserves spatial organization:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Input image
+   ↓
+Conv + activation
+   ↓
+Downsampling
+   ↓
+Conv + activation
+   ↓
+Latent
+   ↓
+Upsampling / transpose convolution
+   ↓
+Conv + activation
+   ↓
+Output image</code></pre>
+</div></p>
+<p>This connects directly to C26.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 29.15: Tensor Shape Example -->
+  <section id="s-29-15" class="section-block">
+    <div class="section-header">
+      <span class="section-num">29.15</span>
+      <h2>Tensor Shape Example</h2>
+      <button class="bookmark-btn" data-id="s-29-15" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose the noisy input is:</p>
+<p>
+$$
+28\times28\times1.
+$$
+</p>
+<p>A simple encoder:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>28×28×1
+ ↓ Conv
+28×28×32
+ ↓ Pool
+14×14×32
+ ↓ Conv
+14×14×64
+ ↓ Pool
+7×7×64</code></pre>
+</div></p>
+<p>The latent representation has:</p>
+<p>
+$$
+7\times7\times64
+=
+3136
+$$
+</p>
+<p>values.</p>
+<p>The decoder reverses the spatial reduction:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>7×7×64
+ ↓ upsample
+14×14×64
+ ↓ conv
+14×14×32
+ ↓ upsample
+28×28×32
+ ↓ conv
+28×28×1</code></pre>
+</div></p>
+<p>Exact architecture choices are not fixed by the syllabus.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 29.16: Why the Encoder Compresses -->
+  <section id="s-29-16" class="section-block">
+    <div class="section-header">
+      <span class="section-num">29.16</span>
+      <h2>Why the Encoder Compresses</h2>
+      <button class="bookmark-btn" data-id="s-29-16" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Downsampling reduces spatial resolution.</p>
+<p>For example:</p>
+<p>
+$$
+28\times28
+\rightarrow
+14\times14
+\rightarrow
+7\times7.
+$$
+</p>
+<p>This encourages the representation to capture broader structures.</p>
+<p>But information can be lost through aggressive downsampling.</p>
+<p>The decoder therefore has to reconstruct fine detail from the latent representation.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 29.17: Denoising as a Learned Prior -->
+  <section id="s-29-17" class="section-block">
+    <div class="section-header">
+      <span class="section-num">29.17</span>
+      <h2>Denoising as a Learned Prior</h2>
+      <button class="bookmark-btn" data-id="s-29-17" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A useful engineering interpretation is:</p>
+<blockquote>
+<p>The trained network learns a statistical prior for what clean images from its training domain tend to look like.</p>
+</blockquote>
+<p>For example, if the network is trained on handwritten digits, it learns regularities of handwritten-digit images.</p>
+<p>That can allow it to reconstruct plausible clean structure from noisy observations.</p>
+<p>But the same network may perform poorly on a very different domain.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 29.18: Noise Model Matters -->
+  <section id="s-29-18" class="section-block">
+    <div class="section-header">
+      <span class="section-num">29.18</span>
+      <h2>Noise Model Matters</h2>
+      <button class="bookmark-btn" data-id="s-29-18" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Consider:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Gaussian noise
+salt-and-pepper noise
+speckle noise</code></pre>
+</div></p>
+<p>A model trained primarily on one corruption type may not generalize equally well to another.</p>
+<p>This is a key connection to C09.</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>C09
+noise models
++
+classical filtering
+
+C29
+learned denoising
++
+training distribution</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 29.19: Synthetic Noise for Training -->
+  <section id="s-29-19" class="section-block">
+    <div class="section-header">
+      <span class="section-num">29.19</span>
+      <h2>Synthetic Noise for Training</h2>
+      <button class="bookmark-btn" data-id="s-29-19" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A common educational workflow is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>clean image
+→ add known synthetic noise
+→ train on noisy/clean pair</code></pre>
+</div></p>
+<p>For Gaussian noise:</p>
+<p>
+$$
+\tilde{x}=x+n
+$$
+</p>
+<p>where:</p>
+<p>
+$$
+n\sim\mathcal{N}(0,\sigma^2)
+$$
+</p>
+<p>in a simplified additive model.</p>
+<p>The noise level $\sigma$ controls corruption strength.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 29.20: Worked Noise Example -->
+  <section id="s-29-20" class="section-block">
+    <div class="section-header">
+      <span class="section-num">29.20</span>
+      <h2>Worked Noise Example</h2>
+      <button class="bookmark-btn" data-id="s-29-20" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p>
+$$
+x=100
+$$
+</p>
+<p>and noise sample:</p>
+<p>
+$$
+n=8.
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+\tilde{x}=100+8=108.
+$$
+</p>
+<p>If a model receives:</p>
+<p>
+$$
+108
+$$
+</p>
+<p>but the target is:</p>
+<p>
+$$
+100,
+$$
+</p>
+<p>the learning process encourages the reconstruction toward the clean value.</p>
+<p>This simple scalar example illustrates the training idea.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 29.21: Why Over-Smoothing Can Occur -->
+  <section id="s-29-21" class="section-block">
+    <div class="section-header">
+      <span class="section-num">29.21</span>
+      <h2>Why Over-Smoothing Can Occur</h2>
+      <button class="bookmark-btn" data-id="s-29-21" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose a small texture has little statistical support in the training data.</p>
+<p>A denoising model may remove it along with noise.</p>
+<p>The result can become:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>noise ↓
+detail ↓</code></pre>
+</div></p>
+<p>Therefore:</p>
+<p>
+$$
+\boxed{
+\text{cleaner image} \not\Rightarrow \text{more faithful image}
+}
+$$
+</p>
+<p>Denoising always involves a trade-off between suppression of corruption and preservation of real detail.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 29.22: Autoencoder vs Classical Filter -->
+  <section id="s-29-22" class="section-block">
+    <div class="section-header">
+      <span class="section-num">29.22</span>
+      <h2>Autoencoder vs Classical Filter</h2>
+      <button class="bookmark-btn" data-id="s-29-22" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Property</th>
+<th>Classical filter</th>
+<th>Denoising autoencoder</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Main mechanism</td>
+<td>Designed mathematical operation</td>
+<td>Learned nonlinear mapping</td>
+</tr>
+<tr>
+<td>Training required</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Noise assumptions</td>
+<td>Often explicit/known</td>
+<td>Learned from training data</td>
+</tr>
+<tr>
+<td>Adaptation to domain</td>
+<td>Manual parameter/design choices</td>
+<td>Data-driven</td>
+</tr>
+<tr>
+<td>Computation</td>
+<td>Often lightweight</td>
+<td>Potentially substantial</td>
+</tr>
+<tr>
+<td>Generalization</td>
+<td>Rule-based</td>
+<td>Depends strongly on training distribution</td>
+</tr>
+<tr>
+<td>Interpretability</td>
+<td>Often easier</td>
+<td>More complex</td>
+</tr>
+<tr>
+<td>Can learn complex restoration</td>
+<td>Limited by chosen model</td>
+<td>Potentially strong</td>
+</tr>
+</tbody>
+</table></div>
+<p>Neither approach dominates every image-restoration problem.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 29.23: Autoencoder vs CNN Classifier -->
+  <section id="s-29-23" class="section-block">
+    <div class="section-header">
+      <span class="section-num">29.23</span>
+      <h2>Autoencoder vs CNN Classifier</h2>
+      <button class="bookmark-btn" data-id="s-29-23" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>C26:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image
+→ CNN
+→ class</code></pre>
+</div></p>
+<p>C29:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>noisy image
+→ encoder
+→ latent
+→ decoder
+→ image</code></pre>
+</div></p>
+<p>The output task is different.</p>
+<p>Classification outputs a label.</p>
+<p>Denoising outputs an image.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 29.24: Training Target Matters -->
+  <section id="s-29-24" class="section-block">
+    <div class="section-header">
+      <span class="section-num">29.24</span>
+      <h2>Training Target Matters</h2>
+      <button class="bookmark-btn" data-id="s-29-24" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>input = noisy image
+target = noisy image</code></pre>
+</div></p>
+<p>That is not the same denoising objective.</p>
+<p>For denoising:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>input  = noisy image
+target = clean image</code></pre>
+</div></p>
+<p>This must be explicit in both code and experiment documentation.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 29.25: Keras Denoising Autoencoder -->
+  <section id="s-29-25" class="section-block">
+    <div class="section-header">
+      <span class="section-num">29.25</span>
+      <h2>Keras Denoising Autoencoder</h2>
+      <button class="bookmark-btn" data-id="s-29-25" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A simple educational convolutional model:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>python</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>from __future__ import annotations
+
+import numpy as np
+from tensorflow import keras
+from tensorflow.keras import layers
+
+
+def build_denoising_autoencoder() -&gt; keras.Model:
+    inputs = keras.Input(shape=(28, 28, 1))
+
+    # Encoder
+    x = layers.Conv2D(32, 3, activation=&quot;relu&quot;, padding=&quot;same&quot;)(inputs)
+    x = layers.MaxPooling2D(2, padding=&quot;same&quot;)(x)
+
+    x = layers.Conv2D(64, 3, activation=&quot;relu&quot;, padding=&quot;same&quot;)(x)
+    latent = layers.MaxPooling2D(2, padding=&quot;same&quot;, name=&quot;latent&quot;)(x)
+
+    # Decoder
+    x = layers.Conv2D(64, 3, activation=&quot;relu&quot;, padding=&quot;same&quot;)(latent)
+    x = layers.UpSampling2D(2)(x)
+
+    x = layers.Conv2D(32, 3, activation=&quot;relu&quot;, padding=&quot;same&quot;)(x)
+    x = layers.UpSampling2D(2)(x)
+
+    outputs = layers.Conv2D(1, 3, activation=&quot;sigmoid&quot;, padding=&quot;same&quot;)(x)
+
+    return keras.Model(inputs, outputs)
+
+
+model = build_denoising_autoencoder()
+model.compile(
+    optimizer=&quot;adam&quot;,
+    loss=&quot;mse&quot;,
+)
+
+model.summary()</code></pre>
+</div></p>
+<p>This is a teaching architecture, not the only valid autoencoder design.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 29.26: Generating Noisy Training Data -->
+  <section id="s-29-26" class="section-block">
+    <div class="section-header">
+      <span class="section-num">29.26</span>
+      <h2>Generating Noisy Training Data</h2>
+      <button class="bookmark-btn" data-id="s-29-26" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For normalized images in $[0,1]$:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>python</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>rng = np.random.default_rng(42)
+
+noise_strength = 0.20
+noise = noise_strength * rng.normal(
+    size=x_train.shape
+).astype(&quot;float32&quot;)
+
+x_noisy = np.clip(
+    x_train + noise,
+    0.0,
+    1.0,
+)</code></pre>
+</div></p>
+<p>Then:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>python</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>model.fit(
+    x_noisy,
+    x_train,
+    epochs=10,
+    batch_size=128,
+    validation_split=0.1,
+)</code></pre>
+</div></p>
+<p>The key relationship is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>x_noisy → input
+x_train → clean target</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 29.27: Inference -->
+  <section id="s-29-27" class="section-block">
+    <div class="section-header">
+      <span class="section-num">29.27</span>
+      <h2>Inference</h2>
+      <button class="bookmark-btn" data-id="s-29-27" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>python</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>reconstructed = model.predict(
+    x_noisy[:10],
+    verbose=0,
+)</code></pre>
+</div></p>
+<p>The output should be compared against:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>clean target</code></pre>
+</div></p>
+<p>rather than simply against the noisy input.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 29.28: Practical Visualization -->
+  <section id="s-29-28" class="section-block">
+    <div class="section-header">
+      <span class="section-num">29.28</span>
+      <h2>Practical Visualization</h2>
+      <button class="bookmark-btn" data-id="s-29-28" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Display three images side by side conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>NOISY             RECONSTRUCTED          CLEAN
+
+████████          ████████               ████████
+██▒██▒██          ████████               ████████
+████▒███          ████████               ████████</code></pre>
+</div></p>
+<p>The three-way comparison is much more informative than showing only the output.</p>
+<p>Measure:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>noisy vs clean
+reconstructed vs clean</code></pre>
+</div></p>
+<p>to see whether denoising reduced error.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 29.29: Denoising Evaluation -->
+  <section id="s-29-29" class="section-block">
+    <div class="section-header">
+      <span class="section-num">29.29</span>
+      <h2>Denoising Evaluation</h2>
+      <button class="bookmark-btn" data-id="s-29-29" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Let:</p>
+<p>
+$$
+MSE_{\text{noisy}}
+$$
+</p>
+<p>be the MSE between noisy and clean images.</p>
+<p>Let:</p>
+<p>
+$$
+MSE_{\text{recon}}
+$$
+</p>
+<p>be the MSE between reconstructed and clean images.</p>
+<p>A useful result is:</p>
+<p>
+$$
+MSE_{\text{recon}}
+<
+MSE_{\text{noisy}}.
+$$
+</p>
+<p>That indicates numerical improvement under MSE.</p>
+<p>But also inspect:</p>
+<ul>
+<li>edges;</li>
+<li>texture;</li>
+<li>small structures;</li>
+<li>ringing;</li>
+<li>blur.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 29.30: PSNR Comparison -->
+  <section id="s-29-30" class="section-block">
+    <div class="section-header">
+      <span class="section-num">29.30</span>
+      <h2>PSNR Comparison</h2>
+      <button class="bookmark-btn" data-id="s-29-30" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For 8-bit images:</p>
+<p>
+$$
+PSNR=
+10\log_{10}
+\left(
+\frac{255^2}{MSE}
+\right).
+$$
+</p>
+<p>If MSE decreases, PSNR increases.</p>
+<p>But PSNR remains only one evaluation dimension.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 29.31: Failure Mode — Distribution Shift -->
+  <section id="s-29-31" class="section-block">
+    <div class="section-header">
+      <span class="section-num">29.31</span>
+      <h2>Failure Mode — Distribution Shift</h2>
+      <button class="bookmark-btn" data-id="s-29-31" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Training:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Gaussian noise
+σ = 0.1</code></pre>
+</div></p>
+<p>Deployment:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>strong salt-and-pepper noise</code></pre>
+</div></p>
+<p>The network may fail.</p>
+<p>This is not necessarily a coding error.</p>
+<p>It may be a mismatch between training and deployment distributions.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 29.32: Failure Mode — Hallucinated Detail -->
+  <section id="s-29-32" class="section-block">
+    <div class="section-header">
+      <span class="section-num">29.32</span>
+      <h2>Failure Mode — Hallucinated Detail</h2>
+      <button class="bookmark-btn" data-id="s-29-32" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A learned restoration model can produce visually plausible structure that was not actually present in the observation.</p>
+<p>For ordinary photographs this may be visually acceptable in some contexts.</p>
+<p>For scientific or medical workflows, it can be dangerous.</p>
+<p>Therefore:</p>
+<blockquote>
+<p><strong>Restoration quality must be judged according to the application's evidence requirements.</strong></p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 29.33: Failure Mode — Edge Loss -->
+  <section id="s-29-33" class="section-block">
+    <div class="section-header">
+      <span class="section-num">29.33</span>
+      <h2>Failure Mode — Edge Loss</h2>
+      <button class="bookmark-btn" data-id="s-29-33" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A model may suppress noise near edges but unintentionally blur the edge.</p>
+<p>Compare:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>ideal edge:
+████████
+
+over-smoothed:
+████▒▒▒▒</code></pre>
+</div></p>
+<p>Evaluation should therefore include local edge inspection.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 29.34: Engineering Comparison -->
+  <section id="s-29-34" class="section-block">
+    <div class="section-header">
+      <span class="section-num">29.34</span>
+      <h2>Engineering Comparison</h2>
+      <button class="bookmark-btn" data-id="s-29-34" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>input noise is well characterized
++
+very low latency required
++
+limited compute</code></pre>
+</div></p>
+<p>A classical filter may be attractive.</p>
+<p>Suppose:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>large representative training dataset
++
+complex noise patterns
++
+sufficient compute</code></pre>
+</div></p>
+<p>A learned denoiser may be attractive.</p>
+<p>The choice is driven by system requirements.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 29.35: Autoencoder Architecture Variants -->
+  <section id="s-29-35" class="section-block">
+    <div class="section-header">
+      <span class="section-num">29.35</span>
+      <h2>Autoencoder Architecture Variants</h2>
+      <button class="bookmark-btn" data-id="s-29-35" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Common conceptual variations include:</p>
+<h3>Undercomplete</h3>
+<p>Latent representation is smaller than the input.</p>
+<h3>Convolutional</h3>
+<p>Uses spatially structured feature extraction.</p>
+<h3>Denoising</h3>
+<p>Input is corrupted; target is clean.</p>
+<h3>Sparse / regularized</h3>
+<p>Adds constraints encouraging particular latent behaviour.</p>
+<p>The syllabus requires denoising with autoencoders; the other terms are supporting context.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 29.36: Why a Bottleneck Does Not Guarantee Perfect Compression -->
+  <section id="s-29-36" class="section-block">
+    <div class="section-header">
+      <span class="section-num">29.36</span>
+      <h2>Why a Bottleneck Does Not Guarantee Perfect Compression</h2>
+      <button class="bookmark-btn" data-id="s-29-36" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A model can still encode information through distributed features.</p>
+<p>Also, skip connections can bypass a bottleneck in some architectures.</p>
+<p>Therefore:</p>
+<blockquote>
+<p><strong>Architecture determines the information path; it does not guarantee one simple semantic meaning for the latent vector.</strong></p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 29.37: Exam Lens -->
+  <section id="s-29-37" class="section-block">
+    <div class="section-header">
+      <span class="section-num">29.37</span>
+      <h2>Exam Lens</h2>
+      <button class="bookmark-btn" data-id="s-29-37" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h2>2-mark questions</h2>
+<p><strong>What is an autoencoder?</strong><br />
+A neural network trained to reconstruct an input through an encoder, latent representation and decoder.</p>
+<p><strong>What is a denoising autoencoder?</strong><br />
+An autoencoder trained using a corrupted input and a clean target.</p>
+<p><strong>What is the main loss in a basic image reconstruction example?</strong></p>
+<p>
+$$
+MSE.
+$$
+</p>
+<hr />
+<h1>38. 5-Mark Question</h1>
+<h3>Explain denoising using an autoencoder.</h3>
+<p>Use:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>clean image
+→ add noise
+→ noisy image
+→ encoder
+→ latent representation
+→ decoder
+→ reconstructed image
+→ compare with clean target
+→ update weights</code></pre>
+</div></p>
+<p>Then explain why the model can learn noise-resistant representations.</p>
+<hr />
+<h1>39. 10-Mark Question</h1>
+<h3>Explain a convolutional denoising autoencoder.</h3>
+<p>Include:</p>
+<ol>
+<li>motivation;</li>
+<li>noisy/clean pair;</li>
+<li>encoder;</li>
+<li>latent representation;</li>
+<li>decoder;</li>
+<li>reconstruction loss;</li>
+<li>training loop;</li>
+<li>inference;</li>
+<li>evaluation;</li>
+<li>advantages;</li>
+<li>limitations;</li>
+<li>domain-shift concerns.</li>
+</ol>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 29.38: Numerical Practice -->
+  <section id="s-29-38" class="section-block">
+    <div class="section-header">
+      <span class="section-num">29.38</span>
+      <h2>Numerical Practice</h2>
+      <button class="bookmark-btn" data-id="s-29-38" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Given:</p>
+<p>
+$$
+x=[50,100,150]
+$$
+</p>
+<p>and:</p>
+<p>
+$$
+\hat{x}=[55,98,147].
+$$
+</p>
+<p>Calculate:</p>
+<p>
+$$
+MSE.
+$$
+</p>
+<p>Errors:</p>
+<p>
+$$
+[-5,2,3].
+$$
+</p>
+<p>Squared:</p>
+<p>
+$$
+[25,4,9].
+$$
+</p>
+<p>Thus:</p>
+<p>
+$$
+MSE=
+\frac{25+4+9}{3}
+=
+\boxed{\frac{38}{3}\approx12.67}.
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 29.39: Chapter Checkpoint -->
+  <section id="s-29-39" class="section-block">
+    <div class="section-header">
+      <span class="section-num">29.39</span>
+      <h2>Chapter Checkpoint</h2>
+      <button class="bookmark-btn" data-id="s-29-39" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Q1</h3>
+<p>What is the difference between an ordinary autoencoder and a denoising autoencoder?</p>
+<h3>Q2</h3>
+<p>Why must the noisy image be the input and the clean image be the target?</p>
+<h3>Q3</h3>
+<p>Why can a denoiser remove useful detail?</p>
+<h3>Q4</h3>
+<p>Why can a model trained on Gaussian noise perform poorly on another noise type?</p>
+<h3>Q5</h3>
+<p>Why is a lower MSE not sufficient to prove that an image looks better?</p>
+<h3>Q6</h3>
+<p>What happens during inference that differs from training?</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 29.40: One-Page Recall Sheet -->
+  <section id="s-29-40" class="section-block">
+    <div class="section-header">
+      <span class="section-num">29.40</span>
+      <h2>One-Page Recall Sheet</h2>
+      <button class="bookmark-btn" data-id="s-29-40" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>DENOISING AUTOENCODER
+│
+├── Clean image
+│      ↓ add noise
+│   Noisy image
+│      ↓
+├── Encoder
+│      ↓
+├── Latent representation
+│      ↓
+├── Decoder
+│      ↓
+├── Reconstructed image
+│      ↓
+└── Compare with clean target
+
+Training:
+noisy → network → clean target → loss → backprop
+
+Inference:
+new noisy image → trained network → reconstruction</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 29.41: Cross-Book Links -->
+  <section id="s-29-41" class="section-block">
+    <div class="section-header">
+      <span class="section-num">29.41</span>
+      <h2>Cross-Book Links</h2>
+      <button class="bookmark-btn" data-id="s-29-41" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Layer</th>
+<th>Connection</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MAIN</td>
+<td>C29 explains learned image denoising</td>
+</tr>
+<tr>
+<td>MATH</td>
+<td>MSE, noise model, tensor dimensions</td>
+</tr>
+<tr>
+<td>LAB</td>
+<td>Practical 4 noise removal + advanced denoising extension</td>
+</tr>
+<tr>
+<td>CODE</td>
+<td>TensorFlow/Keras convolutional autoencoder</td>
+</tr>
+<tr>
+<td>EXAM</td>
+<td>Autoencoder architecture and denoising pipeline</td>
+</tr>
+<tr>
+<td>PRACTICE</td>
+<td>Loss calculations, architecture reasoning, failure diagnosis</td>
+</tr>
+<tr>
+<td>RESOURCE</td>
+<td>Course deep-learning/computer-vision references</td>
+</tr>
+<tr>
+<td>ASSETS</td>
+<td>Encoder-decoder pipeline, noisy/clean/reconstructed triptych</td>
+</tr>
+<tr>
+<td>MASTER</td>
+<td>Links classical restoration to learned restoration</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 29.42: Final Chapter Summary -->
+  <section id="s-29-42" class="section-block">
+    <div class="section-header">
+      <span class="section-num">29.42</span>
+      <h2>Final Chapter Summary</h2>
+      <button class="bookmark-btn" data-id="s-29-42" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The essential architecture is:</p>
+<p>
+$$
+\boxed{
+\text{noisy image}
+\rightarrow
+\text{encoder}
+\rightarrow
+\text{latent representation}
+\rightarrow
+\text{decoder}
+\rightarrow
+\text{cleaner reconstruction}
+}
+$$
+</p>
+<p>Training uses:</p>
+<p>
+$$
+\boxed{
+\text{noisy input}
+\rightarrow
+\text{clean target}
+}
+$$
+</p>
+<p>The central engineering limitation is:</p>
+<p>
+$$
+\boxed{
+\text{learned denoising depends on its training distribution}
+}
+$$
+</p>
+<p>C29 therefore extends the classical denoising/restoration concepts from C09 and C14 into the deep-learning part of the course.</p>
+<p>The next chapter changes the input structure from one image to a sequence:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>C29
+one noisy image → restored image
+
+C30
+frame t + frame t+1 → motion information</code></pre>
+</div></p>
+<hr />
+<p><strong>Next chapter:</strong> C30 — Video Processing and Motion Analysis</p>
+    </div>
+  </section>
+
+  <!-- SECTION 29.43: Worked Example — 10-Mark University Model Answer: Convolutional Autoencoder Denoising &amp; Loss Formulations -->
+  <section id="s-29-43" class="section-block">
+    <div class="section-header">
+      <span class="section-num">29.43</span>
+      <h2>Worked Example — 10-Mark University Model Answer: Convolutional Autoencoder Denoising &amp; Loss Formulations</h2>
+      <button class="bookmark-btn" data-id="s-29-43" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Problem Statement</h3>
+<p>A medical radiography department implements an unsupervised deep learning pipeline for denoising low-dose CT and X-ray images. A Convolutional Autoencoder (CAE) takes a noise-corrupted image $\tilde{x} = x + n$ and reconstructs pristine estimate $\hat{x} = g_\theta(f_\phi(\tilde{x}))$.
+1. Diagram and explain the structural roles of the <strong>Encoder</strong>, the <strong>Latent Bottleneck ($z$)</strong>, and the <strong>Decoder</strong>.
+2. Explain why a bottleneck constraint ($\dim(z) \ll \dim(x)$) is mathematically essential to prevent trivial identity mapping.
+3. Formulate the Mean Squared Error (MSE) reconstruction loss function for a training batch of $N$ images of size $W \times H$.
+4. Contrast the denoising mechanism of an Autoencoder with classical spatial filters (Bilateral Filter and Wiener Filter).
+5. Suppose an input image $x$ has pixel variance $\sigma_x^2 = 0.08$ and additive Gaussian noise has variance $\sigma_n^2 = 0.02$. The pristine pixel at coordinate $(10, 10)$ is $x(10,10) = 0.70$ and corrupted pixel is $\tilde{x}(10,10) = 0.88$. If the trained autoencoder outputs $\hat{x}(10,10) = 0.72$, compute the individual squared error before and after denoising.</p>
+<h3>Step-by-Step Mathematical Solution</h3>
+<div class="worked-example">
+  <div class="worked-example-header">
+    <span class="worked-example-title">Numerical Examination Trace</span>
+    <span class="tag-badge tag-exam">10-MARK UNIVERSITY MODEL ANSWER</span>
+  </div>
+  <p><strong>1. Architectural Components of a Denoising Autoencoder:</strong><br>
+  - <strong>Encoder ($z = f_\phi(\tilde{x})$):</strong> Successive convolutional and downsampling pooling layers that compress the high-dimensional noisy input $\tilde{x} \in \mathbb{R}^{H \times W \times C}$ into a compact, low-dimensional latent feature vector $z \in \mathbb{R}^d$.<br>
+  - <strong>Latent Bottleneck ($z$):</strong> A low-dimensional manifold representation. Because $d \ll H \cdot W \cdot C$, high-frequency uncorrelated noise cannot fit through the information bottleneck.<br>
+  - <strong>Decoder ($\hat{x} = g_\theta(z)$):</strong> Successive transposed convolutional (deconvolution) or bilinear upsampling layers that reconstruct the clean image $\hat{x} \in \mathbb{R}^{H \times W \times C}$ from the latent code $z$.</p>
+
+  <p><strong>2. Mathematical Necessity of the Bottleneck:</strong><br>
+  If an autoencoder had unconstrained capacity ($\dim(z) \ge \dim(x)$), the network could easily learn the trivial identity function $f(x) = x$ by simply copying corrupted input pixels directly to the output. By enforcing an <strong>information bottleneck</strong>, the network is forced to learn the true underlying data manifold—retaining salient visual structures (edges, textures, anatomical shapes) while filtering out uncorrelated stochastic noise perturbations.</p>
+
+  <p><strong>3. Reconstruction Loss Function Formulation:</strong><br>
+  For a batch of $N$ images, each of spatial dimensions $H \times W$ with $C$ channels:
+  
+$$\mathcal{L}_{MSE}(\theta, \phi) = \frac{1}{N \cdot H \cdot W \cdot C} \sum_{i=1}^N \sum_{h=1}^H \sum_{w=1}^W \sum_{c=1}^C \left( x_{i,h,w,c} - \hat{x}_{i,h,w,c} \right)^2$$
+
+  <strong>Critical Training Detail:</strong> The loss is computed between the network's reconstruction $\hat{x} = g_\theta(f_\phi(\tilde{x}))$ and the <strong>original pristine image $x$</strong> (NOT the noisy input $\tilde{x}$). This forces the gradient descent optimization to penalize the residual noise.</p>
+
+  <p><strong>4. Autoencoders vs Classical Spatial Filters:</strong></p>
+  <div class="table-wrap">
+    <table class="comparison-table">
+      <thead>
+        <tr><th>Dimension</th><th>Bilateral Filter</th><th>Wiener Filter</th><th>Denoising Autoencoder (CAE)</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Mathematical Principle</strong></td><td>Non-linear range and spatial Gaussian weighting</td><td>Minimum Mean Square Error (MMSE) in frequency domain</td><td>Deep non-linear manifold projection via neural optimization</td></tr>
+        <tr><td><strong>Noise Prior</strong></td><td>Assumes local photometric smoothness</td><td>Requires known noise power spectral density $S_\eta(u,v)$</td><td>Learns arbitrary noise distributions from training data</td></tr>
+        <tr><td><strong>Edge Preservation</strong></td><td>Preserves sharp step edges; blurs textures</td><td>Blurs edges due to linear low-pass nature</td><td>Learns semantic edges and high-frequency textures simultaneously</td></tr>
+        <tr><td><strong>Adaptability</strong></td><td>Static hand-crafted parameters ($\sigma_s, \sigma_r$)</td><td>Linear stationary assumption</td><td>Adapts dynamically to complex semantic scene priors</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p><strong>5. Numerical Error Reduction Trace:</strong><br>
+  - Pristine ground truth: $x = 0.70$.<br>
+  - Corrupted input: $\tilde{x} = 0.88 \implies \text{Initial Squared Error } e_{\text{noisy}}^2 = (0.88 - 0.70)^2 = (0.18)^2 = \mathbf{0.0324}$.<br>
+  - Autoencoder output: $\hat{x} = 0.72 \implies \text{Denoised Squared Error } e_{\text{denoised}}^2 = (0.72 - 0.70)^2 = (0.02)^2 = \mathbf{0.0004}$.<br>
+  
+$$\text{Error Reduction} = \frac{0.0324 - 0.0004}{0.0324} = \frac{0.0320}{0.0324} \approx \mathbf{98.77\% \text{ noise variance removed!}}$$
+</p>
+</div>
+    </div>
+  </section>
+
+  <!-- SECTION 29.44: Denoising Autoencoder Information Flow -->
+  <section id="s-29-44" class="section-block">
+    <div class="section-header">
+      <span class="section-num">29.44</span>
+      <h2>Denoising Autoencoder Information Flow</h2>
+      <button class="bookmark-btn" data-id="s-29-44" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="diagram-box"><div class="mermaid">
+graph LR
+    Clean["Clean Image x"] -.-> Noise["Additive Noise +n"]
+    Noise --> Corrupt["Noisy Image x̃"]
+    Corrupt --> Enc["Encoder Network<br>Conv + Downsampling"]
+    Enc --> Latent["Latent Bottleneck z<br>Compressed Representation"]
+    Latent --> Dec["Decoder Network<br>Transposed Conv + Upsampling"]
+    Dec --> Reconstruct["Clean Reconstruction x̂"]
+    Clean --> Loss["MSE Loss: ||x - x̂||²"]
+    Reconstruct --> Loss
+</div></div></p>
+    </div>
+  </section>
+
+      <!-- Chapter End Package -->
+      <section class="chapter-end-package">
+        <div class="chapter-nav-grid">
+          <a href="ch28-object-detection-yolo.html" class="chapter-nav-card">
+            <div class="chapter-nav-dir">← Previous</div>
+            <div class="chapter-nav-title">← Ch 28 — Object Detection & YOLO</div>
+          </a>
+          <a href="ch30-video-motion-analysis.html" class="chapter-nav-card next">
+            <div class="chapter-nav-dir">Next →</div>
+            <div class="chapter-nav-title">Next: Ch 30 — Video Processing & Motion Analysis →</div>
+          </a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- FLOATING TTS PANEL (SAFE MANUAL MODE ONLY) -->
+  <div id="tts-panel" style="position:fixed; bottom:20px; right:20px; background:var(--em-surface-1); border:1px solid var(--em-border); border-radius:var(--em-radius-md); padding:12px 16px; box-shadow:var(--sh-lg); z-index:var(--z-float); display:none; gap:10px; align-items:center;">
+    <button class="icon-btn" id="tts-play" title="Play / Pause" style="background:var(--em-accent); color:#fff; border-radius:50%; width:36px; height:36px;">▶</button>
+    <button class="icon-btn" id="tts-stop" title="Stop">⏹</button>
+    <div style="font-size:0.75rem; color:var(--em-text-muted);">
+      <span id="tts-status">Ready</span> · <span id="tts-rate-label">1.0x</span>
+    </div>
+  </div>
+
+  <script src="../assets/js/state.js"></script>
+  <script src="../assets/js/core.js"></script>
+  <script src="../assets/js/tts.js"></script>
+  <script src="../assets/js/glossary.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: document.documentElement.getAttribute('data-theme') === 'light' ? 'default' : 'dark'
+      });
+    });
+  </script>
+</body>
+</html>

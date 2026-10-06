@@ -1,0 +1,2566 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Arpit">
+  <meta name="description" content="Chapter 31: DIP Applications, Engineering Context &amp; Responsible Use — Digital Image Processing MiniBook. Medical Imaging (CT Hounsfield Units, MRI, X-ray), Satellite Remote Sensing (NDVI), Industrial Visual Inspection, Biometric Verification, Ethical &amp; Responsible AI, and Master Curriculum Synthesis">
+  <title>C31: DIP Applications, Engineering Context &amp; Responsible Use | DIP MiniBook 📷 Arpit</title>
+
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <link rel="stylesheet" href="../assets/css/chapters.css">
+  <link rel="stylesheet" href="../assets/css/animations.css">
+  <link rel="stylesheet" href="../assets/css/timer.css">
+
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body data-chapter-id="ch31-dip-applications-engineering">
+  <div id="progress-bar"></div>
+
+  <!-- Header -->
+  <header id="main-header">
+    <div class="header-left">
+      <button id="sidebar-toggle" class="icon-btn" aria-label="Toggle navigation drawer" title="Toggle Sidebar (S)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <a href="../index.html" class="brand-logo">
+        <div class="brand-icon">DIP</div>
+        <div class="brand-text">
+          <span class="main">Digital Image Processing</span>
+          <span class="sub">DU DSE-3 Engineering MiniBook</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="header-chapter-title">C31: DIP Applications, Engineering Context &amp; Responsible Use</div>
+
+    <div class="header-right">
+      <button id="reading-mode-btn" class="icon-btn" aria-label="Toggle reading focus mode" title="Focus Mode (F)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+          <line x1="8" y1="21" x2="16" y2="21"></line>
+          <line x1="12" y1="17" x2="12" y2="21"></line>
+        </svg>
+      </button>
+      <button id="tts-toggle" class="icon-btn" aria-label="Audio Reader" title="Audio Reader">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+        </svg>
+      </button>
+      <button id="theme-toggle" class="icon-btn" aria-label="Cycle theme" title="Theme (T)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="12" cy="12" r="4.5"></circle>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Sidebar Overlay -->
+  <div id="sidebar-overlay"></div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" aria-expanded="true">
+    <div class="sidebar-nav">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">General</div>
+        <a href="../index.html" class="sidebar-link">
+          <span class="link-icon">🏛️</span>
+          <span>Subject Portal</span>
+        </a>
+        <a href="../progress.html" class="sidebar-link">
+          <span class="link-icon">📊</span>
+          <span>Study Dashboard</span>
+        </a>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Current Chapter Sections</div>
+        <a href="#s-31-1" class="sidebar-link"><span class="link-icon">📌</span><span>31.1 Why This Chapter Exists</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-31-2" class="sidebar-link"><span class="link-icon">📌</span><span>31.2 Learning Contract</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-31-3" class="sidebar-link"><span class="link-icon">📌</span><span>31.3 From Algorithm to System</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-31-4" class="sidebar-link"><span class="link-icon">📌</span><span>31.4 The Application Taxonomy</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-31-5" class="sidebar-link"><span class="link-icon">📌</span><span>31.5 Application Design Starts with the Requirement</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-31-6" class="sidebar-link"><span class="link-icon">📌</span><span>31.6 Requirement → Pipeline Mapping</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-31-7" class="sidebar-link"><span class="link-icon">📌</span><span>31.7 Enhancement vs Restoration in Applications</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-31-8" class="sidebar-link"><span class="link-icon">📌</span><span>31.8 Healthcare Imaging</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-31-9" class="sidebar-link"><span class="link-icon">📌</span><span>31.9 Why Preprocessing Matters in Healthcare</span> </a>
+      <a href="#s-31-10" class="sidebar-link"><span class="link-icon">📌</span><span>31.10 Medical Image Segmentation Example</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-31-11" class="sidebar-link"><span class="link-icon">📌</span><span>31.11 Measurement vs Visualization</span> </a>
+      <a href="#s-31-12" class="sidebar-link"><span class="link-icon">📌</span><span>31.12 Classification in Healthcare</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-31-13" class="sidebar-link"><span class="link-icon">📌</span><span>31.13 Detection in Healthcare</span> </a>
+      <a href="#s-31-14" class="sidebar-link"><span class="link-icon">📌</span><span>31.14 Healthcare Validation</span> </a>
+      <a href="#s-31-15" class="sidebar-link"><span class="link-icon">📌</span><span>31.15 Surveillance</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-31-16" class="sidebar-link"><span class="link-icon">📌</span><span>31.16 Surveillance False Alarms</span> </a>
+      <a href="#s-31-17" class="sidebar-link"><span class="link-icon">📌</span><span>31.17 Camera Motion in Surveillance</span> </a>
+      <a href="#s-31-18" class="sidebar-link"><span class="link-icon">📌</span><span>31.18 Privacy as a System Requirement</span> </a>
+      <a href="#s-31-19" class="sidebar-link"><span class="link-icon">📌</span><span>31.19 Security of Image Pipelines</span> </a>
+      <a href="#s-31-20" class="sidebar-link"><span class="link-icon">📌</span><span>31.20 Adversarial or Deceptive Inputs</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-31-21" class="sidebar-link"><span class="link-icon">📌</span><span>31.21 Industrial Inspection</span> </a>
+      <a href="#s-31-22" class="sidebar-link"><span class="link-icon">📌</span><span>31.22 Lighting in Industrial Vision</span> </a>
+      <a href="#s-31-23" class="sidebar-link"><span class="link-icon">📌</span><span>31.23 Document Processing</span> </a>
+      <a href="#s-31-24" class="sidebar-link"><span class="link-icon">📌</span><span>31.24 Remote Sensing</span> </a>
+      <a href="#s-31-25" class="sidebar-link"><span class="link-icon">📌</span><span>31.25 Entertainment and Media</span> </a>
+      <a href="#s-31-26" class="sidebar-link"><span class="link-icon">📌</span><span>31.26 Mobile and Edge Vision</span> </a>
+      <a href="#s-31-27" class="sidebar-link"><span class="link-icon">📌</span><span>31.27 Cloud vs Edge</span> </a>
+      <a href="#s-31-28" class="sidebar-link"><span class="link-icon">📌</span><span>31.28 End-to-End Engineering Stack</span> </a>
+      <a href="#s-31-29" class="sidebar-link"><span class="link-icon">📌</span><span>31.29 Data Quality Pipeline</span> </a>
+      <a href="#s-31-30" class="sidebar-link"><span class="link-icon">📌</span><span>31.30 Algorithm Failure vs System Failure</span> </a>
+      <a href="#s-31-31" class="sidebar-link"><span class="link-icon">📌</span><span>31.31 Evaluation Must Match the Task</span> </a>
+      <a href="#s-31-32" class="sidebar-link"><span class="link-icon">📌</span><span>31.32 Benchmark vs Deployment</span> </a>
+      <a href="#s-31-33" class="sidebar-link"><span class="link-icon">📌</span><span>31.33 Reproducibility</span> </a>
+      <a href="#s-31-34" class="sidebar-link"><span class="link-icon">📌</span><span>31.34 Human-in-the-Loop Systems</span> </a>
+      <a href="#s-31-35" class="sidebar-link"><span class="link-icon">📌</span><span>31.35 Confidence Is Not Certainty</span> </a>
+      <a href="#s-31-36" class="sidebar-link"><span class="link-icon">📌</span><span>31.36 Bias and Dataset Dependence</span> </a>
+      <a href="#s-31-37" class="sidebar-link"><span class="link-icon">📌</span><span>31.37 Responsible Use in Surveillance</span> </a>
+      <a href="#s-31-38" class="sidebar-link"><span class="link-icon">📌</span><span>31.38 Responsible Use in Healthcare</span> </a>
+      <a href="#s-31-39" class="sidebar-link"><span class="link-icon">📌</span><span>31.39 A General Engineering Decision Framework</span> </a>
+      <a href="#s-31-40" class="sidebar-link"><span class="link-icon">📌</span><span>31.40 Baseline First</span> </a>
+      <a href="#s-31-41" class="sidebar-link"><span class="link-icon">📌</span><span>31.41 Application Design Example — Smart Traffic Camera</span> </a>
+      <a href="#s-31-42" class="sidebar-link"><span class="link-icon">📌</span><span>31.42 Application Design Example — Document Scanner</span> </a>
+      <a href="#s-31-43" class="sidebar-link"><span class="link-icon">📌</span><span>31.43 Application Design Example — Industrial Defect Detection</span> </a>
+      <a href="#s-31-44" class="sidebar-link"><span class="link-icon">📌</span><span>31.44 Application Design Example — Video Security</span> </a>
+      <a href="#s-31-45" class="sidebar-link"><span class="link-icon">📌</span><span>31.45 Responsible System Checklist</span> </a>
+      <a href="#s-31-46" class="sidebar-link"><span class="link-icon">📌</span><span>31.46 A DIP System Can Be Visualized as a Graph</span> </a>
+      <a href="#s-31-47" class="sidebar-link"><span class="link-icon">📌</span><span>31.47 Course-Wide Synthesis</span> </a>
+      <a href="#s-31-48" class="sidebar-link"><span class="link-icon">📌</span><span>31.48 What “Engineering Understanding” Looks Like</span> </a>
+      <a href="#s-31-49" class="sidebar-link"><span class="link-icon">📌</span><span>31.49 Exam Lens</span> </a>
+      <a href="#s-31-50" class="sidebar-link"><span class="link-icon">📌</span><span>31.50 Chapter Checkpoint</span> </a>
+      <a href="#s-31-51" class="sidebar-link"><span class="link-icon">📌</span><span>31.51 One-Page Recall Sheet</span> </a>
+      <a href="#s-31-52" class="sidebar-link"><span class="link-icon">📌</span><span>31.52 Cross-Book Links</span> </a>
+      <a href="#s-31-53" class="sidebar-link"><span class="link-icon">📌</span><span>31.53 Final Chapter Summary</span> </a>
+      <a href="#s-31-54" class="sidebar-link"><span class="link-icon">📌</span><span>31.54 Main Book Completion</span> </a>
+      <a href="#s-31-55" class="sidebar-link"><span class="link-icon">📌</span><span>31.55 Worked Example — 10-Mark University Model Answer: Medical &amp; Remote Sensing Imaging Pipeline Design</span> </a>
+      <a href="#s-31-56" class="sidebar-link"><span class="link-icon">📌</span><span>31.56 The Complete 31-Chapter Digital Image Processing Grand Architecture</span> </a>
+      </div>
+
+      
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-i">Part I — The Image</div>
+      <a href="ch01-big-picture.html" class="sidebar-link"><span class="link-icon">01</span><span>The Big Picture</span></a>
+      <a href="ch02-image-formation.html" class="sidebar-link"><span class="link-icon">02</span><span>Formation & Acquisition</span></a>
+      <a href="ch03-sampling-quantization.html" class="sidebar-link"><span class="link-icon">03</span><span>Sampling & Quantization</span></a>
+      <a href="ch04-image-representation.html" class="sidebar-link"><span class="link-icon">04</span><span>Pixels, Matrices & Resolution</span></a>
+      <a href="ch05-colour-models-file-formats.html" class="sidebar-link"><span class="link-icon">05</span><span>Colour Models & Formats</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-ii">Part II — Improving the Image</div>
+      <a href="ch06-point-processing.html" class="sidebar-link"><span class="link-icon">06</span><span>Point Processing & Intensity</span></a>
+      <a href="ch07-histograms-equalization.html" class="sidebar-link"><span class="link-icon">07</span><span>Histograms & Equalization</span></a>
+      <a href="ch08-spatial-filtering.html" class="sidebar-link"><span class="link-icon">08</span><span>Spatial Filtering & Convolution</span></a>
+      <a href="ch09-smoothing-noise-reduction.html" class="sidebar-link"><span class="link-icon">09</span><span>Smoothing & Noise Reduction</span></a>
+      <a href="ch10-sharpening-edge-detection.html" class="sidebar-link"><span class="link-icon">10</span><span>Sharpening & Edge Detection</span></a>
+      <a href="ch11-geometric-transforms.html" class="sidebar-link"><span class="link-icon">11</span><span>Geometric Transforms</span></a>
+      <a href="ch12-fourier-transform.html" class="sidebar-link"><span class="link-icon">12</span><span>Fourier Transform & Frequency</span></a>
+      <a href="ch13-frequency-filtering.html" class="sidebar-link"><span class="link-icon">13</span><span>Frequency-Domain Filtering</span></a>
+      <a href="ch14-image-restoration.html" class="sidebar-link"><span class="link-icon">14</span><span>Restoration & Deblurring</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-iii">Part III — Understanding Content</div>
+      <a href="ch15-segmentation-fundamentals.html" class="sidebar-link"><span class="link-icon">15</span><span>Segmentation Fundamentals</span></a>
+      <a href="ch16-thresholding-otsu.html" class="sidebar-link"><span class="link-icon">16</span><span>Thresholding & Otsu Method</span></a>
+      <a href="ch17-region-segmentation.html" class="sidebar-link"><span class="link-icon">17</span><span>Region-Based Segmentation</span></a>
+      <a href="ch18-mathematical-morphology.html" class="sidebar-link"><span class="link-icon">18</span><span>Mathematical Morphology</span></a>
+      <a href="ch19-features-descriptors.html" class="sidebar-link"><span class="link-icon">19</span><span>Image Features & Descriptors</span></a>
+      <a href="ch20-sift-surf-orb-hog.html" class="sidebar-link"><span class="link-icon">20</span><span>SIFT, SURF, ORB & HOG</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-iv">Part IV — Compressing Images</div>
+      <a href="ch21-compression-entropy.html" class="sidebar-link"><span class="link-icon">21</span><span>Compression & Entropy</span></a>
+      <a href="ch22-lossless-coding.html" class="sidebar-link"><span class="link-icon">22</span><span>Lossless: RLE & Huffman</span></a>
+      <a href="ch23-lossy-dct-jpeg.html" class="sidebar-link"><span class="link-icon">23</span><span>Lossy: DCT & JPEG</span></a>
+      <a href="ch24-wavelets-jpeg2000.html" class="sidebar-link"><span class="link-icon">24</span><span>Wavelets & JPEG 2000</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-v">Part V — Intelligent Vision</div>
+      <a href="ch25-image-classification.html" class="sidebar-link"><span class="link-icon">25</span><span>Image Classification</span></a>
+      <a href="ch26-cnns-image-processing.html" class="sidebar-link"><span class="link-icon">26</span><span>CNNs for Image Processing</span></a>
+      <a href="ch27-modern-vision-architectures.html" class="sidebar-link"><span class="link-icon">27</span><span>Modern Vision Architectures</span></a>
+      <a href="ch28-object-detection-yolo.html" class="sidebar-link"><span class="link-icon">28</span><span>Object Detection: YOLO</span></a>
+      <a href="ch29-image-denoising-autoencoders.html" class="sidebar-link"><span class="link-icon">29</span><span>Image Denoising Autoencoders</span></a>
+      <a href="ch30-video-motion-analysis.html" class="sidebar-link"><span class="link-icon">30</span><span>Video & Motion Analysis</span></a>
+      <a href="ch31-dip-applications-engineering.html" class="sidebar-link active"><span class="link-icon">31</span><span>DIP Applications & Ethics</span></a>
+    </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-brand-mark">
+        <div class="mark">DU</div>
+        <div>
+          <strong>DSE-3 MiniBook</strong>
+          <div>University of Delhi</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mandatory Shell Wrapper -->
+  <div id="main-content">
+    <main class="chapter-content">
+      <!-- Chapter Hero -->
+      <div class="chapter-hero">
+        <div class="hero-meta">
+          <span class="part-badge part-v">Intelligent Vision</span>
+          <span class="chapter-number">CHAPTER 31</span>
+          <span class="reading-time">⏱️ ~55 min read</span>
+          <span class="tag-badge tag-core">Highest Yield (10-mark guarantee)</span>
+        </div>
+        <h1 class="chapter-title">DIP Applications, Engineering Context &amp; Responsible Use</h1>
+        <p class="chapter-subtitle">
+          Medical Imaging (CT Hounsfield Units, MRI, X-ray), Satellite Remote Sensing (NDVI), Industrial Visual Inspection, Biometric Verification, Ethical &amp; Responsible AI, and Master Curriculum Synthesis
+        </p>
+
+        <div class="syllabus-anchor">
+          <span class="syllabus-anchor-label">DU Syllabus</span>
+          <span><strong>Applications & Engineering Context:</strong> Applications in healthcare (computed tomography, MRI artifact removal, automated tumor segmentation), satellite imaging and remote sensing (multispectral processing, NDVI calculation), industrial automated visual inspection, biometric security, ethics and responsible vision AI (bias, deepfakes, privacy), and complete course synthesis.</span>
+        </div>
+      </div>
+
+      <!-- In-Page TOC -->
+      <div class="chapter-checklist-card" style="margin-bottom:var(--em-space-8);">
+        <div class="checklist-title">
+          <span>Table of Contents &amp; Visual Section Map</span>
+          <span class="tag-badge tag-math">56 Deep Sections</span>
+        </div>
+        <ul class="part-chapters-list">
+          <li class="part-chapter-item"><a href="#s-31-1"><strong>31.1</strong> Why This Chapter Exists</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-31-2"><strong>31.2</strong> Learning Contract</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-31-3"><strong>31.3</strong> From Algorithm to System</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-31-4"><strong>31.4</strong> The Application Taxonomy</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-31-5"><strong>31.5</strong> Application Design Starts with the Requirement</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-31-6"><strong>31.6</strong> Requirement → Pipeline Mapping</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-31-7"><strong>31.7</strong> Enhancement vs Restoration in Applications</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-31-8"><strong>31.8</strong> Healthcare Imaging</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-31-9"><strong>31.9</strong> Why Preprocessing Matters in Healthcare</a> </li>
+      <li class="part-chapter-item"><a href="#s-31-10"><strong>31.10</strong> Medical Image Segmentation Example</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-31-11"><strong>31.11</strong> Measurement vs Visualization</a> </li>
+      <li class="part-chapter-item"><a href="#s-31-12"><strong>31.12</strong> Classification in Healthcare</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-31-13"><strong>31.13</strong> Detection in Healthcare</a> </li>
+      <li class="part-chapter-item"><a href="#s-31-14"><strong>31.14</strong> Healthcare Validation</a> </li>
+      <li class="part-chapter-item"><a href="#s-31-15"><strong>31.15</strong> Surveillance</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-31-16"><strong>31.16</strong> Surveillance False Alarms</a> </li>
+      <li class="part-chapter-item"><a href="#s-31-17"><strong>31.17</strong> Camera Motion in Surveillance</a> </li>
+      <li class="part-chapter-item"><a href="#s-31-18"><strong>31.18</strong> Privacy as a System Requirement</a> </li>
+      <li class="part-chapter-item"><a href="#s-31-19"><strong>31.19</strong> Security of Image Pipelines</a> </li>
+      <li class="part-chapter-item"><a href="#s-31-20"><strong>31.20</strong> Adversarial or Deceptive Inputs</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-31-21"><strong>31.21</strong> Industrial Inspection</a> </li>
+      <li class="part-chapter-item"><a href="#s-31-22"><strong>31.22</strong> Lighting in Industrial Vision</a> </li>
+      <li class="part-chapter-item"><a href="#s-31-23"><strong>31.23</strong> Document Processing</a> </li>
+      <li class="part-chapter-item"><a href="#s-31-24"><strong>31.24</strong> Remote Sensing</a> </li>
+      <li class="part-chapter-item"><a href="#s-31-25"><strong>31.25</strong> Entertainment and Media</a> </li>
+      <li class="part-chapter-item"><a href="#s-31-26"><strong>31.26</strong> Mobile and Edge Vision</a> </li>
+      <li class="part-chapter-item"><a href="#s-31-27"><strong>31.27</strong> Cloud vs Edge</a> </li>
+      <li class="part-chapter-item"><a href="#s-31-28"><strong>31.28</strong> End-to-End Engineering Stack</a> </li>
+      <li class="part-chapter-item"><a href="#s-31-29"><strong>31.29</strong> Data Quality Pipeline</a> </li>
+      <li class="part-chapter-item"><a href="#s-31-30"><strong>31.30</strong> Algorithm Failure vs System Failure</a> </li>
+      <li class="part-chapter-item"><a href="#s-31-31"><strong>31.31</strong> Evaluation Must Match the Task</a> </li>
+      <li class="part-chapter-item"><a href="#s-31-32"><strong>31.32</strong> Benchmark vs Deployment</a> </li>
+      <li class="part-chapter-item"><a href="#s-31-33"><strong>31.33</strong> Reproducibility</a> </li>
+      <li class="part-chapter-item"><a href="#s-31-34"><strong>31.34</strong> Human-in-the-Loop Systems</a> </li>
+      <li class="part-chapter-item"><a href="#s-31-35"><strong>31.35</strong> Confidence Is Not Certainty</a> </li>
+      <li class="part-chapter-item"><a href="#s-31-36"><strong>31.36</strong> Bias and Dataset Dependence</a> </li>
+      <li class="part-chapter-item"><a href="#s-31-37"><strong>31.37</strong> Responsible Use in Surveillance</a> </li>
+      <li class="part-chapter-item"><a href="#s-31-38"><strong>31.38</strong> Responsible Use in Healthcare</a> </li>
+      <li class="part-chapter-item"><a href="#s-31-39"><strong>31.39</strong> A General Engineering Decision Framework</a> </li>
+      <li class="part-chapter-item"><a href="#s-31-40"><strong>31.40</strong> Baseline First</a> </li>
+      <li class="part-chapter-item"><a href="#s-31-41"><strong>31.41</strong> Application Design Example — Smart Traffic Camera</a> </li>
+      <li class="part-chapter-item"><a href="#s-31-42"><strong>31.42</strong> Application Design Example — Document Scanner</a> </li>
+      <li class="part-chapter-item"><a href="#s-31-43"><strong>31.43</strong> Application Design Example — Industrial Defect Detection</a> </li>
+      <li class="part-chapter-item"><a href="#s-31-44"><strong>31.44</strong> Application Design Example — Video Security</a> </li>
+      <li class="part-chapter-item"><a href="#s-31-45"><strong>31.45</strong> Responsible System Checklist</a> </li>
+      <li class="part-chapter-item"><a href="#s-31-46"><strong>31.46</strong> A DIP System Can Be Visualized as a Graph</a> </li>
+      <li class="part-chapter-item"><a href="#s-31-47"><strong>31.47</strong> Course-Wide Synthesis</a> </li>
+      <li class="part-chapter-item"><a href="#s-31-48"><strong>31.48</strong> What “Engineering Understanding” Looks Like</a> </li>
+      <li class="part-chapter-item"><a href="#s-31-49"><strong>31.49</strong> Exam Lens</a> </li>
+      <li class="part-chapter-item"><a href="#s-31-50"><strong>31.50</strong> Chapter Checkpoint</a> </li>
+      <li class="part-chapter-item"><a href="#s-31-51"><strong>31.51</strong> One-Page Recall Sheet</a> </li>
+      <li class="part-chapter-item"><a href="#s-31-52"><strong>31.52</strong> Cross-Book Links</a> </li>
+      <li class="part-chapter-item"><a href="#s-31-53"><strong>31.53</strong> Final Chapter Summary</a> </li>
+      <li class="part-chapter-item"><a href="#s-31-54"><strong>31.54</strong> Main Book Completion</a> </li>
+      <li class="part-chapter-item"><a href="#s-31-55"><strong>31.55</strong> Worked Example — 10-Mark University Model Answer: Medical &amp; Remote Sensing Imaging Pipeline Design</a> </li>
+      <li class="part-chapter-item"><a href="#s-31-56"><strong>31.56</strong> The Complete 31-Chapter Digital Image Processing Grand Architecture</a> </li>
+        </ul>
+      </div>
+
+      <div class="concept-hook" style="margin-bottom:var(--em-space-8);"><h1>C31 — DIP Applications, Engineering Context and Responsible Use</h1>
+<blockquote>
+<p><strong>Chapter thesis:</strong> Digital image processing becomes an engineering system when image formation, enhancement, restoration, segmentation, features, compression, learning, detection, and temporal analysis are connected to a real task with measurable requirements, failure modes, and human consequences.</p>
+</blockquote>
+<hr /></div>
+
+      <!-- All Numbered Sections -->
+      
+  <!-- SECTION 31.1: Why This Chapter Exists -->
+  <section id="s-31-1" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.1</span>
+      <h2>Why This Chapter Exists</h2>
+      <button class="bookmark-btn" data-id="s-31-1" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A digital-image-processing course should not end at:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>apply algorithm
+→ obtain image
+→ done</code></pre>
+</div></p>
+<p>Real systems need a larger chain:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>real-world problem
+      ↓
+image/video acquisition
+      ↓
+data quality
+      ↓
+preprocessing
+      ↓
+DIP / vision algorithm
+      ↓
+result
+      ↓
+interpretation
+      ↓
+decision
+      ↓
+action</code></pre>
+</div></p>
+<p>The university syllabus specifically identifies applications such as:</p>
+<ul>
+<li>healthcare;</li>
+<li>surveillance;</li>
+</ul>
+<p>and the course outcomes expect students to analyze and interpret image data across domains such as healthcare, surveillance and entertainment. fileciteturn4file0L22-L31 fileciteturn4file0L48-L52</p>
+<p>This chapter therefore acts as the system-level conclusion of the Main Book.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 31.2: Learning Contract -->
+  <section id="s-31-2" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.2</span>
+      <h2>Learning Contract</h2>
+      <button class="bookmark-btn" data-id="s-31-2" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>After this chapter, you should be able to:</p>
+<ul>
+<li>map DIP techniques to real engineering applications;</li>
+<li>explain an end-to-end image-processing system;</li>
+<li>identify how acquisition quality affects downstream results;</li>
+<li>choose appropriate DIP operations for a stated application;</li>
+<li>distinguish enhancement, restoration, segmentation, classification, detection and tracking in system design;</li>
+<li>explain application-specific trade-offs;</li>
+<li>discuss healthcare and surveillance use cases at an engineering level;</li>
+<li>identify common sources of error;</li>
+<li>distinguish algorithm failure from data or deployment failure;</li>
+<li>explain why validation must match the intended application;</li>
+<li>reason about privacy, bias, security and human oversight;</li>
+<li>design a basic DIP pipeline from requirements to evaluation;</li>
+<li>communicate limitations and uncertainty honestly.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 31.3: From Algorithm to System -->
+  <section id="s-31-3" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.3</span>
+      <h2>From Algorithm to System</h2>
+      <button class="bookmark-btn" data-id="s-31-3" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A laboratory exercise can be:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image
+→ filter
+→ display</code></pre>
+</div></p>
+<p>An engineering system might be:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>camera
+→ sensor
+→ acquisition
+→ quality checks
+→ preprocessing
+→ enhancement
+→ segmentation
+→ feature extraction
+→ classifier/detector
+→ temporal tracking
+→ decision
+→ user interface / alert / record</code></pre>
+</div></p>
+<p>The second is not simply “more algorithms.”</p>
+<p>It introduces:</p>
+<ul>
+<li>interfaces;</li>
+<li>failure handling;</li>
+<li>timing;</li>
+<li>storage;</li>
+<li>security;</li>
+<li>validation;</li>
+<li>human interaction.</li>
+</ul>
+<p>This is the difference between learning an algorithm and engineering a system.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 31.4: The Application Taxonomy -->
+  <section id="s-31-4" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.4</span>
+      <h2>The Application Taxonomy</h2>
+      <button class="bookmark-btn" data-id="s-31-4" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A useful way to organize DIP applications is by the question being asked.</p>
+<div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Goal</th>
+<th>Typical DIP / vision task</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Make an image easier to inspect</td>
+<td>Enhancement</td>
+</tr>
+<tr>
+<td>Recover information from degradation</td>
+<td>Restoration</td>
+</tr>
+<tr>
+<td>Isolate an object/region</td>
+<td>Segmentation</td>
+</tr>
+<tr>
+<td>Describe visual structure</td>
+<td>Features/descriptors</td>
+</tr>
+<tr>
+<td>Store/transmit efficiently</td>
+<td>Compression</td>
+</tr>
+<tr>
+<td>Decide what a whole image contains</td>
+<td>Classification</td>
+</tr>
+<tr>
+<td>Find and localize objects</td>
+<td>Detection</td>
+</tr>
+<tr>
+<td>Follow change over time</td>
+<td>Motion analysis/tracking</td>
+</tr>
+<tr>
+<td>Reconstruct a cleaner image from corruption</td>
+<td>Learned denoising</td>
+</tr>
+</tbody>
+</table></div>
+<p>This taxonomy ties the entire Main Book together.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 31.5: Application Design Starts with the Requirement -->
+  <section id="s-31-5" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.5</span>
+      <h2>Application Design Starts with the Requirement</h2>
+      <button class="bookmark-btn" data-id="s-31-5" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Do not begin with:</p>
+<blockquote>
+<p>“Which algorithm should I use?”</p>
+</blockquote>
+<p>Start with:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>What is the task?
+What is the input?
+What is the output?
+What errors are unacceptable?
+What latency is acceptable?
+What data is available?
+What hardware is available?
+What level of human review exists?</code></pre>
+</div></p>
+<p>Only then choose an algorithm.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 31.6: Requirement → Pipeline Mapping -->
+  <section id="s-31-6" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.6</span>
+      <h2>Requirement → Pipeline Mapping</h2>
+      <button class="bookmark-btn" data-id="s-31-6" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose the requirement is:</p>
+<blockquote>
+<p>Detect vehicles in a road camera stream.</p>
+</blockquote>
+<p>A reasonable conceptual mapping is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>video
+ ↓
+frame capture
+ ↓
+optional preprocessing
+ ↓
+object detection
+ ↓
+vehicle filtering
+ ↓
+tracking
+ ↓
+count / trajectory / event</code></pre>
+</div></p>
+<p>This uses:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>C28 → detection
+C30 → tracking/motion</code></pre>
+</div></p>
+<p>The application requirement determines why these chapters are connected.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 31.7: Enhancement vs Restoration in Applications -->
+  <section id="s-31-7" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.7</span>
+      <h2>Enhancement vs Restoration in Applications</h2>
+      <button class="bookmark-btn" data-id="s-31-7" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>These terms should not be casually exchanged.</p>
+<h3>Enhancement</h3>
+<p>Goal:</p>
+<blockquote>
+<p>Make an image more useful or visually suitable for a task.</p>
+</blockquote>
+<p>Examples:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>contrast enhancement
+sharpening
+illumination correction</code></pre>
+</div></p>
+<h3>Restoration</h3>
+<p>Goal:</p>
+<blockquote>
+<p>Estimate an image from a known or modeled degradation process.</p>
+</blockquote>
+<p>Examples:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>deblurring
+noise restoration
+inverse filtering</code></pre>
+</div></p>
+<p>The difference is especially important in scientific and engineering applications.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 31.8: Healthcare Imaging -->
+  <section id="s-31-8" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.8</span>
+      <h2>Healthcare Imaging</h2>
+      <button class="bookmark-btn" data-id="s-31-8" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Healthcare is one of the major application domains identified in the syllabus. fileciteturn4file0L22-L31 fileciteturn4file0L48-L52</p>
+<p>A conceptual medical-imaging pipeline may be:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>medical image
+      ↓
+quality check
+      ↓
+preprocessing
+      ↓
+enhancement / restoration
+      ↓
+segmentation
+      ↓
+feature extraction or learned representation
+      ↓
+classification / detection
+      ↓
+measurement / decision support
+      ↓
+clinician review</code></pre>
+</div></p>
+<p>The exact pipeline differs by modality and clinical task.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 31.9: Why Preprocessing Matters in Healthcare -->
+  <section id="s-31-9" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.9</span>
+      <h2>Why Preprocessing Matters in Healthcare</h2>
+      <button class="bookmark-btn" data-id="s-31-9" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose a segmentation model receives images with highly variable contrast.</p>
+<p>An enhancement or normalization stage may improve consistency.</p>
+<p>But aggressive preprocessing can also:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>remove clinically relevant detail</code></pre>
+</div></p>
+<p>Therefore the rule is:</p>
+<blockquote>
+<p><strong>Preprocessing should be validated as part of the clinical workflow, not treated as automatically harmless.</strong></p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 31.10: Medical Image Segmentation Example -->
+  <section id="s-31-10" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.10</span>
+      <h2>Medical Image Segmentation Example</h2>
+      <button class="bookmark-btn" data-id="s-31-10" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose the task is to estimate the region of an anatomical structure.</p>
+<p>Possible pipeline:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image
+ ↓
+denoise
+ ↓
+contrast adjustment
+ ↓
+segmentation
+ ↓
+morphological cleanup
+ ↓
+region measurement</code></pre>
+</div></p>
+<p>The output may not be a class label.</p>
+<p>It may be a binary or multiclass mask:</p>
+<p>
+$$
+M(x,y)\in\{0,1,\ldots,K\}.
+$$
+</p>
+<p>This connects:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>C09
+C15–C18</code></pre>
+</div></p>
+<p>to application-level measurement.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 31.11: Measurement vs Visualization -->
+  <section id="s-31-11" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.11</span>
+      <h2>Measurement vs Visualization</h2>
+      <button class="bookmark-btn" data-id="s-31-11" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A particularly important engineering distinction:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image enhancement for visual inspection</code></pre>
+</div></p>
+<p>is not equivalent to:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image processing for quantitative measurement</code></pre>
+</div></p>
+<p>A sharpening method that makes edges look clearer may alter intensities.</p>
+<p>If the next stage measures intensity quantitatively, that change must be understood and validated.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 31.12: Classification in Healthcare -->
+  <section id="s-31-12" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.12</span>
+      <h2>Classification in Healthcare</h2>
+      <button class="bookmark-btn" data-id="s-31-12" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A classifier might produce:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image → class A / B / C</code></pre>
+</div></p>
+<p>But an engineering deployment should also consider:</p>
+<ul>
+<li>class imbalance;</li>
+<li>sensitivity/recall;</li>
+<li>false-negative cost;</li>
+<li>data distribution;</li>
+<li>subgroup performance;</li>
+<li>calibration;</li>
+<li>human review.</li>
+</ul>
+<p>A high overall accuracy can still hide clinically important failures.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 31.13: Detection in Healthcare -->
+  <section id="s-31-13" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.13</span>
+      <h2>Detection in Healthcare</h2>
+      <button class="bookmark-btn" data-id="s-31-13" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Object detection can be used conceptually to localize findings:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>medical image
+→ detector
+→ bounding regions
+→ label + confidence</code></pre>
+</div></p>
+<p>But bounding boxes may not be sufficient for every medical task.</p>
+<p>Some tasks require:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>pixel-level segmentation</code></pre>
+</div></p>
+<p>or more specialized outputs.</p>
+<p>Thus the application determines the appropriate representation.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 31.14: Healthcare Validation -->
+  <section id="s-31-14" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.14</span>
+      <h2>Healthcare Validation</h2>
+      <button class="bookmark-btn" data-id="s-31-14" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A model should not be treated as clinically reliable merely because:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>test accuracy = high</code></pre>
+</div></p>
+<p>Validation should consider:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>dataset
++
+acquisition conditions
++
+patient/population variation
++
+clinical task
++
+error cost
++
+workflow integration</code></pre>
+</div></p>
+<p>This is engineering reasoning rather than a specific medical claim.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 31.15: Surveillance -->
+  <section id="s-31-15" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.15</span>
+      <h2>Surveillance</h2>
+      <button class="bookmark-btn" data-id="s-31-15" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Surveillance provides a natural integration of:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>camera
+→ video
+→ detection
+→ tracking
+→ event analysis</code></pre>
+</div></p>
+<p>A conceptual pipeline is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>camera
+ ↓
+video stream
+ ↓
+motion / scene analysis
+ ↓
+YOLO-style detection
+ ↓
+object association
+ ↓
+tracking
+ ↓
+event rules
+ ↓
+alert / record</code></pre>
+</div></p>
+<p>This directly connects C28 and C30.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 31.16: Surveillance False Alarms -->
+  <section id="s-31-16" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.16</span>
+      <h2>Surveillance False Alarms</h2>
+      <button class="bookmark-btn" data-id="s-31-16" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose the system raises:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>alert
+alert
+alert
+alert</code></pre>
+</div></p>
+<p>but most alerts are harmless.</p>
+<p>A technically accurate detector can still be operationally poor.</p>
+<p>Therefore system evaluation must ask:</p>
+<blockquote>
+<p>How many alerts are meaningful, and how much human effort does the system create?</p>
+</blockquote>
+<p>This connects precision to real operational cost.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 31.17: Camera Motion in Surveillance -->
+  <section id="s-31-17" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.17</span>
+      <h2>Camera Motion in Surveillance</h2>
+      <button class="bookmark-btn" data-id="s-31-17" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A simple background-subtraction system assumes a relatively stable camera.</p>
+<p>If the camera itself moves:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>camera motion
+→ background changes
+→ false foreground</code></pre>
+</div></p>
+<p>A robust system may require:</p>
+<ul>
+<li>camera stabilization;</li>
+<li>global-motion estimation;</li>
+<li>feature matching;</li>
+<li>stronger detection models.</li>
+</ul>
+<p>Thus a failure in deployment may not mean the original algorithm was incorrectly implemented.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 31.18: Privacy as a System Requirement -->
+  <section id="s-31-18" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.18</span>
+      <h2>Privacy as a System Requirement</h2>
+      <button class="bookmark-btn" data-id="s-31-18" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Image/video systems can capture information about people.</p>
+<p>A production design may need:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>data minimization
+access control
+retention policy
+secure storage
+audit logging</code></pre>
+</div></p>
+<p>The appropriate requirements depend on the application and jurisdiction.</p>
+<p>The engineering point is:</p>
+<blockquote>
+<p><strong>Privacy should be designed into the system, not added after deployment.</strong></p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 31.19: Security of Image Pipelines -->
+  <section id="s-31-19" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.19</span>
+      <h2>Security of Image Pipelines</h2>
+      <button class="bookmark-btn" data-id="s-31-19" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>An image-processing system is also a software system.</p>
+<p>Possible engineering concerns include:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>malicious input files
+model tampering
+unauthorized data access
+unsafe metadata
+untrusted camera streams
+dependency vulnerabilities</code></pre>
+</div></p>
+<p>The image itself is data entering a computing pipeline.</p>
+<p>Therefore standard software-security practices remain relevant.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 31.20: Adversarial or Deceptive Inputs -->
+  <section id="s-31-20" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.20</span>
+      <h2>Adversarial or Deceptive Inputs</h2>
+      <button class="bookmark-btn" data-id="s-31-20" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Learning systems can behave unexpectedly on inputs that differ from normal training examples.</p>
+<p>For example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>clean input
+→ expected prediction
+
+unusual input
+→ unreliable prediction</code></pre>
+</div></p>
+<p>The correct response is not to assume:</p>
+<blockquote>
+<p>“The model must be correct.”</p>
+</blockquote>
+<p>System designers should define:</p>
+<ul>
+<li>confidence thresholds;</li>
+<li>rejection/abstention policies;</li>
+<li>human review;</li>
+<li>input validation.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 31.21: Industrial Inspection -->
+  <section id="s-31-21" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.21</span>
+      <h2>Industrial Inspection</h2>
+      <button class="bookmark-btn" data-id="s-31-21" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A manufacturing example might be:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>camera
+ ↓
+image acquisition
+ ↓
+lighting normalization
+ ↓
+segmentation
+ ↓
+feature extraction / detection
+ ↓
+defect classification
+ ↓
+pass / inspect / reject</code></pre>
+</div></p>
+<p>DIP is used not just for visual appearance but for automated measurement and quality control.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 31.22: Lighting in Industrial Vision -->
+  <section id="s-31-22" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.22</span>
+      <h2>Lighting in Industrial Vision</h2>
+      <button class="bookmark-btn" data-id="s-31-22" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A camera system can fail because of uncontrolled illumination.</p>
+<p>Consider:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>same object
++ bright lighting
+→ one image
+
+same object
++ dark lighting
+→ another image</code></pre>
+</div></p>
+<p>A robust system may require controlled:</p>
+<ul>
+<li>lighting;</li>
+<li>camera exposure;</li>
+<li>background;</li>
+<li>viewpoint.</li>
+</ul>
+<p>This illustrates a general principle:</p>
+<blockquote>
+<p><strong>Better data acquisition can sometimes produce a larger improvement than a more sophisticated algorithm.</strong></p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 31.23: Document Processing -->
+  <section id="s-31-23" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.23</span>
+      <h2>Document Processing</h2>
+      <button class="bookmark-btn" data-id="s-31-23" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A document-processing pipeline may be:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>scan/photo
+ ↓
+grayscale
+ ↓
+denoise
+ ↓
+threshold
+ ↓
+morphology
+ ↓
+layout/region segmentation
+ ↓
+feature extraction
+ ↓
+OCR/classification</code></pre>
+</div></p>
+<p>This brings together several course concepts:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>C05
+C09
+C16
+C18
+C19
+C25</code></pre>
+</div></p>
+<p>The application pipeline therefore reinforces the chapter dependencies.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 31.24: Remote Sensing -->
+  <section id="s-31-24" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.24</span>
+      <h2>Remote Sensing</h2>
+      <button class="bookmark-btn" data-id="s-31-24" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Remote-sensing imagery can contain:</p>
+<ul>
+<li>multiple spectral bands;</li>
+<li>large spatial dimensions;</li>
+<li>different resolutions;</li>
+<li>atmospheric effects.</li>
+</ul>
+<p>The course's Unit I explicitly introduces multispectral images. fileciteturn4file0L32-L35</p>
+<p>A conceptual remote-sensing system can be:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>multispectral acquisition
+→ preprocessing
+→ enhancement/calibration
+→ segmentation/features
+→ classification
+→ mapping / analysis</code></pre>
+</div></p>
+<p>This demonstrates why image representation matters before algorithms are selected.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 31.25: Entertainment and Media -->
+  <section id="s-31-25" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.25</span>
+      <h2>Entertainment and Media</h2>
+      <button class="bookmark-btn" data-id="s-31-25" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Applications may include:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image enhancement
+compression
+restoration
+video effects
+motion estimation
+object detection</code></pre>
+</div></p>
+<p>Compression is especially important when storing/transmitting large quantities of photographic and video data.</p>
+<p>This connects Part IV to practical multimedia systems.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 31.26: Mobile and Edge Vision -->
+  <section id="s-31-26" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.26</span>
+      <h2>Mobile and Edge Vision</h2>
+      <button class="bookmark-btn" data-id="s-31-26" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A mobile or edge device introduces constraints:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>limited compute
+limited memory
+battery
+latency
+network availability</code></pre>
+</div></p>
+<p>The design objective becomes:</p>
+<p>
+$$
+\text{accuracy}
++
+\text{latency}
++
+\text{memory}
++
+\text{energy}
+$$
+</p>
+<p>rather than accuracy alone.</p>
+<p>A smaller model may be more appropriate even if a larger model scores slightly better on a benchmark.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 31.27: Cloud vs Edge -->
+  <section id="s-31-27" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.27</span>
+      <h2>Cloud vs Edge</h2>
+      <button class="bookmark-btn" data-id="s-31-27" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Edge</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>camera
+→ local processing
+→ immediate result</code></pre>
+</div></p>
+<p>Advantages can include:</p>
+<ul>
+<li>low latency;</li>
+<li>reduced data transmission;</li>
+<li>local operation.</li>
+</ul>
+<h3>Cloud</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>camera
+→ network
+→ remote compute
+→ result</code></pre>
+</div></p>
+<p>Advantages can include:</p>
+<ul>
+<li>more compute;</li>
+<li>centralized management;</li>
+<li>easier large-scale storage/analysis.</li>
+</ul>
+<p>Trade-offs include:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>latency
+privacy
+bandwidth
+cost
+availability</code></pre>
+</div></p>
+<p>The correct architecture depends on the application.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 31.28: End-to-End Engineering Stack -->
+  <section id="s-31-28" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.28</span>
+      <h2>End-to-End Engineering Stack</h2>
+      <button class="bookmark-btn" data-id="s-31-28" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A modern image system can be viewed in layers:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>L1 — Scene
+L2 — Optics / sensor
+L3 — Acquisition
+L4 — Representation
+L5 — DIP processing
+L6 — Features / learned representation
+L7 — Decision / detection
+L8 — Temporal reasoning
+L9 — Application logic
+L10 — Human / system action</code></pre>
+</div></p>
+<p>This expands the simple DIP pipeline from C01 into an engineering architecture.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 31.29: Data Quality Pipeline -->
+  <section id="s-31-29" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.29</span>
+      <h2>Data Quality Pipeline</h2>
+      <button class="bookmark-btn" data-id="s-31-29" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Before the algorithm:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>capture
+ ↓
+validate
+ ↓
+check dimensions
+ ↓
+check channel order
+ ↓
+check range / dtype
+ ↓
+check corruption
+ ↓
+process</code></pre>
+</div></p>
+<p>Many “algorithm failures” actually originate in:</p>
+<ul>
+<li>wrong image format;</li>
+<li>unexpected channel order;</li>
+<li>incorrect normalization;</li>
+<li>corrupted frames;</li>
+<li>resolution mismatch.</li>
+</ul>
+<p>This is why the Code layer should contain debugging guidance.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 31.30: Algorithm Failure vs System Failure -->
+  <section id="s-31-30" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.30</span>
+      <h2>Algorithm Failure vs System Failure</h2>
+      <button class="bookmark-btn" data-id="s-31-30" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Algorithm failure</h3>
+<p>The method behaves poorly even with valid, representative inputs.</p>
+<h3>Data failure</h3>
+<p>Inputs differ from assumptions.</p>
+<h3>Integration failure</h3>
+<p>The output is correct, but the downstream component interprets it incorrectly.</p>
+<h3>Operational failure</h3>
+<p>The system is too slow, expensive, fragile or difficult to use.</p>
+<h3>Governance failure</h3>
+<p>The system produces technically valid outputs but is deployed without suitable controls.</p>
+<p>This classification makes debugging much more systematic.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 31.31: Evaluation Must Match the Task -->
+  <section id="s-31-31" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.31</span>
+      <h2>Evaluation Must Match the Task</h2>
+      <button class="bookmark-btn" data-id="s-31-31" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Different tasks require different metrics.</p>
+<div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Task</th>
+<th>Example evaluation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Enhancement</td>
+<td>visual quality / downstream task performance</td>
+</tr>
+<tr>
+<td>Restoration</td>
+<td>MSE, PSNR, perceptual/task-specific measures</td>
+</tr>
+<tr>
+<td>Segmentation</td>
+<td>overlap / region metrics</td>
+</tr>
+<tr>
+<td>Classification</td>
+<td>accuracy, precision, recall, F1, confusion matrix</td>
+</tr>
+<tr>
+<td>Detection</td>
+<td>IoU, precision/recall, AP/mAP</td>
+</tr>
+<tr>
+<td>Tracking</td>
+<td>identity/trajectory consistency and task-specific metrics</td>
+</tr>
+<tr>
+<td>Compression</td>
+<td>bitrate/file size + distortion/quality</td>
+</tr>
+</tbody>
+</table></div>
+<p>There is no single “DIP accuracy” number.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 31.32: Benchmark vs Deployment -->
+  <section id="s-31-32" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.32</span>
+      <h2>Benchmark vs Deployment</h2>
+      <button class="bookmark-btn" data-id="s-31-32" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A benchmark answer might be:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Model A &gt; Model B</code></pre>
+</div></p>
+<p>on a dataset.</p>
+<p>Deployment asks:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Does Model A work in our camera?
+our lighting?
+our hardware?
+our population?
+our latency budget?
+our failure tolerance?</code></pre>
+</div></p>
+<p>A benchmark result is evidence, not a complete deployment guarantee.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 31.33: Reproducibility -->
+  <section id="s-31-33" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.33</span>
+      <h2>Reproducibility</h2>
+      <button class="bookmark-btn" data-id="s-31-33" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>An engineering experiment should record:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>dataset
+image dimensions
+preprocessing
+model
+weights
+parameters
+random seed where relevant
+software version
+hardware
+evaluation metric
+thresholds</code></pre>
+</div></p>
+<p>Otherwise reproducing the result becomes difficult.</p>
+<p>This is particularly important for the YOLO, CNN and denoising practicals.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 31.34: Human-in-the-Loop Systems -->
+  <section id="s-31-34" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.34</span>
+      <h2>Human-in-the-Loop Systems</h2>
+      <button class="bookmark-btn" data-id="s-31-34" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For high-consequence applications, a useful system may be:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>algorithm
+ ↓
+result + confidence
+ ↓
+human review
+ ↓
+final decision</code></pre>
+</div></p>
+<p>This is different from:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>algorithm
+ ↓
+automatic irreversible decision</code></pre>
+</div></p>
+<p>The appropriate level of human involvement depends on the application.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 31.35: Confidence Is Not Certainty -->
+  <section id="s-31-35" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.35</span>
+      <h2>Confidence Is Not Certainty</h2>
+      <button class="bookmark-btn" data-id="s-31-35" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A score such as:</p>
+<p>
+$$
+0.97
+$$
+</p>
+<p>can indicate a strong model output.</p>
+<p>It does not prove:</p>
+<p>
+$$
+97\%\text{ probability of truth}
+$$
+</p>
+<p>unless the system is appropriately calibrated and the interpretation is justified.</p>
+<p>For engineering communication:</p>
+<blockquote>
+<p><strong>Report scores with their definition and evaluation context.</strong></p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 31.36: Bias and Dataset Dependence -->
+  <section id="s-31-36" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.36</span>
+      <h2>Bias and Dataset Dependence</h2>
+      <button class="bookmark-btn" data-id="s-31-36" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose the training data overrepresents one environment.</p>
+<p>Then deployment in another environment can produce:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>performance degradation</code></pre>
+</div></p>
+<p>Possible sources include:</p>
+<ul>
+<li>lighting;</li>
+<li>camera models;</li>
+<li>geography;</li>
+<li>image quality;</li>
+<li>object appearance;</li>
+<li>class distribution.</li>
+</ul>
+<p>Therefore a model's performance is tied to its data and task definition.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 31.37: Responsible Use in Surveillance -->
+  <section id="s-31-37" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.37</span>
+      <h2>Responsible Use in Surveillance</h2>
+      <button class="bookmark-btn" data-id="s-31-37" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A surveillance system can be technically capable but still require strong controls.</p>
+<p>Relevant system questions include:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>What is collected?
+Why is it collected?
+Who can access it?
+How long is it retained?
+What actions can an alert trigger?
+How are false alarms handled?
+How is human review performed?</code></pre>
+</div></p>
+<p>The goal is not to replace engineering with abstract ethics.</p>
+<p>The goal is to recognize that deployment requirements extend beyond model accuracy.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 31.38: Responsible Use in Healthcare -->
+  <section id="s-31-38" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.38</span>
+      <h2>Responsible Use in Healthcare</h2>
+      <button class="bookmark-btn" data-id="s-31-38" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Healthcare systems similarly require:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>validation
+traceability
+error analysis
+workflow integration
+human oversight</code></pre>
+</div></p>
+<p>A visually impressive model is not enough.</p>
+<p>This is especially important when a preprocessing step can alter image appearance or numerical values.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 31.39: A General Engineering Decision Framework -->
+  <section id="s-31-39" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.39</span>
+      <h2>A General Engineering Decision Framework</h2>
+      <button class="bookmark-btn" data-id="s-31-39" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>When selecting a DIP/vision method:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>1. Define task
+2. Define input
+3. Define output
+4. Identify data characteristics
+5. Identify failure costs
+6. Choose baseline
+7. Measure
+8. Analyze failures
+9. Improve
+10. Validate on representative data
+11. Check deployment constraints
+12. Document limitations</code></pre>
+</div></p>
+<p>This is more robust than selecting the most advanced-looking algorithm first.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 31.40: Baseline First -->
+  <section id="s-31-40" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.40</span>
+      <h2>Baseline First</h2>
+      <button class="bookmark-btn" data-id="s-31-40" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A good engineering process often starts with a simple baseline.</p>
+<p>Example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Problem: detect moving objects
+
+Baseline:
+frame difference
+
+Then:
+background subtraction
+
+Then:
+object detector
+
+Then:
+detector + tracker</code></pre>
+</div></p>
+<p>Each step should demonstrate why additional complexity is justified.</p>
+<p>This prevents unnecessary model complexity.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 31.41: Application Design Example — Smart Traffic Camera -->
+  <section id="s-31-41" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.41</span>
+      <h2>Application Design Example — Smart Traffic Camera</h2>
+      <button class="bookmark-btn" data-id="s-31-41" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Requirement</h3>
+<p>Count vehicles and track movement.</p>
+<h3>Pipeline</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>camera
+ ↓
+frame capture
+ ↓
+quality check
+ ↓
+YOLO detection
+ ↓
+vehicle class filter
+ ↓
+tracking
+ ↓
+trajectory
+ ↓
+line-crossing / counting rule
+ ↓
+statistics</code></pre>
+</div></p>
+<p>Relevant chapters:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>C28
+→ detection
+
+C30
+→ temporal tracking
+
+C31
+→ system-level evaluation</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 31.42: Application Design Example — Document Scanner -->
+  <section id="s-31-42" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.42</span>
+      <h2>Application Design Example — Document Scanner</h2>
+      <button class="bookmark-btn" data-id="s-31-42" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Requirement</h3>
+<p>Produce clean, readable text pages.</p>
+<p>Pipeline:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>camera
+ ↓
+geometric correction
+ ↓
+grayscale
+ ↓
+denoise
+ ↓
+contrast enhancement
+ ↓
+threshold
+ ↓
+morphological cleanup
+ ↓
+document output / OCR</code></pre>
+</div></p>
+<p>Relevant topics:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>C06
+C09
+C11
+C16
+C18</code></pre>
+</div></p>
+<p>This demonstrates how seemingly separate chapters become one practical system.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 31.43: Application Design Example — Industrial Defect Detection -->
+  <section id="s-31-43" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.43</span>
+      <h2>Application Design Example — Industrial Defect Detection</h2>
+      <button class="bookmark-btn" data-id="s-31-43" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>controlled camera
+ ↓
+image acquisition
+ ↓
+normalization
+ ↓
+ROI extraction
+ ↓
+feature / CNN representation
+ ↓
+classification or detection
+ ↓
+pass / fail
+ ↓
+human inspection for uncertain cases</code></pre>
+</div></p>
+<p>The important engineering principle is:</p>
+<blockquote>
+<p><strong>Control the acquisition conditions when possible before increasing algorithmic complexity.</strong></p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 31.44: Application Design Example — Video Security -->
+  <section id="s-31-44" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.44</span>
+      <h2>Application Design Example — Video Security</h2>
+      <button class="bookmark-btn" data-id="s-31-44" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>camera
+ ↓
+frame sampling
+ ↓
+motion estimation
+ ↓
+object detection
+ ↓
+tracking
+ ↓
+event rule
+ ↓
+alert</code></pre>
+</div></p>
+<p>Possible failure points:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>camera shake
+lighting changes
+occlusion
+false positives
+missed detections
+latency</code></pre>
+</div></p>
+<p>A good system design anticipates them.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 31.45: Responsible System Checklist -->
+  <section id="s-31-45" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.45</span>
+      <h2>Responsible System Checklist</h2>
+      <button class="bookmark-btn" data-id="s-31-45" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Before deployment, ask:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>□ Is the task clearly defined?
+□ Is the training/test data representative?
+□ Is preprocessing documented?
+□ Are important failure modes known?
+□ Are thresholds justified?
+□ Is human review required?
+□ Is sensitive data protected?
+□ Is model/version provenance recorded?
+□ Is performance measured on deployment-like data?
+□ Are limitations communicated?</code></pre>
+</div></p>
+<p>This checklist is more useful than simply saying “the model is accurate.”</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 31.46: A DIP System Can Be Visualized as a Graph -->
+  <section id="s-31-46" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.46</span>
+      <h2>A DIP System Can Be Visualized as a Graph</h2>
+      <button class="bookmark-btn" data-id="s-31-46" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>                 ┌───────────────┐
+                 │   Acquisition │
+                 └───────┬───────┘
+                         ↓
+                 ┌───────────────┐
+                 │ Representation│
+                 └───────┬───────┘
+                         ↓
+             ┌───────────┼───────────┐
+             ↓           ↓           ↓
+         Enhancement  Restoration  Compression
+             │           │           │
+             └───────┬───┴───────────┘
+                     ↓
+                Segmentation
+                     ↓
+                  Features
+                     ↓
+              Classification
+                     ↓
+                 Detection
+                     ↓
+                  Tracking
+                     ↓
+                 Application</code></pre>
+</div></p>
+<p>This is a conceptual relationship graph, not a statement that every system must execute every branch.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 31.47: Course-Wide Synthesis -->
+  <section id="s-31-47" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.47</span>
+      <h2>Course-Wide Synthesis</h2>
+      <button class="bookmark-btn" data-id="s-31-47" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The entire Main Book can now be compressed into:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>WORLD
+ ↓
+IMAGE FORMATION
+ ↓
+SAMPLING + QUANTIZATION
+ ↓
+DIGITAL REPRESENTATION
+ ↓
+COLOUR / STORAGE
+ ↓
+ENHANCEMENT
+ ↓
+RESTORATION
+ ↓
+SEGMENTATION
+ ↓
+FEATURES
+ ↓
+COMPRESSION
+ ↓
+CLASSIFICATION
+ ↓
+DETECTION
+ ↓
+VIDEO / MOTION
+ ↓
+APPLICATION</code></pre>
+</div></p>
+<p>The chapters are connected because each stage changes what can be done next.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 31.48: What “Engineering Understanding” Looks Like -->
+  <section id="s-31-48" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.48</span>
+      <h2>What “Engineering Understanding” Looks Like</h2>
+      <button class="bookmark-btn" data-id="s-31-48" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A student who only memorizes:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Sobel = edge detector
+JPEG = compression
+CNN = classification
+YOLO = detection</code></pre>
+</div></p>
+<p>has vocabulary.</p>
+<p>A student with engineering understanding can explain:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>why the method exists
+→
+what assumptions it makes
+→
+what data it needs
+→
+what output it produces
+→
+how to implement it
+→
+how to evaluate it
+→
+where it fails
+→
+when to choose something else</code></pre>
+</div></p>
+<p>That is the intended end state of the MiniBook.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 31.49: Exam Lens -->
+  <section id="s-31-49" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.49</span>
+      <h2>Exam Lens</h2>
+      <button class="bookmark-btn" data-id="s-31-49" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h2>2-mark questions</h2>
+<p><strong>Name two applications of DIP.</strong></p>
+<p>Examples include healthcare and surveillance, both explicitly identified in the course outcomes/syllabus.</p>
+<p><strong>Why is acquisition important?</strong></p>
+<p>Because image quality and representation at the input affect every downstream processing stage.</p>
+<p><strong>What is human-in-the-loop processing?</strong></p>
+<p>A system in which an algorithm provides analysis or recommendations while a human participates in the final interpretation/decision.</p>
+<hr />
+<h1>50. 5-Mark Question</h1>
+<h3>Explain DIP applications in healthcare and surveillance.</h3>
+<p>A strong answer should include:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>application requirement
+→ acquisition
+→ preprocessing
+→ analysis method
+→ output
+→ evaluation
+→ limitations</code></pre>
+</div></p>
+<p>For example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>healthcare
+image → preprocess → segment/classify → measurement/support
+
+surveillance
+video → detect → track → event analysis → alert</code></pre>
+</div></p>
+<hr />
+<h1>51. 10-Mark Question</h1>
+<h3>Design an image-processing system for a real-world application.</h3>
+<p>Recommended structure:</p>
+<ol>
+<li>problem statement;</li>
+<li>input/data;</li>
+<li>acquisition;</li>
+<li>preprocessing;</li>
+<li>selected DIP methods;</li>
+<li>feature/representation stage;</li>
+<li>decision stage;</li>
+<li>evaluation metrics;</li>
+<li>failure modes;</li>
+<li>computational constraints;</li>
+<li>privacy/security considerations;</li>
+<li>human oversight;</li>
+<li>limitations;</li>
+<li>expected output.</li>
+</ol>
+<p>This tests understanding rather than isolated algorithm recall.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 31.50: Chapter Checkpoint -->
+  <section id="s-31-50" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.50</span>
+      <h2>Chapter Checkpoint</h2>
+      <button class="bookmark-btn" data-id="s-31-50" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Q1</h3>
+<p>Why should system design begin with requirements instead of algorithms?</p>
+<h3>Q2</h3>
+<p>Why can better image acquisition sometimes improve performance more than a more complex model?</p>
+<h3>Q3</h3>
+<p>Give a pipeline connecting YOLO detection to tracking.</p>
+<h3>Q4</h3>
+<p>Why can a high classification accuracy still be insufficient in healthcare?</p>
+<h3>Q5</h3>
+<p>What is the difference between an algorithm failure and a data failure?</p>
+<h3>Q6</h3>
+<p>Why should confidence scores not automatically be treated as certainty?</p>
+<h3>Q7</h3>
+<p>Why are privacy and security part of an image-processing system rather than separate topics?</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 31.51: One-Page Recall Sheet -->
+  <section id="s-31-51" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.51</span>
+      <h2>One-Page Recall Sheet</h2>
+      <button class="bookmark-btn" data-id="s-31-51" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>DIP ENGINEERING
+│
+├── Requirement
+│     ↓
+├── Acquisition
+│     ↓
+├── Representation
+│     ↓
+├── Processing
+│  ├── enhancement
+│  ├── restoration
+│  ├── segmentation
+│  └── compression
+│     ↓
+├── Understanding
+│  ├── features
+│  ├── classification
+│  └── detection
+│     ↓
+├── Time
+│  └── motion / tracking
+│     ↓
+├── Evaluation
+│     ├── accuracy / precision / recall
+│     ├── IoU / AP
+│     ├── MSE / PSNR
+│     └── task-specific metrics
+│
+└── Deployment
+    ├── latency
+    ├── compute
+    ├── privacy
+    ├── security
+    ├── failure handling
+    └── human oversight</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 31.52: Cross-Book Links -->
+  <section id="s-31-52" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.52</span>
+      <h2>Cross-Book Links</h2>
+      <button class="bookmark-btn" data-id="s-31-52" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Layer</th>
+<th>Connection</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MAIN</td>
+<td>C31 integrates the entire DIP journey</td>
+</tr>
+<tr>
+<td>MATH</td>
+<td>Metrics, uncertainty, error reasoning</td>
+</tr>
+<tr>
+<td>LAB</td>
+<td>Uses C08–C10 practical outputs in application-style scenarios</td>
+</tr>
+<tr>
+<td>CODE</td>
+<td>System integration patterns and deployment checks</td>
+</tr>
+<tr>
+<td>EXAM</td>
+<td>Applications, case studies, system-design questions</td>
+</tr>
+<tr>
+<td>PRACTICE</td>
+<td>Pipeline design, method selection, failure analysis</td>
+</tr>
+<tr>
+<td>RESOURCE</td>
+<td>Course references + domain-specific deepening</td>
+</tr>
+<tr>
+<td>ASSETS</td>
+<td>End-to-end architecture diagrams and application pipelines</td>
+</tr>
+<tr>
+<td>MASTER</td>
+<td>Final integration and syllabus completion</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 31.53: Final Chapter Summary -->
+  <section id="s-31-53" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.53</span>
+      <h2>Final Chapter Summary</h2>
+      <button class="bookmark-btn" data-id="s-31-53" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The deepest lesson of the course is not a particular filter, transform, descriptor, CNN or detector.</p>
+<p>It is:</p>
+<p>
+$$
+\boxed{
+\text{Choose and connect image-processing operations according to the task, data, constraints, and consequences of error.}
+}
+$$
+</p>
+<p>The full journey is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>scene
+→ image
+→ digital representation
+→ enhancement/restoration
+→ segmentation/features
+→ compression or intelligent interpretation
+→ classification/detection
+→ video/motion
+→ application decision</code></pre>
+</div></p>
+<p>The syllabus identifies healthcare and surveillance as application domains and expects students to analyze and interpret image data in such contexts. fileciteturn4file0L22-L31 fileciteturn4file0L48-L52</p>
+<p>This chapter therefore closes the <strong>31-chapter Main Book</strong> by connecting individual techniques to complete engineering systems.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 31.54: Main Book Completion -->
+  <section id="s-31-54" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.54</span>
+      <h2>Main Book Completion</h2>
+      <button class="bookmark-btn" data-id="s-31-54" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>PART I   — The Image
+C01–C05  ✅
+
+PART II  — Improving the Image
+C06–C14  ✅
+
+PART III — Understanding Image Content
+C15–C20  ✅
+
+PART IV  — Compressing Images
+C21–C24  ✅
+
+PART V   — From DIP to Intelligent Vision
+C25–C31  ✅</code></pre>
+</div></p>
+<p>
+$$
+\boxed{\text{31 / 31 Main Chapters Complete}}
+$$
+</p>
+<p>The Main Book is now complete at the syllabus-theory level. The remaining MiniBook work belongs primarily to the companion layers: mathematics, laboratory, reusable code, examination, deliberate practice, resources, visual assets, and master integration/QA.</p>
+    </div>
+  </section>
+
+  <!-- SECTION 31.55: Worked Example — 10-Mark University Model Answer: Medical &amp; Remote Sensing Imaging Pipeline Design -->
+  <section id="s-31-55" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.55</span>
+      <h2>Worked Example — 10-Mark University Model Answer: Medical &amp; Remote Sensing Imaging Pipeline Design</h2>
+      <button class="bookmark-btn" data-id="s-31-55" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Problem Statement</h3>
+<p>As a lead Computer Vision Engineer, you are tasked with designing complete digital image processing and analysis systems for two mission-critical domains:
+1. <strong>Domain A (Medical Radiography — CT Pulmonary Lesion Detection):</strong>
+   - Explain the physical meaning and calibration of the <strong>Hounsfield Unit (HU)</strong> scale:
+     
+$$HU = 1000 \times \frac{\mu - \mu_{\text{water}}}{\mu_{\text{water}} - \mu_{\text{air}}}$$
+
+   - Contrast the windowing and leveling settings used for viewing bone structures ($W = 2000, L = 500$) versus lung parenchyma ($W = 1500, L = -600$).
+   - Formulate the 5-stage automated tumor segmentation pipeline: Preprocessing $\to$ Morphological Filtering $\to$ Active Contours / U-Net Segmentation $\to$ Radiomic Feature Extraction $\to$ Diagnostic Classification.
+2. <strong>Domain B (Satellite Remote Sensing — Multispectral Environmental Monitoring):</strong>
+   - State the physical rationale for combining Red and Near-Infrared (NIR) spectral bands.
+   - Formulate the <strong>Normalized Difference Vegetation Index (NDVI)</strong> and explain why healthy photosynthetic vegetation exhibits high positive values ($0.6 \le NDVI \le 0.9$) while water exhibits negative values.
+   - For a satellite pixel recording reflectance values $\rho_{\text{NIR}} = 0.72$ and $\rho_{\text{Red}} = 0.08$, compute the exact NDVI and classify the ground landcover.
+3. <strong>Engineering Ethics &amp; Responsible Vision AI:</strong> State three critical ethical concerns in computer vision deployments (algorithmic bias, deepfake manipulation, biometric privacy) and their corresponding engineering mitigation safeguards.</p>
+<h3>Step-by-Step Mathematical Solution</h3>
+<div class="worked-example">
+  <div class="worked-example-header">
+    <span class="worked-example-title">Numerical Examination Trace</span>
+    <span class="tag-badge tag-exam">10-MARK UNIVERSITY MODEL ANSWER</span>
+  </div>
+  <p><strong>1. Domain A: Medical CT Imaging Principles & Windowing:</strong><br>
+  - <strong>Hounsfield Scale Definition:</strong> Measures radiodensity of tissues relative to distilled water ($\mu_{\text{water}}$) and air ($\mu_{\text{air}} \approx 0$):
+    - Air: $HU = -1000$ (radiotransparent)
+    - Fat: $HU \in [-120, -90]$
+    - Water: $HU = 0$ (reference calibrator)
+    - Soft Tissue / Muscle: $HU \in [+40, +80]$
+    - Dense Cortical Bone: $HU \in [+1000, +3000]$ (radiopaque)<br>
+  - <strong>Windowing / Leveling Transformation:</strong> A raw 12-bit or 16-bit CT scan contains 4096+ gray levels, whereas human vision can only distinguish ~64 levels. Windowing maps an interval $[L - W/2, L + W/2]$ linearly to display intensities $[0, 255]$:
+    
+$$f_{disp}(x) = \begin{cases} 0 & x < L - W/2 \\ 255 \times \frac{x - (L - W/2)}{W} & L - W/2 \le x \le L + W/2 \\ 255 & x > L + W/2 \end{cases}$$
+
+    - <strong>Lung Window ($W = 1500, L = -600$):</strong> Focuses on range $[-1350, +150]$ to clearly resolve low-density alveolar parenchyma and bronchial trees.<br>
+    - <strong>Bone Window ($W = 2000, L = +500$):</strong> Focuses on range $[-500, +1500]$ to distinguish cortical fracture lines without saturation.</p>
+
+  <p><strong>2. Domain B: Multispectral Satellite Remote Sensing & NDVI:</strong><br>
+  - <strong>Chlorophyll Biophysical Rationale:</strong> Healthy green vegetation strongly absorbs Red light ($\lambda \approx 660 \text{ nm}$) for photosynthesis via chlorophyll pigments, while spongy mesophyll leaf cells strongly reflect and scatter Near-Infrared radiation ($\lambda \approx 860 \text{ nm}$) to avoid overheating.<br>
+  - <strong>NDVI Mathematical Formula:</strong>
+    
+$$NDVI = \frac{\rho_{\text{NIR}} - \rho_{\text{Red}}}{\rho_{\text{NIR}} + \rho_{\text{Red}}}$$
+
+    $NDVI$ normalizes illumination changes and ranges strictly between $-1.0$ and $+1.0$.<br>
+  - <strong>Numerical Computation for Pixel ($\rho_{\text{NIR}} = 0.72, \rho_{\text{Red}} = 0.08$):</strong>
+    
+$$NDVI = \frac{0.72 - 0.08}{0.72 + 0.08} = \frac{0.64}{0.80} = \mathbf{+0.80}$$
+
+    <strong>Landcover Classification:</strong> $NDVI = +0.80$ corresponds unambiguously to <strong>Dense, Highly Active Photosynthetic Forest Canopy / Healthy Agriculture</strong>.</p>
+
+  <p><strong>3. Engineering Ethics & Responsible Computer Vision:</strong></p>
+  <div class="table-wrap">
+    <table class="comparison-table">
+      <thead>
+        <tr><th>Ethical Vulnerability</th><th>Societal / Operational Impact</th><th>Engineering Mitigation Safeguard</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Algorithmic Demographic Bias</strong></td><td>Facial recognition systems exhibit dramatically higher false-positive rates on underrepresented demographic groups</td><td>Balanced stratified dataset curation, adversarial debiasing, and demographic parity constraint validation</td></tr>
+        <tr><td><strong>Deepfake Synthetic Media</strong></td><td>Malicious video synthesis and identity theft undermining institutional and personal trust</td><td>Frequency-domain artifact detection (abnormal Fourier phase coherence), eye-blink physiological cadence verification</td></tr>
+        <tr><td><strong>Biometric Privacy & Surveillance</strong></td><td>Pervasive tracking of citizens in public spaces without consent or oversight</td><td>Privacy-by-design edge processing, automated real-time face redaction/blurring, and strict cryptographic audit logs</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+    </div>
+  </section>
+
+  <!-- SECTION 31.56: The Complete 31-Chapter Digital Image Processing Grand Architecture -->
+  <section id="s-31-56" class="section-block">
+    <div class="section-header">
+      <span class="section-num">31.56</span>
+      <h2>The Complete 31-Chapter Digital Image Processing Grand Architecture</h2>
+      <button class="bookmark-btn" data-id="s-31-56" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="diagram-box"><div class="mermaid">
+graph TD
+    subgraph Part1["Part I: The Image (C01-C05)"]
+        Physics["Photon Acquisition & Sampling"] --> Representation["Matrix/Tensor Representations"]
+    end
+    subgraph Part2["Part II: Improving the Image (C06-C14)"]
+        Spatial["Spatial Enhancement & Filtering"] --> Frequency["Fourier Transform & Restoration"]
+    end
+    subgraph Part3["Part III: Understanding Content (C15-C20)"]
+        Segment["Segmentation & Morphology"] --> Descriptors["Feature Descriptors: SIFT, HOG"]
+    end
+    subgraph Part4["Part IV: Compressing Images (C21-C24)"]
+        Entropy["Information Theory & Huffman"] --> JPEG["DCT & JPEG Standard"]
+    end
+    subgraph Part5["Part V: Intelligent Vision (C25-C31)"]
+        Deep["CNNs, ResNet & YOLO"] --> Video["Optical Flow & Motion Tracking"]
+        Video --> Apps["Medical, Satellite & Ethical Vision Systems"]
+    end
+
+    Part1 --> Part2
+    Part2 --> Part3
+    Part3 --> Part4
+    Part4 --> Part5
+</div></div></p>
+    </div>
+  </section>
+
+      <!-- Chapter End Package -->
+      <section class="chapter-end-package">
+        <div class="chapter-nav-grid">
+          <a href="ch30-video-motion-analysis.html" class="chapter-nav-card">
+            <div class="chapter-nav-dir">← Previous</div>
+            <div class="chapter-nav-title">← Ch 30 — Video Processing & Motion Analysis</div>
+          </a>
+          <a href="../index.html" class="chapter-nav-card next">
+            <div class="chapter-nav-dir">Next →</div>
+            <div class="chapter-nav-title">Complete DIP Curriculum Portal 🏛️</div>
+          </a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- FLOATING TTS PANEL (SAFE MANUAL MODE ONLY) -->
+  <div id="tts-panel" style="position:fixed; bottom:20px; right:20px; background:var(--em-surface-1); border:1px solid var(--em-border); border-radius:var(--em-radius-md); padding:12px 16px; box-shadow:var(--sh-lg); z-index:var(--z-float); display:none; gap:10px; align-items:center;">
+    <button class="icon-btn" id="tts-play" title="Play / Pause" style="background:var(--em-accent); color:#fff; border-radius:50%; width:36px; height:36px;">▶</button>
+    <button class="icon-btn" id="tts-stop" title="Stop">⏹</button>
+    <div style="font-size:0.75rem; color:var(--em-text-muted);">
+      <span id="tts-status">Ready</span> · <span id="tts-rate-label">1.0x</span>
+    </div>
+  </div>
+
+  <script src="../assets/js/state.js"></script>
+  <script src="../assets/js/core.js"></script>
+  <script src="../assets/js/tts.js"></script>
+  <script src="../assets/js/glossary.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: document.documentElement.getAttribute('data-theme') === 'light' ? 'default' : 'dark'
+      });
+    });
+  </script>
+</body>
+</html>

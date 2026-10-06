@@ -1,0 +1,2337 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Arpit">
+  <meta name="description" content="Chapter 02: Image Formation &amp; Physical Acquisition — Digital Image Processing MiniBook. The Illumination-Reflectance Model f(x,y)=i(x,y)r(x,y), Thin Lens Optics, Sensor Geometries, and Clipping">
+  <title>C02: Image Formation &amp; Physical Acquisition | DIP MiniBook 📷 Arpit</title>
+
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <link rel="stylesheet" href="../assets/css/chapters.css">
+  <link rel="stylesheet" href="../assets/css/animations.css">
+  <link rel="stylesheet" href="../assets/css/timer.css">
+
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body data-chapter-id="ch02-image-formation">
+  <div id="progress-bar"></div>
+
+  <!-- Header -->
+  <header id="main-header">
+    <div class="header-left">
+      <button id="sidebar-toggle" class="icon-btn" aria-label="Toggle navigation drawer" title="Toggle Sidebar (S)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <a href="../index.html" class="brand-logo">
+        <div class="brand-icon">DIP</div>
+        <div class="brand-text">
+          <span class="main">Digital Image Processing</span>
+          <span class="sub">DU DSE-3 Engineering MiniBook</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="header-chapter-title">C02: Image Formation &amp; Physical Acquisition</div>
+
+    <div class="header-right">
+      <button id="reading-mode-btn" class="icon-btn" aria-label="Toggle reading focus mode" title="Focus Mode (F)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+          <line x1="8" y1="21" x2="16" y2="21"></line>
+          <line x1="12" y1="17" x2="12" y2="21"></line>
+        </svg>
+      </button>
+      <button id="tts-toggle" class="icon-btn" aria-label="Audio Reader" title="Audio Reader">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+        </svg>
+      </button>
+      <button id="theme-toggle" class="icon-btn" aria-label="Cycle theme" title="Theme (T)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="12" cy="12" r="4.5"></circle>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Sidebar Overlay -->
+  <div id="sidebar-overlay"></div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" aria-expanded="true">
+    <div class="sidebar-nav">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">General</div>
+        <a href="../index.html" class="sidebar-link">
+          <span class="link-icon">🏛️</span>
+          <span>Subject Portal</span>
+        </a>
+        <a href="../progress.html" class="sidebar-link">
+          <span class="link-icon">📊</span>
+          <span>Study Dashboard</span>
+        </a>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Current Chapter Sections</div>
+        <a href="#s-02-0" class="sidebar-link"><span class="link-icon">📌</span><span>02.0 Why this chapter exists</span> </a>
+      <a href="#s-02-1" class="sidebar-link"><span class="link-icon">📌</span><span>02.1 What does “image formation” mean?</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-02-2" class="sidebar-link"><span class="link-icon">📌</span><span>02.2 A simple model of what a camera observes</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-02-3" class="sidebar-link"><span class="link-icon">📌</span><span>02.3 From a 3-D scene to a 2-D image</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-02-4" class="sidebar-link"><span class="link-icon">📌</span><span>02.4 The role of illumination</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-02-5" class="sidebar-link"><span class="link-icon">📌</span><span>02.5 Optics: how an imaging system focuses information</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-02-6" class="sidebar-link"><span class="link-icon">📌</span><span>02.6 Sensor response</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-02-7" class="sidebar-link"><span class="link-icon">📌</span><span>02.7 Exposure, saturation, and clipping</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-02-8" class="sidebar-link"><span class="link-icon">📌</span><span>02.8 Dynamic range</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-02-9" class="sidebar-link"><span class="link-icon">📌</span><span>02.9 Noise in image acquisition</span> </a>
+      <a href="#s-02-10" class="sidebar-link"><span class="link-icon">📌</span><span>02.10 The acquisition chain in more detail</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-02-11" class="sidebar-link"><span class="link-icon">📌</span><span>02.11 How does one pixel actually happen?</span> </a>
+      <a href="#s-02-12" class="sidebar-link"><span class="link-icon">📌</span><span>02.12 Area measurement versus ideal point measurement</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-02-13" class="sidebar-link"><span class="link-icon">📌</span><span>02.13 Single sensor, sensor strip, and sensor array</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-02-14" class="sidebar-link"><span class="link-icon">📌</span><span>02.14 How colour is acquired</span> </a>
+      <a href="#s-02-15" class="sidebar-link"><span class="link-icon">📌</span><span>02.15 Acquisition of different kinds of images</span> </a>
+      <a href="#s-02-16" class="sidebar-link"><span class="link-icon">📌</span><span>02.16 A deeper mathematical acquisition model</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-02-17" class="sidebar-link"><span class="link-icon">📌</span><span>02.17 Worked example — from scene response to an 8-bit pixel</span> </a>
+      <a href="#s-02-18" class="sidebar-link"><span class="link-icon">📌</span><span>02.18 Worked example — quantization step preview</span> </a>
+      <a href="#s-02-19" class="sidebar-link"><span class="link-icon">📌</span><span>02.19 Where acquisition errors enter the final image</span> </a>
+      <a href="#s-02-20" class="sidebar-link"><span class="link-icon">📌</span><span>02.20 Restoration versus enhancement — early distinction</span> </a>
+      <a href="#s-02-21" class="sidebar-link"><span class="link-icon">📌</span><span>02.21 Acquisition metadata is part of practical image information</span> </a>
+      <a href="#s-02-22" class="sidebar-link"><span class="link-icon">📌</span><span>02.22 Common image-formation mistakes</span> </a>
+      <a href="#s-02-23" class="sidebar-link"><span class="link-icon">📌</span><span>02.23 A practical “read the image” checklist</span> </a>
+      <a href="#s-02-24" class="sidebar-link"><span class="link-icon">📌</span><span>02.24 Image formation and acquisition — system comparison</span> </a>
+      <a href="#s-02-25" class="sidebar-link"><span class="link-icon">📌</span><span>02.25 EXAM lens</span> </a>
+      <a href="#s-02-26" class="sidebar-link"><span class="link-icon">📌</span><span>02.26 Chapter checkpoint</span> </a>
+      <a href="#s-02-27" class="sidebar-link"><span class="link-icon">📌</span><span>02.27 Lab / implementation bridge</span> </a>
+      <a href="#s-02-28" class="sidebar-link"><span class="link-icon">📌</span><span>02.28 Forward connection — sampling and quantization</span> </a>
+      <a href="#s-02-29" class="sidebar-link"><span class="link-icon">📌</span><span>02.29 Worked Degradation Example</span> </a>
+      <a href="#s-02-30" class="sidebar-link"><span class="link-icon">📌</span><span>02.30 Image Formation vs Sampling vs Quantization</span> </a>
+      <a href="#s-02-31" class="sidebar-link"><span class="link-icon">📌</span><span>02.31 Worked Conceptual Chain</span> </a>
+      <a href="#s-02-32" class="sidebar-link"><span class="link-icon">📌</span><span>02.32 The Information Boundary</span> </a>
+      <a href="#s-02-33" class="sidebar-link"><span class="link-icon">📌</span><span>02.33 Acquisition Quality as an Engineering Trade-Off</span> </a>
+      <a href="#s-02-34" class="sidebar-link"><span class="link-icon">📌</span><span>02.34 Acquisition Examples Across Modalities</span> </a>
+      <a href="#s-02-35" class="sidebar-link"><span class="link-icon">📌</span><span>02.35 Common Acquisition Artifacts</span> </a>
+      <a href="#s-02-36" class="sidebar-link"><span class="link-icon">📌</span><span>02.36 Acquisition Artifact → Later DIP Method</span> </a>
+      <a href="#s-02-37" class="sidebar-link"><span class="link-icon">📌</span><span>02.37 Common Traps</span> </a>
+      <a href="#s-02-38" class="sidebar-link"><span class="link-icon">📌</span><span>02.38 Engineering Insight — Diagnose the Acquisition Before the Algorithm</span> </a>
+      <a href="#s-02-39" class="sidebar-link"><span class="link-icon">📌</span><span>02.39 Cross-Book Bridges</span> </a>
+      <a href="#s-02-40" class="sidebar-link"><span class="link-icon">📌</span><span>02.40 Quick Recall</span> </a>
+      <a href="#s-02-41" class="sidebar-link"><span class="link-icon">📌</span><span>02.41 Chapter Checkpoint</span> </a>
+      <a href="#s-02-42" class="sidebar-link"><span class="link-icon">📌</span><span>02.42 Connection Forward</span> </a>
+      <a href="#s-02-43" class="sidebar-link"><span class="link-icon">📌</span><span>02.43 Final Mental Model</span> </a>
+      </div>
+
+      
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-i">Part I — The Image</div>
+      <a href="ch01-big-picture.html" class="sidebar-link"><span class="link-icon">01</span><span>The Big Picture</span></a>
+      <a href="ch02-image-formation.html" class="sidebar-link active"><span class="link-icon">02</span><span>Formation & Acquisition</span></a>
+      <a href="ch03-sampling-quantization.html" class="sidebar-link"><span class="link-icon">03</span><span>Sampling & Quantization</span></a>
+      <a href="ch04-image-representation.html" class="sidebar-link"><span class="link-icon">04</span><span>Pixels, Matrices & Resolution</span></a>
+      <a href="ch05-colour-models-file-formats.html" class="sidebar-link"><span class="link-icon">05</span><span>Colour Models & Formats</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-ii">Part II — Improving the Image</div>
+      <a href="ch06-point-processing.html" class="sidebar-link"><span class="link-icon">06</span><span>Point Processing & Intensity</span></a>
+      <a href="ch07-histograms-equalization.html" class="sidebar-link"><span class="link-icon">07</span><span>Histograms & Equalization</span></a>
+      <a href="ch08-spatial-filtering.html" class="sidebar-link"><span class="link-icon">08</span><span>Spatial Filtering & Convolution</span></a>
+      <a href="ch09-smoothing-noise-reduction.html" class="sidebar-link"><span class="link-icon">09</span><span>Smoothing & Noise Reduction</span></a>
+      <a href="ch10-sharpening-edge-detection.html" class="sidebar-link"><span class="link-icon">10</span><span>Sharpening & Edge Detection</span></a>
+      <a href="ch11-geometric-transforms.html" class="sidebar-link"><span class="link-icon">11</span><span>Geometric Transforms</span></a>
+      <a href="ch12-fourier-transform.html" class="sidebar-link"><span class="link-icon">12</span><span>Fourier Transform & Frequency</span></a>
+      <a href="ch13-frequency-filtering.html" class="sidebar-link"><span class="link-icon">13</span><span>Frequency-Domain Filtering</span></a>
+      <a href="ch14-image-restoration.html" class="sidebar-link"><span class="link-icon">14</span><span>Restoration & Deblurring</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-iii">Part III — Understanding Content</div>
+      <a href="ch15-segmentation-fundamentals.html" class="sidebar-link"><span class="link-icon">15</span><span>Segmentation Fundamentals</span></a>
+      <a href="ch16-thresholding-otsu.html" class="sidebar-link"><span class="link-icon">16</span><span>Thresholding & Otsu Method</span></a>
+      <a href="ch17-region-segmentation.html" class="sidebar-link"><span class="link-icon">17</span><span>Region-Based Segmentation</span></a>
+      <a href="ch18-mathematical-morphology.html" class="sidebar-link"><span class="link-icon">18</span><span>Mathematical Morphology</span></a>
+      <a href="ch19-features-descriptors.html" class="sidebar-link"><span class="link-icon">19</span><span>Image Features & Descriptors</span></a>
+      <a href="ch20-sift-surf-orb-hog.html" class="sidebar-link"><span class="link-icon">20</span><span>SIFT, SURF, ORB & HOG</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-iv">Part IV — Compressing Images</div>
+      <a href="ch21-compression-entropy.html" class="sidebar-link"><span class="link-icon">21</span><span>Compression & Entropy</span></a>
+      <a href="ch22-lossless-coding.html" class="sidebar-link"><span class="link-icon">22</span><span>Lossless: RLE & Huffman</span></a>
+      <a href="ch23-lossy-dct-jpeg.html" class="sidebar-link"><span class="link-icon">23</span><span>Lossy: DCT & JPEG</span></a>
+      <a href="ch24-wavelets-jpeg2000.html" class="sidebar-link"><span class="link-icon">24</span><span>Wavelets & JPEG 2000</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-v">Part V — Intelligent Vision</div>
+      <a href="ch25-image-classification.html" class="sidebar-link"><span class="link-icon">25</span><span>Image Classification</span></a>
+      <a href="ch26-cnns-image-processing.html" class="sidebar-link"><span class="link-icon">26</span><span>CNNs for Image Processing</span></a>
+      <a href="ch27-modern-vision-architectures.html" class="sidebar-link"><span class="link-icon">27</span><span>Modern Vision Architectures</span></a>
+      <a href="ch28-object-detection-yolo.html" class="sidebar-link"><span class="link-icon">28</span><span>Object Detection: YOLO</span></a>
+      <a href="ch29-image-denoising-autoencoders.html" class="sidebar-link"><span class="link-icon">29</span><span>Image Denoising Autoencoders</span></a>
+      <a href="ch30-video-motion-analysis.html" class="sidebar-link"><span class="link-icon">30</span><span>Video & Motion Analysis</span></a>
+      <a href="ch31-dip-applications-engineering.html" class="sidebar-link"><span class="link-icon">31</span><span>DIP Applications & Ethics</span></a>
+    </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-brand-mark">
+        <div class="mark">DU</div>
+        <div>
+          <strong>DSE-3 MiniBook</strong>
+          <div>University of Delhi</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mandatory Shell Wrapper -->
+  <div id="main-content">
+    <main class="chapter-content">
+      <!-- Chapter Hero -->
+      <div class="chapter-hero">
+        <div class="hero-meta">
+          <span class="part-badge part-i">The Image</span>
+          <span class="chapter-number">CHAPTER 02</span>
+          <span class="reading-time">⏱️ ~45 min read</span>
+          <span class="tag-badge tag-core">High Yield (5–10 mark guarantee)</span>
+        </div>
+        <h1 class="chapter-title">Image Formation &amp; Physical Acquisition</h1>
+        <p class="chapter-subtitle">
+          The Illumination-Reflectance Model f(x,y)=i(x,y)r(x,y), Thin Lens Optics, Sensor Geometries, and Clipping
+        </p>
+
+        <div class="syllabus-anchor">
+          <span class="syllabus-anchor-label">DU Syllabus</span>
+          <span><strong>Image Formation & Sensing:</strong> Physical basis of illumination and reflectance, physical constraints, camera geometry, thin lens formula, single sensor, sensor strip, and 2D focal plane arrays.</span>
+        </div>
+      </div>
+
+      <!-- In-Page TOC -->
+      <div class="chapter-checklist-card" style="margin-bottom:var(--em-space-8);">
+        <div class="checklist-title">
+          <span>Table of Contents &amp; Visual Section Map</span>
+          <span class="tag-badge tag-math">44 Deep Sections</span>
+        </div>
+        <ul class="part-chapters-list">
+          <li class="part-chapter-item"><a href="#s-02-0"><strong>02.0</strong> Why this chapter exists</a> </li>
+      <li class="part-chapter-item"><a href="#s-02-1"><strong>02.1</strong> What does “image formation” mean?</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-02-2"><strong>02.2</strong> A simple model of what a camera observes</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-02-3"><strong>02.3</strong> From a 3-D scene to a 2-D image</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-02-4"><strong>02.4</strong> The role of illumination</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-02-5"><strong>02.5</strong> Optics: how an imaging system focuses information</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-02-6"><strong>02.6</strong> Sensor response</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-02-7"><strong>02.7</strong> Exposure, saturation, and clipping</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-02-8"><strong>02.8</strong> Dynamic range</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-02-9"><strong>02.9</strong> Noise in image acquisition</a> </li>
+      <li class="part-chapter-item"><a href="#s-02-10"><strong>02.10</strong> The acquisition chain in more detail</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-02-11"><strong>02.11</strong> How does one pixel actually happen?</a> </li>
+      <li class="part-chapter-item"><a href="#s-02-12"><strong>02.12</strong> Area measurement versus ideal point measurement</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-02-13"><strong>02.13</strong> Single sensor, sensor strip, and sensor array</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-02-14"><strong>02.14</strong> How colour is acquired</a> </li>
+      <li class="part-chapter-item"><a href="#s-02-15"><strong>02.15</strong> Acquisition of different kinds of images</a> </li>
+      <li class="part-chapter-item"><a href="#s-02-16"><strong>02.16</strong> A deeper mathematical acquisition model</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-02-17"><strong>02.17</strong> Worked example — from scene response to an 8-bit pixel</a> </li>
+      <li class="part-chapter-item"><a href="#s-02-18"><strong>02.18</strong> Worked example — quantization step preview</a> </li>
+      <li class="part-chapter-item"><a href="#s-02-19"><strong>02.19</strong> Where acquisition errors enter the final image</a> </li>
+      <li class="part-chapter-item"><a href="#s-02-20"><strong>02.20</strong> Restoration versus enhancement — early distinction</a> </li>
+      <li class="part-chapter-item"><a href="#s-02-21"><strong>02.21</strong> Acquisition metadata is part of practical image information</a> </li>
+      <li class="part-chapter-item"><a href="#s-02-22"><strong>02.22</strong> Common image-formation mistakes</a> </li>
+      <li class="part-chapter-item"><a href="#s-02-23"><strong>02.23</strong> A practical “read the image” checklist</a> </li>
+      <li class="part-chapter-item"><a href="#s-02-24"><strong>02.24</strong> Image formation and acquisition — system comparison</a> </li>
+      <li class="part-chapter-item"><a href="#s-02-25"><strong>02.25</strong> EXAM lens</a> </li>
+      <li class="part-chapter-item"><a href="#s-02-26"><strong>02.26</strong> Chapter checkpoint</a> </li>
+      <li class="part-chapter-item"><a href="#s-02-27"><strong>02.27</strong> Lab / implementation bridge</a> </li>
+      <li class="part-chapter-item"><a href="#s-02-28"><strong>02.28</strong> Forward connection — sampling and quantization</a> </li>
+      <li class="part-chapter-item"><a href="#s-02-29"><strong>02.29</strong> Worked Degradation Example</a> </li>
+      <li class="part-chapter-item"><a href="#s-02-30"><strong>02.30</strong> Image Formation vs Sampling vs Quantization</a> </li>
+      <li class="part-chapter-item"><a href="#s-02-31"><strong>02.31</strong> Worked Conceptual Chain</a> </li>
+      <li class="part-chapter-item"><a href="#s-02-32"><strong>02.32</strong> The Information Boundary</a> </li>
+      <li class="part-chapter-item"><a href="#s-02-33"><strong>02.33</strong> Acquisition Quality as an Engineering Trade-Off</a> </li>
+      <li class="part-chapter-item"><a href="#s-02-34"><strong>02.34</strong> Acquisition Examples Across Modalities</a> </li>
+      <li class="part-chapter-item"><a href="#s-02-35"><strong>02.35</strong> Common Acquisition Artifacts</a> </li>
+      <li class="part-chapter-item"><a href="#s-02-36"><strong>02.36</strong> Acquisition Artifact → Later DIP Method</a> </li>
+      <li class="part-chapter-item"><a href="#s-02-37"><strong>02.37</strong> Common Traps</a> </li>
+      <li class="part-chapter-item"><a href="#s-02-38"><strong>02.38</strong> Engineering Insight — Diagnose the Acquisition Before the Algorithm</a> </li>
+      <li class="part-chapter-item"><a href="#s-02-39"><strong>02.39</strong> Cross-Book Bridges</a> </li>
+      <li class="part-chapter-item"><a href="#s-02-40"><strong>02.40</strong> Quick Recall</a> </li>
+      <li class="part-chapter-item"><a href="#s-02-41"><strong>02.41</strong> Chapter Checkpoint</a> </li>
+      <li class="part-chapter-item"><a href="#s-02-42"><strong>02.42</strong> Connection Forward</a> </li>
+      <li class="part-chapter-item"><a href="#s-02-43"><strong>02.43</strong> Final Mental Model</a> </li>
+        </ul>
+      </div>
+
+      <div class="concept-hook" style="margin-bottom:var(--em-space-8);"><h1>Chapter 02 — Image Formation and Acquisition</h1>
+<blockquote>
+<p><strong>Chapter thesis</strong>
+A pixel is the end product of a measurement process: scene information is shaped by illumination, optics, sensor response, and digitisation before it becomes a numerical value.</p>
+</blockquote>
+<p><strong>Part I — The Image</strong><br />
+<strong>Syllabus anchor:</strong> Unit I — image formation; sampling and quantization.</p>
+<hr /></div>
+
+      <!-- All Numbered Sections -->
+      
+  <!-- SECTION 02.0: Why this chapter exists -->
+  <section id="s-02-0" class="section-block">
+    <div class="section-header">
+      <span class="section-num">02.0</span>
+      <h2>Why this chapter exists</h2>
+      <button class="bookmark-btn" data-id="s-02-0" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Chapter 01 treated a digital image as structured numerical data. The next step is to understand where those numbers came from.</p>
+<p>A camera does not simply “take a picture.” An imaging system performs a chain of physical and computational operations:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Scene
+  ↓
+Illumination / emitted radiation
+  ↓
+Interaction with the scene
+  ↓
+Optical system
+  ↓
+Sensor response
+  ↓
+Signal formation
+  ↓
+Sampling
+  ↓
+Quantization
+  ↓
+Digital image</code></pre>
+</div></p>
+<p>The exact physics changes with the imaging modality, but this chain provides the foundational mental model required for DIP.</p>
+<p>The University of Delhi syllabus names <strong>image formation</strong>, <strong>sampling</strong>, and <strong>quantization</strong> explicitly within Unit I. fileciteturn4file0L32-L35</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 02.1: What does “image formation” mean? -->
+  <section id="s-02-1" class="section-block">
+    <div class="section-header">
+      <span class="section-num">02.1</span>
+      <h2>What does “image formation” mean?</h2>
+      <button class="bookmark-btn" data-id="s-02-1" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><strong>Image formation</strong> is the process by which information about a scene is transformed into a spatially varying signal that an imaging device can measure.</p>
+<p>For a conventional visible-light camera, the chain involves light arriving from the environment, interaction with objects, optics that collect and focus the light, and a sensor that converts the received energy into an electrical response.</p>
+<p>A useful high-level model is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>         REAL SCENE
+             │
+             ▼
+      Light / radiation
+             │
+             ▼
+     Scene interaction
+             │
+             ▼
+        OPTICS
+   focus + magnification
+             │
+             ▼
+          SENSOR
+             │
+             ▼
+      Analog response
+             │
+             ▼
+     Sampling + ADC
+             │
+             ▼
+      Digital image</code></pre>
+</div></p>
+<h3>Important distinction</h3>
+<p>A digital image is therefore <strong>not a direct copy of the scene</strong>.</p>
+<p>It is a measurement influenced by:</p>
+<ul>
+<li>illumination;</li>
+<li>surface properties;</li>
+<li>geometry;</li>
+<li>optical focus and blur;</li>
+<li>sensor response;</li>
+<li>exposure;</li>
+<li>noise;</li>
+<li>sampling;</li>
+<li>quantization;</li>
+<li>subsequent processing.</li>
+</ul>
+<p>This is why the same object can produce very different digital images under different conditions.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 02.2: A simple model of what a camera observes -->
+  <section id="s-02-2" class="section-block">
+    <div class="section-header">
+      <span class="section-num">02.2</span>
+      <h2>A simple model of what a camera observes</h2>
+      <button class="bookmark-btn" data-id="s-02-2" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A useful idealised model separates illumination and reflectance:</p>
+<p>
+$$
+f(x,y)=i(x,y)r(x,y)
+$$
+</p>
+<p>where:</p>
+<ul>
+<li>$i(x,y)$ represents illumination over the scene;</li>
+<li>$r(x,y)$ represents the scene's reflectance or local response;</li>
+<li>$f(x,y)$ is the resulting image intensity model.</li>
+</ul>
+<p>This is an <strong>approximate modelling tool</strong>, not a universal physical law for every imaging modality.</p>
+<h3>Why is this model useful?</h3>
+<p>Suppose the object has the same reflectance but illumination changes dramatically.</p>
+<p>Then the measured intensity can change even though the object itself has not changed.</p>
+<p>That explains everyday observations such as:</p>
+<ul>
+<li>a white wall appearing dark at night;</li>
+<li>a face looking different in direct sunlight and indoor lighting;</li>
+<li>shadows changing measured intensity;</li>
+<li>uneven illumination making one side of a document darker.</li>
+</ul>
+<h3>Mental model</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Measured appearance
+      ≈
+illumination × scene response</code></pre>
+</div></p>
+<p>This becomes useful later when studying illumination correction, enhancement, and segmentation.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 02.3: From a 3-D scene to a 2-D image -->
+  <section id="s-02-3" class="section-block">
+    <div class="section-header">
+      <span class="section-num">02.3</span>
+      <h2>From a 3-D scene to a 2-D image</h2>
+      <button class="bookmark-btn" data-id="s-02-3" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The physical world is three-dimensional, but most ordinary camera images are two-dimensional projections.</p>
+<p>A simplified pinhole-camera relationship is:</p>
+<p>
+$$
+x=f\frac{X}{Z},
+\qquad
+y=f\frac{Y}{Z}
+$$
+</p>
+<p>where:</p>
+<ul>
+<li>$(X,Y,Z)$ is a 3-D point in the camera coordinate system;</li>
+<li>$(x,y)$ is its projected image-plane location;</li>
+<li>$f$ is focal length.</li>
+</ul>
+<p><strong>EXTENSION:</strong> Real cameras are more complicated. Lens distortion, principal point, sensor geometry, and camera calibration parameters affect the final mapping.</p>
+<h3>Why projection matters in DIP</h3>
+<p>It explains why an image loses or transforms some of the geometric information present in the original scene.</p>
+<p>Two objects that are far apart in 3-D can overlap in the 2-D image.</p>
+<p>That matters later for:</p>
+<ul>
+<li>segmentation;</li>
+<li>object detection;</li>
+<li>depth estimation;</li>
+<li>geometric correction;</li>
+<li>tracking.</li>
+</ul>
+<h3>Visual intuition</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>3-D scene                   image plane
+   ● P                         • p
+    \                          |
+     \                         |
+      \                        |
+       \                       |
+        \                      |
+         \                     |
+          ● camera ------------┘</code></pre>
+</div></p>
+<p>The image is a projection, not a complete 3-D copy.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 02.4: The role of illumination -->
+  <section id="s-02-4" class="section-block">
+    <div class="section-header">
+      <span class="section-num">02.4</span>
+      <h2>The role of illumination</h2>
+      <button class="bookmark-btn" data-id="s-02-4" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Illumination determines how much energy is available to the imaging system.</p>
+<h3>Uniform illumination</h3>
+<p>A simple object under relatively uniform illumination is easier to analyse because intensity variation is more strongly related to the object's own properties.</p>
+<h3>Non-uniform illumination</h3>
+<p>Consider a document where the left side is brightly lit and the right side is in shadow.</p>
+<p>A single global threshold may fail even though the document itself is perfectly legible.</p>
+<p>This is one motivation for later techniques such as:</p>
+<ul>
+<li>contrast correction;</li>
+<li>adaptive thresholding;</li>
+<li>background estimation;</li>
+<li>illumination normalisation.</li>
+</ul>
+<h3>Example</h3>
+<p>Suppose a page contains black text on a white background.</p>
+<p>Under ideal lighting:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>background ≈ bright
+text       ≈ dark</code></pre>
+</div></p>
+<p>Under strong illumination variation:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>left background  ≈ very bright
+right background ≈ moderately bright
+text              ≈ dark, but not equally dark everywhere</code></pre>
+</div></p>
+<p>A threshold chosen from one part of the image may no longer separate the classes globally.</p>
+<p><strong>FORWARD LINK:</strong> This exact problem reappears in Unit III when global and adaptive thresholding are studied.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 02.5: Optics: how an imaging system focuses information -->
+  <section id="s-02-5" class="section-block">
+    <div class="section-header">
+      <span class="section-num">02.5</span>
+      <h2>Optics: how an imaging system focuses information</h2>
+      <button class="bookmark-btn" data-id="s-02-5" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The optical system determines how scene information is mapped onto the sensor.</p>
+<p>Ideally, a point in the scene would map to one point in the image.</p>
+<p>Real systems are not perfect.</p>
+<p>A point object generally produces a small spatial distribution of energy rather than an infinitely small point. This motivates the <strong>point spread function (PSF)</strong>.</p>
+<h3>Point spread function</h3>
+<p>The PSF describes how the imaging system responds spatially to a point-like input.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Ideal point         Real optical response
+    •                    ╭───╮
+                         │ • │
+                         ╰───╯</code></pre>
+</div></p>
+<p>A blurred point spreads over neighbouring pixels.</p>
+<h3>Why this matters</h3>
+<p>Blur reduces high-frequency spatial detail.</p>
+<p>Later, when we study restoration, a degradation model can describe the observed image as approximately:</p>
+<p>
+$$
+g(x,y)=h(x,y)*f(x,y)+\eta(x,y)
+$$
+</p>
+<p>where:</p>
+<ul>
+<li>$f(x,y)$ = ideal/original image;</li>
+<li>$h(x,y)$ = degradation function, often related to system blur;</li>
+<li>$*$ = convolution;</li>
+<li>$\eta(x,y)$ = noise;</li>
+<li>$g(x,y)$ = observed degraded image.</li>
+</ul>
+<p><strong>This equation is introduced here only as a bridge.</strong> The full restoration model belongs to Chapter 14.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 02.6: Sensor response -->
+  <section id="s-02-6" class="section-block">
+    <div class="section-header">
+      <span class="section-num">02.6</span>
+      <h2>Sensor response</h2>
+      <button class="bookmark-btn" data-id="s-02-6" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A sensor converts incident energy into a measurable response.</p>
+<p>The exact mechanism depends on the modality, but for a simple conceptual model:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>More received energy
+        ↓
+larger sensor response
+        ↓
+larger recorded intensity</code></pre>
+</div></p>
+<p>within the usable operating range.</p>
+<p>The response does not usually remain physically useful forever. Sensors have limits.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 02.7: Exposure, saturation, and clipping -->
+  <section id="s-02-7" class="section-block">
+    <div class="section-header">
+      <span class="section-num">02.7</span>
+      <h2>Exposure, saturation, and clipping</h2>
+      <button class="bookmark-btn" data-id="s-02-7" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose a simplified sensor pipeline produces an internal response that is later mapped into an 8-bit range.</p>
+<p>For illustration, imagine the output is clipped to:</p>
+<p>
+$$
+0\le g\le255
+$$
+</p>
+<p>and a simplified gain stage produces:</p>
+<p>
+$$
+g'=200s
+$$
+</p>
+<p>where $s$ is a normalised scene-response quantity.</p>
+<p>For:</p>
+<p>
+$$
+s=0.2
+$$
+</p>
+<p>we obtain:</p>
+<p>
+$$
+g'=200(0.2)=40
+$$
+</p>
+<p>For:</p>
+<p>
+$$
+s=0.8
+$$
+</p>
+<p>we obtain:</p>
+<p>
+$$
+g'=200(0.8)=160
+$$
+</p>
+<p>For:</p>
+<p>
+$$
+s=1.5
+$$
+</p>
+<p>we obtain:</p>
+<p>
+$$
+g'=200(1.5)=300
+$$
+</p>
+<p>but the 8-bit output cannot represent 300, so clipping yields:</p>
+<p>
+$$
+g=255
+$$
+</p>
+<h3>Table</h3>
+<div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th style="text-align: right;">Normalised response $s$</th>
+<th style="text-align: right;">Internal value $200s$</th>
+<th style="text-align: right;">Stored 8-bit result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">0.0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td style="text-align: right;">0.2</td>
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">40</td>
+</tr>
+<tr>
+<td style="text-align: right;">0.8</td>
+<td style="text-align: right;">160</td>
+<td style="text-align: right;">160</td>
+</tr>
+<tr>
+<td style="text-align: right;">1.0</td>
+<td style="text-align: right;">200</td>
+<td style="text-align: right;">200</td>
+</tr>
+<tr>
+<td style="text-align: right;">1.5</td>
+<td style="text-align: right;">300</td>
+<td style="text-align: right;">255 after clipping</td>
+</tr>
+</tbody>
+</table></div>
+<h3>Why clipping matters</h3>
+<p>Once a value is clipped to the maximum, different scene values can collapse to the same stored value.</p>
+<p>For example:</p>
+<p>
+$$
+260,\;280,\;300\rightarrow255
+$$
+</p>
+<p>Information about the differences among those values is lost at that stage.</p>
+<p>The same idea applies at the dark end if a pipeline clips values to zero.</p>
+<blockquote>
+<p><strong>ENGINEERING INSIGHT:</strong> Saturation is not merely “a bright pixel.” It represents a measurement region where the available representation can no longer distinguish higher inputs.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 02.8: Dynamic range -->
+  <section id="s-02-8" class="section-block">
+    <div class="section-header">
+      <span class="section-num">02.8</span>
+      <h2>Dynamic range</h2>
+      <button class="bookmark-btn" data-id="s-02-8" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><strong>Dynamic range</strong> describes the span between relatively low and high signal levels that an imaging system can meaningfully represent.</p>
+<p>It is useful to distinguish:</p>
+<ul>
+<li>the theoretical code range of a representation;</li>
+<li>the actual usable range of the sensor/system;</li>
+<li>the scene's own range of illumination or radiance.</li>
+</ul>
+<p>For an 8-bit channel, the code space is 0–255, but this does not guarantee that the physical system uses the full range optimally in every scene.</p>
+<h3>Why it matters in DIP</h3>
+<p>If the useful scene information occupies only a narrow region of the available range, contrast enhancement may improve visibility.</p>
+<p>This leads naturally to later topics:</p>
+<ul>
+<li>contrast stretching;</li>
+<li>histogram equalization;</li>
+<li>gamma correction;</li>
+<li>dynamic-range compression.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 02.9: Noise in image acquisition -->
+  <section id="s-02-9" class="section-block">
+    <div class="section-header">
+      <span class="section-num">02.9</span>
+      <h2>Noise in image acquisition</h2>
+      <button class="bookmark-btn" data-id="s-02-9" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>No real measurement system is perfectly clean.</p>
+<p>A simple conceptual model is:</p>
+<p>
+$$
+g(x,y)=s(x,y)+n(x,y)
+$$
+</p>
+<p>where:</p>
+<ul>
+<li>$s(x,y)$ is the desired signal;</li>
+<li>$n(x,y)$ is unwanted variation introduced by the system or environment.</li>
+</ul>
+<p>A more realistic restoration model may include blur as well:</p>
+<p>
+$$
+g(x,y)=h(x,y)*f(x,y)+\eta(x,y)
+$$
+</p>
+<h3>What can create noise or unwanted variation?</h3>
+<p>Depending on the system, possible sources include:</p>
+<ul>
+<li>sensor electronics;</li>
+<li>random photon arrival;</li>
+<li>temperature-related effects;</li>
+<li>readout electronics;</li>
+<li>transmission/storage corruption;</li>
+<li>environmental interference.</li>
+</ul>
+<p><strong>EXTENSION:</strong> Different noise mechanisms have different statistical structures. That is why noise modelling matters when choosing a restoration or denoising method.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 02.10: The acquisition chain in more detail -->
+  <section id="s-02-10" class="section-block">
+    <div class="section-header">
+      <span class="section-num">02.10</span>
+      <h2>The acquisition chain in more detail</h2>
+      <button class="bookmark-btn" data-id="s-02-10" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A practical acquisition pipeline can be represented as:</p>
+<p><div class="diagram-box"><div class="mermaid">
+flowchart LR
+    A[Scene] --> B[Illumination / emitted radiation]
+    B --> C[Scene interaction]
+    C --> D[Optical / sensing system]
+    D --> E[Sensor response]
+    E --> F[Analog signal]
+    F --> G[Sampling]
+    G --> H[Quantization / ADC]
+    H --> I[Digital image]
+</div></div></p>
+<p>Each stage can introduce its own limitations.</p>
+<div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Stage</th>
+<th>Main question</th>
+<th>Possible effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Scene</td>
+<td>What physical information exists?</td>
+<td>Texture, shape, colour, motion</td>
+</tr>
+<tr>
+<td>Illumination</td>
+<td>How much energy reaches the scene?</td>
+<td>Shadows, uneven lighting</td>
+</tr>
+<tr>
+<td>Interaction</td>
+<td>How does the scene modify the signal?</td>
+<td>Reflectance / transmission changes</td>
+</tr>
+<tr>
+<td>Optics</td>
+<td>How is spatial information focused?</td>
+<td>Blur, magnification, distortion</td>
+</tr>
+<tr>
+<td>Sensor</td>
+<td>How is energy converted to a signal?</td>
+<td>Sensitivity, noise, saturation</td>
+</tr>
+<tr>
+<td>Sampling</td>
+<td>At which spatial locations is it measured?</td>
+<td>Spatial discretisation, aliasing risk</td>
+</tr>
+<tr>
+<td>Quantization</td>
+<td>Which intensity codes are allowed?</td>
+<td>Intensity discretisation</td>
+</tr>
+<tr>
+<td>Storage</td>
+<td>How are values represented and encoded?</td>
+<td>Datatype / compression effects</td>
+</tr>
+</tbody>
+</table></div>
+<p>Sampling and quantization are covered much more deeply in Chapter 03.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 02.11: How does one pixel actually happen? -->
+  <section id="s-02-11" class="section-block">
+    <div class="section-header">
+      <span class="section-num">02.11</span>
+      <h2>How does one pixel actually happen?</h2>
+      <button class="bookmark-btn" data-id="s-02-11" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Think of one final digital pixel as the endpoint of a chain.</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Small region of scene
+        ↓
+physical signal arrives
+        ↓
+optical system maps energy
+        ↓
+sensor collects energy
+        ↓
+electrical response
+        ↓
+sampled measurement
+        ↓
+quantized code
+        ↓
+stored pixel value</code></pre>
+</div></p>
+<p>This is why the statement</p>
+<blockquote>
+<p>“A pixel is the colour of one tiny point in the real world”</p>
+</blockquote>
+<p>is useful intuition but technically incomplete.</p>
+<p>A practical pixel value is better understood as a <strong>sampled measurement associated with an area/region and an acquisition process</strong>.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 02.12: Area measurement versus ideal point measurement -->
+  <section id="s-02-12" class="section-block">
+    <div class="section-header">
+      <span class="section-num">02.12</span>
+      <h2>Area measurement versus ideal point measurement</h2>
+      <button class="bookmark-btn" data-id="s-02-12" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>An ideal mathematical function $f(x,y)$ can describe intensity continuously.</p>
+<p>A real detector element has finite extent.</p>
+<p>Conceptually, a detector measures some integrated or averaged response over its sensitive area rather than an infinitely small geometric point.</p>
+<p>A simplified model is:</p>
+<p>
+$$
+p_{mn}\propto \iint_{A_{mn}} f(x,y)\,dx\,dy
+$$
+</p>
+<p>where $A_{mn}$ is the sensor area associated with sample $(m,n)$.</p>
+<p>The exact proportionality and normalisation depend on the sensor model.</p>
+<h3>Why this matters</h3>
+<p>It explains why:</p>
+<ul>
+<li>changing pixel size affects spatial detail;</li>
+<li>fine patterns can disappear or alias;</li>
+<li>optical blur and finite sensor area interact;</li>
+<li>sensor design affects the final image before software processing begins.</li>
+</ul>
+<p>This is the physical intuition behind sampling theory.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 02.13: Single sensor, sensor strip, and sensor array -->
+  <section id="s-02-13" class="section-block">
+    <div class="section-header">
+      <span class="section-num">02.13</span>
+      <h2>Single sensor, sensor strip, and sensor array</h2>
+      <button class="bookmark-btn" data-id="s-02-13" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Classical DIP texts describe several acquisition arrangements.</p>
+<h2>Single sensor</h2>
+<p>A single sensing element measures one location at a time.</p>
+<p>Spatial information may require mechanical movement or scanning.</p>
+<h2>Sensor strip / line sensor</h2>
+<p>A one-dimensional array captures a line at a time.</p>
+<p>Movement of the object or sensor builds the two-dimensional image.</p>
+<p>Commonly useful in scanning systems and some industrial or remote-sensing applications.</p>
+<h2>Two-dimensional sensor array</h2>
+<p>A 2-D array measures many spatial locations simultaneously.</p>
+<p>This is the common conceptual model for ordinary digital cameras.</p>
+<h3>Comparison</h3>
+<div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Architecture</th>
+<th style="text-align: right;">Samples at once</th>
+<th>How 2-D image forms</th>
+<th>Typical concept</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Single sensor</td>
+<td style="text-align: right;">1</td>
+<td>Scanning</td>
+<td>Point-by-point acquisition</td>
+</tr>
+<tr>
+<td>Line sensor</td>
+<td style="text-align: right;">One line</td>
+<td>Mechanical / object motion</td>
+<td>Line scanning</td>
+</tr>
+<tr>
+<td>2-D array</td>
+<td style="text-align: right;">Many pixels</td>
+<td>Direct 2-D capture</td>
+<td>Camera-like acquisition</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 02.14: How colour is acquired -->
+  <section id="s-02-14" class="section-block">
+    <div class="section-header">
+      <span class="section-num">02.14</span>
+      <h2>How colour is acquired</h2>
+      <button class="bookmark-btn" data-id="s-02-14" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Colour requires more than a single scalar intensity measurement.</p>
+<p>A simple conceptual model is to measure different spectral responses and represent them as channels.</p>
+<p>For RGB imagery:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Scene
+  ↓
+Spectral information
+  ↓
+three colour responses
+  ├── R
+  ├── G
+  └── B
+  ↓
+three aligned channels
+  ↓
+RGB image</code></pre>
+</div></p>
+<p><strong>EXTENSION:</strong> Many consumer cameras use a colour filter array so neighbouring sensor elements respond differently to parts of the visible spectrum. A reconstruction/demosaicing process can then form a full RGB representation. The exact sensor architecture varies.</p>
+<h3>Why colour-space conversion later becomes useful</h3>
+<p>RGB is convenient for acquisition and display, but not always the most convenient representation for a particular processing task.</p>
+<p>That is why the syllabus later requires colour models such as:</p>
+<ul>
+<li>RGB;</li>
+<li>HSV;</li>
+<li>CMY;</li>
+<li>YUV.</li>
+</ul>
+<p>Different representations expose different aspects of the image data.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 02.15: Acquisition of different kinds of images -->
+  <section id="s-02-15" class="section-block">
+    <div class="section-header">
+      <span class="section-num">02.15</span>
+      <h2>Acquisition of different kinds of images</h2>
+      <button class="bookmark-btn" data-id="s-02-15" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>“Image formation” does not always mean a visible-light camera.</p>
+<div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Imaging modality</th>
+<th>Measured phenomenon</th>
+<th>Typical information</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Visible camera</td>
+<td>Reflected visible light</td>
+<td>Colour, texture, shape</td>
+</tr>
+<tr>
+<td>Infrared imaging</td>
+<td>Infrared radiation</td>
+<td>Thermal/material differences depending on band and system</td>
+</tr>
+<tr>
+<td>X-ray imaging</td>
+<td>X-ray attenuation</td>
+<td>Internal structure</td>
+</tr>
+<tr>
+<td>Microscopy</td>
+<td>Optical response at microscopic scale</td>
+<td>Cells, tissue, microstructure</td>
+</tr>
+<tr>
+<td>Remote sensing</td>
+<td>Reflected/emitted radiation from Earth</td>
+<td>Land cover, vegetation, environmental properties</td>
+</tr>
+<tr>
+<td>Radar imaging</td>
+<td>Radio-frequency response</td>
+<td>Structure / motion / surface properties</td>
+</tr>
+</tbody>
+</table></div>
+<p>The same digital-image ideas—representation, noise, sampling, filtering, segmentation, compression—can be reused, but the physical acquisition model changes.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 02.16: A deeper mathematical acquisition model -->
+  <section id="s-02-16" class="section-block">
+    <div class="section-header">
+      <span class="section-num">02.16</span>
+      <h2>A deeper mathematical acquisition model</h2>
+      <button class="bookmark-btn" data-id="s-02-16" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A useful layered representation is:</p>
+<h3>Stage 1 — Continuous scene signal</h3>
+<p>
+$$
+s(x,y)
+$$
+</p>
+<h3>Stage 2 — Optical/sensor response</h3>
+<p>
+$$
+a(x,y)=h(x,y)*s(x,y)+\eta(x,y)
+$$
+</p>
+<p>where $h$ models spatial system response and $\eta$ models additive disturbance in this simplified model.</p>
+<h3>Stage 3 — Sampling</h3>
+<p>
+$$
+a(x,y)\rightarrow a[m,n]
+$$
+</p>
+<p>Only discrete spatial locations are retained.</p>
+<h3>Stage 4 — Quantization</h3>
+<p>
+$$
+a[m,n]\rightarrow I[m,n]
+$$
+</p>
+<p>Continuous-valued measurements are mapped to allowed digital code levels.</p>
+<h3>Combined conceptual chain</h3>
+<p>
+$$
+\boxed{
+s(x,y)
+\xrightarrow{\text{imaging}}
+a(x,y)
+\xrightarrow{\text{sampling}}
+a[m,n]
+\xrightarrow{\text{quantization}}
+I[m,n]
+}
+$$
+</p>
+<p>This compact chain should stay in your mental model throughout Part I.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 02.17: Worked example — from scene response to an 8-bit pixel -->
+  <section id="s-02-17" class="section-block">
+    <div class="section-header">
+      <span class="section-num">02.17</span>
+      <h2>Worked example — from scene response to an 8-bit pixel</h2>
+      <button class="bookmark-btn" data-id="s-02-17" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose a simplified sensor chain produces a normalised signal value:</p>
+<p>
+$$
+s=0.62
+$$
+</p>
+<p>Assume a gain stage maps this to a nominal 0–255 scale:</p>
+<p>
+$$
+v=255s
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+v=255(0.62)=158.1
+$$
+</p>
+<p>If the system rounds to the nearest integer:</p>
+<p>
+$$
+I=158
+$$
+</p>
+<p>So the final stored pixel value is:</p>
+<p>
+$$
+\boxed{158}
+$$
+</p>
+<h3>What happened?</h3>
+<p>It is tempting to say “the scene had intensity 158,” but that is not what the calculation means.</p>
+<p>The actual statement is:</p>
+<blockquote>
+<p>Under the assumed acquisition and scaling model, a normalised measured response of 0.62 was mapped to the digital code 158.</p>
+</blockquote>
+<p>The distinction matters because raw sensor readings, calibrated physical quantities, and display-oriented pixel codes are not automatically the same thing.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 02.18: Worked example — quantization step preview -->
+  <section id="s-02-18" class="section-block">
+    <div class="section-header">
+      <span class="section-num">02.18</span>
+      <h2>Worked example — quantization step preview</h2>
+      <button class="bookmark-btn" data-id="s-02-18" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose a normalised signal lies in the interval:</p>
+<p>
+$$
+0\le s<1
+$$
+</p>
+<p>and an ideal 3-bit quantizer is used.</p>
+<p>The number of levels is:</p>
+<p>
+$$
+L=2^3=8
+$$
+</p>
+<p>The approximate step width is:</p>
+<p>
+$$
+\Delta=\frac{1}{8}=0.125
+$$
+</p>
+<p>A signal of:</p>
+<p>
+$$
+s=0.62
+$$
+</p>
+<p>falls into one of these quantization intervals depending on the chosen quantizer convention.</p>
+<p>The key lesson is not the particular rounding rule but the fact that <strong>many possible continuous values are represented by a finite set of digital codes</strong>.</p>
+<p>Chapter 03 will build this precisely with sampling and quantization mathematics.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 02.19: Where acquisition errors enter the final image -->
+  <section id="s-02-19" class="section-block">
+    <div class="section-header">
+      <span class="section-num">02.19</span>
+      <h2>Where acquisition errors enter the final image</h2>
+      <button class="bookmark-btn" data-id="s-02-19" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A useful debugging map is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Scene / illumination
+        │
+        ├── wrong exposure
+        ├── shadows
+        └── insufficient signal
+        ↓
+Optics
+        │
+        ├── blur
+        ├── distortion
+        └── defocus
+        ↓
+Sensor
+        │
+        ├── noise
+        ├── saturation
+        └── sensitivity limits
+        ↓
+Sampling
+        │
+        └── spatial discretisation / aliasing
+        ↓
+Quantization
+        │
+        └── intensity discretisation
+        ↓
+Storage / processing
+        │
+        ├── compression
+        ├── format conversion
+        └── numerical errors
+        ↓
+FINAL DIGITAL IMAGE</code></pre>
+</div></p>
+<p>When an image looks “bad,” the cause may have happened <strong>before</strong> any enhancement algorithm was run.</p>
+<p>That distinction is central to restoration.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 02.20: Restoration versus enhancement — early distinction -->
+  <section id="s-02-20" class="section-block">
+    <div class="section-header">
+      <span class="section-num">02.20</span>
+      <h2>Restoration versus enhancement — early distinction</h2>
+      <button class="bookmark-btn" data-id="s-02-20" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The acquisition model explains an important conceptual difference.</p>
+<h3>Enhancement</h3>
+<p>Goal:</p>
+<blockquote>
+<p>Produce an image that is more useful or visually informative for a chosen task.</p>
+</blockquote>
+<p>There may be many acceptable outcomes.</p>
+<h3>Restoration</h3>
+<p>Goal:</p>
+<blockquote>
+<p>Estimate the original or intended image using an explicit or assumed degradation model.</p>
+</blockquote>
+<p>The model might be:</p>
+<p>
+$$
+g=h*f+\eta
+$$
+</p>
+<p>This distinction is important because it explains why restoration is more model-driven than generic visual enhancement.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 02.21: Acquisition metadata is part of practical image information -->
+  <section id="s-02-21" class="section-block">
+    <div class="section-header">
+      <span class="section-num">02.21</span>
+      <h2>Acquisition metadata is part of practical image information</h2>
+      <button class="bookmark-btn" data-id="s-02-21" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The pixel matrix is not always the complete story.</p>
+<p>Depending on the image source, metadata may include:</p>
+<ul>
+<li>acquisition time;</li>
+<li>device information;</li>
+<li>orientation;</li>
+<li>exposure-related settings;</li>
+<li>spatial reference;</li>
+<li>spectral band information;</li>
+<li>calibration parameters.</li>
+</ul>
+<p>Not all file formats contain the same metadata, and metadata may be lost or altered during conversion.</p>
+<p><strong>EXTENSION:</strong> In scientific and geospatial imaging, metadata can be essential to interpretation. A numerical array without the context of how it was measured can be misleading.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 02.22: Common image-formation mistakes -->
+  <section id="s-02-22" class="section-block">
+    <div class="section-header">
+      <span class="section-num">02.22</span>
+      <h2>Common image-formation mistakes</h2>
+      <button class="bookmark-btn" data-id="s-02-22" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="trap-box"><div class="trap-title"><span>⚠️</span> Mistake 1 — Treating the pixel value as a direct physical measurement</div>
+
+A stored 8-bit value is often a processed code, not a universal physical unit.
+
+</div>
+
+<div class="trap-box"><div class="trap-title"><span>⚠️</span> Mistake 2 — Assuming brighter always means more “important”</div>
+
+Brightness depends on illumination, sensor response, processing, and representation.
+
+</div>
+
+<div class="trap-box"><div class="trap-title"><span>⚠️</span> Mistake 3 — Ignoring saturation</div>
+
+A clipped region may have lost distinctions that no post-processing algorithm can reliably reconstruct.
+
+</div>
+
+<div class="trap-box"><div class="trap-title"><span>⚠️</span> Mistake 4 — Assuming blur is only a software problem</div>
+
+Blur can originate in optics, motion during acquisition, defocus, resampling, and later processing.
+
+</div>
+
+<div class="trap-box"><div class="trap-title"><span>⚠️</span> Mistake 5 — Treating all noise as the same</div>
+
+Different noise mechanisms have different spatial/statistical behaviour.
+
+</div>
+
+<div class="trap-box"><div class="trap-title"><span>⚠️</span> Mistake 6 — Confusing projection with measurement of 3-D structure</div>
+
+A 2-D image is a projection/measurement of the scene; multiple 3-D configurations can produce similar 2-D observations.
+
+</div>
+
+<div class="trap-box"><div class="trap-title"><span>⚠️</span> Mistake 7 — Forgetting the acquisition context</div>
+
+The same digital values can have different meanings depending on modality, calibration, colour space, and datatype.
+
+</div>
+
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 02.23: A practical “read the image” checklist -->
+  <section id="s-02-23" class="section-block">
+    <div class="section-header">
+      <span class="section-num">02.23</span>
+      <h2>A practical “read the image” checklist</h2>
+      <button class="bookmark-btn" data-id="s-02-23" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Before processing any image, inspect:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>1. What is the acquisition source?
+2. What are the dimensions?
+3. How many channels are there?
+4. What is the datatype?
+5. What is the valid value range?
+6. Which colour space is used?
+7. Has the image been compressed?
+8. Is there visible noise?
+9. Is there blur or motion smear?
+10. Is there saturation or clipping?
+11. Is illumination uniform?
+12. What task will the processing serve?</code></pre>
+</div></p>
+<p>This checklist is more valuable than blindly applying filters.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 02.24: Image formation and acquisition — system comparison -->
+  <section id="s-02-24" class="section-block">
+    <div class="section-header">
+      <span class="section-num">02.24</span>
+      <h2>Image formation and acquisition — system comparison</h2>
+      <button class="bookmark-btn" data-id="s-02-24" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Factor</th>
+<th>What changes</th>
+<th>DIP consequence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Illumination</td>
+<td>Signal level across scene</td>
+<td>Contrast, shadows, thresholding difficulty</td>
+</tr>
+<tr>
+<td>Focus</td>
+<td>Spatial sharpness</td>
+<td>Edge/detail quality</td>
+</tr>
+<tr>
+<td>Motion</td>
+<td>Position during exposure</td>
+<td>Motion blur</td>
+</tr>
+<tr>
+<td>Optics</td>
+<td>Spatial response</td>
+<td>Blur/distortion</td>
+</tr>
+<tr>
+<td>Sensor sensitivity</td>
+<td>Signal response</td>
+<td>Brightness/noise behaviour</td>
+</tr>
+<tr>
+<td>Exposure</td>
+<td>Amount of received energy</td>
+<td>Under/overexposure</td>
+</tr>
+<tr>
+<td>Sampling</td>
+<td>Spatial sample density</td>
+<td>Detail / aliasing</td>
+</tr>
+<tr>
+<td>Quantization</td>
+<td>Number of code levels</td>
+<td>Intensity precision</td>
+</tr>
+<tr>
+<td>Compression</td>
+<td>Encoding of stored data</td>
+<td>File size / possible information loss</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 02.25: EXAM lens -->
+  <section id="s-02-25" class="section-block">
+    <div class="section-header">
+      <span class="section-num">02.25</span>
+      <h2>EXAM lens</h2>
+      <button class="bookmark-btn" data-id="s-02-25" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>High-yield definitions</h3>
+<ol>
+<li>Define image formation.</li>
+<li>Explain image acquisition.</li>
+<li>Explain the role of a sensor in image acquisition.</li>
+<li>Define dynamic range.</li>
+<li>Explain saturation/clipping.</li>
+<li>Explain the concept of PSF at a conceptual level.</li>
+<li>Explain the image degradation model.</li>
+</ol>
+<h3>High-yield formulas</h3>
+<p>
+$$
+f(x,y)=i(x,y)r(x,y)
+$$
+</p>
+<p>Simple illumination–reflectance model.</p>
+<p>
+$$
+x=f\frac{X}{Z},\qquad y=f\frac{Y}{Z}
+$$
+</p>
+<p>Simple pinhole projection model — extension material.</p>
+<p>
+$$
+g(x,y)=h(x,y)*f(x,y)+\eta(x,y)
+$$
+</p>
+<p>Basic degradation model.</p>
+<h3>Typical conceptual question</h3>
+<blockquote>
+<p>Why can an image be degraded before any digital image-processing algorithm is applied?</p>
+</blockquote>
+<p>Expected reasoning:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>scene / illumination / optics / sensor / acquisition
+                    ↓
+            degraded measurement
+                    ↓
+               digital image</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 02.26: Chapter checkpoint -->
+  <section id="s-02-26" class="section-block">
+    <div class="section-header">
+      <span class="section-num">02.26</span>
+      <h2>Chapter checkpoint</h2>
+      <button class="bookmark-btn" data-id="s-02-26" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Concept 1</h3>
+<p>Explain why a pixel should be considered the result of a measurement-and-digitisation process rather than simply a “tiny square in the world.”</p>
+<h3>Concept 2</h3>
+<p>Two photographs of the same object are taken using different lighting. The object does not move, but the pixel intensities differ substantially.</p>
+<p>List at least three reasons why this can happen.</p>
+<h3>Numerical</h3>
+<p>A simplified acquisition model maps a normalised sensor response $s$ to an 8-bit value using:</p>
+<p>
+$$
+I=\operatorname{round}(255s)
+$$
+</p>
+<p>Calculate the output for:</p>
+<p>
+$$
+s\in\{0.10,0.50,0.90\}
+$$
+</p>
+<h3>System reasoning</h3>
+<p>An image contains a large bright region with many pixels at exactly 255.</p>
+<p>What does this suggest about the acquisition process, and what information may be lost?</p>
+<h3>Design question</h3>
+<p>Draw the complete chain from a real-world scene to a stored digital pixel. Label where blur, noise, sampling, and quantization can appear.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 02.27: Lab / implementation bridge -->
+  <section id="s-02-27" class="section-block">
+    <div class="section-header">
+      <span class="section-num">02.27</span>
+      <h2>Lab / implementation bridge</h2>
+      <button class="bookmark-btn" data-id="s-02-27" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Although the first university practical focuses on loading, displaying, and converting images between colour spaces, it is useful to connect every loaded image back to its acquisition context.</p>
+<p>The syllabus explicitly requires image input/output and colour-space conversion in Experiment 1. fileciteturn4file0L58-L61</p>
+<p>Before calling an API, inspect the data conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>shape      → spatial dimensions + channels
+channel    → what component is being represented?
+dtype      → how is each value stored?
+range      → what values are valid?
+colour     → which colour-space convention?
+origin     → how was the image acquired?</code></pre>
+</div></p>
+<p>This habit will prevent many later implementation bugs.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 02.28: Forward connection — sampling and quantization -->
+  <section id="s-02-28" class="section-block">
+    <div class="section-header">
+      <span class="section-num">02.28</span>
+      <h2>Forward connection — sampling and quantization</h2>
+      <button class="bookmark-btn" data-id="s-02-28" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>We now know that a real imaging system produces a continuous or analogue signal and that the computer eventually needs a finite digital representation.</p>
+<p>The bridge between those two worlds is:</p>
+<p>
+$$
+\boxed{
+\text{continuous spatial signal}
+\rightarrow
+\text{sampling}
+\rightarrow
+\text{discrete coordinates}
+}
+$$
+</p>
+<p>and:</p>
+<p>
+$$
+\boxed{
+\text{continuous intensity}
+\rightarrow
+\text{quantization}
+\rightarrow
+\text{finite digital levels}
+}
+$$
+</p>
+<p>The next chapter develops both ideas rigorously, including aliasing, sampling density, bit depth, quantization error, and worked numerical examples.</p>
+<hr />
+<h2>Chapter summary</h2>
+<p>Image formation and acquisition explain why a digital image is a <strong>measurement produced by a system</strong>, not a perfect copy of reality.</p>
+<p>The chain is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>scene
+ → illumination / emitted radiation
+ → scene interaction
+ → optics
+ → sensor response
+ → analogue signal
+ → sampling
+ → quantization
+ → digital image</code></pre>
+</div></p>
+<p>Every stage can affect the final data. Illumination changes intensity, optics affect spatial detail, sensors introduce response limits and noise, sampling determines spatial discretisation, and quantization determines intensity discretisation.</p>
+<p>The most important idea to retain is:</p>
+<blockquote>
+<p><strong>When you inspect a digital image, you are looking at the output of an acquisition pipeline. Understanding that pipeline explains many of the image's strengths, weaknesses, and failure modes.</strong></p>
+</blockquote>
+    </div>
+  </section>
+
+  <!-- SECTION 02.29: Worked Degradation Example -->
+  <section id="s-02-29" class="section-block">
+    <div class="section-header">
+      <span class="section-num">02.29</span>
+      <h2>Worked Degradation Example</h2>
+      <button class="bookmark-btn" data-id="s-02-29" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose the original 1-D signal is:</p>
+<p>
+$$
+f=[0,0,100,0,0]
+$$
+</p>
+<p>and a simple averaging blur is approximated by:</p>
+<p>
+$$
+h=\frac{1}{3}[1,1,1]
+$$
+</p>
+<p>The central peak becomes distributed into neighbouring positions.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Original
+      █
+      █
+      █
+
+After blur
+    ▄ █ ▄</code></pre>
+</div></p>
+<p>The exact boundary treatment changes the numerical output, so the MiniBook will state the border convention whenever a full calculation is performed.</p>
+<p>The key point is:</p>
+<blockquote>
+<p><strong>Blur spreads localized information across neighbouring spatial locations.</strong></p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 02.30: Image Formation vs Sampling vs Quantization -->
+  <section id="s-02-30" class="section-block">
+    <div class="section-header">
+      <span class="section-num">02.30</span>
+      <h2>Image Formation vs Sampling vs Quantization</h2>
+      <button class="bookmark-btn" data-id="s-02-30" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>These three concepts must remain distinct.</p>
+<div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Stage</th>
+<th>Main question</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Image formation</td>
+<td>How does scene information become a measurable signal?</td>
+</tr>
+<tr>
+<td>Sampling</td>
+<td>At which spatial locations do we record the signal?</td>
+</tr>
+<tr>
+<td>Quantization</td>
+<td>Which numerical intensity levels can represent each measurement?</td>
+</tr>
+</tbody>
+</table></div>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>physical scene
+      ↓
+image formation
+      ↓
+continuous/spatially varying signal
+      ↓
+sampling
+      ↓
+discrete spatial locations
+      ↓
+quantization
+      ↓
+finite intensity levels
+      ↓
+digital image</code></pre>
+</div></p>
+<p>Chapter 03 will study the last part in depth.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 02.31: Worked Conceptual Chain -->
+  <section id="s-02-31" class="section-block">
+    <div class="section-header">
+      <span class="section-num">02.31</span>
+      <h2>Worked Conceptual Chain</h2>
+      <button class="bookmark-btn" data-id="s-02-31" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Imagine a document under uneven lighting.</p>
+<h3>Physical stage</h3>
+<p>The paper reflects available illumination.</p>
+<h3>Optical stage</h3>
+<p>The imaging system projects the page onto the sensor.</p>
+<h3>Sensor stage</h3>
+<p>The sensor measures the incoming response.</p>
+<h3>Acquisition issues</h3>
+<p>One region may receive less light.</p>
+<h3>Digitisation</h3>
+<p>The continuous spatial/response information is sampled and quantized.</p>
+<h3>Final digital image</h3>
+<p>The resulting pixel values may show:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>bright page region
++
+darkened region
++
+sensor noise
++
+optical blur</code></pre>
+</div></p>
+<p>Later algorithms can attempt:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>contrast enhancement
+noise reduction
+deblurring
+thresholding</code></pre>
+</div></p>
+<p>But software cannot guarantee perfect recovery of information that was never captured.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 02.32: The Information Boundary -->
+  <section id="s-02-32" class="section-block">
+    <div class="section-header">
+      <span class="section-num">02.32</span>
+      <h2>The Information Boundary</h2>
+      <button class="bookmark-btn" data-id="s-02-32" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>This is an important engineering principle.</p>
+<p>Suppose a bright region has saturated:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>true response:
+300, 340, 420, 500
+
+stored:
+255, 255, 255, 255</code></pre>
+</div></p>
+<p>The stored image no longer contains enough information to distinguish the original values.</p>
+<p>Similarly:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>very fine spatial pattern</code></pre>
+</div></p>
+<p>may disappear under insufficient sampling.</p>
+<p>Or:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>fine detail</code></pre>
+</div></p>
+<p>may be suppressed by optical blur.</p>
+<p>Therefore:</p>
+<blockquote>
+<p><strong>Image processing can transform available information, but it cannot universally reconstruct arbitrary information that the acquisition chain completely discarded.</strong></p>
+</blockquote>
+<p>This principle will return in restoration, compression and super-resolution discussions.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 02.33: Acquisition Quality as an Engineering Trade-Off -->
+  <section id="s-02-33" class="section-block">
+    <div class="section-header">
+      <span class="section-num">02.33</span>
+      <h2>Acquisition Quality as an Engineering Trade-Off</h2>
+      <button class="bookmark-btn" data-id="s-02-33" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Real imaging systems trade among factors such as:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>spatial detail
+signal strength
+noise
+exposure time
+dynamic range
+field of view
+data volume
+hardware limits</code></pre>
+</div></p>
+<p>Improving one quantity can affect another.</p>
+<p>For example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>higher spatial sampling
+→ potentially more detail
+→ potentially more data
+
+longer exposure
+→ potentially more signal
+→ potentially more motion blur</code></pre>
+</div></p>
+<p>These are engineering trade-offs, not purely software decisions.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 02.34: Acquisition Examples Across Modalities -->
+  <section id="s-02-34" class="section-block">
+    <div class="section-header">
+      <span class="section-num">02.34</span>
+      <h2>Acquisition Examples Across Modalities</h2>
+      <button class="bookmark-btn" data-id="s-02-34" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The exact physical process changes by modality.</p>
+<div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Modality</th>
+<th>Measured/used information</th>
+<th>Example output</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Visible-light camera</td>
+<td>reflected/emitted optical radiation</td>
+<td>RGB/grayscale image</td>
+</tr>
+<tr>
+<td>Scanner</td>
+<td>reflected/transmitted light along a controlled path</td>
+<td>document image</td>
+</tr>
+<tr>
+<td>Infrared imaging</td>
+<td>infrared radiation</td>
+<td>thermal/spectral representation</td>
+</tr>
+<tr>
+<td>X-ray imaging</td>
+<td>transmitted X-ray intensity</td>
+<td>projection image</td>
+</tr>
+<tr>
+<td>MRI</td>
+<td>magnetic-resonance-derived measurements</td>
+<td>reconstructed image</td>
+</tr>
+<tr>
+<td>Ultrasound</td>
+<td>acoustic reflections</td>
+<td>reconstructed image</td>
+</tr>
+</tbody>
+</table></div>
+<p>The DIP principles remain relevant because all ultimately produce numerical data for computational processing, even though the acquisition physics differ.</p>
+<blockquote>
+<p><strong>EXTENSION:</strong> A good DIP engineer understands where a numerical image came from because acquisition assumptions affect how later algorithms should be interpreted.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 02.35: Common Acquisition Artifacts -->
+  <section id="s-02-35" class="section-block">
+    <div class="section-header">
+      <span class="section-num">02.35</span>
+      <h2>Common Acquisition Artifacts</h2>
+      <button class="bookmark-btn" data-id="s-02-35" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Examples:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>blur
+noise
+saturation
+underexposure
+overexposure
+illumination non-uniformity
+geometric distortion
+sensor non-uniformity
+compression artifacts introduced later in the storage pipeline</code></pre>
+</div></p>
+<p>The final artifact may have multiple causes, so diagnosis should be evidence-driven.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 02.36: Acquisition Artifact → Later DIP Method -->
+  <section id="s-02-36" class="section-block">
+    <div class="section-header">
+      <span class="section-num">02.36</span>
+      <h2>Acquisition Artifact → Later DIP Method</h2>
+      <button class="bookmark-btn" data-id="s-02-36" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Acquisition issue</th>
+<th>Potential downstream response</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>uneven illumination</td>
+<td>contrast correction / adaptive processing</td>
+</tr>
+<tr>
+<td>impulse-like noise</td>
+<td>nonlinear filtering</td>
+</tr>
+<tr>
+<td>smooth random noise</td>
+<td>smoothing / restoration</td>
+</tr>
+<tr>
+<td>blur</td>
+<td>deconvolution/restoration</td>
+</tr>
+<tr>
+<td>geometric distortion</td>
+<td>geometric correction</td>
+</tr>
+<tr>
+<td>limited dynamic range</td>
+<td>enhancement or acquisition redesign</td>
+</tr>
+<tr>
+<td>saturation</td>
+<td>often cannot be perfectly recovered</td>
+</tr>
+</tbody>
+</table></div>
+<p>The table is a decision aid, not a guarantee that one method always solves the problem.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 02.37: Common Traps -->
+  <section id="s-02-37" class="section-block">
+    <div class="section-header">
+      <span class="section-num">02.37</span>
+      <h2>Common Traps</h2>
+      <button class="bookmark-btn" data-id="s-02-37" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h2>Trap 1 — “A camera records the scene exactly.”</h2>
+<p>False.</p>
+<p>It records a measurement influenced by the entire imaging chain.</p>
+<h2>Trap 2 — “A pixel is the physical scene point.”</h2>
+<p>Incomplete.</p>
+<p>A digital pixel is a representation associated with a sampled image location; the physical sensing process involves finite sensor areas, optics and integration effects.</p>
+<h2>Trap 3 — “More exposure always gives a better image.”</h2>
+<p>False.</p>
+<p>Too much exposure can lead to clipping/saturation.</p>
+<h2>Trap 4 — “Software can recover any lost information.”</h2>
+<p>False.</p>
+<p>If information is fully destroyed by clipping, insufficient sampling, severe blur or other irreversible operations, exact recovery is generally not guaranteed.</p>
+<h2>Trap 5 — “Image formation and sampling are the same.”</h2>
+<p>False.</p>
+<p>Formation concerns how scene information produces a measurable signal; sampling concerns discrete spatial recording of that signal.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 02.38: Engineering Insight — Diagnose the Acquisition Before the Algorithm -->
+  <section id="s-02-38" class="section-block">
+    <div class="section-header">
+      <span class="section-num">02.38</span>
+      <h2>Engineering Insight — Diagnose the Acquisition Before the Algorithm</h2>
+      <button class="bookmark-btn" data-id="s-02-38" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>When a new image looks poor, ask:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Was the illumination adequate?
+Was the scene properly exposed?
+Was the focus appropriate?
+Is there motion?
+Is the dynamic range sufficient?
+Is the sensor noisy?
+Is there saturation?
+Was the image resampled or compressed?</code></pre>
+</div></p>
+<p>Only then choose a processing method.</p>
+<p>A strong DIP workflow therefore begins with <strong>measurement diagnosis</strong>, not automatic filtering.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 02.39: Cross-Book Bridges -->
+  <section id="s-02-39" class="section-block">
+    <div class="section-header">
+      <span class="section-num">02.39</span>
+      <h2>Cross-Book Bridges</h2>
+      <button class="bookmark-btn" data-id="s-02-39" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <blockquote>
+<p><strong>MATH BRIDGE — M02 / M16</strong><br />
+Review discrete image coordinates and geometric transformation mathematics.</p>
+<p><strong>LAB BRIDGE — LAB-U1-01</strong><br />
+Inspect actual image dimensions, datatype, channels and range after loading an image.</p>
+<p><strong>PRACTICE BRIDGE</strong><br />
+Diagnose whether a described artifact is more plausibly caused by illumination, noise, blur, sampling or saturation.</p>
+<p><strong>EXAM BRIDGE</strong><br />
+Be able to explain the image-acquisition pipeline, the illumination/reflectance model, the role of sensors and the distinction between image formation, sampling and quantization.</p>
+<p><strong>RESOURCE BRIDGE</strong><br />
+Consult the classical DIP references for more detailed acquisition and degradation models.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 02.40: Quick Recall -->
+  <section id="s-02-40" class="section-block">
+    <div class="section-header">
+      <span class="section-num">02.40</span>
+      <h2>Quick Recall</h2>
+      <button class="bookmark-btn" data-id="s-02-40" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>SCENE
+↓
+ILLUMINATION / EMISSION
+↓
+SCENE INTERACTION
+↓
+OPTICS
+↓
+SENSOR
+↓
+READOUT
+↓
+SAMPLING
+↓
+QUANTIZATION
+↓
+DIGITAL IMAGE</code></pre>
+</div></p>
+<p>A useful reflective-scene model:</p>
+<p>
+$$
+f(x,y)=i(x,y)r(x,y)
+$$
+</p>
+<p>A simple additive-noise model:</p>
+<p>
+$$
+g(x,y)=f(x,y)+\eta(x,y)
+$$
+</p>
+<p>A simple degradation model:</p>
+<p>
+$$
+g(x,y)=h(x,y)*f(x,y)+\eta(x,y)
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 02.41: Chapter Checkpoint -->
+  <section id="s-02-41" class="section-block">
+    <div class="section-header">
+      <span class="section-num">02.41</span>
+      <h2>Chapter Checkpoint</h2>
+      <button class="bookmark-btn" data-id="s-02-41" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>You should now be able to answer:</p>
+<ol>
+<li>What is image formation?</li>
+<li>Why is a digital image considered a measurement rather than an exact copy of a scene?</li>
+<li>What roles do illumination and reflectance play?</li>
+<li>What does the simplified model $f=i\,r$ tell us?</li>
+<li>What is the difference between a sensor element and a digital pixel?</li>
+<li>What is saturation?</li>
+<li>Why can clipped data be impossible to reconstruct exactly?</li>
+<li>How can acquisition introduce blur and noise?</li>
+<li>Distinguish image formation, sampling and quantization.</li>
+<li>Why should image quality problems be diagnosed before choosing a processing algorithm?</li>
+</ol>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 02.42: Connection Forward -->
+  <section id="s-02-42" class="section-block">
+    <div class="section-header">
+      <span class="section-num">02.42</span>
+      <h2>Connection Forward</h2>
+      <button class="bookmark-btn" data-id="s-02-42" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The acquisition system gives us a continuously varying physical signal.</p>
+<p>But a computer needs discrete numerical data.</p>
+<p>That creates the next fundamental question:</p>
+<blockquote>
+<p><strong>How do we turn continuous spatial information and continuously varying measurements into discrete samples and finite numeric levels?</strong></p>
+</blockquote>
+<p>That is the problem of:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>SAMPLING + QUANTIZATION</code></pre>
+</div></p>
+<p>and it is the focus of Chapter 03.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 02.43: Final Mental Model -->
+  <section id="s-02-43" class="section-block">
+    <div class="section-header">
+      <span class="section-num">02.43</span>
+      <h2>Final Mental Model</h2>
+      <button class="bookmark-btn" data-id="s-02-43" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>A digital image starts long before the pixel array exists.
+
+Scene
+  ↓
+physics
+  ↓
+optics
+  ↓
+sensor
+  ↓
+measurement
+  ↓
+digitisation
+  ↓
+pixel values
+
+Every stage can preserve, distort, limit or discard information.
+
+Understanding that chain is the foundation for understanding
+enhancement, restoration, segmentation and vision.</code></pre>
+</div></p>
+    </div>
+  </section>
+
+      <!-- Chapter End Package -->
+      <section class="chapter-end-package">
+        <div class="chapter-nav-grid">
+          <a href="ch01-big-picture.html" class="chapter-nav-card">
+            <div class="chapter-nav-dir">← Previous</div>
+            <div class="chapter-nav-title">← Ch 1 — The Big Picture</div>
+          </a>
+          <a href="ch03-sampling-quantization.html" class="chapter-nav-card next">
+            <div class="chapter-nav-dir">Next →</div>
+            <div class="chapter-nav-title">Next: Ch 3 — Sampling & Quantization →</div>
+          </a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- FLOATING TTS PANEL (SAFE MANUAL MODE ONLY) -->
+  <div id="tts-panel" style="position:fixed; bottom:20px; right:20px; background:var(--em-surface-1); border:1px solid var(--em-border); border-radius:var(--em-radius-md); padding:12px 16px; box-shadow:var(--sh-lg); z-index:var(--z-float); display:none; gap:10px; align-items:center;">
+    <button class="icon-btn" id="tts-play" title="Play / Pause" style="background:var(--em-accent); color:#fff; border-radius:50%; width:36px; height:36px;">▶</button>
+    <button class="icon-btn" id="tts-stop" title="Stop">⏹</button>
+    <div style="font-size:0.75rem; color:var(--em-text-muted);">
+      <span id="tts-status">Ready</span> · <span id="tts-rate-label">1.0x</span>
+    </div>
+  </div>
+
+  <script src="../assets/js/state.js"></script>
+  <script src="../assets/js/core.js"></script>
+  <script src="../assets/js/tts.js"></script>
+  <script src="../assets/js/glossary.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: document.documentElement.getAttribute('data-theme') === 'light' ? 'default' : 'dark'
+      });
+    });
+  </script>
+</body>
+</html>

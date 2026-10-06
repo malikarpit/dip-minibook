@@ -1,0 +1,2121 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Arpit">
+  <meta name="description" content="Chapter 05: Colour Models &amp; Image File Formats — Digital Image Processing MiniBook. Trichromatic Human Vision, RGB Cube, CMYK Printing, HSV/HSI Geometric Derivations, YCbCr Video Subsampling, and File Formats (BMP, PNG, JPEG, TIFF)">
+  <title>C05: Colour Models &amp; Image File Formats | DIP MiniBook 📷 Arpit</title>
+
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <link rel="stylesheet" href="../assets/css/chapters.css">
+  <link rel="stylesheet" href="../assets/css/animations.css">
+  <link rel="stylesheet" href="../assets/css/timer.css">
+
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body data-chapter-id="ch05-colour-models-file-formats">
+  <div id="progress-bar"></div>
+
+  <!-- Header -->
+  <header id="main-header">
+    <div class="header-left">
+      <button id="sidebar-toggle" class="icon-btn" aria-label="Toggle navigation drawer" title="Toggle Sidebar (S)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <a href="../index.html" class="brand-logo">
+        <div class="brand-icon">DIP</div>
+        <div class="brand-text">
+          <span class="main">Digital Image Processing</span>
+          <span class="sub">DU DSE-3 Engineering MiniBook</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="header-chapter-title">C05: Colour Models &amp; Image File Formats</div>
+
+    <div class="header-right">
+      <button id="reading-mode-btn" class="icon-btn" aria-label="Toggle reading focus mode" title="Focus Mode (F)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+          <line x1="8" y1="21" x2="16" y2="21"></line>
+          <line x1="12" y1="17" x2="12" y2="21"></line>
+        </svg>
+      </button>
+      <button id="tts-toggle" class="icon-btn" aria-label="Audio Reader" title="Audio Reader">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+        </svg>
+      </button>
+      <button id="theme-toggle" class="icon-btn" aria-label="Cycle theme" title="Theme (T)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="12" cy="12" r="4.5"></circle>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Sidebar Overlay -->
+  <div id="sidebar-overlay"></div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" aria-expanded="true">
+    <div class="sidebar-nav">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">General</div>
+        <a href="../index.html" class="sidebar-link">
+          <span class="link-icon">🏛️</span>
+          <span>Subject Portal</span>
+        </a>
+        <a href="../progress.html" class="sidebar-link">
+          <span class="link-icon">📊</span>
+          <span>Study Dashboard</span>
+        </a>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Current Chapter Sections</div>
+        <a href="#s-05-0" class="sidebar-link"><span class="link-icon">📌</span><span>05.0 Why This Chapter Matters</span> </a>
+      <a href="#s-05-1" class="sidebar-link"><span class="link-icon">📌</span><span>05.1 Colour Is a Representation Problem</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-05-2" class="sidebar-link"><span class="link-icon">📌</span><span>05.2 Additive vs Subtractive Colour</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-05-3" class="sidebar-link"><span class="link-icon">📌</span><span>05.3 RGB — The Familiar Digital Colour Model</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-05-4" class="sidebar-link"><span class="link-icon">📌</span><span>05.4 RGB as a Cube</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-05-5" class="sidebar-link"><span class="link-icon">📌</span><span>05.5 Worked Example — RGB Combination</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-05-6" class="sidebar-link"><span class="link-icon">📌</span><span>05.6 RGB Strengths and Limitations</span> </a>
+      <a href="#s-05-7" class="sidebar-link"><span class="link-icon">📌</span><span>05.7 HSV — Hue, Saturation, Value</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-05-8" class="sidebar-link"><span class="link-icon">📌</span><span>05.8 Why HSV Is Popular in Segmentation</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-05-9" class="sidebar-link"><span class="link-icon">📌</span><span>05.9 HSV Circularity of Hue</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-05-10" class="sidebar-link"><span class="link-icon">📌</span><span>05.10 RGB to HSV — Conceptual Route</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-05-11" class="sidebar-link"><span class="link-icon">📌</span><span>05.11 Worked HSV Example</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-05-12" class="sidebar-link"><span class="link-icon">📌</span><span>05.12 CMY — A Subtractive Model</span> </a>
+      <a href="#s-05-13" class="sidebar-link"><span class="link-icon">📌</span><span>05.13 Worked RGB → CMY</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-05-14" class="sidebar-link"><span class="link-icon">📌</span><span>05.14 Why CMYK Exists</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-05-15" class="sidebar-link"><span class="link-icon">📌</span><span>05.15 YUV — Separating Luma-Related and Chrominance Information</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-05-16" class="sidebar-link"><span class="link-icon">📌</span><span>05.16 Why Separate Brightness and Colour?</span> </a>
+      <a href="#s-05-17" class="sidebar-link"><span class="link-icon">📌</span><span>05.17 Chroma Subsampling</span> </a>
+      <a href="#s-05-18" class="sidebar-link"><span class="link-icon">📌</span><span>05.18 Colour Model Comparison</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-05-19" class="sidebar-link"><span class="link-icon">📌</span><span>05.19 Colour Conversion Is a Transformation</span> </a>
+      <a href="#s-05-20" class="sidebar-link"><span class="link-icon">📌</span><span>05.20 Common Colour-Processing Errors</span> </a>
+      <a href="#s-05-21" class="sidebar-link"><span class="link-icon">📌</span><span>05.21 What Is an Image File Format?</span> </a>
+      <a href="#s-05-22" class="sidebar-link"><span class="link-icon">📌</span><span>05.22 BMP</span> </a>
+      <a href="#s-05-23" class="sidebar-link"><span class="link-icon">📌</span><span>05.23 PNG</span> </a>
+      <a href="#s-05-24" class="sidebar-link"><span class="link-icon">📌</span><span>05.24 JPEG</span> </a>
+      <a href="#s-05-25" class="sidebar-link"><span class="link-icon">📌</span><span>05.25 Why JPEG Works Well for Photos</span> </a>
+      <a href="#s-05-26" class="sidebar-link"><span class="link-icon">📌</span><span>05.26 JPEG Artifacts</span> </a>
+      <a href="#s-05-27" class="sidebar-link"><span class="link-icon">📌</span><span>05.27 TIFF</span> </a>
+      <a href="#s-05-28" class="sidebar-link"><span class="link-icon">📌</span><span>05.28 Format Comparison</span> </a>
+      <a href="#s-05-29" class="sidebar-link"><span class="link-icon">📌</span><span>05.29 Lossless vs Lossy</span> </a>
+      <a href="#s-05-30" class="sidebar-link"><span class="link-icon">📌</span><span>05.30 Worked Format Decision</span> </a>
+      <a href="#s-05-31" class="sidebar-link"><span class="link-icon">📌</span><span>05.31 File Extension Is Not Enough</span> </a>
+      <a href="#s-05-32" class="sidebar-link"><span class="link-icon">📌</span><span>05.32 File Format vs Codec vs Container</span> </a>
+      <a href="#s-05-33" class="sidebar-link"><span class="link-icon">📌</span><span>05.33 A Complete Colour-Image Pipeline</span> </a>
+      <a href="#s-05-34" class="sidebar-link"><span class="link-icon">📌</span><span>05.34 Engineering Scenario — Coloured Object Detection</span> </a>
+      <a href="#s-05-35" class="sidebar-link"><span class="link-icon">📌</span><span>05.35 Engineering Scenario — Why JPEG Can Be Dangerous</span> </a>
+      <a href="#s-05-36" class="sidebar-link"><span class="link-icon">📌</span><span>05.36 Common Traps</span> </a>
+      <a href="#s-05-37" class="sidebar-link"><span class="link-icon">📌</span><span>05.37 Exam-Ready Comparison</span> </a>
+      <a href="#s-05-38" class="sidebar-link"><span class="link-icon">📌</span><span>05.38 Cross-Book Bridges</span> </a>
+      <a href="#s-05-39" class="sidebar-link"><span class="link-icon">📌</span><span>05.39 Quick Recall</span> </a>
+      <a href="#s-05-40" class="sidebar-link"><span class="link-icon">📌</span><span>05.40 Chapter Checkpoint</span> </a>
+      <a href="#s-05-41" class="sidebar-link"><span class="link-icon">📌</span><span>05.41 Part I Completion Map</span> </a>
+      <a href="#s-05-42" class="sidebar-link"><span class="link-icon">📌</span><span>05.42 Mathematical Derivation: RGB to HSV / HSI Conversion</span> </a>
+      <a href="#s-05-43" class="sidebar-link"><span class="link-icon">📌</span><span>05.43 Chroma Subsampling: YCbCr 4:4:4 vs 4:2:2 vs 4:2:0</span> </a>
+      </div>
+
+      
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-i">Part I — The Image</div>
+      <a href="ch01-big-picture.html" class="sidebar-link"><span class="link-icon">01</span><span>The Big Picture</span></a>
+      <a href="ch02-image-formation.html" class="sidebar-link"><span class="link-icon">02</span><span>Formation & Acquisition</span></a>
+      <a href="ch03-sampling-quantization.html" class="sidebar-link"><span class="link-icon">03</span><span>Sampling & Quantization</span></a>
+      <a href="ch04-image-representation.html" class="sidebar-link"><span class="link-icon">04</span><span>Pixels, Matrices & Resolution</span></a>
+      <a href="ch05-colour-models-file-formats.html" class="sidebar-link active"><span class="link-icon">05</span><span>Colour Models & Formats</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-ii">Part II — Improving the Image</div>
+      <a href="ch06-point-processing.html" class="sidebar-link"><span class="link-icon">06</span><span>Point Processing & Intensity</span></a>
+      <a href="ch07-histograms-equalization.html" class="sidebar-link"><span class="link-icon">07</span><span>Histograms & Equalization</span></a>
+      <a href="ch08-spatial-filtering.html" class="sidebar-link"><span class="link-icon">08</span><span>Spatial Filtering & Convolution</span></a>
+      <a href="ch09-smoothing-noise-reduction.html" class="sidebar-link"><span class="link-icon">09</span><span>Smoothing & Noise Reduction</span></a>
+      <a href="ch10-sharpening-edge-detection.html" class="sidebar-link"><span class="link-icon">10</span><span>Sharpening & Edge Detection</span></a>
+      <a href="ch11-geometric-transforms.html" class="sidebar-link"><span class="link-icon">11</span><span>Geometric Transforms</span></a>
+      <a href="ch12-fourier-transform.html" class="sidebar-link"><span class="link-icon">12</span><span>Fourier Transform & Frequency</span></a>
+      <a href="ch13-frequency-filtering.html" class="sidebar-link"><span class="link-icon">13</span><span>Frequency-Domain Filtering</span></a>
+      <a href="ch14-image-restoration.html" class="sidebar-link"><span class="link-icon">14</span><span>Restoration & Deblurring</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-iii">Part III — Understanding Content</div>
+      <a href="ch15-segmentation-fundamentals.html" class="sidebar-link"><span class="link-icon">15</span><span>Segmentation Fundamentals</span></a>
+      <a href="ch16-thresholding-otsu.html" class="sidebar-link"><span class="link-icon">16</span><span>Thresholding & Otsu Method</span></a>
+      <a href="ch17-region-segmentation.html" class="sidebar-link"><span class="link-icon">17</span><span>Region-Based Segmentation</span></a>
+      <a href="ch18-mathematical-morphology.html" class="sidebar-link"><span class="link-icon">18</span><span>Mathematical Morphology</span></a>
+      <a href="ch19-features-descriptors.html" class="sidebar-link"><span class="link-icon">19</span><span>Image Features & Descriptors</span></a>
+      <a href="ch20-sift-surf-orb-hog.html" class="sidebar-link"><span class="link-icon">20</span><span>SIFT, SURF, ORB & HOG</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-iv">Part IV — Compressing Images</div>
+      <a href="ch21-compression-entropy.html" class="sidebar-link"><span class="link-icon">21</span><span>Compression & Entropy</span></a>
+      <a href="ch22-lossless-coding.html" class="sidebar-link"><span class="link-icon">22</span><span>Lossless: RLE & Huffman</span></a>
+      <a href="ch23-lossy-dct-jpeg.html" class="sidebar-link"><span class="link-icon">23</span><span>Lossy: DCT & JPEG</span></a>
+      <a href="ch24-wavelets-jpeg2000.html" class="sidebar-link"><span class="link-icon">24</span><span>Wavelets & JPEG 2000</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-v">Part V — Intelligent Vision</div>
+      <a href="ch25-image-classification.html" class="sidebar-link"><span class="link-icon">25</span><span>Image Classification</span></a>
+      <a href="ch26-cnns-image-processing.html" class="sidebar-link"><span class="link-icon">26</span><span>CNNs for Image Processing</span></a>
+      <a href="ch27-modern-vision-architectures.html" class="sidebar-link"><span class="link-icon">27</span><span>Modern Vision Architectures</span></a>
+      <a href="ch28-object-detection-yolo.html" class="sidebar-link"><span class="link-icon">28</span><span>Object Detection: YOLO</span></a>
+      <a href="ch29-image-denoising-autoencoders.html" class="sidebar-link"><span class="link-icon">29</span><span>Image Denoising Autoencoders</span></a>
+      <a href="ch30-video-motion-analysis.html" class="sidebar-link"><span class="link-icon">30</span><span>Video & Motion Analysis</span></a>
+      <a href="ch31-dip-applications-engineering.html" class="sidebar-link"><span class="link-icon">31</span><span>DIP Applications & Ethics</span></a>
+    </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-brand-mark">
+        <div class="mark">DU</div>
+        <div>
+          <strong>DSE-3 MiniBook</strong>
+          <div>University of Delhi</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mandatory Shell Wrapper -->
+  <div id="main-content">
+    <main class="chapter-content">
+      <!-- Chapter Hero -->
+      <div class="chapter-hero">
+        <div class="hero-meta">
+          <span class="part-badge part-i">The Image</span>
+          <span class="chapter-number">CHAPTER 05</span>
+          <span class="reading-time">⏱️ ~50 min read</span>
+          <span class="tag-badge tag-core">High Yield (5–10 mark guarantee)</span>
+        </div>
+        <h1 class="chapter-title">Colour Models &amp; Image File Formats</h1>
+        <p class="chapter-subtitle">
+          Trichromatic Human Vision, RGB Cube, CMYK Printing, HSV/HSI Geometric Derivations, YCbCr Video Subsampling, and File Formats (BMP, PNG, JPEG, TIFF)
+        </p>
+
+        <div class="syllabus-anchor">
+          <span class="syllabus-anchor-label">DU Syllabus</span>
+          <span><strong>Colour Models & File Formats:</strong> Primary colours, CIE chromaticity diagram, RGB, CMY/CMYK, HSV (Hue, Saturation, Value), HSI, YCbCr chroma subsampling (4:4:4, 4:2:2, 4:2:0), BMP header structure, PNG lossless Deflate, JPEG lossy DCT overview, and OpenCV BGR vs RGB convention.</span>
+        </div>
+      </div>
+
+      <!-- In-Page TOC -->
+      <div class="chapter-checklist-card" style="margin-bottom:var(--em-space-8);">
+        <div class="checklist-title">
+          <span>Table of Contents &amp; Visual Section Map</span>
+          <span class="tag-badge tag-math">44 Deep Sections</span>
+        </div>
+        <ul class="part-chapters-list">
+          <li class="part-chapter-item"><a href="#s-05-0"><strong>05.0</strong> Why This Chapter Matters</a> </li>
+      <li class="part-chapter-item"><a href="#s-05-1"><strong>05.1</strong> Colour Is a Representation Problem</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-05-2"><strong>05.2</strong> Additive vs Subtractive Colour</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-05-3"><strong>05.3</strong> RGB — The Familiar Digital Colour Model</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-05-4"><strong>05.4</strong> RGB as a Cube</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-05-5"><strong>05.5</strong> Worked Example — RGB Combination</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-05-6"><strong>05.6</strong> RGB Strengths and Limitations</a> </li>
+      <li class="part-chapter-item"><a href="#s-05-7"><strong>05.7</strong> HSV — Hue, Saturation, Value</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-05-8"><strong>05.8</strong> Why HSV Is Popular in Segmentation</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-05-9"><strong>05.9</strong> HSV Circularity of Hue</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-05-10"><strong>05.10</strong> RGB to HSV — Conceptual Route</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-05-11"><strong>05.11</strong> Worked HSV Example</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-05-12"><strong>05.12</strong> CMY — A Subtractive Model</a> </li>
+      <li class="part-chapter-item"><a href="#s-05-13"><strong>05.13</strong> Worked RGB → CMY</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-05-14"><strong>05.14</strong> Why CMYK Exists</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-05-15"><strong>05.15</strong> YUV — Separating Luma-Related and Chrominance Information</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-05-16"><strong>05.16</strong> Why Separate Brightness and Colour?</a> </li>
+      <li class="part-chapter-item"><a href="#s-05-17"><strong>05.17</strong> Chroma Subsampling</a> </li>
+      <li class="part-chapter-item"><a href="#s-05-18"><strong>05.18</strong> Colour Model Comparison</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-05-19"><strong>05.19</strong> Colour Conversion Is a Transformation</a> </li>
+      <li class="part-chapter-item"><a href="#s-05-20"><strong>05.20</strong> Common Colour-Processing Errors</a> </li>
+      <li class="part-chapter-item"><a href="#s-05-21"><strong>05.21</strong> What Is an Image File Format?</a> </li>
+      <li class="part-chapter-item"><a href="#s-05-22"><strong>05.22</strong> BMP</a> </li>
+      <li class="part-chapter-item"><a href="#s-05-23"><strong>05.23</strong> PNG</a> </li>
+      <li class="part-chapter-item"><a href="#s-05-24"><strong>05.24</strong> JPEG</a> </li>
+      <li class="part-chapter-item"><a href="#s-05-25"><strong>05.25</strong> Why JPEG Works Well for Photos</a> </li>
+      <li class="part-chapter-item"><a href="#s-05-26"><strong>05.26</strong> JPEG Artifacts</a> </li>
+      <li class="part-chapter-item"><a href="#s-05-27"><strong>05.27</strong> TIFF</a> </li>
+      <li class="part-chapter-item"><a href="#s-05-28"><strong>05.28</strong> Format Comparison</a> </li>
+      <li class="part-chapter-item"><a href="#s-05-29"><strong>05.29</strong> Lossless vs Lossy</a> </li>
+      <li class="part-chapter-item"><a href="#s-05-30"><strong>05.30</strong> Worked Format Decision</a> </li>
+      <li class="part-chapter-item"><a href="#s-05-31"><strong>05.31</strong> File Extension Is Not Enough</a> </li>
+      <li class="part-chapter-item"><a href="#s-05-32"><strong>05.32</strong> File Format vs Codec vs Container</a> </li>
+      <li class="part-chapter-item"><a href="#s-05-33"><strong>05.33</strong> A Complete Colour-Image Pipeline</a> </li>
+      <li class="part-chapter-item"><a href="#s-05-34"><strong>05.34</strong> Engineering Scenario — Coloured Object Detection</a> </li>
+      <li class="part-chapter-item"><a href="#s-05-35"><strong>05.35</strong> Engineering Scenario — Why JPEG Can Be Dangerous</a> </li>
+      <li class="part-chapter-item"><a href="#s-05-36"><strong>05.36</strong> Common Traps</a> </li>
+      <li class="part-chapter-item"><a href="#s-05-37"><strong>05.37</strong> Exam-Ready Comparison</a> </li>
+      <li class="part-chapter-item"><a href="#s-05-38"><strong>05.38</strong> Cross-Book Bridges</a> </li>
+      <li class="part-chapter-item"><a href="#s-05-39"><strong>05.39</strong> Quick Recall</a> </li>
+      <li class="part-chapter-item"><a href="#s-05-40"><strong>05.40</strong> Chapter Checkpoint</a> </li>
+      <li class="part-chapter-item"><a href="#s-05-41"><strong>05.41</strong> Part I Completion Map</a> </li>
+      <li class="part-chapter-item"><a href="#s-05-42"><strong>05.42</strong> Mathematical Derivation: RGB to HSV / HSI Conversion</a> </li>
+      <li class="part-chapter-item"><a href="#s-05-43"><strong>05.43</strong> Chroma Subsampling: YCbCr 4:4:4 vs 4:2:2 vs 4:2:0</a> </li>
+        </ul>
+      </div>
+
+      <div class="concept-hook" style="margin-bottom:var(--em-space-8);"><h1>Chapter 05 — Colour Models and Image File Formats</h1>
+<blockquote>
+<p><strong>Chapter thesis</strong><br />
+Colour is not a single number. A colour image is a structured representation of measurements, and the best representation depends on the task. File formats then determine how those numerical data are organized, stored, compressed and exchanged.</p>
+</blockquote>
+<p><strong>Part I — The Image</strong><br />
+<strong>Syllabus anchor:</strong> Unit I explicitly includes RGB, HSV, CMY and YUV colour models, together with BMP, JPEG, PNG and TIFF image formats. fileciteturn4file0L32-L35</p>
+<hr /></div>
+
+      <!-- All Numbered Sections -->
+      
+  <!-- SECTION 05.0: Why This Chapter Matters -->
+  <section id="s-05-0" class="section-block">
+    <div class="section-header">
+      <span class="section-num">05.0</span>
+      <h2>Why This Chapter Matters</h2>
+      <button class="bookmark-btn" data-id="s-05-0" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>By now we can describe an image as:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>spatial samples
++
+channel values
++
+bit depth
++
+datatype</code></pre>
+</div></p>
+<p>But a colour image adds another question:</p>
+<blockquote>
+<p>How should the channels be interpreted?</p>
+</blockquote>
+<p>The same visual scene can be represented as:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>RGB
+HSV
+CMY
+YUV</code></pre>
+</div></p>
+<p>These are not merely different names for the same three numbers.</p>
+<p>They organize colour information differently.</p>
+<p>A second engineering question is:</p>
+<blockquote>
+<p>How do we store that representation in a file?</p>
+</blockquote>
+<p>That leads to:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>BMP
+JPEG
+PNG
+TIFF</code></pre>
+</div></p>
+<p>Understanding the difference between <strong>colour representation</strong> and <strong>file format</strong> prevents many common mistakes.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 05.1: Colour Is a Representation Problem -->
+  <section id="s-05-1" class="section-block">
+    <div class="section-header">
+      <span class="section-num">05.1</span>
+      <h2>Colour Is a Representation Problem</h2>
+      <button class="bookmark-btn" data-id="s-05-1" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A digital colour image usually associates multiple channel values with one spatial location.</p>
+<p>Conceptually:</p>
+<p>
+$$
+I(x,y)=(c_1,c_2,\ldots,c_K)
+$$
+</p>
+<p>For ordinary RGB imagery:</p>
+<p>
+$$
+I(x,y)=(R,G,B)
+$$
+</p>
+<p>The three values together define a colour under the specified colour-space conventions.</p>
+<p>This immediately gives an important rule:</p>
+<blockquote>
+<p>Never interpret a colour triplet without knowing what the channels mean.</p>
+</blockquote>
+<p>For example, the triplet:</p>
+<p>
+$$
+(255,0,0)
+$$
+</p>
+<p>means saturated red under a conventional 8-bit RGB interpretation.</p>
+<p>But a three-number vector in another colour model can mean something entirely different.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 05.2: Additive vs Subtractive Colour -->
+  <section id="s-05-2" class="section-block">
+    <div class="section-header">
+      <span class="section-num">05.2</span>
+      <h2>Additive vs Subtractive Colour</h2>
+      <button class="bookmark-btn" data-id="s-05-2" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Two major ideas help organize the colour models in this chapter.</p>
+<h3>Additive colour</h3>
+<p>Light components are combined.</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>RED + GREEN + BLUE
+        ↓
+      WHITE</code></pre>
+</div></p>
+<p>This is associated with displays and emitted light.</p>
+<h3>Subtractive colour</h3>
+<p>Components conceptually remove portions of reflected/transmitted light.</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>CYAN + MAGENTA + YELLOW
+             ↓
+     reduced reflected light</code></pre>
+</div></p>
+<p>This is associated with printing processes.</p>
+<p>This distinction explains why RGB and CMY use different conceptual structures.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 05.3: RGB — The Familiar Digital Colour Model -->
+  <section id="s-05-3" class="section-block">
+    <div class="section-header">
+      <span class="section-num">05.3</span>
+      <h2>RGB — The Familiar Digital Colour Model</h2>
+      <button class="bookmark-btn" data-id="s-05-3" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>RGB stands for:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>R = Red
+G = Green
+B = Blue</code></pre>
+</div></p>
+<p>A pixel is represented as:</p>
+<p>
+$$
+(R,G,B)
+$$
+</p>
+<p>Under a common 8-bit-per-channel representation:</p>
+<p>
+$$
+0\le R,G,B\le255
+$$
+</p>
+<p>Examples:</p>
+<div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>RGB triplet</th>
+<th>Conceptual result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>(0,0,0)</td>
+<td>black</td>
+</tr>
+<tr>
+<td>(255,255,255)</td>
+<td>white</td>
+</tr>
+<tr>
+<td>(255,0,0)</td>
+<td>red</td>
+</tr>
+<tr>
+<td>(0,255,0)</td>
+<td>green</td>
+</tr>
+<tr>
+<td>(0,0,255)</td>
+<td>blue</td>
+</tr>
+<tr>
+<td>(255,255,0)</td>
+<td>yellow</td>
+</tr>
+<tr>
+<td>(0,255,255)</td>
+<td>cyan</td>
+</tr>
+<tr>
+<td>(255,0,255)</td>
+<td>magenta</td>
+</tr>
+</tbody>
+</table></div>
+<p>These examples assume the conventional normalized/8-bit interpretation.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 05.4: RGB as a Cube -->
+  <section id="s-05-4" class="section-block">
+    <div class="section-header">
+      <span class="section-num">05.4</span>
+      <h2>RGB as a Cube</h2>
+      <button class="bookmark-btn" data-id="s-05-4" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A useful mental model is an RGB cube.</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>                 B
+                 ↑
+                 │
+                 ●────────────●
+                /│           /│
+               / │          / │
+              ●────────────●  │
+              │  │         │  │
+              │  ●─────────│──●
+              │ /          │ /
+              │/           │/
+              ●────────────●────→ R
+             /
+            G</code></pre>
+</div></p>
+<p>Each colour is a point in a 3-D coordinate space:</p>
+<p>
+$$
+(R,G,B)
+$$
+</p>
+<p>This geometric interpretation is useful for understanding:</p>
+<ul>
+<li>colour distance,</li>
+<li>colour clustering,</li>
+<li>segmentation,</li>
+<li>channel manipulation.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 05.5: Worked Example — RGB Combination -->
+  <section id="s-05-5" class="section-block">
+    <div class="section-header">
+      <span class="section-num">05.5</span>
+      <h2>Worked Example — RGB Combination</h2>
+      <button class="bookmark-btn" data-id="s-05-5" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Take:</p>
+<p>
+$$
+R=200,\quad G=120,\quad B=40
+$$
+</p>
+<p>Then the pixel is:</p>
+<p>
+$$
+(200,120,40)
+$$
+</p>
+<p>Relative comparison:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>R = strong
+G = moderate
+B = low</code></pre>
+</div></p>
+<p>So the pixel is warm and reddish/yellowish in ordinary RGB visualization.</p>
+<p>The exact perceptual appearance depends on the display and colour-management pipeline.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 05.6: RGB Strengths and Limitations -->
+  <section id="s-05-6" class="section-block">
+    <div class="section-header">
+      <span class="section-num">05.6</span>
+      <h2>RGB Strengths and Limitations</h2>
+      <button class="bookmark-btn" data-id="s-05-6" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Strengths</h3>
+<ul>
+<li>natural representation for many cameras/displays,</li>
+<li>straightforward channel-wise storage,</li>
+<li>directly supported by common image libraries,</li>
+<li>convenient for many machine-learning pipelines.</li>
+</ul>
+<h3>Limitations</h3>
+<p>RGB is not always the most convenient space for a particular task.</p>
+<p>For example:</p>
+<ul>
+<li>similar colours can differ in several channels,</li>
+<li>brightness and chromatic information are mixed,</li>
+<li>simple channel thresholds may not correspond to perceptual similarity.</li>
+</ul>
+<p>This motivates alternative colour models.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 05.7: HSV — Hue, Saturation, Value -->
+  <section id="s-05-7" class="section-block">
+    <div class="section-header">
+      <span class="section-num">05.7</span>
+      <h2>HSV — Hue, Saturation, Value</h2>
+      <button class="bookmark-btn" data-id="s-05-7" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>HSV represents colour using:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>H = Hue
+S = Saturation
+V = Value</code></pre>
+</div></p>
+<p>It is often useful because it separates a colour-like attribute from two magnitude-related attributes more explicitly than raw RGB coordinates do.</p>
+<h3>Hue</h3>
+<p>Describes the dominant colour family.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>red → yellow → green → cyan → blue → magenta → red</code></pre>
+</div></p>
+<h3>Saturation</h3>
+<p>Describes how strongly coloured the value is relative to a neutral/gray axis in the model.</p>
+<h3>Value</h3>
+<p>Represents the model's brightness-like magnitude coordinate.</p>
+<blockquote>
+<p><strong>WARNING:</strong> “Value” in HSV is not identical to physical luminance, radiometric intensity, or perceptual brightness.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 05.8: Why HSV Is Popular in Segmentation -->
+  <section id="s-05-8" class="section-block">
+    <div class="section-header">
+      <span class="section-num">05.8</span>
+      <h2>Why HSV Is Popular in Segmentation</h2>
+      <button class="bookmark-btn" data-id="s-05-8" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Consider detecting a coloured object.</p>
+<p>In RGB:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>object colour
+→ may vary strongly in R, G and B</code></pre>
+</div></p>
+<p>In HSV:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>object colour
+→ often easier to describe with a hue interval</code></pre>
+</div></p>
+<p>Conceptual pipeline:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>RGB image
+    ↓
+HSV conversion
+    ↓
+select Hue/Saturation range
+    ↓
+binary mask
+    ↓
+morphological cleanup</code></pre>
+</div></p>
+<p>This can be useful for controlled colour-based segmentation.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 05.9: HSV Circularity of Hue -->
+  <section id="s-05-9" class="section-block">
+    <div class="section-header">
+      <span class="section-num">05.9</span>
+      <h2>HSV Circularity of Hue</h2>
+      <button class="bookmark-btn" data-id="s-05-9" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Hue has a special property.</p>
+<p>Red lies near both ends of the hue cycle:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>          RED
+      /         \
+ MAGENTA         YELLOW
+   |               |
+ BLUE             GREEN
+      \         /
+          CYAN</code></pre>
+</div></p>
+<p>Therefore a condition such as:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>H &gt; 350°
+or
+H &lt; 10°</code></pre>
+</div></p>
+<p>may represent one contiguous red interval.</p>
+<p>This is different from a normal linear numerical variable.</p>
+<blockquote>
+<p><strong>Engineering trap:</strong> Treating hue as an ordinary straight-line scalar can create incorrect threshold logic around the wrap-around boundary.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 05.10: RGB to HSV — Conceptual Route -->
+  <section id="s-05-10" class="section-block">
+    <div class="section-header">
+      <span class="section-num">05.10</span>
+      <h2>RGB to HSV — Conceptual Route</h2>
+      <button class="bookmark-btn" data-id="s-05-10" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For normalized RGB:</p>
+<p>
+$$
+r,g,b\in[0,1]
+$$
+</p>
+<p>define:</p>
+<p>
+$$
+C_{\max}=\max(r,g,b)
+$$
+</p>
+<p>
+$$
+C_{\min}=\min(r,g,b)
+$$
+</p>
+<p>
+$$
+\Delta=C_{\max}-C_{\min}
+$$
+</p>
+<p>Then the HSV values are derived according to which channel is maximal.</p>
+<p>For example, when $C_{\max}=r$:</p>
+<p>
+$$
+H'=60^\circ
+\left(
+\frac{g-b}{\Delta}
+\right)
+$$
+</p>
+<p>with appropriate wrap-around adjustment.</p>
+<p>Then:</p>
+<p>
+$$
+S=
+\begin{cases}
+0,&C_{\max}=0\\[4pt]
+\frac{\Delta}{C_{\max}},&C_{\max}\ne0
+\end{cases}
+$$
+</p>
+<p>and:</p>
+<p>
+$$
+V=C_{\max}
+$$
+</p>
+<blockquote>
+<p><strong>EXAM NOTE:</strong> The exact hue formula has separate cases for max-$R$, max-$G$, max-$B$. Do not memorize only one branch as the complete conversion.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 05.11: Worked HSV Example -->
+  <section id="s-05-11" class="section-block">
+    <div class="section-header">
+      <span class="section-num">05.11</span>
+      <h2>Worked HSV Example</h2>
+      <button class="bookmark-btn" data-id="s-05-11" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Take normalized RGB:</p>
+<p>
+$$
+(r,g,b)=(1,0,0)
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+C_{\max}=1
+$$
+</p>
+<p>
+$$
+C_{\min}=0
+$$
+</p>
+<p>
+$$
+\Delta=1
+$$
+</p>
+<p>Since $R$ is maximum:</p>
+<p>
+$$
+H'= \frac{0-0}{1}=0
+$$
+</p>
+<p>so:</p>
+<p>
+$$
+H=0^\circ
+$$
+</p>
+<p>and:</p>
+<p>
+$$
+S=\frac{1}{1}=1
+$$
+</p>
+<p>
+$$
+V=1
+$$
+</p>
+<p>Therefore:</p>
+<p>
+$$
+(R,G,B)=(1,0,0)
+\rightarrow
+(H,S,V)=(0^\circ,1,1)
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 05.12: CMY — A Subtractive Model -->
+  <section id="s-05-12" class="section-block">
+    <div class="section-header">
+      <span class="section-num">05.12</span>
+      <h2>CMY — A Subtractive Model</h2>
+      <button class="bookmark-btn" data-id="s-05-12" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>CMY stands for:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>C = Cyan
+M = Magenta
+Y = Yellow</code></pre>
+</div></p>
+<p>For normalized components under the basic complement relationship:</p>
+<p>
+$$
+C=1-R
+$$
+</p>
+<p>
+$$
+M=1-G
+$$
+</p>
+<p>
+$$
+Y=1-B
+$$
+</p>
+<p>This describes the conceptual inverse relation between normalized RGB and CMY.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 05.13: Worked RGB → CMY -->
+  <section id="s-05-13" class="section-block">
+    <div class="section-header">
+      <span class="section-num">05.13</span>
+      <h2>Worked RGB → CMY</h2>
+      <button class="bookmark-btn" data-id="s-05-13" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Take:</p>
+<p>
+$$
+(R,G,B)=(1,0.4,0.2)
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+C=1-1=0
+$$
+</p>
+<p>
+$$
+M=1-0.4=0.6
+$$
+</p>
+<p>
+$$
+Y=1-0.2=0.8
+$$
+</p>
+<p>Therefore:</p>
+<p>
+$$
+(C,M,Y)=(0,0.6,0.8)
+$$
+</p>
+<p>This is useful for understanding the relationship between additive RGB and subtractive CMY.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 05.14: Why CMYK Exists -->
+  <section id="s-05-14" class="section-block">
+    <div class="section-header">
+      <span class="section-num">05.14</span>
+      <h2>Why CMYK Exists</h2>
+      <button class="bookmark-btn" data-id="s-05-14" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Printing commonly introduces a fourth component:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>C
+M
+Y
+K = Black</code></pre>
+</div></p>
+<p>The syllabus names CMY rather than CMYK, so CMYK is treated here as an extension.</p>
+<p>Why add black?</p>
+<p>Conceptually, a separate black ink can:</p>
+<ul>
+<li>improve deep dark tones,</li>
+<li>reduce the need to combine large amounts of coloured inks,</li>
+<li>improve practical printing control.</li>
+</ul>
+<p>Real printer colour management is more complex than simply applying the idealized complement equations.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 05.15: YUV — Separating Luma-Related and Chrominance Information -->
+  <section id="s-05-15" class="section-block">
+    <div class="section-header">
+      <span class="section-num">05.15</span>
+      <h2>YUV — Separating Luma-Related and Chrominance Information</h2>
+      <button class="bookmark-btn" data-id="s-05-15" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>YUV is commonly discussed in the context of separating brightness-related information from colour-difference components.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Y
+→ luma-related component
+
+U, V
+→ chrominance / colour-difference components</code></pre>
+</div></p>
+<p>This structure is particularly useful when designing systems in which human visual sensitivity to spatial detail differs between brightness-related and colour information.</p>
+<blockquote>
+<p><strong>Terminology note:</strong> In digital video, related systems such as YCbCr are extremely common. Do not automatically treat “YUV” and every YCbCr encoding as mathematically identical.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 05.16: Why Separate Brightness and Colour? -->
+  <section id="s-05-16" class="section-block">
+    <div class="section-header">
+      <span class="section-num">05.16</span>
+      <h2>Why Separate Brightness and Colour?</h2>
+      <button class="bookmark-btn" data-id="s-05-16" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A simplified conceptual idea is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>fine spatial detail
+→ important in brightness/luma
+
+colour detail
+→ can sometimes be represented at lower spatial resolution</code></pre>
+</div></p>
+<p>This helps explain chroma subsampling.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 05.17: Chroma Subsampling -->
+  <section id="s-05-17" class="section-block">
+    <div class="section-header">
+      <span class="section-num">05.17</span>
+      <h2>Chroma Subsampling</h2>
+      <button class="bookmark-btn" data-id="s-05-17" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <blockquote>
+<p><strong>EXTENSION</strong></p>
+</blockquote>
+<p>Some image/video systems store colour-difference information at lower spatial resolution than luma.</p>
+<p>Common notation includes:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>4:4:4
+4:2:2
+4:2:0</code></pre>
+</div></p>
+<p>The exact sampling structure depends on the standard and should be learned from the relevant specification.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>4:4:4
+→ full chroma sampling
+
+4:2:2
+→ reduced horizontal chroma sampling
+
+4:2:0
+→ reduced chroma sampling in both dimensions</code></pre>
+</div></p>
+<p>This can reduce data volume with relatively modest perceptual impact in many viewing conditions.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 05.18: Colour Model Comparison -->
+  <section id="s-05-18" class="section-block">
+    <div class="section-header">
+      <span class="section-num">05.18</span>
+      <h2>Colour Model Comparison</h2>
+      <button class="bookmark-btn" data-id="s-05-18" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Model</th>
+<th>Main idea</th>
+<th>Typical usefulness</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RGB</td>
+<td>additive channel representation</td>
+<td>cameras, displays, general image data</td>
+</tr>
+<tr>
+<td>HSV</td>
+<td>hue/saturation/value coordinates</td>
+<td>colour selection and some segmentation workflows</td>
+</tr>
+<tr>
+<td>CMY</td>
+<td>subtractive colour components</td>
+<td>printing concepts</td>
+</tr>
+<tr>
+<td>YUV</td>
+<td>luma/chroma-oriented representation</td>
+<td>video/compression-related systems</td>
+</tr>
+</tbody>
+</table></div>
+<p>No model is universally “best.”</p>
+<p>The appropriate representation depends on:</p>
+<ul>
+<li>sensor,</li>
+<li>display,</li>
+<li>task,</li>
+<li>computation,</li>
+<li>storage,</li>
+<li>communication system.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 05.19: Colour Conversion Is a Transformation -->
+  <section id="s-05-19" class="section-block">
+    <div class="section-header">
+      <span class="section-num">05.19</span>
+      <h2>Colour Conversion Is a Transformation</h2>
+      <button class="bookmark-btn" data-id="s-05-19" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A common pipeline is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>camera/image file
+      ↓
+RGB
+      ↓
+HSV
+      ↓
+segmentation</code></pre>
+</div></p>
+<p>Or:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>RGB
+ ↓
+grayscale
+ ↓
+edge detection</code></pre>
+</div></p>
+<p>Or:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>RGB / source colour representation
+      ↓
+luma/chroma representation
+      ↓
+compression/storage</code></pre>
+</div></p>
+<p>Each conversion changes the numerical representation.</p>
+<p>It can also introduce:</p>
+<ul>
+<li>rounding,</li>
+<li>range changes,</li>
+<li>clipping,</li>
+<li>precision loss,</li>
+<li>convention mismatches.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 05.20: Common Colour-Processing Errors -->
+  <section id="s-05-20" class="section-block">
+    <div class="section-header">
+      <span class="section-num">05.20</span>
+      <h2>Common Colour-Processing Errors</h2>
+      <button class="bookmark-btn" data-id="s-05-20" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Error 1 — RGB vs BGR confusion</h3>
+<p>Some software APIs use channel order such as:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>B, G, R</code></pre>
+</div></p>
+<p>even though the image is conventionally described as RGB.</p>
+<p>Always inspect the API documentation and test with a known colour.</p>
+<h3>Error 2 — HSV range confusion</h3>
+<p>Different libraries may use different numeric ranges for $H,S,V$.</p>
+<p>Never assume a hue range from one library applies unchanged to another.</p>
+<h3>Error 3 — Limited vs full ranges</h3>
+<p>Video-oriented encodings can use conventions that differ from a simple full-range 0–255 representation.</p>
+<h3>Error 4 — “HSV is perceptually uniform”</h3>
+<p>It is not.</p>
+<p>HSV is convenient, not a universal model of human colour perception.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 05.21: What Is an Image File Format? -->
+  <section id="s-05-21" class="section-block">
+    <div class="section-header">
+      <span class="section-num">05.21</span>
+      <h2>What Is an Image File Format?</h2>
+      <button class="bookmark-btn" data-id="s-05-21" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A file format defines how image data are structured and stored.</p>
+<p>It may specify:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>metadata
++
+pixel/channel data
++
+colour interpretation
++
+compression
++
+file organization</code></pre>
+</div></p>
+<p>Therefore:</p>
+<blockquote>
+<p>A colour model and a file format are different concepts.</p>
+</blockquote>
+<p>For example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>RGB</code></pre>
+</div></p>
+<p>is a colour representation.</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>JPEG</code></pre>
+</div></p>
+<p>is a file format.</p>
+<p>A JPEG file can contain colour information represented using structures designed around its compression pipeline.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 05.22: BMP -->
+  <section id="s-05-22" class="section-block">
+    <div class="section-header">
+      <span class="section-num">05.22</span>
+      <h2>BMP</h2>
+      <button class="bookmark-btn" data-id="s-05-22" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>BMP is a bitmap-oriented image format historically associated with relatively direct pixel storage.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>BMP file
+├── file information
+├── image information
+├── pixel storage
+└── optional additional structures</code></pre>
+</div></p>
+<p>BMP can be useful for teaching because the relationship between stored pixels and image data can be relatively straightforward for simple cases.</p>
+<h3>Strength</h3>
+<p>Simple conceptual relationship to bitmap storage.</p>
+<h3>Limitation</h3>
+<p>For many practical workflows, it is less storage-efficient than compressed formats.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 05.23: PNG -->
+  <section id="s-05-23" class="section-block">
+    <div class="section-header">
+      <span class="section-num">05.23</span>
+      <h2>PNG</h2>
+      <button class="bookmark-btn" data-id="s-05-23" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>PNG is designed for <strong>lossless</strong> image compression.</p>
+<p>That means, after decoding:</p>
+<p>
+$$
+\text{decoded image data}
+=
+\text{original encoded image data}
+$$
+</p>
+<p>for the data covered by the compression process.</p>
+<p>PNG is especially useful when exact pixel preservation matters, such as:</p>
+<ul>
+<li>diagrams,</li>
+<li>screenshots,</li>
+<li>graphics,</li>
+<li>images with sharp edges,</li>
+<li>transparency-supporting workflows.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 05.24: JPEG -->
+  <section id="s-05-24" class="section-block">
+    <div class="section-header">
+      <span class="section-num">05.24</span>
+      <h2>JPEG</h2>
+      <button class="bookmark-btn" data-id="s-05-24" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>JPEG is commonly used for photographic images and typically uses <strong>lossy</strong> compression.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>RGB/source image
+      ↓
+colour transformation
+      ↓
+block-based transform
+      ↓
+quantization
+      ↓
+entropy coding
+      ↓
+JPEG bitstream</code></pre>
+</div></p>
+<p>The detailed JPEG pipeline is covered in depth later in C24.</p>
+<h3>Key property</h3>
+<p>Lossy compression can reduce file size substantially, but decoding does not necessarily reproduce the original pixel values exactly.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 05.25: Why JPEG Works Well for Photos -->
+  <section id="s-05-25" class="section-block">
+    <div class="section-header">
+      <span class="section-num">05.25</span>
+      <h2>Why JPEG Works Well for Photos</h2>
+      <button class="bookmark-btn" data-id="s-05-25" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Natural photographs contain substantial spatial correlation.</p>
+<p>Neighbouring pixels often have related values.</p>
+<p>JPEG exploits image structure to represent information more compactly.</p>
+<p>Its transform and quantization stages allow the encoder to remove information judged less important for the desired compression level.</p>
+<p>At higher compression, visible artifacts can appear.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 05.26: JPEG Artifacts -->
+  <section id="s-05-26" class="section-block">
+    <div class="section-header">
+      <span class="section-num">05.26</span>
+      <h2>JPEG Artifacts</h2>
+      <button class="bookmark-btn" data-id="s-05-26" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>At aggressive compression settings, common artifacts can include:</p>
+<ul>
+<li>block boundaries,</li>
+<li>ringing-like effects,</li>
+<li>loss of fine texture,</li>
+<li>colour/detail degradation.</li>
+</ul>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>original
+→ fine detail
+
+high compression
+→ simplified local structure
+→ possible blocking / ringing / blur</code></pre>
+</div></p>
+<p>These artifacts matter in:</p>
+<ul>
+<li>medical imaging,</li>
+<li>scientific analysis,</li>
+<li>machine vision,</li>
+<li>document processing,</li>
+</ul>
+<p>where exact or subtle pixel information may be important.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 05.27: TIFF -->
+  <section id="s-05-27" class="section-block">
+    <div class="section-header">
+      <span class="section-num">05.27</span>
+      <h2>TIFF</h2>
+      <button class="bookmark-btn" data-id="s-05-27" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>TIFF is a flexible image-file format widely used in professional, archival and scientific workflows.</p>
+<p>A TIFF file can support different forms of image data and may be configured in ways that preserve high precision or use compression.</p>
+<p>This makes TIFF less about one fixed visual appearance and more about a flexible container for image information.</p>
+<blockquote>
+<p><strong>Important:</strong> “TIFF = lossless” is too simplistic. TIFF can support different compression choices and image configurations.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 05.28: Format Comparison -->
+  <section id="s-05-28" class="section-block">
+    <div class="section-header">
+      <span class="section-num">05.28</span>
+      <h2>Format Comparison</h2>
+      <button class="bookmark-btn" data-id="s-05-28" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Format</th>
+<th>Typical compression</th>
+<th>Typical strength</th>
+<th>Typical caution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BMP</td>
+<td>often little/no compression in simple cases</td>
+<td>straightforward bitmap storage</td>
+<td>large files</td>
+</tr>
+<tr>
+<td>PNG</td>
+<td>lossless</td>
+<td>exact pixel recovery, graphics, transparency</td>
+<td>usually less effective than JPEG for photos</td>
+</tr>
+<tr>
+<td>JPEG</td>
+<td>lossy</td>
+<td>efficient photographic compression</td>
+<td>irreversible detail loss</td>
+</tr>
+<tr>
+<td>TIFF</td>
+<td>flexible; can be uncompressed or compressed</td>
+<td>high-quality/professional/scientific workflows</td>
+<td>larger/more complex files depending on configuration</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 05.29: Lossless vs Lossy -->
+  <section id="s-05-29" class="section-block">
+    <div class="section-header">
+      <span class="section-num">05.29</span>
+      <h2>Lossless vs Lossy</h2>
+      <button class="bookmark-btn" data-id="s-05-29" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>This distinction becomes fundamental in C21–C24.</p>
+<h3>Lossless</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>encode
+ ↓
+decode
+ ↓
+original represented data recovered</code></pre>
+</div></p>
+<h3>Lossy</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>encode
+ ↓
+information deliberately discarded
+ ↓
+decode
+ ↓
+approximation of original</code></pre>
+</div></p>
+<p>Use lossless approaches when exact data recovery matters.</p>
+<p>Use lossy approaches when storage/communication efficiency is more important and some information loss is acceptable.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 05.30: Worked Format Decision -->
+  <section id="s-05-30" class="section-block">
+    <div class="section-header">
+      <span class="section-num">05.30</span>
+      <h2>Worked Format Decision</h2>
+      <button class="bookmark-btn" data-id="s-05-30" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose you have:</p>
+<h3>Case A — Laboratory graph/screenshot</h3>
+<p>Need:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>sharp edges
+exact text
+small file</code></pre>
+</div></p>
+<p>PNG may be a suitable choice.</p>
+<h3>Case B — Natural photograph for web delivery</h3>
+<p>Need:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>small file
+acceptable visual quality</code></pre>
+</div></p>
+<p>JPEG is often suitable.</p>
+<h3>Case C — Scientific image requiring flexible high-precision storage</h3>
+<p>Need:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>metadata
+high bit depth
+controlled processing</code></pre>
+</div></p>
+<p>A suitable TIFF configuration may be preferable.</p>
+<blockquote>
+<p>These are engineering examples, not universal rules.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 05.31: File Extension Is Not Enough -->
+  <section id="s-05-31" class="section-block">
+    <div class="section-header">
+      <span class="section-num">05.31</span>
+      <h2>File Extension Is Not Enough</h2>
+      <button class="bookmark-btn" data-id="s-05-31" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A filename ending in:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>.jpg</code></pre>
+</div></p>
+<p>does not by itself tell you all of the numerical properties of the decoded image.</p>
+<p>You should inspect:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>dimensions
+channels
+datatype
+colour interpretation
+compression
+metadata</code></pre>
+</div></p>
+<p>Likewise, changing a filename extension does not convert an image format.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 05.32: File Format vs Codec vs Container -->
+  <section id="s-05-32" class="section-block">
+    <div class="section-header">
+      <span class="section-num">05.32</span>
+      <h2>File Format vs Codec vs Container</h2>
+      <button class="bookmark-btn" data-id="s-05-32" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>These terms can overlap in casual discussion but are not identical.</p>
+<p>A practical mental model is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>FORMAT
+→ defines file organization and rules
+
+ENCODING / CODEC
+→ defines how data are compressed/represented
+
+CONTAINER
+→ packages one or more streams and metadata</code></pre>
+</div></p>
+<p>The exact relationship depends on the ecosystem.</p>
+<p>For the university syllabus, the main distinction to retain is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>colour model
+≠
+file format</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 05.33: A Complete Colour-Image Pipeline -->
+  <section id="s-05-33" class="section-block">
+    <div class="section-header">
+      <span class="section-num">05.33</span>
+      <h2>A Complete Colour-Image Pipeline</h2>
+      <button class="bookmark-btn" data-id="s-05-33" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>SCENE
+  ↓
+IMAGE ACQUISITION
+  ↓
+RAW / SENSOR-RELATED DATA
+  ↓
+COLOUR REPRESENTATION
+  ↓
+RGB
+  ↓
+OPTIONAL CONVERSION
+  ├── HSV → segmentation
+  ├── grayscale → intensity processing
+  └── luma/chroma → coding/compression workflow
+  ↓
+FILE ENCODING
+  ├── PNG
+  ├── JPEG
+  ├── TIFF
+  └── BMP
+  ↓
+STORAGE / TRANSMISSION
+  ↓
+DECODING
+  ↓
+PROCESSING / DISPLAY</code></pre>
+</div></p>
+<p>The same scene can therefore pass through several representations before a final output is obtained.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 05.34: Engineering Scenario — Coloured Object Detection -->
+  <section id="s-05-34" class="section-block">
+    <div class="section-header">
+      <span class="section-num">05.34</span>
+      <h2>Engineering Scenario — Coloured Object Detection</h2>
+      <button class="bookmark-btn" data-id="s-05-34" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose the goal is to detect a red object.</p>
+<p>A simple pipeline might be:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image
+ ↓
+RGB
+ ↓
+HSV
+ ↓
+red hue mask
+ ↓
+morphological cleanup
+ ↓
+connected components / contour analysis
+ ↓
+object location</code></pre>
+</div></p>
+<p>Potential failures:</p>
+<ul>
+<li>illumination changes,</li>
+<li>shadows,</li>
+<li>reflections,</li>
+<li>background colours,</li>
+<li>hue wrap-around,</li>
+<li>sensor noise.</li>
+</ul>
+<p>This illustrates a major DIP principle:</p>
+<blockquote>
+<p>A representation can make a problem easier without making it solved.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 05.35: Engineering Scenario — Why JPEG Can Be Dangerous -->
+  <section id="s-05-35" class="section-block">
+    <div class="section-header">
+      <span class="section-num">05.35</span>
+      <h2>Engineering Scenario — Why JPEG Can Be Dangerous</h2>
+      <button class="bookmark-btn" data-id="s-05-35" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose a model is trained on heavily compressed images.</p>
+<p>Compression artifacts may become a shortcut signal.</p>
+<p>For example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>class A
+→ consistently JPEG-compressed differently
+
+class B
+→ different JPEG processing</code></pre>
+</div></p>
+<p>A model could partially learn the compression signature rather than the intended visual feature.</p>
+<p>This is a machine-learning extension of a classical image-processing issue.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 05.36: Common Traps -->
+  <section id="s-05-36" class="section-block">
+    <div class="section-header">
+      <span class="section-num">05.36</span>
+      <h2>Common Traps</h2>
+      <button class="bookmark-btn" data-id="s-05-36" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h2>Trap 1 — “RGB is a file format.”</h2>
+<p>False.</p>
+<p>RGB is a colour representation.</p>
+<h2>Trap 2 — “JPEG always means RGB.”</h2>
+<p>Not necessarily.</p>
+<p>File encodings can transform or store colour information in different internal representations.</p>
+<h2>Trap 3 — “PNG has no compression.”</h2>
+<p>False.</p>
+<p>PNG uses lossless compression.</p>
+<h2>Trap 4 — “TIFF is always lossless.”</h2>
+<p>False.</p>
+<p>TIFF can support different compression approaches/configurations.</p>
+<h2>Trap 5 — “HSV is better than RGB.”</h2>
+<p>Not universally.</p>
+<p>It may be more convenient for some tasks.</p>
+<h2>Trap 6 — “YUV and YCbCr are identical in every context.”</h2>
+<p>Unsafe assumption.</p>
+<p>They are related, but exact conventions and equations can differ.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 05.37: Exam-Ready Comparison -->
+  <section id="s-05-37" class="section-block">
+    <div class="section-header">
+      <span class="section-num">05.37</span>
+      <h2>Exam-Ready Comparison</h2>
+      <button class="bookmark-btn" data-id="s-05-37" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Question</th>
+<th>Core answer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RGB?</td>
+<td>additive three-channel colour representation</td>
+</tr>
+<tr>
+<td>HSV?</td>
+<td>hue/saturation/value representation</td>
+</tr>
+<tr>
+<td>CMY?</td>
+<td>subtractive cyan/magenta/yellow representation</td>
+</tr>
+<tr>
+<td>YUV?</td>
+<td>luma/chroma-oriented representation</td>
+</tr>
+<tr>
+<td>BMP?</td>
+<td>bitmap-oriented image file format</td>
+</tr>
+<tr>
+<td>PNG?</td>
+<td>lossless compressed image format</td>
+</tr>
+<tr>
+<td>JPEG?</td>
+<td>usually lossy photographic compression format</td>
+</tr>
+<tr>
+<td>TIFF?</td>
+<td>flexible image file format supporting multiple configurations</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 05.38: Cross-Book Bridges -->
+  <section id="s-05-38" class="section-block">
+    <div class="section-header">
+      <span class="section-num">05.38</span>
+      <h2>Cross-Book Bridges</h2>
+      <button class="bookmark-btn" data-id="s-05-38" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <blockquote>
+<p><strong>MATH BRIDGE</strong><br />
+Review vector representation and transformation equations for colour conversion.</p>
+<p><strong>LAB BRIDGE — LAB-U1-01 / LAB-U1-07</strong><br />
+Load an image, inspect channel order, convert RGB↔HSV and compare format behaviour.</p>
+<p><strong>PRACTICE BRIDGE</strong><br />
+Choose an appropriate colour representation or file format for a stated engineering task.</p>
+<p><strong>EXAM BRIDGE</strong><br />
+Prepare definitions, comparisons, RGB/CMY equations, conceptual HSV conversion, and format distinctions.</p>
+<p><strong>COMPRESSION BRIDGE</strong><br />
+JPEG concepts introduced here are developed mathematically in C21–C24.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 05.39: Quick Recall -->
+  <section id="s-05-39" class="section-block">
+    <div class="section-header">
+      <span class="section-num">05.39</span>
+      <h2>Quick Recall</h2>
+      <button class="bookmark-btn" data-id="s-05-39" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>RGB
+→ additive
+→ display/camera-friendly
+
+HSV
+→ hue + saturation + value
+→ often useful for colour selection
+
+CMY
+→ subtractive
+→ printing concept
+
+YUV
+→ luma/chroma-oriented
+
+PNG
+→ lossless
+
+JPEG
+→ usually lossy
+
+BMP
+→ bitmap-oriented
+
+TIFF
+→ flexible image format</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 05.40: Chapter Checkpoint -->
+  <section id="s-05-40" class="section-block">
+    <div class="section-header">
+      <span class="section-num">05.40</span>
+      <h2>Chapter Checkpoint</h2>
+      <button class="bookmark-btn" data-id="s-05-40" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <ol>
+<li>What is a colour model?</li>
+<li>Why is RGB called additive?</li>
+<li>What are the three RGB components?</li>
+<li>What are hue, saturation and value?</li>
+<li>Why can HSV be useful for colour segmentation?</li>
+<li>Write the normalized RGB→CMY complement equations.</li>
+<li>What is the role of Y in a YUV-type representation?</li>
+<li>Distinguish a colour model from a file format.</li>
+<li>Compare BMP, PNG, JPEG and TIFF.</li>
+<li>What is the difference between lossless and lossy compression?</li>
+<li>Why should file format properties be inspected rather than inferred from a filename?</li>
+<li>Give one example where HSV may be preferable to direct RGB thresholding.</li>
+</ol>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 05.41: Part I Completion Map -->
+  <section id="s-05-41" class="section-block">
+    <div class="section-header">
+      <span class="section-num">05.41</span>
+      <h2>Part I Completion Map</h2>
+      <button class="bookmark-btn" data-id="s-05-41" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>At the end of Part I, the representation chain is now:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>C01
+BIG PICTURE
+     ↓
+C02
+IMAGE FORMATION
+     ↓
+C03
+SAMPLING + QUANTIZATION
+     ↓
+C04
+PIXELS + MATRICES + TENSORS + RESOLUTION
+     ↓
+C05
+COLOUR MODELS + FILE FORMATS</code></pre>
+</div></p>
+<p>The result is a complete foundation for the next part:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>THE IMAGE
+→
+HOW TO IMPROVE THE IMAGE</code></pre>
+</div></p>
+<p>That begins with point processing and intensity transformations in Chapter 06.</p>
+    </div>
+  </section>
+
+  <!-- SECTION 05.42: Mathematical Derivation: RGB to HSV / HSI Conversion -->
+  <section id="s-05-42" class="section-block">
+    <div class="section-header">
+      <span class="section-num">05.42</span>
+      <h2>Mathematical Derivation: RGB to HSV / HSI Conversion</h2>
+      <button class="bookmark-btn" data-id="s-05-42" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Decoupling Chromaticity from Intensity</h3>
+<p>The RGB colour cube entangles brightness with chromatic information. The HSI model decouples intensity $I$ from chromaticity (Hue $H$ and Saturation $S$).
+Given normalized RGB components $r, g, b \in [0, 1]$:
+1. <strong>Intensity Component $I$:</strong>
+
+$$I = rac{R + G + B}{3}$$
+
+2. <strong>Saturation Component $S$:</strong>
+
+$$S = 1 - rac{3}{R + G + B} \min(R, G, B)$$
+
+3. <strong>Hue Component $H$:</strong>
+
+$$H = egin{cases}
+	heta & 	ext{if } B \le G \
+360^\circ - 	heta & 	ext{if } B > G
+\end{cases}$$
+
+where the angle $heta$ is derived from vector projection:
+
+$$	heta = rccos\left( rac{rac{1}{2}[(R - G) + (R - B)]}{\sqrt{(R - G)^2 + (R - B)(G - B)}} ight)$$
+</p>
+    </div>
+  </section>
+
+  <!-- SECTION 05.43: Chroma Subsampling: YCbCr 4:4:4 vs 4:2:2 vs 4:2:0 -->
+  <section id="s-05-43" class="section-block">
+    <div class="section-header">
+      <span class="section-num">05.43</span>
+      <h2>Chroma Subsampling: YCbCr 4:4:4 vs 4:2:2 vs 4:2:0</h2>
+      <button class="bookmark-btn" data-id="s-05-43" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Biological Motivation</h3>
+<p>Human retinas possess approximately 120 million rod cells (sensitive to luminance/brightness) but only 6 to 7 million cone cells (sensitive to color). Therefore, spatial bandwidth can be safely stripped from color difference channels ($Cb, Cr$) without human perceptual degradation.</p>
+<div class="comparison-table-wrap">
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th>Subsampling Scheme</th>
+        <th>Luma Samples (Y)</th>
+        <th>Chroma Samples (Cb, Cr)</th>
+        <th>Bandwidth Savings</th>
+        <th>Standard Application</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>4:4:4</strong></td>
+        <td>4 per row</td>
+        <td>4 Cb + 4 Cr (Full Resolution)</td>
+        <td>0% (Baseline 24 bpp)</td>
+        <td>Medical imaging, cinema mastering, high-end CGI.</td>
+      </tr>
+      <tr>
+        <td><strong>4:2:2</strong></td>
+        <td>4 per row</td>
+        <td>2 Cb + 2 Cr (Horizontal 2:1 reduction)</td>
+        <td>33.3% savings (16 bpp)</td>
+        <td>Broadcast television (ProRes, DVCPRO-HD).</td>
+      </tr>
+      <tr>
+        <td><strong>4:2:0</strong></td>
+        <td>4 per row</td>
+        <td>2 Cb + 2 Cr per 2x2 macroblock</td>
+        <td>50% savings (12 bpp)</td>
+        <td>JPEG images, MPEG video, YouTube, Netflix streaming.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+    </div>
+  </section>
+
+      <!-- Chapter End Package -->
+      <section class="chapter-end-package">
+        <div class="chapter-nav-grid">
+          <a href="ch04-image-representation.html" class="chapter-nav-card">
+            <div class="chapter-nav-dir">← Previous</div>
+            <div class="chapter-nav-title">← Ch 4 — Pixels, Matrices & Resolution</div>
+          </a>
+          <a href="ch06-point-processing.html" class="chapter-nav-card next">
+            <div class="chapter-nav-dir">Next →</div>
+            <div class="chapter-nav-title">Next: Ch 6 — Point Processing & Intensity →</div>
+          </a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- FLOATING TTS PANEL (SAFE MANUAL MODE ONLY) -->
+  <div id="tts-panel" style="position:fixed; bottom:20px; right:20px; background:var(--em-surface-1); border:1px solid var(--em-border); border-radius:var(--em-radius-md); padding:12px 16px; box-shadow:var(--sh-lg); z-index:var(--z-float); display:none; gap:10px; align-items:center;">
+    <button class="icon-btn" id="tts-play" title="Play / Pause" style="background:var(--em-accent); color:#fff; border-radius:50%; width:36px; height:36px;">▶</button>
+    <button class="icon-btn" id="tts-stop" title="Stop">⏹</button>
+    <div style="font-size:0.75rem; color:var(--em-text-muted);">
+      <span id="tts-status">Ready</span> · <span id="tts-rate-label">1.0x</span>
+    </div>
+  </div>
+
+  <script src="../assets/js/state.js"></script>
+  <script src="../assets/js/core.js"></script>
+  <script src="../assets/js/tts.js"></script>
+  <script src="../assets/js/glossary.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: document.documentElement.getAttribute('data-theme') === 'light' ? 'default' : 'dark'
+      });
+    });
+  </script>
+</body>
+</html>

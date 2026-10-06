@@ -1,0 +1,2329 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Arpit">
+  <meta name="description" content="Chapter 23: Transform Coding &amp; Discrete Cosine Transform — Digital Image Processing MiniBook. Energy Compaction Principles, 2D DCT-II Mathematical Formulation, Parseval&#x27;s Energy Conservation, DCT vs DFT vs KLT Comparison, Sub-Image Partitioning, and Zonal/Threshold Quantization">
+  <title>C23: Transform Coding &amp; Discrete Cosine Transform | DIP MiniBook 📷 Arpit</title>
+
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <link rel="stylesheet" href="../assets/css/chapters.css">
+  <link rel="stylesheet" href="../assets/css/animations.css">
+  <link rel="stylesheet" href="../assets/css/timer.css">
+
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body data-chapter-id="ch23-lossy-dct-jpeg">
+  <div id="progress-bar"></div>
+
+  <!-- Header -->
+  <header id="main-header">
+    <div class="header-left">
+      <button id="sidebar-toggle" class="icon-btn" aria-label="Toggle navigation drawer" title="Toggle Sidebar (S)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <a href="../index.html" class="brand-logo">
+        <div class="brand-icon">DIP</div>
+        <div class="brand-text">
+          <span class="main">Digital Image Processing</span>
+          <span class="sub">DU DSE-3 Engineering MiniBook</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="header-chapter-title">C23: Transform Coding &amp; Discrete Cosine Transform</div>
+
+    <div class="header-right">
+      <button id="reading-mode-btn" class="icon-btn" aria-label="Toggle reading focus mode" title="Focus Mode (F)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+          <line x1="8" y1="21" x2="16" y2="21"></line>
+          <line x1="12" y1="17" x2="12" y2="21"></line>
+        </svg>
+      </button>
+      <button id="tts-toggle" class="icon-btn" aria-label="Audio Reader" title="Audio Reader">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+        </svg>
+      </button>
+      <button id="theme-toggle" class="icon-btn" aria-label="Cycle theme" title="Theme (T)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="12" cy="12" r="4.5"></circle>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Sidebar Overlay -->
+  <div id="sidebar-overlay"></div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" aria-expanded="true">
+    <div class="sidebar-nav">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">General</div>
+        <a href="../index.html" class="sidebar-link">
+          <span class="link-icon">🏛️</span>
+          <span>Subject Portal</span>
+        </a>
+        <a href="../progress.html" class="sidebar-link">
+          <span class="link-icon">📊</span>
+          <span>Study Dashboard</span>
+        </a>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Current Chapter Sections</div>
+        <a href="#s-23-1" class="sidebar-link"><span class="link-icon">📌</span><span>23.1 Why This Chapter Exists</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-23-2" class="sidebar-link"><span class="link-icon">📌</span><span>23.2 Learning Contract</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-23-3" class="sidebar-link"><span class="link-icon">📌</span><span>23.3 Transform Coding: The Big Idea</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-23-4" class="sidebar-link"><span class="link-icon">📌</span><span>23.4 Transformation Is Not Automatically Lossy</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-23-5" class="sidebar-link"><span class="link-icon">📌</span><span>23.5 Why Work on Small Blocks?</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-23-6" class="sidebar-link"><span class="link-icon">📌</span><span>23.6 Frequency Intuition</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-23-7" class="sidebar-link"><span class="link-icon">📌</span><span>23.7 Basis Functions</span> </a>
+      <a href="#s-23-8" class="sidebar-link"><span class="link-icon">📌</span><span>23.8 The DC Coefficient</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-23-9" class="sidebar-link"><span class="link-icon">📌</span><span>23.9 What \(u\) and \(v\) Mean</span> </a>
+      <a href="#s-23-10" class="sidebar-link"><span class="link-icon">📌</span><span>23.10 Matrix Form of the DCT</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-23-11" class="sidebar-link"><span class="link-icon">📌</span><span>23.11 A Small 2×2 DCT Example</span> </a>
+      <a href="#s-23-12" class="sidebar-link"><span class="link-icon">📌</span><span>23.12 Another 2×2 Example — A Horizontal Change</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-23-13" class="sidebar-link"><span class="link-icon">📌</span><span>23.13 Why DCT Is Useful for Natural Images</span> </a>
+      <a href="#s-23-14" class="sidebar-link"><span class="link-icon">📌</span><span>23.14 Energy Compaction</span> </a>
+      <a href="#s-23-15" class="sidebar-link"><span class="link-icon">📌</span><span>23.15 Transform Coefficients Are Not “Pixels”</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-23-16" class="sidebar-link"><span class="link-icon">📌</span><span>23.16 Coefficient Sign</span> </a>
+      <a href="#s-23-17" class="sidebar-link"><span class="link-icon">📌</span><span>23.17 Quantization After the DCT</span> </a>
+      <a href="#s-23-18" class="sidebar-link"><span class="link-icon">📌</span><span>23.18 Why Quantization Creates Zeros</span> </a>
+      <a href="#s-23-19" class="sidebar-link"><span class="link-icon">📌</span><span>23.19 Worked Quantization Example</span> </a>
+      <a href="#s-23-20" class="sidebar-link"><span class="link-icon">📌</span><span>23.20 Why Quantization Is Frequency-Dependent</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-23-21" class="sidebar-link"><span class="link-icon">📌</span><span>23.21 Compression Pipeline at the Block Level</span> </a>
+      <a href="#s-23-22" class="sidebar-link"><span class="link-icon">📌</span><span>23.22 Why Zig-Zag Ordering Helps</span> </a>
+      <a href="#s-23-23" class="sidebar-link"><span class="link-icon">📌</span><span>23.23 Worked Zig-Zag Example</span> </a>
+      <a href="#s-23-24" class="sidebar-link"><span class="link-icon">📌</span><span>23.24 Why Not Just Quantize Pixels Directly?</span> </a>
+      <a href="#s-23-25" class="sidebar-link"><span class="link-icon">📌</span><span>23.25 DCT vs. Fourier Transform</span> </a>
+      <a href="#s-23-26" class="sidebar-link"><span class="link-icon">📌</span><span>23.26 Relation to C12</span> </a>
+      <a href="#s-23-27" class="sidebar-link"><span class="link-icon">📌</span><span>23.27 Complexity and Implementation</span> </a>
+      <a href="#s-23-28" class="sidebar-link"><span class="link-icon">📌</span><span>23.28 MATLAB — Block DCT Demonstration</span> </a>
+      <a href="#s-23-29" class="sidebar-link"><span class="link-icon">📌</span><span>23.29 Python — DCT Concept</span> </a>
+      <a href="#s-23-30" class="sidebar-link"><span class="link-icon">📌</span><span>23.30 Manual 8×8 Block Processing</span> </a>
+      <a href="#s-23-31" class="sidebar-link"><span class="link-icon">📌</span><span>23.31 Range Preparation / Level Shift</span> </a>
+      <a href="#s-23-32" class="sidebar-link"><span class="link-icon">📌</span><span>23.32 DCT and Visual Information</span> </a>
+      <a href="#s-23-33" class="sidebar-link"><span class="link-icon">📌</span><span>23.33 Engineering Failure Modes</span> </a>
+      <a href="#s-23-34" class="sidebar-link"><span class="link-icon">📌</span><span>23.34 Verification Experiment</span> </a>
+      <a href="#s-23-35" class="sidebar-link"><span class="link-icon">📌</span><span>23.35 Worked End-to-End Micro Example</span> </a>
+      <a href="#s-23-36" class="sidebar-link"><span class="link-icon">📌</span><span>23.36 Lossy Information Flow</span> </a>
+      <a href="#s-23-37" class="sidebar-link"><span class="link-icon">📌</span><span>23.37 Exam Lens</span> </a>
+      <a href="#s-23-38" class="sidebar-link"><span class="link-icon">📌</span><span>23.38 Numerical Practice Pattern</span> </a>
+      <a href="#s-23-39" class="sidebar-link"><span class="link-icon">📌</span><span>23.39 Chapter Checkpoint</span> </a>
+      <a href="#s-23-40" class="sidebar-link"><span class="link-icon">📌</span><span>23.40 One-Page Recall Sheet</span> </a>
+      <a href="#s-23-41" class="sidebar-link"><span class="link-icon">📌</span><span>23.41 Cross-Book Links</span> </a>
+      <a href="#s-23-42" class="sidebar-link"><span class="link-icon">📌</span><span>23.42 Final Chapter Summary</span> </a>
+      <a href="#s-23-43" class="sidebar-link"><span class="link-icon">📌</span><span>23.43 Mathematical Derivation: 2D Discrete Cosine Transform (DCT-II)</span> </a>
+      <a href="#s-23-44" class="sidebar-link"><span class="link-icon">📌</span><span>23.44 Comparative Analysis: Why DCT Outperforms DFT and KLT in Video/Image Standards</span> </a>
+      </div>
+
+      
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-i">Part I — The Image</div>
+      <a href="ch01-big-picture.html" class="sidebar-link"><span class="link-icon">01</span><span>The Big Picture</span></a>
+      <a href="ch02-image-formation.html" class="sidebar-link"><span class="link-icon">02</span><span>Formation & Acquisition</span></a>
+      <a href="ch03-sampling-quantization.html" class="sidebar-link"><span class="link-icon">03</span><span>Sampling & Quantization</span></a>
+      <a href="ch04-image-representation.html" class="sidebar-link"><span class="link-icon">04</span><span>Pixels, Matrices & Resolution</span></a>
+      <a href="ch05-colour-models-file-formats.html" class="sidebar-link"><span class="link-icon">05</span><span>Colour Models & Formats</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-ii">Part II — Improving the Image</div>
+      <a href="ch06-point-processing.html" class="sidebar-link"><span class="link-icon">06</span><span>Point Processing & Intensity</span></a>
+      <a href="ch07-histograms-equalization.html" class="sidebar-link"><span class="link-icon">07</span><span>Histograms & Equalization</span></a>
+      <a href="ch08-spatial-filtering.html" class="sidebar-link"><span class="link-icon">08</span><span>Spatial Filtering & Convolution</span></a>
+      <a href="ch09-smoothing-noise-reduction.html" class="sidebar-link"><span class="link-icon">09</span><span>Smoothing & Noise Reduction</span></a>
+      <a href="ch10-sharpening-edge-detection.html" class="sidebar-link"><span class="link-icon">10</span><span>Sharpening & Edge Detection</span></a>
+      <a href="ch11-geometric-transforms.html" class="sidebar-link"><span class="link-icon">11</span><span>Geometric Transforms</span></a>
+      <a href="ch12-fourier-transform.html" class="sidebar-link"><span class="link-icon">12</span><span>Fourier Transform & Frequency</span></a>
+      <a href="ch13-frequency-filtering.html" class="sidebar-link"><span class="link-icon">13</span><span>Frequency-Domain Filtering</span></a>
+      <a href="ch14-image-restoration.html" class="sidebar-link"><span class="link-icon">14</span><span>Restoration & Deblurring</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-iii">Part III — Understanding Content</div>
+      <a href="ch15-segmentation-fundamentals.html" class="sidebar-link"><span class="link-icon">15</span><span>Segmentation Fundamentals</span></a>
+      <a href="ch16-thresholding-otsu.html" class="sidebar-link"><span class="link-icon">16</span><span>Thresholding & Otsu Method</span></a>
+      <a href="ch17-region-segmentation.html" class="sidebar-link"><span class="link-icon">17</span><span>Region-Based Segmentation</span></a>
+      <a href="ch18-mathematical-morphology.html" class="sidebar-link"><span class="link-icon">18</span><span>Mathematical Morphology</span></a>
+      <a href="ch19-features-descriptors.html" class="sidebar-link"><span class="link-icon">19</span><span>Image Features & Descriptors</span></a>
+      <a href="ch20-sift-surf-orb-hog.html" class="sidebar-link"><span class="link-icon">20</span><span>SIFT, SURF, ORB & HOG</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-iv">Part IV — Compressing Images</div>
+      <a href="ch21-compression-entropy.html" class="sidebar-link"><span class="link-icon">21</span><span>Compression & Entropy</span></a>
+      <a href="ch22-lossless-coding.html" class="sidebar-link"><span class="link-icon">22</span><span>Lossless: RLE & Huffman</span></a>
+      <a href="ch23-lossy-dct-jpeg.html" class="sidebar-link active"><span class="link-icon">23</span><span>Lossy: DCT & JPEG</span></a>
+      <a href="ch24-wavelets-jpeg2000.html" class="sidebar-link"><span class="link-icon">24</span><span>Wavelets & JPEG 2000</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-v">Part V — Intelligent Vision</div>
+      <a href="ch25-image-classification.html" class="sidebar-link"><span class="link-icon">25</span><span>Image Classification</span></a>
+      <a href="ch26-cnns-image-processing.html" class="sidebar-link"><span class="link-icon">26</span><span>CNNs for Image Processing</span></a>
+      <a href="ch27-modern-vision-architectures.html" class="sidebar-link"><span class="link-icon">27</span><span>Modern Vision Architectures</span></a>
+      <a href="ch28-object-detection-yolo.html" class="sidebar-link"><span class="link-icon">28</span><span>Object Detection: YOLO</span></a>
+      <a href="ch29-image-denoising-autoencoders.html" class="sidebar-link"><span class="link-icon">29</span><span>Image Denoising Autoencoders</span></a>
+      <a href="ch30-video-motion-analysis.html" class="sidebar-link"><span class="link-icon">30</span><span>Video & Motion Analysis</span></a>
+      <a href="ch31-dip-applications-engineering.html" class="sidebar-link"><span class="link-icon">31</span><span>DIP Applications & Ethics</span></a>
+    </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-brand-mark">
+        <div class="mark">DU</div>
+        <div>
+          <strong>DSE-3 MiniBook</strong>
+          <div>University of Delhi</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mandatory Shell Wrapper -->
+  <div id="main-content">
+    <main class="chapter-content">
+      <!-- Chapter Hero -->
+      <div class="chapter-hero">
+        <div class="hero-meta">
+          <span class="part-badge part-iv">Compressing Images</span>
+          <span class="chapter-number">CHAPTER 23</span>
+          <span class="reading-time">⏱️ ~55 min read</span>
+          <span class="tag-badge tag-core">Highest Yield (10-mark guarantee)</span>
+        </div>
+        <h1 class="chapter-title">Transform Coding &amp; Discrete Cosine Transform</h1>
+        <p class="chapter-subtitle">
+          Energy Compaction Principles, 2D DCT-II Mathematical Formulation, Parseval&#x27;s Energy Conservation, DCT vs DFT vs KLT Comparison, Sub-Image Partitioning, and Zonal/Threshold Quantization
+        </p>
+
+        <div class="syllabus-anchor">
+          <span class="syllabus-anchor-label">DU Syllabus</span>
+          <span><strong>Transform Coding:</strong> Principles of transform coding, energy compaction and decorrelation, 1D and 2D Discrete Cosine Transform (DCT-II), basis functions, properties (orthogonality, symmetry), comparison of DCT with DFT and KLT, selection of sub-image size (8x8 blocks), zonal coding, and threshold coding.</span>
+        </div>
+      </div>
+
+      <!-- In-Page TOC -->
+      <div class="chapter-checklist-card" style="margin-bottom:var(--em-space-8);">
+        <div class="checklist-title">
+          <span>Table of Contents &amp; Visual Section Map</span>
+          <span class="tag-badge tag-math">44 Deep Sections</span>
+        </div>
+        <ul class="part-chapters-list">
+          <li class="part-chapter-item"><a href="#s-23-1"><strong>23.1</strong> Why This Chapter Exists</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-23-2"><strong>23.2</strong> Learning Contract</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-23-3"><strong>23.3</strong> Transform Coding: The Big Idea</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-23-4"><strong>23.4</strong> Transformation Is Not Automatically Lossy</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-23-5"><strong>23.5</strong> Why Work on Small Blocks?</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-23-6"><strong>23.6</strong> Frequency Intuition</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-23-7"><strong>23.7</strong> Basis Functions</a> </li>
+      <li class="part-chapter-item"><a href="#s-23-8"><strong>23.8</strong> The DC Coefficient</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-23-9"><strong>23.9</strong> What \(u\) and \(v\) Mean</a> </li>
+      <li class="part-chapter-item"><a href="#s-23-10"><strong>23.10</strong> Matrix Form of the DCT</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-23-11"><strong>23.11</strong> A Small 2×2 DCT Example</a> </li>
+      <li class="part-chapter-item"><a href="#s-23-12"><strong>23.12</strong> Another 2×2 Example — A Horizontal Change</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-23-13"><strong>23.13</strong> Why DCT Is Useful for Natural Images</a> </li>
+      <li class="part-chapter-item"><a href="#s-23-14"><strong>23.14</strong> Energy Compaction</a> </li>
+      <li class="part-chapter-item"><a href="#s-23-15"><strong>23.15</strong> Transform Coefficients Are Not “Pixels”</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-23-16"><strong>23.16</strong> Coefficient Sign</a> </li>
+      <li class="part-chapter-item"><a href="#s-23-17"><strong>23.17</strong> Quantization After the DCT</a> </li>
+      <li class="part-chapter-item"><a href="#s-23-18"><strong>23.18</strong> Why Quantization Creates Zeros</a> </li>
+      <li class="part-chapter-item"><a href="#s-23-19"><strong>23.19</strong> Worked Quantization Example</a> </li>
+      <li class="part-chapter-item"><a href="#s-23-20"><strong>23.20</strong> Why Quantization Is Frequency-Dependent</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-23-21"><strong>23.21</strong> Compression Pipeline at the Block Level</a> </li>
+      <li class="part-chapter-item"><a href="#s-23-22"><strong>23.22</strong> Why Zig-Zag Ordering Helps</a> </li>
+      <li class="part-chapter-item"><a href="#s-23-23"><strong>23.23</strong> Worked Zig-Zag Example</a> </li>
+      <li class="part-chapter-item"><a href="#s-23-24"><strong>23.24</strong> Why Not Just Quantize Pixels Directly?</a> </li>
+      <li class="part-chapter-item"><a href="#s-23-25"><strong>23.25</strong> DCT vs. Fourier Transform</a> </li>
+      <li class="part-chapter-item"><a href="#s-23-26"><strong>23.26</strong> Relation to C12</a> </li>
+      <li class="part-chapter-item"><a href="#s-23-27"><strong>23.27</strong> Complexity and Implementation</a> </li>
+      <li class="part-chapter-item"><a href="#s-23-28"><strong>23.28</strong> MATLAB — Block DCT Demonstration</a> </li>
+      <li class="part-chapter-item"><a href="#s-23-29"><strong>23.29</strong> Python — DCT Concept</a> </li>
+      <li class="part-chapter-item"><a href="#s-23-30"><strong>23.30</strong> Manual 8×8 Block Processing</a> </li>
+      <li class="part-chapter-item"><a href="#s-23-31"><strong>23.31</strong> Range Preparation / Level Shift</a> </li>
+      <li class="part-chapter-item"><a href="#s-23-32"><strong>23.32</strong> DCT and Visual Information</a> </li>
+      <li class="part-chapter-item"><a href="#s-23-33"><strong>23.33</strong> Engineering Failure Modes</a> </li>
+      <li class="part-chapter-item"><a href="#s-23-34"><strong>23.34</strong> Verification Experiment</a> </li>
+      <li class="part-chapter-item"><a href="#s-23-35"><strong>23.35</strong> Worked End-to-End Micro Example</a> </li>
+      <li class="part-chapter-item"><a href="#s-23-36"><strong>23.36</strong> Lossy Information Flow</a> </li>
+      <li class="part-chapter-item"><a href="#s-23-37"><strong>23.37</strong> Exam Lens</a> </li>
+      <li class="part-chapter-item"><a href="#s-23-38"><strong>23.38</strong> Numerical Practice Pattern</a> </li>
+      <li class="part-chapter-item"><a href="#s-23-39"><strong>23.39</strong> Chapter Checkpoint</a> </li>
+      <li class="part-chapter-item"><a href="#s-23-40"><strong>23.40</strong> One-Page Recall Sheet</a> </li>
+      <li class="part-chapter-item"><a href="#s-23-41"><strong>23.41</strong> Cross-Book Links</a> </li>
+      <li class="part-chapter-item"><a href="#s-23-42"><strong>23.42</strong> Final Chapter Summary</a> </li>
+      <li class="part-chapter-item"><a href="#s-23-43"><strong>23.43</strong> Mathematical Derivation: 2D Discrete Cosine Transform (DCT-II)</a> </li>
+      <li class="part-chapter-item"><a href="#s-23-44"><strong>23.44</strong> Comparative Analysis: Why DCT Outperforms DFT and KLT in Video/Image Standards</a> </li>
+        </ul>
+      </div>
+
+      <div class="concept-hook" style="margin-bottom:var(--em-space-8);"><h1>C23 — Transform Coding and the Discrete Cosine Transform</h1>
+<blockquote>
+<p><strong>Chapter thesis:</strong> Transform coding changes the representation of image data so that energy is concentrated into a smaller number of coefficients, making efficient quantization and entropy coding possible.</p>
+</blockquote>
+<hr /></div>
+
+      <!-- All Numbered Sections -->
+      
+  <!-- SECTION 23.1: Why This Chapter Exists -->
+  <section id="s-23-1" class="section-block">
+    <div class="section-header">
+      <span class="section-num">23.1</span>
+      <h2>Why This Chapter Exists</h2>
+      <button class="bookmark-btn" data-id="s-23-1" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>C21 introduced the purpose of compression.</p>
+<p>C22 showed how statistical structure can be encoded efficiently.</p>
+<p>But photographs contain another useful kind of structure:</p>
+<blockquote>
+<p><strong>Neighbouring pixels tend to be correlated, so representing every pixel independently is often inefficient.</strong></p>
+</blockquote>
+<p>Transform coding attacks that problem by changing representation.</p>
+<p>Instead of storing:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>pixel values</code></pre>
+</div></p>
+<p>we can represent a block using:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>transform coefficients</code></pre>
+</div></p>
+<p>The transform itself does not necessarily compress the data. It creates a representation that is easier to compress.</p>
+<p>The core chain is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>correlated pixels
+      ↓
+transform
+      ↓
+decorrelated / energy-concentrated coefficients
+      ↓
+quantization
+      ↓
+many small or zero coefficients
+      ↓
+efficient coding</code></pre>
+</div></p>
+<p>This distinction is essential:</p>
+<blockquote>
+<p><strong>A transform is primarily a representation change; compression emerges when that representation is combined with quantization and coding.</strong></p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 23.2: Learning Contract -->
+  <section id="s-23-2" class="section-block">
+    <div class="section-header">
+      <span class="section-num">23.2</span>
+      <h2>Learning Contract</h2>
+      <button class="bookmark-btn" data-id="s-23-2" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>After this chapter, you should be able to:</p>
+<ul>
+<li>explain transform coding;</li>
+<li>explain why correlation between neighbouring pixels is useful for compression;</li>
+<li>distinguish spatial-domain samples from transform-domain coefficients;</li>
+<li>explain the DCT conceptually;</li>
+<li>identify low-frequency and high-frequency components;</li>
+<li>explain the DC and AC coefficient idea;</li>
+<li>write the 1-D and 2-D DCT equations;</li>
+<li>calculate a small DCT example;</li>
+<li>explain why cosine basis functions are useful;</li>
+<li>explain the role of quantization after the DCT;</li>
+<li>explain why quantization creates zeros;</li>
+<li>describe the JPEG block-level compression pipeline;</li>
+<li>connect DCT to zig-zag scanning, run-length coding, and entropy coding.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 23.3: Transform Coding: The Big Idea -->
+  <section id="s-23-3" class="section-block">
+    <div class="section-header">
+      <span class="section-num">23.3</span>
+      <h2>Transform Coding: The Big Idea</h2>
+      <button class="bookmark-btn" data-id="s-23-3" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose an image block is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>52  52  53  54
+52  53  54  55
+53  54  55  55
+54  55  55  56</code></pre>
+</div></p>
+<p>The values are highly related.</p>
+<p>Storing all sixteen values separately does not explicitly expose that structure.</p>
+<p>A transform represents the same block as weighted combinations of basis patterns.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>spatial image block
+        ↓
+    transform
+        ↓
+frequency-like coefficient block</code></pre>
+</div></p>
+<p>The coefficients tell us how strongly different basis patterns contribute to the original image.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 23.4: Transformation Is Not Automatically Lossy -->
+  <section id="s-23-4" class="section-block">
+    <div class="section-header">
+      <span class="section-num">23.4</span>
+      <h2>Transformation Is Not Automatically Lossy</h2>
+      <button class="bookmark-btn" data-id="s-23-4" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>This is a common misconception.</p>
+<p>A transform can be invertible.</p>
+<p>If:</p>
+<p>
+$$
+Y=T(X)
+$$
+</p>
+<p>and:</p>
+<p>
+$$
+X=T^{-1}(Y),
+$$
+</p>
+<p>then no information has necessarily been discarded.</p>
+<p>For an ideal exact transform:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>X
+ ↓
+Transform
+ ↓
+Y
+ ↓
+Inverse transform
+ ↓
+X exactly</code></pre>
+</div></p>
+<p>The lossy step usually comes later:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Y
+ ↓
+Quantization
+ ↓
+Y&#x27;
+ ↓
+Inverse transform
+ ↓
+X&#x27;</code></pre>
+</div></p>
+<p>where:</p>
+<p>
+$$
+X'\neq X
+$$
+</p>
+<p>in general.</p>
+<p>Thus:</p>
+<p>
+$$
+\boxed{\text{Transform} \neq \text{information loss}}
+$$
+</p>
+<p>and:</p>
+<p>
+$$
+\boxed{\text{Quantization can introduce the loss}}
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 23.5: Why Work on Small Blocks? -->
+  <section id="s-23-5" class="section-block">
+    <div class="section-header">
+      <span class="section-num">23.5</span>
+      <h2>Why Work on Small Blocks?</h2>
+      <button class="bookmark-btn" data-id="s-23-5" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>JPEG uses small image blocks rather than applying one giant transform to the entire image.</p>
+<p>For baseline JPEG, the spatial image is processed using:</p>
+<p>
+$$
+8\times8
+$$
+</p>
+<p>blocks.</p>
+<p>Why is block processing attractive?</p>
+<h3>Local structure</h3>
+<p>A small region can often be approximated effectively by a limited set of basis patterns.</p>
+<h3>Computational practicality</h3>
+<p>Transforming many small blocks is manageable.</p>
+<h3>Adaptation</h3>
+<p>Different regions of an image can receive different coefficient patterns and quantization effects.</p>
+<h3>Important limitation</h3>
+<p>Block processing can produce visible block artifacts at strong compression.</p>
+<p>This becomes obvious in C24.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 23.6: Frequency Intuition -->
+  <section id="s-23-6" class="section-block">
+    <div class="section-header">
+      <span class="section-num">23.6</span>
+      <h2>Frequency Intuition</h2>
+      <button class="bookmark-btn" data-id="s-23-6" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The word “frequency” can be intimidating because an image is not an audio waveform.</p>
+<p>Here, frequency refers to how rapidly intensity changes across spatial position.</p>
+<h3>Low spatial frequency</h3>
+<p>Slow intensity variation:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>dark → slightly brighter → slightly brighter → bright</code></pre>
+</div></p>
+<h3>High spatial frequency</h3>
+<p>Rapid changes:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>dark → bright → dark → bright</code></pre>
+</div></p>
+<p>Strong edges contain high-frequency components.</p>
+<p>Broad smooth regions contain more low-frequency content.</p>
+<p>So a transform can separate:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>slow variation
+from
+rapid variation</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 23.7: Basis Functions -->
+  <section id="s-23-7" class="section-block">
+    <div class="section-header">
+      <span class="section-num">23.7</span>
+      <h2>Basis Functions</h2>
+      <button class="bookmark-btn" data-id="s-23-7" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A transform represents a signal using basis functions.</p>
+<p>For DCT, these basis functions are cosine patterns with different spatial frequencies.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>DC basis:
+████████
+████████
+████████
+████████
+
+low frequency:
+░░▒▒▓▓██
+░░▒▒▓▓██
+░░▒▒▓▓██
+░░▒▒▓▓██
+
+higher frequency:
+█░█░█░█░
+█░█░█░█░
+█░█░█░█░
+█░█░█░█░</code></pre>
+</div></p>
+<p>These are conceptual illustrations, not exact DCT basis matrices.</p>
+<p>The transform asks:</p>
+<blockquote>
+<p><strong>How much of each basis pattern is present in this image block?</strong></p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 23.8: The DC Coefficient -->
+  <section id="s-23-8" class="section-block">
+    <div class="section-header">
+      <span class="section-num">23.8</span>
+      <h2>The DC Coefficient</h2>
+      <button class="bookmark-btn" data-id="s-23-8" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The coefficient at the top-left of the DCT coefficient matrix is conventionally called the <strong>DC coefficient</strong>.</p>
+<p>It represents the average or overall brightness component of the block, subject to transform normalization conventions.</p>
+<p>The remaining coefficients are commonly called <strong>AC coefficients</strong>.</p>
+<p>A useful mental map is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>DCT coefficient matrix
+
+[ DC | low horizontal frequencies ... ]
+[ low vertical ...                 ... ]
+[ ...                    high ...  ... ]
+[ ...                         high ...]</code></pre>
+</div></p>
+<p>The distance from the top-left generally increases with spatial frequency in the horizontal and vertical directions.</p>
+<hr />
+<h1>9. 1-D DCT</h1>
+<p>For an input sequence $f(x)$ of length $N$, one common orthonormal DCT-II form is:</p>
+<p>
+$$
+F(u)=
+\alpha(u)
+\sum_{x=0}^{N-1}
+f(x)
+\cos
+\left[
+\frac{\pi(2x+1)u}{2N}
+\right]
+$$
+</p>
+<p>where:</p>
+<p>
+$$
+\alpha(u)=
+\begin{cases}
+\sqrt{\frac{1}{N}}, & u=0,\\[4pt]
+\sqrt{\frac{2}{N}}, & u>0.
+\end{cases}
+$$
+</p>
+<p>Different books and implementations may use equivalent scaling conventions.</p>
+<p>That changes coefficient magnitudes but not the fundamental concept.</p>
+<blockquote>
+<p><strong>Always check the normalization convention before comparing hand calculations with a software library.</strong></p>
+</blockquote>
+<hr />
+<h1>10. 2-D DCT</h1>
+<p>For an $N\times N$ image block:</p>
+<p>
+$$
+F(u,v)=
+\alpha(u)\alpha(v)
+\sum_{x=0}^{N-1}
+\sum_{y=0}^{N-1}
+f(x,y)
+\cos
+\left[
+\frac{\pi(2x+1)u}{2N}
+\right]
+\cos
+\left[
+\frac{\pi(2y+1)v}{2N}
+\right].
+$$
+</p>
+<p>For the JPEG block:</p>
+<p>
+$$
+N=8.
+$$
+</p>
+<p>Thus:</p>
+<p>
+$$
+F(u,v)
+=
+\alpha(u)\alpha(v)
+\sum_{x=0}^{7}
+\sum_{y=0}^{7}
+f(x,y)
+\cos
+\left[
+\frac{\pi(2x+1)u}{16}
+\right]
+\cos
+\left[
+\frac{\pi(2y+1)v}{16}
+\right].
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 23.9: What \(u\) and \(v\) Mean -->
+  <section id="s-23-9" class="section-block">
+    <div class="section-header">
+      <span class="section-num">23.9</span>
+      <h2>What \(u\) and \(v\) Mean</h2>
+      <button class="bookmark-btn" data-id="s-23-9" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>In:</p>
+<p>
+$$
+F(u,v)
+$$
+</p>
+<ul>
+<li>$u$ indexes one spatial frequency direction;</li>
+<li>$v$ indexes the other spatial frequency direction.</li>
+</ul>
+<p>The pair $(u,v)$ identifies a particular 2-D cosine basis.</p>
+<p>The DC component is:</p>
+<p>
+$$
+F(0,0).
+$$
+</p>
+<p>Large $u$, $v$ values correspond to higher-frequency variations along those directions.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 23.10: Matrix Form of the DCT -->
+  <section id="s-23-10" class="section-block">
+    <div class="section-header">
+      <span class="section-num">23.10</span>
+      <h2>Matrix Form of the DCT</h2>
+      <button class="bookmark-btn" data-id="s-23-10" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A compact way to express a 2-D DCT is:</p>
+<p>
+$$
+F=CXC^T
+$$
+</p>
+<p>where:</p>
+<ul>
+<li>$X$ = spatial-domain block;</li>
+<li>$C$ = DCT transform matrix;</li>
+<li>$F$ = coefficient matrix.</li>
+</ul>
+<p>The inverse is:</p>
+<p>
+$$
+X=C^TFC
+$$
+</p>
+<p>for the orthonormal convention.</p>
+<p>This form is extremely useful because it makes the connection to linear algebra explicit.</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>X
+ ↓ left multiply by C
+C X
+ ↓ right multiply by Cᵀ
+C X Cᵀ
+ ↓
+F</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 23.11: A Small 2×2 DCT Example -->
+  <section id="s-23-11" class="section-block">
+    <div class="section-header">
+      <span class="section-num">23.11</span>
+      <h2>A Small 2×2 DCT Example</h2>
+      <button class="bookmark-btn" data-id="s-23-11" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>To make the mathematics manageable, consider:</p>
+<p>
+$$
+X=
+\begin{bmatrix}
+10 & 10\\
+10 & 10
+\end{bmatrix}.
+$$
+</p>
+<p>This block is constant.</p>
+<p>Therefore, intuitively:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>average brightness → present
+variation           → absent</code></pre>
+</div></p>
+<p>So the DC coefficient is nonzero, while AC coefficients are zero under an orthonormal DCT.</p>
+<p>Using:</p>
+<p>
+$$
+C=
+\frac{1}{\sqrt2}
+\begin{bmatrix}
+1&1\\
+1&-1
+\end{bmatrix},
+$$
+</p>
+<p>we have:</p>
+<p>
+$$
+F=CXC^T.
+$$
+</p>
+<p>First:</p>
+<p>
+$$
+CX
+=
+\frac{1}{\sqrt2}
+\begin{bmatrix}
+1&1\\
+1&-1
+\end{bmatrix}
+\begin{bmatrix}
+10&10\\
+10&10
+\end{bmatrix}
+$$
+</p>
+<p>
+$$
+=
+\frac{1}{\sqrt2}
+\begin{bmatrix}
+20&20\\
+0&0
+\end{bmatrix}.
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+F=
+\frac{1}{\sqrt2}
+\begin{bmatrix}
+20&20\\
+0&0
+\end{bmatrix}
+\frac{1}{\sqrt2}
+\begin{bmatrix}
+1&1\\
+1&-1
+\end{bmatrix}
+$$
+</p>
+<p>which gives:</p>
+<p>
+$$
+\boxed{
+F=
+\begin{bmatrix}
+20&0\\
+0&0
+\end{bmatrix}
+}
+$$
+</p>
+<p>This is an ideal demonstration of energy concentration:</p>
+<blockquote>
+<p>A constant image block needs only the DC component.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 23.12: Another 2×2 Example — A Horizontal Change -->
+  <section id="s-23-12" class="section-block">
+    <div class="section-header">
+      <span class="section-num">23.12</span>
+      <h2>Another 2×2 Example — A Horizontal Change</h2>
+      <button class="bookmark-btn" data-id="s-23-12" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Consider:</p>
+<p>
+$$
+X=
+\begin{bmatrix}
+10&20\\
+10&20
+\end{bmatrix}.
+$$
+</p>
+<p>There is:</p>
+<ul>
+<li>an average brightness;</li>
+<li>a horizontal intensity change;</li>
+<li>no vertical change.</li>
+</ul>
+<p>The DCT therefore places energy primarily in:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>DC
++
+horizontal-frequency component</code></pre>
+</div></p>
+<p>while the coefficient corresponding to pure vertical variation is zero.</p>
+<p>The important insight is:</p>
+<blockquote>
+<p><strong>DCT coefficients describe patterns of variation, not simply individual pixel locations.</strong></p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 23.13: Why DCT Is Useful for Natural Images -->
+  <section id="s-23-13" class="section-block">
+    <div class="section-header">
+      <span class="section-num">23.13</span>
+      <h2>Why DCT Is Useful for Natural Images</h2>
+      <button class="bookmark-btn" data-id="s-23-13" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Natural image blocks often vary smoothly.</p>
+<p>For smooth content:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>low-frequency coefficients
+→ relatively important
+
+high-frequency coefficients
+→ often smaller</code></pre>
+</div></p>
+<p>This creates an opportunity.</p>
+<p>If many high-frequency coefficients are small, quantization can reduce them to zero or coarser values.</p>
+<p>After that:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>many zeros
++
+repeated/small coefficient patterns
+→
+RLE + entropy coding</code></pre>
+</div></p>
+<p>This is the main compression chain.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 23.14: Energy Compaction -->
+  <section id="s-23-14" class="section-block">
+    <div class="section-header">
+      <span class="section-num">23.14</span>
+      <h2>Energy Compaction</h2>
+      <button class="bookmark-btn" data-id="s-23-14" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A major reason for using DCT is <strong>energy compaction</strong>.</p>
+<p>Suppose a block's total signal energy is represented by coefficients.</p>
+<p>A transform with good energy compaction places a large portion of useful signal energy into a small subset of coefficients.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Before transform
+
+information spread across many pixels
+████ ████ ████ ████ ████ ████
+
+After DCT
+
+large energy concentrated near DC/low frequencies
+████████████
+██
+█
+.
+.
+.</code></pre>
+</div></p>
+<p>This is not a guarantee that every image or every block concentrates perfectly.</p>
+<p>It is a statistical property exploited by the codec.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 23.15: Transform Coefficients Are Not “Pixels” -->
+  <section id="s-23-15" class="section-block">
+    <div class="section-header">
+      <span class="section-num">23.15</span>
+      <h2>Transform Coefficients Are Not “Pixels”</h2>
+      <button class="bookmark-btn" data-id="s-23-15" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A common beginner mistake is to interpret:</p>
+<p>
+$$
+F(u,v)
+$$
+</p>
+<p>as though it were another image with ordinary pixel values.</p>
+<p>It is not.</p>
+<p>A coefficient represents the strength of a particular basis function.</p>
+<p>Thus:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>pixel matrix
+→ actual spatial samples
+
+DCT matrix
+→ strengths of spatial-frequency components</code></pre>
+</div></p>
+<p>The coefficient image can be visualized, but its values have a different interpretation.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 23.16: Coefficient Sign -->
+  <section id="s-23-16" class="section-block">
+    <div class="section-header">
+      <span class="section-num">23.16</span>
+      <h2>Coefficient Sign</h2>
+      <button class="bookmark-btn" data-id="s-23-16" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>DCT coefficients may be:</p>
+<ul>
+<li>positive;</li>
+<li>negative;</li>
+<li>zero.</li>
+</ul>
+<p>The sign describes the phase/polarity contribution of the corresponding cosine basis pattern under the chosen convention.</p>
+<p>The magnitude indicates how strongly that component contributes.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 23.17: Quantization After the DCT -->
+  <section id="s-23-17" class="section-block">
+    <div class="section-header">
+      <span class="section-num">23.17</span>
+      <h2>Quantization After the DCT</h2>
+      <button class="bookmark-btn" data-id="s-23-17" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose the DCT produces:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>120  11   4   2
+  8   4   1   1
+  3   1   0   0
+  1   0   0   0</code></pre>
+</div></p>
+<p>We can divide coefficients by a quantization table and round.</p>
+<p>Conceptually:</p>
+<p>
+$$
+\hat F(u,v)
+=
+\operatorname{round}
+\left(
+\frac{F(u,v)}{Q(u,v)}
+\right).
+$$
+</p>
+<p>Then reconstruction uses:</p>
+<p>
+$$
+F'(u,v)
+=
+\hat F(u,v)Q(u,v).
+$$
+</p>
+<p>Because rounding is not generally reversible, this stage can lose information.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 23.18: Why Quantization Creates Zeros -->
+  <section id="s-23-18" class="section-block">
+    <div class="section-header">
+      <span class="section-num">23.18</span>
+      <h2>Why Quantization Creates Zeros</h2>
+      <button class="bookmark-btn" data-id="s-23-18" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p>
+$$
+F=7
+$$
+</p>
+<p>and:</p>
+<p>
+$$
+Q=10.
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+\operatorname{round}(7/10)=1.
+$$
+</p>
+<p>Suppose:</p>
+<p>
+$$
+F=2,\quad Q=10.
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+\operatorname{round}(2/10)=0.
+$$
+</p>
+<p>Small coefficients can therefore disappear.</p>
+<p>This is enormously useful for compression because a coefficient matrix containing many zeros is easier to encode efficiently.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 23.19: Worked Quantization Example -->
+  <section id="s-23-19" class="section-block">
+    <div class="section-header">
+      <span class="section-num">23.19</span>
+      <h2>Worked Quantization Example</h2>
+      <button class="bookmark-btn" data-id="s-23-19" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose a coefficient block is:</p>
+<p>
+$$
+F=
+\begin{bmatrix}
+80 & 17 & 5\\
+11 & 3 & 2\\
+4 & 2 & 1
+\end{bmatrix}
+$$
+</p>
+<p>and a simplified quantization matrix is:</p>
+<p>
+$$
+Q=
+\begin{bmatrix}
+8 & 10 & 16\\
+10 & 16 & 20\\
+16 & 20 & 24
+\end{bmatrix}.
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+\hat F=
+\operatorname{round}(F/Q).
+$$
+</p>
+<p>Element-wise:</p>
+<p>
+$$
+80/8=10
+$$
+</p>
+<p>
+$$
+17/10=1.7\rightarrow2
+$$
+</p>
+<p>
+$$
+5/16=0.3125\rightarrow0
+$$
+</p>
+<p>and so on.</p>
+<p>A possible result is:</p>
+<p>
+$$
+\boxed{
+\hat F=
+\begin{bmatrix}
+10&2&0\\
+1&0&0\\
+0&0&0
+\end{bmatrix}
+}
+$$
+</p>
+<p>Many coefficients have become zero.</p>
+<p>This illustrates the mechanism without reproducing the full JPEG standard quantization tables.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 23.20: Why Quantization Is Frequency-Dependent -->
+  <section id="s-23-20" class="section-block">
+    <div class="section-header">
+      <span class="section-num">23.20</span>
+      <h2>Why Quantization Is Frequency-Dependent</h2>
+      <button class="bookmark-btn" data-id="s-23-20" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>In JPEG-style compression, quantization is typically stronger for higher spatial frequencies.</p>
+<p>Why?</p>
+<p>Because many natural images can tolerate some loss of fine detail more than loss of broad intensity structure.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>DC / low frequency
+→ finer preservation
+
+higher frequency
+→ stronger quantization</code></pre>
+</div></p>
+<p>This is a perceptual engineering choice, not a mathematical law that all images must obey.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 23.21: Compression Pipeline at the Block Level -->
+  <section id="s-23-21" class="section-block">
+    <div class="section-header">
+      <span class="section-num">23.21</span>
+      <h2>Compression Pipeline at the Block Level</h2>
+      <button class="bookmark-btn" data-id="s-23-21" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The basic JPEG-inspired block pipeline is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>8×8 image block
+      ↓
+level / range preparation
+      ↓
+2-D DCT
+      ↓
+64 coefficients
+      ↓
+quantization
+      ↓
+many small / zero coefficients
+      ↓
+zig-zag ordering
+      ↓
+run-length representation
+      ↓
+entropy coding</code></pre>
+</div></p>
+<p>C24 will expand the JPEG-specific implementation details.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 23.22: Why Zig-Zag Ordering Helps -->
+  <section id="s-23-22" class="section-block">
+    <div class="section-header">
+      <span class="section-num">23.22</span>
+      <h2>Why Zig-Zag Ordering Helps</h2>
+      <button class="bookmark-btn" data-id="s-23-22" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>After quantization, low-frequency coefficients tend to be near the top-left, while high-frequency coefficients tend to lie farther away.</p>
+<p>A zig-zag scan orders the 8×8 coefficients approximately from lower to higher spatial frequency.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code> 0  1  5  6 ...
+ 2  4  7 ...
+ 3  8 ...
+...</code></pre>
+</div></p>
+<p>The exact standard ordering is fixed and should be treated as a lookup pattern, not guessed.</p>
+<p>The benefit is practical:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>important nonzero coefficients
+→ early
+
+many zero coefficients
+→ later</code></pre>
+</div></p>
+<p>This creates long runs of zeros.</p>
+<p>That is precisely what enables run-based coding to become effective.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 23.23: Worked Zig-Zag Example -->
+  <section id="s-23-23" class="section-block">
+    <div class="section-header">
+      <span class="section-num">23.23</span>
+      <h2>Worked Zig-Zag Example</h2>
+      <button class="bookmark-btn" data-id="s-23-23" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose a quantized block becomes conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>10  2  0  0
+ 1  0  0  0
+ 0  0  0  0
+ 0  0  0  0</code></pre>
+</div></p>
+<p>A zig-zag-like ordering groups the nonzero low-frequency values near the beginning:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>10, 2, 1, 0, 0, 0, 0, ...</code></pre>
+</div></p>
+<p>The later part contains a long sequence of zeros.</p>
+<p>An RLE representation can then record:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>number of zeros before next nonzero
++
+nonzero coefficient</code></pre>
+</div></p>
+<p>This is one of the important connections between:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>DCT
+→ quantization
+→ zig-zag
+→ RLE</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 23.24: Why Not Just Quantize Pixels Directly? -->
+  <section id="s-23-24" class="section-block">
+    <div class="section-header">
+      <span class="section-num">23.24</span>
+      <h2>Why Not Just Quantize Pixels Directly?</h2>
+      <button class="bookmark-btn" data-id="s-23-24" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Direct pixel quantization can discard information, but it does not exploit the spatial structure as effectively.</p>
+<p>Transform coding first separates different spatial variation patterns.</p>
+<p>That allows the compressor to treat:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>smooth/large-scale content
+and
+fine/high-frequency content</code></pre>
+</div></p>
+<p>differently.</p>
+<p>This provides more control over the rate–distortion trade-off.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 23.25: DCT vs. Fourier Transform -->
+  <section id="s-23-25" class="section-block">
+    <div class="section-header">
+      <span class="section-num">23.25</span>
+      <h2>DCT vs. Fourier Transform</h2>
+      <button class="bookmark-btn" data-id="s-23-25" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Both describe spatial frequency information, but they are not identical.</p>
+<div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Aspect</th>
+<th>DCT</th>
+<th>DFT</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Basis</td>
+<td>Cosine</td>
+<td>Complex exponential / sine + cosine</td>
+</tr>
+<tr>
+<td>Typical coefficients</td>
+<td>Real-valued</td>
+<td>Generally complex-valued</td>
+</tr>
+<tr>
+<td>Symmetry assumptions</td>
+<td>Even-symmetry relationship</td>
+<td>Periodic representation</td>
+</tr>
+<tr>
+<td>Common JPEG role</td>
+<td>Core block transform</td>
+<td>Not the baseline JPEG transform</td>
+</tr>
+<tr>
+<td>Compression use</td>
+<td>Strong energy compaction for typical image blocks</td>
+<td>More general frequency analysis</td>
+</tr>
+</tbody>
+</table></div>
+<p>The DCT is especially convenient for image compression because of its real coefficients and favourable energy-compaction behaviour for correlated image blocks.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 23.26: Relation to C12 -->
+  <section id="s-23-26" class="section-block">
+    <div class="section-header">
+      <span class="section-num">23.26</span>
+      <h2>Relation to C12</h2>
+      <button class="bookmark-btn" data-id="s-23-26" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>C12 introduced the frequency-domain viewpoint.</p>
+<p>C23 applies that viewpoint to compression:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>C12
+Fourier / frequency thinking
+        ↓
+C23
+DCT representation
+        ↓
+energy compaction
+        ↓
+quantization
+        ↓
+compression</code></pre>
+</div></p>
+<p>Do not think of DCT as unrelated to the Fourier transform family.</p>
+<p>It belongs to the broader family of transform-domain signal representations.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 23.27: Complexity and Implementation -->
+  <section id="s-23-27" class="section-block">
+    <div class="section-header">
+      <span class="section-num">23.27</span>
+      <h2>Complexity and Implementation</h2>
+      <button class="bookmark-btn" data-id="s-23-27" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A direct 2-D DCT is computationally expensive if evaluated literally from the double summation for every coefficient.</p>
+<p>Practical libraries use optimized algorithms.</p>
+<p>Possible implementation strategies include:</p>
+<ul>
+<li>separability;</li>
+<li>precomputed transform matrices;</li>
+<li>fast DCT algorithms;</li>
+<li>vectorized numerical operations;</li>
+<li>optimized native libraries.</li>
+</ul>
+<h3>Separability</h3>
+<p>A 2-D DCT can be computed as:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>rows → 1-D DCT
+columns → 1-D DCT</code></pre>
+</div></p>
+<p>instead of directly evaluating every 2-D basis expression independently.</p>
+<p>This is a general computational insight:</p>
+<blockquote>
+<p><strong>Exploit mathematical structure before optimizing code.</strong></p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 23.28: MATLAB — Block DCT Demonstration -->
+  <section id="s-23-28" class="section-block">
+    <div class="section-header">
+      <span class="section-num">23.28</span>
+      <h2>MATLAB — Block DCT Demonstration</h2>
+      <button class="bookmark-btn" data-id="s-23-28" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>MATLAB provides an implementation of the 2-D DCT through <code>dct2</code>.</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>matlab</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>img = imread(&#x27;sample.png&#x27;);
+
+if ndims(img) == 3
+    img = rgb2gray(img);
+end
+
+img = double(img);
+
+F = dct2(img);
+
+figure;
+imagesc(log(abs(F) + 1));
+axis image;
+colormap gray;
+title(&#x27;Log-Magnitude DCT Coefficients&#x27;);</code></pre>
+</div></p>
+<p>The logarithm is used only for visualization so that a wide range of coefficient magnitudes can be displayed.</p>
+<p>It does not mean JPEG stores <code>log(abs(F)+1)</code>.</p>
+<p>That is a frequent implementation misconception.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 23.29: Python — DCT Concept -->
+  <section id="s-23-29" class="section-block">
+    <div class="section-header">
+      <span class="section-num">23.29</span>
+      <h2>Python — DCT Concept</h2>
+      <button class="bookmark-btn" data-id="s-23-29" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A typical Python implementation may use SciPy for the transform.</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>python</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>from __future__ import annotations
+
+import cv2
+import numpy as np
+from scipy.fft import dct
+
+
+def dct2(block: np.ndarray) -&gt; np.ndarray:
+    if block.ndim != 2:
+        raise ValueError(&quot;Expected a 2-D grayscale block.&quot;)
+
+    x = np.asarray(block, dtype=np.float64)
+
+    # Apply an orthonormal 1-D DCT to rows,
+    # then to columns.
+    tmp = dct(x, axis=0, norm=&quot;ortho&quot;)
+    return dct(tmp, axis=1, norm=&quot;ortho&quot;)
+
+
+img = cv2.imread(&quot;sample.png&quot;, cv2.IMREAD_GRAYSCALE)
+if img is None:
+    raise FileNotFoundError(&quot;Could not read sample.png&quot;)
+
+coeff = dct2(img)
+
+visual = np.log1p(np.abs(coeff))
+
+print(&quot;Image shape:&quot;, img.shape)
+print(&quot;DCT shape:&quot;, coeff.shape)</code></pre>
+</div></p>
+<p>The transform's exact numerical scaling depends on the selected normalization convention.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 23.30: Manual 8×8 Block Processing -->
+  <section id="s-23-30" class="section-block">
+    <div class="section-header">
+      <span class="section-num">23.30</span>
+      <h2>Manual 8×8 Block Processing</h2>
+      <button class="bookmark-btn" data-id="s-23-30" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A JPEG-like teaching implementation can process an image block by block.</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image
+ ↓
+pad to dimensions divisible by 8
+ ↓
+extract 8×8 block
+ ↓
+apply DCT
+ ↓
+quantize
+ ↓
+store coefficient block
+ ↓
+next 8×8 block</code></pre>
+</div></p>
+<p>A production codec must also handle:</p>
+<ul>
+<li>image dimensions;</li>
+<li>data ranges;</li>
+<li>colour channels;</li>
+<li>quantization tables;</li>
+<li>entropy coding;</li>
+<li>headers and metadata.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 23.31: Range Preparation / Level Shift -->
+  <section id="s-23-31" class="section-block">
+    <div class="section-header">
+      <span class="section-num">23.31</span>
+      <h2>Range Preparation / Level Shift</h2>
+      <button class="bookmark-btn" data-id="s-23-31" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>JPEG encoding commonly shifts 8-bit sample values before the DCT so that an unsigned range centered around 128 becomes approximately symmetric around zero.</p>
+<p>For an 8-bit sample $f$:</p>
+<p>
+$$
+f_{\text{shifted}}=f-128.
+$$
+</p>
+<p>Thus:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>0     → -128
+128   → 0
+255   → 127</code></pre>
+</div></p>
+<p>This centers the block values for the transform.</p>
+<h3>Important nuance</h3>
+<p>The DCT itself is not “subtract 128.” The level shift is a JPEG implementation step associated with preparing 8-bit samples for the baseline encoding process.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 23.32: DCT and Visual Information -->
+  <section id="s-23-32" class="section-block">
+    <div class="section-header">
+      <span class="section-num">23.32</span>
+      <h2>DCT and Visual Information</h2>
+      <button class="bookmark-btn" data-id="s-23-32" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The transform does not identify “important pixels.”</p>
+<p>Instead, it identifies components such as:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>average brightness
+horizontal change
+vertical change
+diagonal change
+fine texture</code></pre>
+</div></p>
+<p>This allows compression to preserve major structure while coarsening selected detail.</p>
+<p>That is why the DCT is better understood as a <strong>representation of patterns</strong>.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 23.33: Engineering Failure Modes -->
+  <section id="s-23-33" class="section-block">
+    <div class="section-header">
+      <span class="section-num">23.33</span>
+      <h2>Engineering Failure Modes</h2>
+      <button class="bookmark-btn" data-id="s-23-33" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Failure 1 — Wrong normalization</h3>
+<p>Two DCT libraries may return different numerical values because of scaling conventions.</p>
+<h3>Failure 2 — Forgetting level shift</h3>
+<p>A manual JPEG-like encoder may produce incorrect coefficient behaviour if the expected preprocessing convention is not followed.</p>
+<h3>Failure 3 — Quantizing before transform</h3>
+<p>That changes the algorithm and loses the main transform-coding advantage.</p>
+<h3>Failure 4 — Treating coefficient magnitude as an image intensity</h3>
+<p>Coefficient values have transform-domain meaning.</p>
+<h3>Failure 5 — Assuming all energy is always in low frequencies</h3>
+<p>Natural images often exhibit concentration there, but not every image block does.</p>
+<h3>Failure 6 — Skipping inverse testing</h3>
+<p>A transform implementation should be tested through:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>input
+→ DCT
+→ inverse DCT
+→ reconstruction
+→ compare with input</code></pre>
+</div></p>
+<p>before adding quantization.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 23.34: Verification Experiment -->
+  <section id="s-23-34" class="section-block">
+    <div class="section-header">
+      <span class="section-num">23.34</span>
+      <h2>Verification Experiment</h2>
+      <button class="bookmark-btn" data-id="s-23-34" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For a lossless transform test:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>original block
+      ↓
+DCT
+      ↓
+inverse DCT
+      ↓
+reconstructed block</code></pre>
+</div></p>
+<p>With floating-point arithmetic, expect very small numerical differences due to finite precision.</p>
+<p>Define:</p>
+<p>
+$$
+e=\max |X-\hat X|.
+$$
+</p>
+<p>If $e$ is close to numerical tolerance, the transform implementation is behaving as expected.</p>
+<p>After quantization:</p>
+<p>
+$$
+e
+$$
+</p>
+<p>will generally become nonzero by design.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 23.35: Worked End-to-End Micro Example -->
+  <section id="s-23-35" class="section-block">
+    <div class="section-header">
+      <span class="section-num">23.35</span>
+      <h2>Worked End-to-End Micro Example</h2>
+      <button class="bookmark-btn" data-id="s-23-35" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose an 8×8 block has:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>smooth intensity pattern</code></pre>
+</div></p>
+<h3>Step 1 — DCT</h3>
+<p>Produces:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>large DC
+several low-frequency coefficients
+many smaller high-frequency coefficients</code></pre>
+</div></p>
+<h3>Step 2 — Quantization</h3>
+<p>Small coefficients become zero:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>large values → retained
+small values → coarse / zero</code></pre>
+</div></p>
+<h3>Step 3 — Zig-zag</h3>
+<p>Coefficients become:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>large/important terms first
+→
+longer zero region later</code></pre>
+</div></p>
+<h3>Step 4 — RLE</h3>
+<p>Zero runs become compact:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>(run length, coefficient)</code></pre>
+</div></p>
+<h3>Step 5 — Entropy coding</h3>
+<p>The resulting symbols receive efficient variable-length codes.</p>
+<p>Thus:</p>
+<p>
+$$
+\boxed{
+\text{DCT enables a representation that later stages can compress efficiently}
+}
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 23.36: Lossy Information Flow -->
+  <section id="s-23-36" class="section-block">
+    <div class="section-header">
+      <span class="section-num">23.36</span>
+      <h2>Lossy Information Flow</h2>
+      <button class="bookmark-btn" data-id="s-23-36" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For a JPEG-style pipeline:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Original pixels
+     │
+     ▼
+DCT
+     │
+     ▼
+Coefficients
+     │
+     ▼
+Quantization
+     │
+     ├── information may be discarded
+     ▼
+Quantized coefficients
+     │
+     ▼
+Zig-zag / RLE / entropy coding
+     │
+     ▼
+Compressed bitstream</code></pre>
+</div></p>
+<p>During decoding:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>bitstream
+→ entropy decode
+→ inverse run representation
+→ inverse zig-zag
+→ dequantization
+→ inverse DCT
+→ reconstructed image</code></pre>
+</div></p>
+<p>The key loss location is:</p>
+<p>
+$$
+\boxed{\text{quantization}}
+$$
+</p>
+<p>for the usual lossy JPEG pipeline.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 23.37: Exam Lens -->
+  <section id="s-23-37" class="section-block">
+    <div class="section-header">
+      <span class="section-num">23.37</span>
+      <h2>Exam Lens</h2>
+      <button class="bookmark-btn" data-id="s-23-37" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h2>2-mark questions</h2>
+<p><strong>What is transform coding?</strong><br />
+A compression approach that transforms data into a representation in which redundancy can be exploited more effectively.</p>
+<p><strong>What is DCT?</strong><br />
+A transform that represents image samples using cosine basis functions with different spatial frequencies.</p>
+<p><strong>What is the DC coefficient?</strong><br />
+The coefficient representing the zero-frequency/average component of a block under the chosen DCT convention.</p>
+<hr />
+<h2>5-mark question</h2>
+<h3>Explain why DCT is used in image compression.</h3>
+<p>Structure:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>pixel correlation
+→ transform
+→ frequency components
+→ energy compaction
+→ quantization
+→ zeros/small coefficients
+→ RLE + entropy coding</code></pre>
+</div></p>
+<hr />
+<h2>10-mark question</h2>
+<h3>Explain the role of DCT in JPEG.</h3>
+<p>Include:</p>
+<ol>
+<li>8×8 blocking;</li>
+<li>level shift where applicable;</li>
+<li>2-D DCT;</li>
+<li>coefficient interpretation;</li>
+<li>quantization;</li>
+<li>zig-zag order;</li>
+<li>run-length representation;</li>
+<li>entropy coding;</li>
+<li>lossy step;</li>
+<li>reconstruction quality trade-off.</li>
+</ol>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 23.38: Numerical Practice Pattern -->
+  <section id="s-23-38" class="section-block">
+    <div class="section-header">
+      <span class="section-num">23.38</span>
+      <h2>Numerical Practice Pattern</h2>
+      <button class="bookmark-btn" data-id="s-23-38" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For exams, be prepared for small matrices.</p>
+<p>A problem may provide:</p>
+<p>
+$$
+X=
+\begin{bmatrix}
+x_{00}&x_{01}\\
+x_{10}&x_{11}
+\end{bmatrix}
+$$
+</p>
+<p>and ask for a small DCT.</p>
+<p>The safe procedure is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>1. identify transform convention
+2. construct C or use the equation
+3. compute C X
+4. compute C X Cᵀ
+5. interpret DC / AC components</code></pre>
+</div></p>
+<p>Do not silently switch normalization conventions.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 23.39: Chapter Checkpoint -->
+  <section id="s-23-39" class="section-block">
+    <div class="section-header">
+      <span class="section-num">23.39</span>
+      <h2>Chapter Checkpoint</h2>
+      <button class="bookmark-btn" data-id="s-23-39" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Concept</h3>
+<p>Why does transforming an image help compression if the transform itself can be reversible?</p>
+<h3>Mathematics</h3>
+<p>For:</p>
+<p>
+$$
+X=
+\begin{bmatrix}
+10&10\\
+10&10
+\end{bmatrix}
+$$
+</p>
+<p>under the orthonormal 2×2 DCT, determine the nonzero coefficient.</p>
+<h3>Compression reasoning</h3>
+<p>Why does quantizing small high-frequency coefficients often create many zeros?</p>
+<h3>Pipeline</h3>
+<p>Put the following in order:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>entropy coding
+DCT
+quantization
+zig-zag
+RLE</code></pre>
+</div></p>
+<h3>Engineering</h3>
+<p>Why should a DCT implementation be tested with inverse DCT before quantization is introduced?</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 23.40: One-Page Recall Sheet -->
+  <section id="s-23-40" class="section-block">
+    <div class="section-header">
+      <span class="section-num">23.40</span>
+      <h2>One-Page Recall Sheet</h2>
+      <button class="bookmark-btn" data-id="s-23-40" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>TRANSFORM CODING
+│
+├── Goal
+│   └── change representation
+│
+├── DCT
+│   ├── cosine basis
+│   ├── DC = average component
+│   └── AC = variation components
+│
+├── Desired property
+│   └── energy compaction
+│
+├── Quantization
+│   ├── divide by Q
+│   ├── round
+│   └── may lose information
+│
+├── Then
+│   ├── zig-zag
+│   ├── RLE
+│   └── entropy coding
+│
+└── JPEG bridge
+    └── DCT + quantization + coding</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 23.41: Cross-Book Links -->
+  <section id="s-23-41" class="section-block">
+    <div class="section-header">
+      <span class="section-num">23.41</span>
+      <h2>Cross-Book Links</h2>
+      <button class="bookmark-btn" data-id="s-23-41" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Layer</th>
+<th>Connection</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MAIN</td>
+<td>C23 explains transform coding and DCT</td>
+</tr>
+<tr>
+<td>MATH</td>
+<td>Matrix form, cosine basis, orthogonality</td>
+</tr>
+<tr>
+<td>LAB</td>
+<td>Manual JPEG / DCT experiment</td>
+</tr>
+<tr>
+<td>CODE</td>
+<td>DCT block implementation and inverse verification</td>
+</tr>
+<tr>
+<td>EXAM</td>
+<td>DCT equation, coefficient interpretation, JPEG role</td>
+</tr>
+<tr>
+<td>PRACTICE</td>
+<td>Small matrix DCT + pipeline reasoning</td>
+</tr>
+<tr>
+<td>RESOURCE</td>
+<td>Gonzalez &amp; Woods; Szeliski</td>
+</tr>
+<tr>
+<td>ASSETS</td>
+<td>DCT basis illustrations, coefficient matrices, zig-zag diagram</td>
+</tr>
+<tr>
+<td>MASTER</td>
+<td>Direct dependency into C24</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 23.42: Final Chapter Summary -->
+  <section id="s-23-42" class="section-block">
+    <div class="section-header">
+      <span class="section-num">23.42</span>
+      <h2>Final Chapter Summary</h2>
+      <button class="bookmark-btn" data-id="s-23-42" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The core sequence is:</p>
+<p>
+$$
+\boxed{
+\text{correlated pixels}
+\rightarrow
+\text{DCT}
+\rightarrow
+\text{energy concentration}
+\rightarrow
+\text{quantization}
+\rightarrow
+\text{zeros/sparse coefficients}
+\rightarrow
+\text{efficient coding}
+}
+$$
+</p>
+<p>The most important conceptual distinction is:</p>
+<blockquote>
+<p><strong>DCT changes the representation; quantization is where controlled information loss enters the JPEG-style lossy pipeline.</strong></p>
+</blockquote>
+<p>The next chapter puts the pieces together.</p>
+<hr />
+<p><strong>Next chapter:</strong> C24 — JPEG Compression End to End</p>
+    </div>
+  </section>
+
+  <!-- SECTION 23.43: Mathematical Derivation: 2D Discrete Cosine Transform (DCT-II) -->
+  <section id="s-23-43" class="section-block">
+    <div class="section-header">
+      <span class="section-num">23.43</span>
+      <h2>Mathematical Derivation: 2D Discrete Cosine Transform (DCT-II)</h2>
+      <button class="bookmark-btn" data-id="s-23-43" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Continuous to Discrete Cosine Basis</h3>
+<p>For an $N \times N$ spatial block $f(x, y)$, the forward 2D DCT-II is defined as:
+
+$$C(u, v) = \alpha(u) \alpha(v) \sum_{x=0}^{N-1} \sum_{y=0}^{N-1} f(x, y) \cos\left[ \frac{(2x+1)u\pi}{2N} \right] \cos\left[ \frac{(2y+1)v\pi}{2N} \right]$$
+
+for $u, v = 0, 1, \dots, N-1$, where the normalizing orthogonal scale factors are:
+
+$$\alpha(u) = \begin{cases} \sqrt{\frac{1}{N}} & \text{if } u = 0 \\ \sqrt{\frac{2}{N}} & \text{if } u > 0 \end{cases}$$
+</p>
+<h3>DC Component Physical Meaning</h3>
+<p>For $u = 0, v = 0$:
+
+$$\alpha(0) \alpha(0) = \sqrt{\frac{1}{N}} \sqrt{\frac{1}{N}} = \frac{1}{N}$$
+
+
+$$\cos(0) \cdot \cos(0) = 1 \cdot 1 = 1$$
+
+
+$$C(0, 0) = \frac{1}{N} \sum_{x=0}^{N-1} \sum_{y=0}^{N-1} f(x, y)$$
+
+Notice that the average brightness (DC value) of the $N \times N$ block is $\bar{f} = \frac{1}{N^2} \sum \sum f(x, y)$.
+
+$$\therefore C(0, 0) = N \cdot \bar{f}$$
+
+The DC coefficient represents exactly $N$ times the average intensity of the entire block, concentrating the bulk of the image energy into a single scalar value.</p>
+    </div>
+  </section>
+
+  <!-- SECTION 23.44: Comparative Analysis: Why DCT Outperforms DFT and KLT in Video/Image Standards -->
+  <section id="s-23-44" class="section-block">
+    <div class="section-header">
+      <span class="section-num">23.44</span>
+      <h2>Comparative Analysis: Why DCT Outperforms DFT and KLT in Video/Image Standards</h2>
+      <button class="bookmark-btn" data-id="s-23-44" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap">
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th>Transform Metric</th>
+        <th>Karhunen-Loève Transform (KLT)</th>
+        <th>Discrete Cosine Transform (DCT)</th>
+        <th>Discrete Fourier Transform (DFT)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Energy Compaction</strong></td>
+        <td><strong>Statistically Optimal:</strong> Completely diagonalizes the covariance matrix.</td>
+        <td><strong>Near-Optimal:</strong> Asymptotically approaches KLT for Markov-1 sources ($\rho \approx 0.95$).</td>
+        <td>Moderate (Significantly lower than DCT due to complex phase dispersion).</td>
+      </tr>
+      <tr>
+        <td><strong>Data Dependency</strong></td>
+        <td>Data-dependent: Basis functions must be computed from image covariance matrix.</td>
+        <td><strong>Data-Independent:</strong> Universal cosine basis functions pre-computed offline.</td>
+        <td>Data-Independent: Universal complex exponential basis functions.</td>
+      </tr>
+      <tr>
+        <td><strong>Boundary Artifacts</strong></td>
+        <td>No boundary assumptions.</td>
+        <td><strong>Even Symmetric Extension:</strong> Continuous at block boundaries; no Gibbs ringing.</td>
+        <td>Periodic wrap-around causes sharp boundary discontinuities and heavy high-frequency ringing.</td>
+      </tr>
+      <tr>
+        <td><strong>Computational Complexity</strong></td>
+        <td>$O(N^3)$ (Requires full covariance matrix diagonalization).</td>
+        <td><strong>$O(N \log N)$ (Fast Feig-Winograd / Arai algorithms).</strong></td>
+        <td>$O(N \log N)$ (FFT algorithms).</td>
+      </tr>
+      <tr>
+        <td><strong>Standard Adoption</strong></td>
+        <td>Theoretical benchmark; never used in real-time standards.</td>
+        <td><strong>Universal Standard:</strong> JPEG, MPEG-1/2/4, H.264, HEVC.</td>
+        <td>Frequency filtering, radar, optical analysis.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+    </div>
+  </section>
+
+      <!-- Chapter End Package -->
+      <section class="chapter-end-package">
+        <div class="chapter-nav-grid">
+          <a href="ch22-lossless-coding.html" class="chapter-nav-card">
+            <div class="chapter-nav-dir">← Previous</div>
+            <div class="chapter-nav-title">← Ch 22 — Lossless Coding</div>
+          </a>
+          <a href="ch24-wavelets-jpeg2000.html" class="chapter-nav-card next">
+            <div class="chapter-nav-dir">Next →</div>
+            <div class="chapter-nav-title">Next: Ch 24 — JPEG Compression End to End →</div>
+          </a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- FLOATING TTS PANEL (SAFE MANUAL MODE ONLY) -->
+  <div id="tts-panel" style="position:fixed; bottom:20px; right:20px; background:var(--em-surface-1); border:1px solid var(--em-border); border-radius:var(--em-radius-md); padding:12px 16px; box-shadow:var(--sh-lg); z-index:var(--z-float); display:none; gap:10px; align-items:center;">
+    <button class="icon-btn" id="tts-play" title="Play / Pause" style="background:var(--em-accent); color:#fff; border-radius:50%; width:36px; height:36px;">▶</button>
+    <button class="icon-btn" id="tts-stop" title="Stop">⏹</button>
+    <div style="font-size:0.75rem; color:var(--em-text-muted);">
+      <span id="tts-status">Ready</span> · <span id="tts-rate-label">1.0x</span>
+    </div>
+  </div>
+
+  <script src="../assets/js/state.js"></script>
+  <script src="../assets/js/core.js"></script>
+  <script src="../assets/js/tts.js"></script>
+  <script src="../assets/js/glossary.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: document.documentElement.getAttribute('data-theme') === 'light' ? 'default' : 'dark'
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,2355 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Arpit">
+  <meta name="description" content="Chapter 01: The Big Picture: What is an Image? — Digital Image Processing MiniBook. Physical Scenes, Measured Signals, Digital Matrices, the EM Spectrum, and the Master DIP Pipeline">
+  <title>C01: The Big Picture: What is an Image? | DIP MiniBook 📷 Arpit</title>
+
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <link rel="stylesheet" href="../assets/css/chapters.css">
+  <link rel="stylesheet" href="../assets/css/animations.css">
+  <link rel="stylesheet" href="../assets/css/timer.css">
+
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body data-chapter-id="ch01-big-picture">
+  <div id="progress-bar"></div>
+
+  <!-- Header -->
+  <header id="main-header">
+    <div class="header-left">
+      <button id="sidebar-toggle" class="icon-btn" aria-label="Toggle navigation drawer" title="Toggle Sidebar (S)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <a href="../index.html" class="brand-logo">
+        <div class="brand-icon">DIP</div>
+        <div class="brand-text">
+          <span class="main">Digital Image Processing</span>
+          <span class="sub">DU DSE-3 Engineering MiniBook</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="header-chapter-title">C01: The Big Picture: What is an Image?</div>
+
+    <div class="header-right">
+      <button id="reading-mode-btn" class="icon-btn" aria-label="Toggle reading focus mode" title="Focus Mode (F)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+          <line x1="8" y1="21" x2="16" y2="21"></line>
+          <line x1="12" y1="17" x2="12" y2="21"></line>
+        </svg>
+      </button>
+      <button id="tts-toggle" class="icon-btn" aria-label="Audio Reader" title="Audio Reader">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+        </svg>
+      </button>
+      <button id="theme-toggle" class="icon-btn" aria-label="Cycle theme" title="Theme (T)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="12" cy="12" r="4.5"></circle>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Sidebar Overlay -->
+  <div id="sidebar-overlay"></div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" aria-expanded="true">
+    <div class="sidebar-nav">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">General</div>
+        <a href="../index.html" class="sidebar-link">
+          <span class="link-icon">🏛️</span>
+          <span>Subject Portal</span>
+        </a>
+        <a href="../progress.html" class="sidebar-link">
+          <span class="link-icon">📊</span>
+          <span>Study Dashboard</span>
+        </a>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Current Chapter Sections</div>
+        <a href="#s-01-0" class="sidebar-link"><span class="link-icon">📌</span><span>01.0 What this chapter is for</span> </a>
+      <a href="#s-01-1" class="sidebar-link"><span class="link-icon">📌</span><span>01.1 What is Digital Image Processing?</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-01-2" class="sidebar-link"><span class="link-icon">📌</span><span>01.2 The three things called “the image”</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-01-3" class="sidebar-link"><span class="link-icon">📌</span><span>01.3 Why do we process images?</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-01-4" class="sidebar-link"><span class="link-icon">📌</span><span>01.4 The master Digital Image Processing pipeline</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-01-5" class="sidebar-link"><span class="link-icon">📌</span><span>01.5 An image is numerical data</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-01-6" class="sidebar-link"><span class="link-icon">📌</span><span>01.6 What information is actually inside an image?</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-01-7" class="sidebar-link"><span class="link-icon">📌</span><span>01.7 Grayscale, colour, and multispectral images</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-01-8" class="sidebar-link"><span class="link-icon">📌</span><span>01.8 Image processing operations by what information they use</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-01-9" class="sidebar-link"><span class="link-icon">📌</span><span>01.9 What does “processing” actually change?</span> </a>
+      <a href="#s-01-10" class="sidebar-link"><span class="link-icon">📌</span><span>01.10 A worked image-data example</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-01-11" class="sidebar-link"><span class="link-icon">📌</span><span>01.11 Coordinate thinking: pixels, rows, columns, and physical position</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-01-12" class="sidebar-link"><span class="link-icon">📌</span><span>01.12 Image quality and image usefulness are not the same thing</span> </a>
+      <a href="#s-01-13" class="sidebar-link"><span class="link-icon">📌</span><span>01.13 Application pathways</span> </a>
+      <a href="#s-01-14" class="sidebar-link"><span class="link-icon">📌</span><span>01.14 DIP, Computer Vision, and AI — where are the boundaries?</span> </a>
+      <a href="#s-01-15" class="sidebar-link"><span class="link-icon">📌</span><span>01.15 Why DIP remains important even when AI is available</span> </a>
+      <a href="#s-01-16" class="sidebar-link"><span class="link-icon">📌</span><span>01.16 The central “information flow” view of DIP</span> </a>
+      <a href="#s-01-17" class="sidebar-link"><span class="link-icon">📌</span><span>01.17 Common misconceptions and bug prevention</span> </a>
+      <a href="#s-01-18" class="sidebar-link"><span class="link-icon">📌</span><span>01.18 Mini visual glossary</span> </a>
+      <a href="#s-01-19" class="sidebar-link"><span class="link-icon">📌</span><span>01.19 Formula card</span> </a>
+      <a href="#s-01-20" class="sidebar-link"><span class="link-icon">📌</span><span>01.20 EXAM lens</span> </a>
+      <a href="#s-01-21" class="sidebar-link"><span class="link-icon">📌</span><span>01.21 LAB connection</span> </a>
+      <a href="#s-01-22" class="sidebar-link"><span class="link-icon">📌</span><span>01.22 Chapter checkpoint</span> </a>
+      <a href="#s-01-23" class="sidebar-link"><span class="link-icon">📌</span><span>01.23 Forward connection</span> </a>
+      <a href="#s-01-24" class="sidebar-link"><span class="link-icon">📌</span><span>01.24 Spatial Domain vs Other Representations</span> </a>
+      <a href="#s-01-25" class="sidebar-link"><span class="link-icon">📌</span><span>01.25 Why Filtering Works Locally</span> </a>
+      <a href="#s-01-26" class="sidebar-link"><span class="link-icon">📌</span><span>01.26 Mini Worked Example — A Point Transformation</span> </a>
+      <a href="#s-01-27" class="sidebar-link"><span class="link-icon">📌</span><span>01.27 What Happens When We Apply an Operation to the Whole Image?</span> </a>
+      <a href="#s-01-28" class="sidebar-link"><span class="link-icon">📌</span><span>01.28 Local, Global and Geometric Operations</span> </a>
+      <a href="#s-01-29" class="sidebar-link"><span class="link-icon">📌</span><span>01.29 Why Enhancement, Restoration and Analysis Are Different</span> </a>
+      <a href="#s-01-30" class="sidebar-link"><span class="link-icon">📌</span><span>01.30 Applications</span> </a>
+      <a href="#s-01-31" class="sidebar-link"><span class="link-icon">📌</span><span>01.31 A Better Way to Think About Every DIP Algorithm</span> </a>
+      <a href="#s-01-32" class="sidebar-link"><span class="link-icon">📌</span><span>01.32 The Cost of Representation</span> </a>
+      <a href="#s-01-33" class="sidebar-link"><span class="link-icon">📌</span><span>01.33 What Information Can Be Lost?</span> </a>
+      <a href="#s-01-34" class="sidebar-link"><span class="link-icon">📌</span><span>01.34 DIP as a Chain of Information Transformations</span> </a>
+      <a href="#s-01-35" class="sidebar-link"><span class="link-icon">📌</span><span>01.35 Common Traps</span> </a>
+      <a href="#s-01-36" class="sidebar-link"><span class="link-icon">📌</span><span>01.36 Engineering Decision Example</span> </a>
+      <a href="#s-01-37" class="sidebar-link"><span class="link-icon">📌</span><span>01.37 Connection to the Rest of the Book</span> </a>
+      <a href="#s-01-38" class="sidebar-link"><span class="link-icon">📌</span><span>01.38 Cross-Book Bridges</span> </a>
+      <a href="#s-01-39" class="sidebar-link"><span class="link-icon">📌</span><span>01.39 Quick Recall</span> </a>
+      <a href="#s-01-40" class="sidebar-link"><span class="link-icon">📌</span><span>01.40 Chapter Checkpoint</span> </a>
+      <a href="#s-01-41" class="sidebar-link"><span class="link-icon">📌</span><span>01.41 Final Mental Model</span> </a>
+      </div>
+
+      
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-i">Part I — The Image</div>
+      <a href="ch01-big-picture.html" class="sidebar-link active"><span class="link-icon">01</span><span>The Big Picture</span></a>
+      <a href="ch02-image-formation.html" class="sidebar-link"><span class="link-icon">02</span><span>Formation & Acquisition</span></a>
+      <a href="ch03-sampling-quantization.html" class="sidebar-link"><span class="link-icon">03</span><span>Sampling & Quantization</span></a>
+      <a href="ch04-image-representation.html" class="sidebar-link"><span class="link-icon">04</span><span>Pixels, Matrices & Resolution</span></a>
+      <a href="ch05-colour-models-file-formats.html" class="sidebar-link"><span class="link-icon">05</span><span>Colour Models & Formats</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-ii">Part II — Improving the Image</div>
+      <a href="ch06-point-processing.html" class="sidebar-link"><span class="link-icon">06</span><span>Point Processing & Intensity</span></a>
+      <a href="ch07-histograms-equalization.html" class="sidebar-link"><span class="link-icon">07</span><span>Histograms & Equalization</span></a>
+      <a href="ch08-spatial-filtering.html" class="sidebar-link"><span class="link-icon">08</span><span>Spatial Filtering & Convolution</span></a>
+      <a href="ch09-smoothing-noise-reduction.html" class="sidebar-link"><span class="link-icon">09</span><span>Smoothing & Noise Reduction</span></a>
+      <a href="ch10-sharpening-edge-detection.html" class="sidebar-link"><span class="link-icon">10</span><span>Sharpening & Edge Detection</span></a>
+      <a href="ch11-geometric-transforms.html" class="sidebar-link"><span class="link-icon">11</span><span>Geometric Transforms</span></a>
+      <a href="ch12-fourier-transform.html" class="sidebar-link"><span class="link-icon">12</span><span>Fourier Transform & Frequency</span></a>
+      <a href="ch13-frequency-filtering.html" class="sidebar-link"><span class="link-icon">13</span><span>Frequency-Domain Filtering</span></a>
+      <a href="ch14-image-restoration.html" class="sidebar-link"><span class="link-icon">14</span><span>Restoration & Deblurring</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-iii">Part III — Understanding Content</div>
+      <a href="ch15-segmentation-fundamentals.html" class="sidebar-link"><span class="link-icon">15</span><span>Segmentation Fundamentals</span></a>
+      <a href="ch16-thresholding-otsu.html" class="sidebar-link"><span class="link-icon">16</span><span>Thresholding & Otsu Method</span></a>
+      <a href="ch17-region-segmentation.html" class="sidebar-link"><span class="link-icon">17</span><span>Region-Based Segmentation</span></a>
+      <a href="ch18-mathematical-morphology.html" class="sidebar-link"><span class="link-icon">18</span><span>Mathematical Morphology</span></a>
+      <a href="ch19-features-descriptors.html" class="sidebar-link"><span class="link-icon">19</span><span>Image Features & Descriptors</span></a>
+      <a href="ch20-sift-surf-orb-hog.html" class="sidebar-link"><span class="link-icon">20</span><span>SIFT, SURF, ORB & HOG</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-iv">Part IV — Compressing Images</div>
+      <a href="ch21-compression-entropy.html" class="sidebar-link"><span class="link-icon">21</span><span>Compression & Entropy</span></a>
+      <a href="ch22-lossless-coding.html" class="sidebar-link"><span class="link-icon">22</span><span>Lossless: RLE & Huffman</span></a>
+      <a href="ch23-lossy-dct-jpeg.html" class="sidebar-link"><span class="link-icon">23</span><span>Lossy: DCT & JPEG</span></a>
+      <a href="ch24-wavelets-jpeg2000.html" class="sidebar-link"><span class="link-icon">24</span><span>Wavelets & JPEG 2000</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-v">Part V — Intelligent Vision</div>
+      <a href="ch25-image-classification.html" class="sidebar-link"><span class="link-icon">25</span><span>Image Classification</span></a>
+      <a href="ch26-cnns-image-processing.html" class="sidebar-link"><span class="link-icon">26</span><span>CNNs for Image Processing</span></a>
+      <a href="ch27-modern-vision-architectures.html" class="sidebar-link"><span class="link-icon">27</span><span>Modern Vision Architectures</span></a>
+      <a href="ch28-object-detection-yolo.html" class="sidebar-link"><span class="link-icon">28</span><span>Object Detection: YOLO</span></a>
+      <a href="ch29-image-denoising-autoencoders.html" class="sidebar-link"><span class="link-icon">29</span><span>Image Denoising Autoencoders</span></a>
+      <a href="ch30-video-motion-analysis.html" class="sidebar-link"><span class="link-icon">30</span><span>Video & Motion Analysis</span></a>
+      <a href="ch31-dip-applications-engineering.html" class="sidebar-link"><span class="link-icon">31</span><span>DIP Applications & Ethics</span></a>
+    </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-brand-mark">
+        <div class="mark">DU</div>
+        <div>
+          <strong>DSE-3 MiniBook</strong>
+          <div>University of Delhi</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mandatory Shell Wrapper -->
+  <div id="main-content">
+    <main class="chapter-content">
+      <!-- Chapter Hero -->
+      <div class="chapter-hero">
+        <div class="hero-meta">
+          <span class="part-badge part-i">The Image</span>
+          <span class="chapter-number">CHAPTER 01</span>
+          <span class="reading-time">⏱️ ~40 min read</span>
+          <span class="tag-badge tag-core">Core Foundation</span>
+        </div>
+        <h1 class="chapter-title">The Big Picture: What is an Image?</h1>
+        <p class="chapter-subtitle">
+          Physical Scenes, Measured Signals, Digital Matrices, the EM Spectrum, and the Master DIP Pipeline
+        </p>
+
+        <div class="syllabus-anchor">
+          <span class="syllabus-anchor-label">DU Syllabus</span>
+          <span><strong>Fundamentals of Image Processing:</strong> What is DIP, steps in image processing, components of an image processing system, visual perception, electromagnetic spectrum imaging, and the imaging continuum.</span>
+        </div>
+      </div>
+
+      <!-- In-Page TOC -->
+      <div class="chapter-checklist-card" style="margin-bottom:var(--em-space-8);">
+        <div class="checklist-title">
+          <span>Table of Contents &amp; Visual Section Map</span>
+          <span class="tag-badge tag-math">42 Deep Sections</span>
+        </div>
+        <ul class="part-chapters-list">
+          <li class="part-chapter-item"><a href="#s-01-0"><strong>01.0</strong> What this chapter is for</a> </li>
+      <li class="part-chapter-item"><a href="#s-01-1"><strong>01.1</strong> What is Digital Image Processing?</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-01-2"><strong>01.2</strong> The three things called “the image”</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-01-3"><strong>01.3</strong> Why do we process images?</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-01-4"><strong>01.4</strong> The master Digital Image Processing pipeline</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-01-5"><strong>01.5</strong> An image is numerical data</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-01-6"><strong>01.6</strong> What information is actually inside an image?</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-01-7"><strong>01.7</strong> Grayscale, colour, and multispectral images</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-01-8"><strong>01.8</strong> Image processing operations by what information they use</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-01-9"><strong>01.9</strong> What does “processing” actually change?</a> </li>
+      <li class="part-chapter-item"><a href="#s-01-10"><strong>01.10</strong> A worked image-data example</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-01-11"><strong>01.11</strong> Coordinate thinking: pixels, rows, columns, and physical position</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-01-12"><strong>01.12</strong> Image quality and image usefulness are not the same thing</a> </li>
+      <li class="part-chapter-item"><a href="#s-01-13"><strong>01.13</strong> Application pathways</a> </li>
+      <li class="part-chapter-item"><a href="#s-01-14"><strong>01.14</strong> DIP, Computer Vision, and AI — where are the boundaries?</a> </li>
+      <li class="part-chapter-item"><a href="#s-01-15"><strong>01.15</strong> Why DIP remains important even when AI is available</a> </li>
+      <li class="part-chapter-item"><a href="#s-01-16"><strong>01.16</strong> The central “information flow” view of DIP</a> </li>
+      <li class="part-chapter-item"><a href="#s-01-17"><strong>01.17</strong> Common misconceptions and bug prevention</a> </li>
+      <li class="part-chapter-item"><a href="#s-01-18"><strong>01.18</strong> Mini visual glossary</a> </li>
+      <li class="part-chapter-item"><a href="#s-01-19"><strong>01.19</strong> Formula card</a> </li>
+      <li class="part-chapter-item"><a href="#s-01-20"><strong>01.20</strong> EXAM lens</a> </li>
+      <li class="part-chapter-item"><a href="#s-01-21"><strong>01.21</strong> LAB connection</a> </li>
+      <li class="part-chapter-item"><a href="#s-01-22"><strong>01.22</strong> Chapter checkpoint</a> </li>
+      <li class="part-chapter-item"><a href="#s-01-23"><strong>01.23</strong> Forward connection</a> </li>
+      <li class="part-chapter-item"><a href="#s-01-24"><strong>01.24</strong> Spatial Domain vs Other Representations</a> </li>
+      <li class="part-chapter-item"><a href="#s-01-25"><strong>01.25</strong> Why Filtering Works Locally</a> </li>
+      <li class="part-chapter-item"><a href="#s-01-26"><strong>01.26</strong> Mini Worked Example — A Point Transformation</a> </li>
+      <li class="part-chapter-item"><a href="#s-01-27"><strong>01.27</strong> What Happens When We Apply an Operation to the Whole Image?</a> </li>
+      <li class="part-chapter-item"><a href="#s-01-28"><strong>01.28</strong> Local, Global and Geometric Operations</a> </li>
+      <li class="part-chapter-item"><a href="#s-01-29"><strong>01.29</strong> Why Enhancement, Restoration and Analysis Are Different</a> </li>
+      <li class="part-chapter-item"><a href="#s-01-30"><strong>01.30</strong> Applications</a> </li>
+      <li class="part-chapter-item"><a href="#s-01-31"><strong>01.31</strong> A Better Way to Think About Every DIP Algorithm</a> </li>
+      <li class="part-chapter-item"><a href="#s-01-32"><strong>01.32</strong> The Cost of Representation</a> </li>
+      <li class="part-chapter-item"><a href="#s-01-33"><strong>01.33</strong> What Information Can Be Lost?</a> </li>
+      <li class="part-chapter-item"><a href="#s-01-34"><strong>01.34</strong> DIP as a Chain of Information Transformations</a> </li>
+      <li class="part-chapter-item"><a href="#s-01-35"><strong>01.35</strong> Common Traps</a> </li>
+      <li class="part-chapter-item"><a href="#s-01-36"><strong>01.36</strong> Engineering Decision Example</a> </li>
+      <li class="part-chapter-item"><a href="#s-01-37"><strong>01.37</strong> Connection to the Rest of the Book</a> </li>
+      <li class="part-chapter-item"><a href="#s-01-38"><strong>01.38</strong> Cross-Book Bridges</a> </li>
+      <li class="part-chapter-item"><a href="#s-01-39"><strong>01.39</strong> Quick Recall</a> </li>
+      <li class="part-chapter-item"><a href="#s-01-40"><strong>01.40</strong> Chapter Checkpoint</a> </li>
+      <li class="part-chapter-item"><a href="#s-01-41"><strong>01.41</strong> Final Mental Model</a> </li>
+        </ul>
+      </div>
+
+      <div class="concept-hook" style="margin-bottom:var(--em-space-8);"><h1>Chapter 01 — Digital Image Processing: The Big Picture</h1>
+<blockquote>
+<p><strong>Chapter thesis</strong>
+A digital image is not merely a picture stored on a computer. It is a structured numerical representation of a scene, and digital image processing is the disciplined transformation, analysis, storage, and interpretation of that representation.</p>
+</blockquote>
+<p><strong>Part I — The Image</strong><br />
+<strong>Syllabus anchor:</strong> Unit I — fundamentals of image processing; image formation; sampling and quantization; image types and representation.</p>
+<hr /></div>
+
+      <!-- All Numbered Sections -->
+      
+  <!-- SECTION 01.0: What this chapter is for -->
+  <section id="s-01-0" class="section-block">
+    <div class="section-header">
+      <span class="section-num">01.0</span>
+      <h2>What this chapter is for</h2>
+      <button class="bookmark-btn" data-id="s-01-0" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Digital Image Processing (DIP) becomes much easier once the subject is seen as one connected system instead of a collection of algorithms.</p>
+<p>The University of Delhi syllabus begins with fundamentals, image formation, sampling and quantization, image types, representation, colour models, and file formats. Those topics are deliberately foundational: before asking an algorithm to improve, restore, segment, compress, or classify an image, we must know <strong>what the image is, where its numbers came from, and what those numbers mean</strong>.</p>
+<p>This chapter establishes that mental model. Later chapters will reuse it constantly.</p>
+<h3>Learning objectives</h3>
+<p>By the end of this chapter, you should be able to:</p>
+<ul>
+<li>define digital image processing in engineering terms;</li>
+<li>distinguish an image as a physical scene, a measured signal, and a digital data structure;</li>
+<li>describe the major stages of a practical image-processing pipeline;</li>
+<li>explain the difference between spatial, local, global, geometric, and transform-domain operations;</li>
+<li>identify the important information carried by an image: dimensions, channels, bit depth, dynamic range, datatype, and colour representation;</li>
+<li>perform small pixel-level calculations by hand;</li>
+<li>connect classical DIP operations to segmentation, feature extraction, compression, classification, and later CNN-based vision;</li>
+<li>identify common conceptual mistakes before they enter code or calculations.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 01.1: What is Digital Image Processing? -->
+  <section id="s-01-1" class="section-block">
+    <div class="section-header">
+      <span class="section-num">01.1</span>
+      <h2>What is Digital Image Processing?</h2>
+      <button class="bookmark-btn" data-id="s-01-1" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>CORE — Working definition</h3>
+<p><strong>Digital Image Processing is the use of computational methods to manipulate, transform, enhance, restore, analyse, represent, compress, or otherwise extract useful information from digital images.</strong></p>
+<p>That definition contains two ideas that should never be separated:</p>
+<ol>
+<li><strong>Image as data</strong> — the computer sees numerical values arranged in a spatial structure.</li>
+<li><strong>Processing as a transformation</strong> — an algorithm changes, analyses, or represents those values for a purpose.</li>
+</ol>
+<p>A photograph, for example, may be processed to:</p>
+<ul>
+<li>improve visibility;</li>
+<li>reduce noise;</li>
+<li>remove blur;</li>
+<li>detect boundaries;</li>
+<li>separate foreground from background;</li>
+<li>extract features;</li>
+<li>reduce storage size;</li>
+<li>classify an object;</li>
+<li>locate an object;</li>
+<li>track motion across frames.</li>
+</ul>
+<p>The same underlying image can therefore support very different tasks.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 01.2: The three things called “the image” -->
+  <section id="s-01-2" class="section-block">
+    <div class="section-header">
+      <span class="section-num">01.2</span>
+      <h2>The three things called “the image”</h2>
+      <button class="bookmark-btn" data-id="s-01-2" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A major source of confusion is using the word <em>image</em> for three different things.</p>
+<h3>1. The physical scene</h3>
+<p>The real-world object or environment exists before any camera or scanner measures it.</p>
+<p>Examples:</p>
+<ul>
+<li>a face in front of a camera;</li>
+<li>a printed page under a scanner;</li>
+<li>a road viewed by a vehicle camera;</li>
+<li>tissue inside a medical scanner.</li>
+</ul>
+<h3>2. The measured signal</h3>
+<p>A sensor receives some physical quantity and converts it into an electrical or digital signal.</p>
+<p>The sensor does <strong>not</strong> receive “pixels.” The pixels are part of the digital representation produced after acquisition and discretisation.</p>
+<h3>3. The digital image</h3>
+<p>The computer stores the acquired information as numerical samples.</p>
+<p>For a grayscale image, a simple mathematical model is:</p>
+<p>
+$$
+f(x,y)
+$$
+</p>
+<p>where $x$ and $y$ describe spatial position and $f$ describes image intensity at that position.</p>
+<p>Once the image becomes digital, coordinates and intensity values are represented in discrete form, for example:</p>
+<p>
+$$
+f[m,n]
+$$
+</p>
+<p>or equivalently as a matrix.</p>
+<h3>Mental model</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>REAL WORLD SCENE
+       │
+       │ light / radiation / measured phenomenon
+       ▼
+SENSOR + ACQUISITION SYSTEM
+       │
+       │ analog or sampled signal
+       ▼
+SAMPLING + QUANTIZATION
+       │
+       ▼
+DIGITAL IMAGE
+       │
+       │ numerical processing
+       ▼
+PROCESSED / ANALYSED IMAGE
+       │
+       ▼
+HUMAN OR MACHINE DECISION</code></pre>
+</div></p>
+<p><strong>DEEP DIVE:</strong> This distinction becomes critical later. Restoration asks how a degraded observation arose from an original image; compression asks how a digital representation can be encoded more efficiently; CNNs ask how useful representations can be learned from image data.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 01.3: Why do we process images? -->
+  <section id="s-01-3" class="section-block">
+    <div class="section-header">
+      <span class="section-num">01.3</span>
+      <h2>Why do we process images?</h2>
+      <button class="bookmark-btn" data-id="s-01-3" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A useful engineering question is not simply <strong>“What can we do to an image?”</strong> but <strong>“What problem are we solving?”</strong></p>
+<h3>Major goals of DIP</h3>
+<div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Goal</th>
+<th>Typical question</th>
+<th>Example output</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Acquisition</td>
+<td>How do we turn a physical scene into usable image data?</td>
+<td>Digital image</td>
+</tr>
+<tr>
+<td>Enhancement</td>
+<td>How can we make important visual information easier to see?</td>
+<td>Higher-contrast image</td>
+</tr>
+<tr>
+<td>Restoration</td>
+<td>How can we estimate a degraded image more faithfully?</td>
+<td>Deblurred / denoised estimate</td>
+</tr>
+<tr>
+<td>Segmentation</td>
+<td>Which pixels belong to the object or region of interest?</td>
+<td>Binary or labelled regions</td>
+</tr>
+<tr>
+<td>Feature extraction</td>
+<td>What compact properties describe useful structure?</td>
+<td>Edges, keypoints, descriptors</td>
+</tr>
+<tr>
+<td>Compression</td>
+<td>How can the image be stored/transmitted more efficiently?</td>
+<td>Encoded bitstream</td>
+</tr>
+<tr>
+<td>Classification</td>
+<td>What category does the image belong to?</td>
+<td>Class label</td>
+</tr>
+<tr>
+<td>Detection</td>
+<td>Which objects are present and where?</td>
+<td>Bounding boxes + labels</td>
+</tr>
+<tr>
+<td>Tracking</td>
+<td>How does an object move over time?</td>
+<td>Object trajectories / motion vectors</td>
+</tr>
+</tbody>
+</table></div>
+<p>The same input can pass through several of these stages.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 01.4: The master Digital Image Processing pipeline -->
+  <section id="s-01-4" class="section-block">
+    <div class="section-header">
+      <span class="section-num">01.4</span>
+      <h2>The master Digital Image Processing pipeline</h2>
+      <button class="bookmark-btn" data-id="s-01-4" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A practical DIP system can be viewed as a chain of representations and decisions.</p>
+<p><div class="diagram-box"><div class="mermaid">
+flowchart TD
+    A[Real-world scene] --> B[Image formation / acquisition]
+    B --> C[Sampling]
+    C --> D[Quantization]
+    D --> E[Digital image: matrix / tensor]
+    E --> F[Pre-processing]
+    F --> G{Processing objective}
+    G --> H[Enhancement]
+    G --> I[Restoration]
+    G --> J[Segmentation]
+    G --> K[Compression]
+    G --> L[Feature extraction / representation]
+    H --> M[Analysis / decision]
+    I --> M
+    J --> M
+    L --> M
+    K --> N[Storage / transmission]
+    M --> O[Application output]
+</div></div></p>
+<h3>Important: this is a framework, not a mandatory sequence</h3>
+<p>A real system may use only a subset of these stages.</p>
+<p>For example:</p>
+<p><strong>Simple enhancement</strong></p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Image → contrast adjustment → display</code></pre>
+</div></p>
+<p><strong>OCR-style document analysis</strong></p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Image
+  ↓
+Pre-processing
+  ↓
+Segmentation
+  ↓
+Feature / learned representation
+  ↓
+Recognition
+  ↓
+Text</code></pre>
+</div></p>
+<p><strong>Object detection</strong></p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Image
+  ↓
+Pre-processing (optional)
+  ↓
+Detector
+  ↓
+Bounding boxes + classes</code></pre>
+</div></p>
+<p><strong>Image compression</strong></p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Image
+  ↓
+Transformation / redundancy reduction
+  ↓
+Encoding
+  ↓
+Compressed representation</code></pre>
+</div></p>
+<h3>CENTRAL IDEA</h3>
+<blockquote>
+<p><strong>Every DIP algorithm should be understood as an operation on a particular representation of image information.</strong></p>
+</blockquote>
+<p>When a method fails, ask:</p>
+<blockquote>
+<p><em>Which information did it destroy, preserve, or misinterpret?</em></p>
+</blockquote>
+<p>That question is often more useful than memorising the algorithm name.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 01.5: An image is numerical data -->
+  <section id="s-01-5" class="section-block">
+    <div class="section-header">
+      <span class="section-num">01.5</span>
+      <h2>An image is numerical data</h2>
+      <button class="bookmark-btn" data-id="s-01-5" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A grayscale image can be represented by a matrix.</p>
+<p>Consider:</p>
+<p>
+$$
+I=
+\begin{bmatrix}
+12 & 18 & 25 & 31\\
+15 & 20 & 29 & 35\\
+22 & 28 & 41 & 48\\
+30 & 37 & 50 & 62
+\end{bmatrix}
+$$
+</p>
+<p>Each number represents the intensity associated with a pixel location.</p>
+<p>For a conventional 8-bit grayscale representation:</p>
+<p>
+$$
+0 \le I(i,j) \le 255
+$$
+</p>
+<p>with the common interpretation:</p>
+<ul>
+<li>lower values → darker intensities;</li>
+<li>higher values → brighter intensities.</li>
+</ul>
+<h3>Matrix notation versus image notation</h3>
+<p>The same information can be described in several ways:</p>
+<p>
+$$
+I(i,j)
+$$
+</p>
+<p>for a pixel at row $i$, column $j$, or</p>
+<p>
+$$
+f(x,y)
+$$
+</p>
+<p>for a mathematical spatial coordinate system.</p>
+<p>These notations are related, but they should not be casually treated as identical in every implementation.</p>
+<blockquote>
+<p><strong>BUG-PREVENTION RULE:</strong> In matrix-based code, <code>(row, column)</code> is usually the safest way to think about indexing. In mathematical image-processing notation, $(x,y)$ often denotes spatial coordinates. Always check the convention before translating equations into code.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 01.6: What information is actually inside an image? -->
+  <section id="s-01-6" class="section-block">
+    <div class="section-header">
+      <span class="section-num">01.6</span>
+      <h2>What information is actually inside an image?</h2>
+      <button class="bookmark-btn" data-id="s-01-6" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A filename such as <code>photo.jpg</code> tells you very little about the actual numerical representation.</p>
+<p>A proper image description should consider at least:</p>
+<div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Property</th>
+<th>What it tells us</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Width</td>
+<td>Number of samples along one spatial dimension</td>
+</tr>
+<tr>
+<td>Height</td>
+<td>Number of samples along the other spatial dimension</td>
+</tr>
+<tr>
+<td>Channels</td>
+<td>Number of stored image components per spatial location</td>
+</tr>
+<tr>
+<td>Bit depth</td>
+<td>Number of bits available for representing a channel value</td>
+</tr>
+<tr>
+<td>Intensity range</td>
+<td>Smallest to largest representable or meaningful values</td>
+</tr>
+<tr>
+<td>Dynamic range</td>
+<td>Span between the low and high useful signal levels</td>
+</tr>
+<tr>
+<td>Datatype</td>
+<td>How values are stored computationally, e.g. integer or floating-point</td>
+</tr>
+<tr>
+<td>Colour space</td>
+<td>Coordinate system used to describe colour</td>
+</tr>
+<tr>
+<td>File format</td>
+<td>How image data and metadata are packaged</td>
+</tr>
+<tr>
+<td>Compression</td>
+<td>Whether the stored representation is uncompressed, lossless, or lossy</td>
+</tr>
+<tr>
+<td>Metadata</td>
+<td>Acquisition, orientation, timing, camera or other auxiliary information</td>
+</tr>
+</tbody>
+</table></div>
+<h3>Do not collapse these terms into one idea</h3>
+<p><strong>Resolution</strong>, <strong>bit depth</strong>, <strong>dynamic range</strong>, <strong>colour</strong>, and <strong>compression</strong> are different properties.</p>
+<p>A larger image is not automatically a higher-quality image.</p>
+<p>A 24-bit RGB image is not automatically “higher resolution” than an 8-bit grayscale image.</p>
+<p>A JPEG file being smaller does not automatically mean the original image dimensions changed.</p>
+<p>These distinctions will be developed in later chapters.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 01.7: Grayscale, colour, and multispectral images -->
+  <section id="s-01-7" class="section-block">
+    <div class="section-header">
+      <span class="section-num">01.7</span>
+      <h2>Grayscale, colour, and multispectral images</h2>
+      <button class="bookmark-btn" data-id="s-01-7" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h2>01.7.1 Grayscale image</h2>
+<p>A grayscale image contains one intensity value per pixel.</p>
+<p>Conceptually:</p>
+<p>
+$$
+I(i,j)\in\{0,1,\ldots,L-1\}
+$$
+</p>
+<p>where $L$ is the number of available intensity levels.</p>
+<p>For an 8-bit image:</p>
+<p>
+$$
+L=2^8=256
+$$
+</p>
+<p>So the available values are:</p>
+<p>
+$$
+0,1,2,\ldots,255
+$$
+</p>
+<h3>What grayscale does not mean</h3>
+<p>It does not mean “black and white only.”</p>
+<p>That phrase is often used casually, but a grayscale image can contain many intensity levels between black and white.</p>
+<hr />
+<h2>01.7.2 RGB colour image</h2>
+<p>An RGB image represents colour using three channels:</p>
+<p>
+$$
+I(i,j)=
+\begin{bmatrix}
+R(i,j)\\
+G(i,j)\\
+B(i,j)
+\end{bmatrix}
+$$
+</p>
+<p>A colour image can therefore be thought of as three aligned grayscale-like planes.</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>             RGB IMAGE
+                 │
+       ┌─────────┼─────────┐
+       ▼         ▼         ▼
+   R channel  G channel  B channel
+       │         │         │
+       └─────────┼─────────┘
+                 ▼
+         displayed colour</code></pre>
+</div></p>
+<p><strong>Engineering consequence:</strong> An RGB image is not one number per pixel. It has multiple channel values at each spatial position.</p>
+<hr />
+<h2>01.7.3 Multispectral image</h2>
+<p>A multispectral image contains several bands beyond ordinary RGB.</p>
+<p>Conceptually:</p>
+<p>
+$$
+I(i,j,b)
+$$
+</p>
+<p>where $b$ denotes a spectral band.</p>
+<p>Such representations are common in fields such as remote sensing.</p>
+<p><strong>EXTENSION:</strong> The number and wavelength of bands depend on the sensor. Multispectral and hyperspectral imagery therefore should not be treated as merely “RGB with more colours.” They provide measurements across different portions of the electromagnetic spectrum.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 01.8: Image processing operations by what information they use -->
+  <section id="s-01-8" class="section-block">
+    <div class="section-header">
+      <span class="section-num">01.8</span>
+      <h2>Image processing operations by what information they use</h2>
+      <button class="bookmark-btn" data-id="s-01-8" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A useful classification is to ask <strong>how much of the image an output value depends on</strong>.</p>
+<h2>Point operation</h2>
+<p>Each output pixel depends only on the corresponding input pixel:</p>
+<p>
+$$
+g(i,j)=T\left(I(i,j)\right)
+$$
+</p>
+<p>Examples:</p>
+<ul>
+<li>negative transformation;</li>
+<li>thresholding;</li>
+<li>logarithmic transformation;</li>
+<li>gamma transformation.</li>
+</ul>
+<div class="worked-example"><div class="worked-example-header"><span class="worked-example-title"><span>🧮</span> Tiny worked example — negative transformation</span><span class="tag-badge tag-exam">NUMERICAL WORKTHROUGH</span></div>
+
+For an 8-bit grayscale image:
+
+
+$$
+g=255-f
+$$
+
+
+If
+
+
+$$
+f=40
+$$
+
+
+then
+
+
+$$
+g=255-40=215
+$$
+
+
+A small set of values gives:
+
+| Input $f$ | Output $255-f$ |
+|---:|---:|
+| 0 | 255 |
+| 50 | 205 |
+| 128 | 127 |
+| 200 | 55 |
+| 255 | 0 |
+
+The transformation reverses the intensity scale.
+
+</div>
+
+<hr />
+<h2>Local / neighbourhood operation</h2>
+<p>An output pixel depends on a neighbourhood around the corresponding input location.</p>
+<p>For a 3×3 operation:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>┌───┬───┬───┐
+│   │   │   │
+├───┼───┼───┤
+│   │ X │   │  ← neighbourhood around X
+├───┼───┼───┤
+│   │   │   │
+└───┴───┴───┘</code></pre>
+</div></p>
+<p>Examples:</p>
+<ul>
+<li>mean filtering;</li>
+<li>Gaussian filtering;</li>
+<li>median filtering;</li>
+<li>Sobel filtering;</li>
+<li>convolution with a kernel.</li>
+</ul>
+<p>These will receive detailed treatment later.</p>
+<hr />
+<h2>Global operation</h2>
+<p>The output may depend on a property of the whole image.</p>
+<p>For example, a histogram-based method can use the distribution of intensities across the complete image.</p>
+<p>This distinction matters because changing one region of the image can change the statistics used to process another region.</p>
+<hr />
+<h2>Geometric operation</h2>
+<p>A geometric transformation changes spatial coordinates rather than merely changing intensity values.</p>
+<p>Examples:</p>
+<ul>
+<li>translation;</li>
+<li>rotation;</li>
+<li>scaling;</li>
+<li>warping.</li>
+</ul>
+<p>Later chapters will show why interpolation is needed when the new coordinates do not land exactly on existing pixel locations.</p>
+<hr />
+<h2>Transform-domain operation</h2>
+<p>Some problems become easier after representing the image in another mathematical domain.</p>
+<p>For Fourier processing:</p>
+<p>
+$$
+f(x,y)\xrightarrow{\mathcal{F}}F(u,v)
+$$
+</p>
+<p>Processing is then performed in the transformed representation before returning to the spatial domain:</p>
+<p>
+$$
+F(u,v)\xrightarrow{\mathcal{F}^{-1}}g(x,y)
+$$
+</p>
+<p><strong>DEEP DIVE:</strong> The transform does not create new physical information by itself. It changes representation so particular structures—especially spatial frequency content—can be manipulated more conveniently.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 01.9: What does “processing” actually change? -->
+  <section id="s-01-9" class="section-block">
+    <div class="section-header">
+      <span class="section-num">01.9</span>
+      <h2>What does “processing” actually change?</h2>
+      <button class="bookmark-btn" data-id="s-01-9" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A useful classification is based on the information being changed.</p>
+<div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Operation family</th>
+<th>Mainly changes</th>
+<th>Typical purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Point intensity transform</td>
+<td>Pixel values</td>
+<td>Brightness / contrast manipulation</td>
+</tr>
+<tr>
+<td>Smoothing</td>
+<td>High-frequency local variation</td>
+<td>Noise reduction / softening</td>
+</tr>
+<tr>
+<td>Sharpening</td>
+<td>Local intensity transitions</td>
+<td>Detail enhancement</td>
+</tr>
+<tr>
+<td>Edge detection</td>
+<td>Gradient structure</td>
+<td>Boundary detection</td>
+</tr>
+<tr>
+<td>Geometric transform</td>
+<td>Spatial coordinates</td>
+<td>Resize / rotate / align</td>
+</tr>
+<tr>
+<td>Segmentation</td>
+<td>Region membership</td>
+<td>Object / background separation</td>
+</tr>
+<tr>
+<td>Compression</td>
+<td>Representation / redundancy</td>
+<td>Storage / transmission efficiency</td>
+</tr>
+<tr>
+<td>Feature extraction</td>
+<td>Representation</td>
+<td>Compact description for matching/classification</td>
+</tr>
+<tr>
+<td>Restoration</td>
+<td>Estimate of degraded content</td>
+<td>Recover useful information from a degradation model</td>
+</tr>
+</tbody>
+</table></div>
+<p>This table is intentionally conceptual. Individual algorithms can overlap these categories.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 01.10: A worked image-data example -->
+  <section id="s-01-10" class="section-block">
+    <div class="section-header">
+      <span class="section-num">01.10</span>
+      <h2>A worked image-data example</h2>
+      <button class="bookmark-btn" data-id="s-01-10" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose an image has dimensions:</p>
+<p>
+$$
+1920\times1080
+$$
+</p>
+<p>and is stored as an 8-bit grayscale image.</p>
+<h3>Step 1 — Number of pixels</h3>
+<p>
+$$
+N=1920\times1080=2,073,600\text{ pixels}
+$$
+</p>
+<h3>Step 2 — Bytes per pixel</h3>
+<p>For an 8-bit grayscale representation:</p>
+<p>
+$$
+8\text{ bits}=1\text{ byte}
+$$
+</p>
+<h3>Step 3 — Raw storage</h3>
+<p>
+$$
+2,073,600\times1
+=2,073,600\text{ bytes}
+$$
+</p>
+<p>This is approximately:</p>
+<p>
+$$
+\frac{2,073,600}{1,048,576}\approx1.98\text{ MiB}
+$$
+</p>
+<h3>What about RGB?</h3>
+<p>A three-channel 8-bit RGB representation uses three bytes per spatial location if stored without additional packing/compression:</p>
+<p>
+$$
+2,073,600\times3=6,220,800\text{ bytes}
+$$
+</p>
+<p>or approximately:</p>
+<p>
+$$
+5.93\text{ MiB}
+$$
+</p>
+<h3>Important conclusion</h3>
+<p>The same spatial dimensions can correspond to very different amounts of image data depending on:</p>
+<ul>
+<li>number of channels;</li>
+<li>bit depth;</li>
+<li>datatype;</li>
+<li>compression;</li>
+<li>storage format.</li>
+</ul>
+<p><strong>EXAM TRAP:</strong> File size is not determined only by width × height.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 01.11: Coordinate thinking: pixels, rows, columns, and physical position -->
+  <section id="s-01-11" class="section-block">
+    <div class="section-header">
+      <span class="section-num">01.11</span>
+      <h2>Coordinate thinking: pixels, rows, columns, and physical position</h2>
+      <button class="bookmark-btn" data-id="s-01-11" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Consider this 3×4 image matrix:</p>
+<p>
+$$
+I=
+\begin{bmatrix}
+10&20&30&40\\
+50&60&70&80\\
+90&100&110&120
+\end{bmatrix}
+$$
+</p>
+<p>If we use matrix indexing, the centre value is easy to identify as the element in the second row and third column.</p>
+<p>But there are several conventions for naming spatial coordinates.</p>
+<h3>Safe engineering rule</h3>
+<p>When moving between mathematics and code, explicitly write the mapping:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Mathematical notation → spatial coordinate convention
+Matrix / array        → row, column indexing
+Image library API     → library-specific channel + indexing convention</code></pre>
+</div></p>
+<p>This prevents bugs involving:</p>
+<ul>
+<li>swapped axes;</li>
+<li>transposed images;</li>
+<li>incorrect channel selection;</li>
+<li>incorrect kernel orientation;</li>
+<li>incorrect plotting coordinates.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 01.12: Image quality and image usefulness are not the same thing -->
+  <section id="s-01-12" class="section-block">
+    <div class="section-header">
+      <span class="section-num">01.12</span>
+      <h2>Image quality and image usefulness are not the same thing</h2>
+      <button class="bookmark-btn" data-id="s-01-12" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A visually pleasing image is not necessarily the best image for every task.</p>
+<p>For example:</p>
+<ul>
+<li>heavy smoothing may make a photograph look clean but remove edges needed for segmentation;</li>
+<li>aggressive sharpening may make edges look stronger but amplify noise;</li>
+<li>contrast enhancement may reveal a hidden structure but also exaggerate unwanted variations;</li>
+<li>lossy compression may produce a visually acceptable image while modifying small details that matter for measurement.</li>
+</ul>
+<p>Therefore, the correct question is:</p>
+<blockquote>
+<p><strong>Useful for what task?</strong></p>
+</blockquote>
+<p>This idea will return repeatedly throughout the book.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 01.13: Application pathways -->
+  <section id="s-01-13" class="section-block">
+    <div class="section-header">
+      <span class="section-num">01.13</span>
+      <h2>Application pathways</h2>
+      <button class="bookmark-btn" data-id="s-01-13" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The syllabus explicitly highlights domains such as healthcare, surveillance, and entertainment. Those applications can all use the same fundamental image representation while requiring very different processing pipelines.</p>
+<h3>Healthcare</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Acquired image
+   ↓
+Pre-processing / restoration
+   ↓
+Region isolation
+   ↓
+Measurement / feature extraction
+   ↓
+Decision support</code></pre>
+</div></p>
+<p>The important distinction is that an image-processing method may support a clinical workflow without itself constituting a medical diagnosis.</p>
+<h3>Surveillance</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Video frames
+   ↓
+Pre-processing
+   ↓
+Motion / object detection
+   ↓
+Tracking
+   ↓
+Event interpretation</code></pre>
+</div></p>
+<h3>Entertainment</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Image / video
+   ↓
+Colour / tone processing
+   ↓
+Filtering / effects
+   ↓
+Rendering / storage</code></pre>
+</div></p>
+<p><strong>EXTENSION:</strong> Industrial inspection, remote sensing, robotics, document analysis, biometrics, microscopy, scientific imaging, and autonomous systems are additional major application areas.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 01.14: DIP, Computer Vision, and AI — where are the boundaries? -->
+  <section id="s-01-14" class="section-block">
+    <div class="section-header">
+      <span class="section-num">01.14</span>
+      <h2>DIP, Computer Vision, and AI — where are the boundaries?</h2>
+      <button class="bookmark-btn" data-id="s-01-14" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>These fields overlap, but they are not synonyms.</p>
+<div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Area</th>
+<th>Main concern</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Digital Image Processing</td>
+<td>Transform, restore, enhance, represent, compress, or analyse image data</td>
+</tr>
+<tr>
+<td>Computer Vision</td>
+<td>Infer useful information about the world from images/video</td>
+</tr>
+<tr>
+<td>Machine Learning</td>
+<td>Learn patterns or decision functions from data</td>
+</tr>
+<tr>
+<td>Deep Learning</td>
+<td>Learn layered representations and decision functions, often from large datasets</td>
+</tr>
+</tbody>
+</table></div>
+<p>A pipeline can contain all four.</p>
+<p>Example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Camera image
+   ↓
+DIP preprocessing
+   ↓
+Computer-vision representation
+   ↓
+CNN detector
+   ↓
+Object labels + locations</code></pre>
+</div></p>
+<p>The boundaries are practical rather than absolute. A modern vision system frequently combines traditional image processing and learned models.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 01.15: Why DIP remains important even when AI is available -->
+  <section id="s-01-15" class="section-block">
+    <div class="section-header">
+      <span class="section-num">01.15</span>
+      <h2>Why DIP remains important even when AI is available</h2>
+      <button class="bookmark-btn" data-id="s-01-15" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A common misconception is:</p>
+<blockquote>
+<p>“If CNNs can learn features automatically, classical DIP is no longer useful.”</p>
+</blockquote>
+<p>That is too simplistic.</p>
+<p>Classical operations remain useful for:</p>
+<ul>
+<li>acquisition and calibration;</li>
+<li>resizing and resampling;</li>
+<li>normalisation;</li>
+<li>noise reduction;</li>
+<li>image alignment;</li>
+<li>geometric correction;</li>
+<li>data preparation;</li>
+<li>compression;</li>
+<li>interpretability and inspection;</li>
+<li>systems where labelled training data is scarce;</li>
+<li>computationally constrained systems.</li>
+</ul>
+<p>More importantly, learning modern vision becomes easier when the reader understands what a filter, edge, frequency component, pixel neighbourhood, and image representation actually mean.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 01.16: The central “information flow” view of DIP -->
+  <section id="s-01-16" class="section-block">
+    <div class="section-header">
+      <span class="section-num">01.16</span>
+      <h2>The central “information flow” view of DIP</h2>
+      <button class="bookmark-btn" data-id="s-01-16" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Instead of memorising 31 chapters as independent topics, keep this question in mind:</p>
+<blockquote>
+<p><strong>What information exists at this stage, and what information does the next operation need?</strong></p>
+</blockquote>
+<p>For example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Pixels
+  ↓
+Intensity structure
+  ↓
+Edges / local patterns
+  ↓
+Regions / shapes
+  ↓
+Descriptors / learned features
+  ↓
+Object identity / location
+  ↓
+Decision</code></pre>
+</div></p>
+<p>Each stage changes the representation of what is useful.</p>
+<p>That is the intellectual backbone of the entire MiniBook.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 01.17: Common misconceptions and bug prevention -->
+  <section id="s-01-17" class="section-block">
+    <div class="section-header">
+      <span class="section-num">01.17</span>
+      <h2>Common misconceptions and bug prevention</h2>
+      <button class="bookmark-btn" data-id="s-01-17" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>1. “Every pixel stores a colour.”</h3>
+<p>False for grayscale images. A grayscale pixel stores one intensity value.</p>
+<h3>2. “8-bit means eight intensity levels.”</h3>
+<p>False.</p>
+<p>
+$$
+2^8=256
+$$
+</p>
+<p>possible code values.</p>
+<h3>3. “Resolution and bit depth are the same.”</h3>
+<p>False. Spatial sampling and intensity precision describe different dimensions of image representation.</p>
+<h3>4. “JPEG always changes image dimensions.”</h3>
+<p>False. Compression and spatial resizing are separate operations.</p>
+<h3>5. “An image is just a matrix.”</h3>
+<p>Mathematically useful, but incomplete. Practical image data also carries datatype, channels, metadata, colour interpretation, storage semantics, and sometimes compression.</p>
+<h3>6. “Every image-processing operation improves the image.”</h3>
+<p>No. Processing always involves a task-dependent trade-off.</p>
+<h3>7. “Computer vision and DIP are identical.”</h3>
+<p>They overlap, but vision generally places more emphasis on interpreting scene content and making decisions.</p>
+<h3>8. “If two images look identical on screen, their data are identical.”</h3>
+<p>Not necessarily. Different datatypes, transfer functions, metadata, colour management, or hidden numerical differences can produce visually similar renderings.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 01.18: Mini visual glossary -->
+  <section id="s-01-18" class="section-block">
+    <div class="section-header">
+      <span class="section-num">01.18</span>
+      <h2>Mini visual glossary</h2>
+      <button class="bookmark-btn" data-id="s-01-18" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Term</th>
+<th>One-line mental model</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pixel</td>
+<td>One sampled spatial location in a digital image</td>
+</tr>
+<tr>
+<td>Channel</td>
+<td>One component of the image representation</td>
+</tr>
+<tr>
+<td>Grayscale</td>
+<td>One intensity channel</td>
+</tr>
+<tr>
+<td>RGB</td>
+<td>Three colour-component channels</td>
+</tr>
+<tr>
+<td>Bit depth</td>
+<td>Number of bits used to encode a channel value</td>
+</tr>
+<tr>
+<td>Dynamic range</td>
+<td>Span between low and high useful signal levels</td>
+</tr>
+<tr>
+<td>Sampling</td>
+<td>Choosing discrete spatial locations</td>
+</tr>
+<tr>
+<td>Quantization</td>
+<td>Mapping intensity values to discrete levels</td>
+</tr>
+<tr>
+<td>Kernel / mask</td>
+<td>Small numerical operator applied over a neighbourhood</td>
+</tr>
+<tr>
+<td>Histogram</td>
+<td>Distribution of image intensities</td>
+</tr>
+<tr>
+<td>Segmentation</td>
+<td>Assigning pixels to meaningful regions/classes</td>
+</tr>
+<tr>
+<td>Descriptor</td>
+<td>Numerical representation of image structure</td>
+</tr>
+<tr>
+<td>Compression</td>
+<td>Encoding image information more efficiently</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 01.19: Formula card -->
+  <section id="s-01-19" class="section-block">
+    <div class="section-header">
+      <span class="section-num">01.19</span>
+      <h2>Formula card</h2>
+      <button class="bookmark-btn" data-id="s-01-19" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h2>Intensity levels</h2>
+<p>For $k$ bits per channel:</p>
+<p>
+$$
+L=2^k
+$$
+</p>
+<h2>Point transformation</h2>
+<p>
+$$
+g(i,j)=T(I(i,j))
+$$
+</p>
+<h2>8-bit negative transform</h2>
+<p>
+$$
+g=255-f
+$$
+</p>
+<h2>Raw image sample count</h2>
+<p>For width $W$, height $H$, and $C$ channels:</p>
+<p>
+$$
+N=WHC
+$$
+</p>
+<h2>Approximate raw bytes</h2>
+<p>For $b$ bits per stored sample:</p>
+<p>
+$$
+\text{bytes}=WHC\frac{b}{8}
+$$
+</p>
+<p>This simple formula assumes the stated representation is directly stored without extra packing or compression.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 01.20: EXAM lens -->
+  <section id="s-01-20" class="section-block">
+    <div class="section-header">
+      <span class="section-num">01.20</span>
+      <h2>EXAM lens</h2>
+      <button class="bookmark-btn" data-id="s-01-20" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>High-yield definitions</h3>
+<ol>
+<li>Define digital image processing.</li>
+<li>Define a digital image mathematically.</li>
+<li>Differentiate image processing and computer vision.</li>
+<li>Explain sampling and quantization at a conceptual level.</li>
+<li>Explain grayscale, RGB, and multispectral images.</li>
+<li>Define pixel, bit depth, and resolution.</li>
+</ol>
+<div class="exam-connection"><div class="exam-title"><span>📝</span> High-yield conceptual questions</div>
+
+- Why can two images of equal dimensions require different amounts of storage?
+- Why is bit depth not the same as spatial resolution?
+- Why can an image-processing operation improve one task and hurt another?
+- Why is a practical image pipeline not necessarily a fixed sequence?
+
+</div>
+
+<h3>Numerical pattern</h3>
+<p>Given dimensions, channels, and bit depth, calculate the number of stored samples and approximate uncompressed memory.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 01.21: LAB connection -->
+  <section id="s-01-21" class="section-block">
+    <div class="section-header">
+      <span class="section-num">01.21</span>
+      <h2>LAB connection</h2>
+      <button class="bookmark-btn" data-id="s-01-21" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><strong>Direct syllabus connection — Experiment 1:</strong> image input/output and colour-space conversion.</p>
+<p>The syllabus asks students to load, display, and convert images between colour spaces. fileciteturn4file0L58-L61</p>
+<p>Before performing the experiment, you should be comfortable answering:</p>
+<blockquote>
+<p>How many channels does this image have?<br />
+What is its datatype?<br />
+What are the dimensions?<br />
+What range can one channel represent?<br />
+Which colour-space convention is being used?</p>
+</blockquote>
+<p>Those questions are more important than memorising a single library command.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 01.22: Chapter checkpoint -->
+  <section id="s-01-22" class="section-block">
+    <div class="section-header">
+      <span class="section-num">01.22</span>
+      <h2>Chapter checkpoint</h2>
+      <button class="bookmark-btn" data-id="s-01-22" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Concept</h3>
+<p>In your own words, explain why an image should be treated as a <strong>structured measurement represented numerically</strong>, rather than simply as a visible picture.</p>
+<h3>Numerical</h3>
+<p>An image is 640 × 480, grayscale, and 8-bit.</p>
+<ol>
+<li>How many pixels does it contain?</li>
+<li>How many raw bytes are required if stored directly?</li>
+<li>How many possible intensity values exist?</li>
+</ol>
+<h3>Interpretation</h3>
+<p>Suppose an enhancement method produces a visually sharper image but increases noise around object boundaries.</p>
+<p>Is it automatically a better image? Explain your answer in terms of task-dependent usefulness.</p>
+<h3>Design question</h3>
+<p>Draw a pipeline for an application where the goal is to identify objects in a video stream. Mark which stages are acquisition, preprocessing, representation, analysis, and decision.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 01.23: Forward connection -->
+  <section id="s-01-23" class="section-block">
+    <div class="section-header">
+      <span class="section-num">01.23</span>
+      <h2>Forward connection</h2>
+      <button class="bookmark-btn" data-id="s-01-23" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The next question is unavoidable:</p>
+<blockquote>
+<p><strong>Where did those pixel numbers come from?</strong></p>
+</blockquote>
+<p>A digital image starts as a physical phenomenon interacting with an imaging system. Before the computer can process pixels, the system must form an image, capture it, sense it, and convert the measured signal into data.</p>
+<p>That is the subject of <strong>Chapter 02 — Image Formation and Acquisition</strong>.</p>
+<hr />
+<h2>Chapter summary</h2>
+<p>Digital Image Processing is fundamentally about <strong>representations and transformations of image information</strong>. A real scene becomes a measured signal, the signal becomes sampled and quantized data, and the resulting digital image can then be enhanced, restored, segmented, compressed, described, classified, detected, or tracked.</p>
+<p>The most important habit to carry forward is simple:</p>
+<blockquote>
+<p><strong>Do not memorise an operation before asking what information it acts on, what information it changes, and what task that change is meant to serve.</strong></p>
+</blockquote>
+    </div>
+  </section>
+
+  <!-- SECTION 01.24: Spatial Domain vs Other Representations -->
+  <section id="s-01-24" class="section-block">
+    <div class="section-header">
+      <span class="section-num">01.24</span>
+      <h2>Spatial Domain vs Other Representations</h2>
+      <button class="bookmark-btn" data-id="s-01-24" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>One of the most important ideas in DIP is that the same image can be represented in different ways.</p>
+<h2>Spatial domain</h2>
+<p>Operate directly on image coordinates/pixels.</p>
+<p>Examples:</p>
+<ul>
+<li>point transformations,</li>
+<li>smoothing,</li>
+<li>sharpening,</li>
+<li>edge detection.</li>
+</ul>
+<h2>Frequency domain</h2>
+<p>Represent spatial variation using frequency components.</p>
+<p>Examples:</p>
+<ul>
+<li>Fourier transform,</li>
+<li>low-pass filtering,</li>
+<li>high-pass filtering.</li>
+</ul>
+<h2>Feature representation</h2>
+<p>Represent an image using extracted features or descriptors.</p>
+<p>Examples:</p>
+<ul>
+<li>SIFT-style local descriptors,</li>
+<li>HOG,</li>
+<li>learned CNN features.</li>
+</ul>
+<p>A useful mental model is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>SAME IMAGE INFORMATION
+       │
+       ├── pixel representation
+       ├── frequency representation
+       ├── feature representation
+       └── learned representation</code></pre>
+</div></p>
+<p>The choice of representation can make a problem easier or harder.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 01.25: Why Filtering Works Locally -->
+  <section id="s-01-25" class="section-block">
+    <div class="section-header">
+      <span class="section-num">01.25</span>
+      <h2>Why Filtering Works Locally</h2>
+      <button class="bookmark-btn" data-id="s-01-25" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Many classical spatial filters operate on a neighbourhood.</p>
+<p>For a 3×3 neighbourhood:</p>
+<p>
+$$
+\begin{bmatrix}
+a&b&c\\
+d&e&f\\
+g&h&i
+\end{bmatrix}
+$$
+</p>
+<p>the output associated with the centre often depends on all nine values.</p>
+<p>This is why later topics require:</p>
+<ul>
+<li>matrices,</li>
+<li>kernels,</li>
+<li>indexing,</li>
+<li>convolution/correlation,</li>
+<li>border handling.</li>
+</ul>
+<p>A local operation can therefore change one pixel based on information from nearby pixels.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 01.26: Mini Worked Example — A Point Transformation -->
+  <section id="s-01-26" class="section-block">
+    <div class="section-header">
+      <span class="section-num">01.26</span>
+      <h2>Mini Worked Example — A Point Transformation</h2>
+      <button class="bookmark-btn" data-id="s-01-26" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose an 8-bit grayscale pixel has:</p>
+<p>
+$$
+r=80
+$$
+</p>
+<p>and we apply the negative transformation:</p>
+<p>
+$$
+s=(L-1)-r
+$$
+</p>
+<p>For an 8-bit image:</p>
+<p>
+$$
+L=256
+$$
+</p>
+<p>therefore:</p>
+<p>
+$$
+s=255-80=175
+$$
+</p>
+<h3>Interpretation</h3>
+<p>The original pixel intensity was relatively dark compared with the maximum intensity.</p>
+<p>The negative transformation maps it to a relatively bright value.</p>
+<p>This example is intentionally tiny because the goal is to understand the transformation before studying a full image.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 01.27: What Happens When We Apply an Operation to the Whole Image? -->
+  <section id="s-01-27" class="section-block">
+    <div class="section-header">
+      <span class="section-num">01.27</span>
+      <h2>What Happens When We Apply an Operation to the Whole Image?</h2>
+      <button class="bookmark-btn" data-id="s-01-27" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>If a transformation is pointwise:</p>
+<p>
+$$
+s[m,n]=T(I[m,n])
+$$
+</p>
+<p>then each pixel can be processed independently.</p>
+<p>If the operation is local:</p>
+<p>
+$$
+s[m,n]=\Phi(\text{neighbourhood around }I[m,n])
+$$
+</p>
+<p>then nearby pixels influence the output.</p>
+<p>If the operation is global:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>output at one location
+may depend on information from a much larger portion
+of the image</code></pre>
+</div></p>
+<p>This distinction will become extremely useful later.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 01.28: Local, Global and Geometric Operations -->
+  <section id="s-01-28" class="section-block">
+    <div class="section-header">
+      <span class="section-num">01.28</span>
+      <h2>Local, Global and Geometric Operations</h2>
+      <button class="bookmark-btn" data-id="s-01-28" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Operation class</th>
+<th>Information used</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Point</td>
+<td>one pixel/sample</td>
+<td>negative, gamma mapping</td>
+</tr>
+<tr>
+<td>Local</td>
+<td>neighbourhood</td>
+<td>mean, Gaussian, Sobel</td>
+</tr>
+<tr>
+<td>Global</td>
+<td>whole-image statistics or representation</td>
+<td>histogram equalization</td>
+</tr>
+<tr>
+<td>Geometric</td>
+<td>coordinate relationship</td>
+<td>scaling, rotation</td>
+</tr>
+<tr>
+<td>Transform-domain</td>
+<td>transformed representation</td>
+<td>Fourier filtering</td>
+</tr>
+<tr>
+<td>Structural</td>
+<td>shape/set relationship</td>
+<td>morphology</td>
+</tr>
+<tr>
+<td>Learned</td>
+<td>parameters learned from data</td>
+<td>CNN feature extraction</td>
+</tr>
+</tbody>
+</table></div>
+<p>These categories are not mutually exclusive in every implementation, but they are useful for organizing the subject.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 01.29: Why Enhancement, Restoration and Analysis Are Different -->
+  <section id="s-01-29" class="section-block">
+    <div class="section-header">
+      <span class="section-num">01.29</span>
+      <h2>Why Enhancement, Restoration and Analysis Are Different</h2>
+      <button class="bookmark-btn" data-id="s-01-29" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Enhancement</h3>
+<p>Goal:</p>
+<blockquote>
+<p>Make an image more useful, visible or informative for a given task.</p>
+</blockquote>
+<p>Examples:</p>
+<ul>
+<li>contrast enhancement,</li>
+<li>sharpening,</li>
+<li>smoothing.</li>
+</ul>
+<p>There may be no single “correct” enhanced image.</p>
+<h3>Restoration</h3>
+<p>Goal:</p>
+<blockquote>
+<p>Estimate or recover an image from a modelled degradation process.</p>
+</blockquote>
+<p>Examples:</p>
+<ul>
+<li>deblurring,</li>
+<li>noise-model-based restoration.</li>
+</ul>
+<p>Restoration is therefore more explicitly tied to assumptions about how degradation occurred.</p>
+<h3>Analysis</h3>
+<p>Goal:</p>
+<blockquote>
+<p>Extract measurable or semantic information from the image.</p>
+</blockquote>
+<p>Examples:</p>
+<ul>
+<li>segmentation,</li>
+<li>feature extraction,</li>
+<li>object detection.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 01.30: Applications -->
+  <section id="s-01-30" class="section-block">
+    <div class="section-header">
+      <span class="section-num">01.30</span>
+      <h2>Applications</h2>
+      <button class="bookmark-btn" data-id="s-01-30" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The supplied syllabus explicitly mentions domains such as healthcare, surveillance and entertainment. fileciteturn4file0L22-L31</p>
+<p>The same core DIP ideas appear in many systems:</p>
+<div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Domain</th>
+<th>Example task</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Healthcare</td>
+<td>enhancement, segmentation, measurement, computer-aided analysis</td>
+</tr>
+<tr>
+<td>Surveillance</td>
+<td>motion detection, object detection, tracking</td>
+</tr>
+<tr>
+<td>Documents</td>
+<td>thresholding, denoising, OCR preprocessing</td>
+</tr>
+<tr>
+<td>Remote sensing</td>
+<td>enhancement, classification, land-cover analysis</td>
+</tr>
+<tr>
+<td>Industrial inspection</td>
+<td>defect detection, measurement</td>
+</tr>
+<tr>
+<td>Media</td>
+<td>restoration, enhancement, compression</td>
+</tr>
+<tr>
+<td>Robotics</td>
+<td>perception and object localization</td>
+</tr>
+</tbody>
+</table></div>
+<p>The algorithm is not selected because it belongs to “DIP.” It is selected because its assumptions fit the task.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 01.31: A Better Way to Think About Every DIP Algorithm -->
+  <section id="s-01-31" class="section-block">
+    <div class="section-header">
+      <span class="section-num">01.31</span>
+      <h2>A Better Way to Think About Every DIP Algorithm</h2>
+      <button class="bookmark-btn" data-id="s-01-31" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For every method, ask six questions:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>1. What problem does it solve?
+2. What representation does it operate on?
+3. What information does it use?
+4. What information does it suppress/change/extract?
+5. What assumptions does it make?
+6. How do we know whether the result is useful?</code></pre>
+</div></p>
+<p>This six-question framework will recur throughout the book.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 01.32: The Cost of Representation -->
+  <section id="s-01-32" class="section-block">
+    <div class="section-header">
+      <span class="section-num">01.32</span>
+      <h2>The Cost of Representation</h2>
+      <button class="bookmark-btn" data-id="s-01-32" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A representation determines what information is easy to access.</p>
+<h3>Pixel representation</h3>
+<p>Easy to inspect:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>intensity
+local neighbourhood
+spatial location</code></pre>
+</div></p>
+<h3>Histogram</h3>
+<p>Easy to inspect:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>intensity distribution
+contrast distribution</code></pre>
+</div></p>
+<p>But spatial location is largely discarded.</p>
+<h3>Fourier representation</h3>
+<p>Easy to inspect:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>spatial-frequency content</code></pre>
+</div></p>
+<p>But the result is no longer intuitive as a direct pixel grid.</p>
+<h3>Feature descriptor</h3>
+<p>Easy to compare:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>selected structural properties</code></pre>
+</div></p>
+<p>But it does not contain every original image detail.</p>
+<blockquote>
+<p><strong>Engineering Insight:</strong> Processing is often a controlled decision about which representation makes the next task easier.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 01.33: What Information Can Be Lost? -->
+  <section id="s-01-33" class="section-block">
+    <div class="section-header">
+      <span class="section-num">01.33</span>
+      <h2>What Information Can Be Lost?</h2>
+      <button class="bookmark-btn" data-id="s-01-33" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Not every transformation is reversible.</p>
+<p>Examples:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>downsampling
+→ can discard spatial detail
+
+quantization
+→ can discard intensity precision
+
+thresholding
+→ can collapse many intensity values into fewer classes
+
+lossy compression
+→ deliberately discards information
+
+blurring
+→ suppresses fine spatial detail</code></pre>
+</div></p>
+<p>Later chapters will repeatedly ask:</p>
+<blockquote>
+<p>What did this operation preserve, and what did it destroy?</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 01.34: DIP as a Chain of Information Transformations -->
+  <section id="s-01-34" class="section-block">
+    <div class="section-header">
+      <span class="section-num">01.34</span>
+      <h2>DIP as a Chain of Information Transformations</h2>
+      <button class="bookmark-btn" data-id="s-01-34" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A more advanced mental model is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>SCENE INFORMATION
+        ↓
+MEASURED INFORMATION
+        ↓
+DIGITAL REPRESENTATION
+        ↓
+PROCESSED REPRESENTATION
+        ↓
+EXTRACTED INFORMATION
+        ↓
+DECISION</code></pre>
+</div></p>
+<p>At every arrow, information may be:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>preserved
+suppressed
+distorted
+reformatted
+summarized
+or discarded</code></pre>
+</div></p>
+<p>This is one of the deepest unifying ideas in DIP.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 01.35: Common Traps -->
+  <section id="s-01-35" class="section-block">
+    <div class="section-header">
+      <span class="section-num">01.35</span>
+      <h2>Common Traps</h2>
+      <button class="bookmark-btn" data-id="s-01-35" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h2>Trap 1 — “DIP is only image enhancement.”</h2>
+<p>False.</p>
+<p>The syllabus also includes restoration, segmentation, feature extraction, compression, classification, object detection and video/motion analysis. fileciteturn4file0L36-L52</p>
+<h2>Trap 2 — “A digital image is just a picture.”</h2>
+<p>Incomplete.</p>
+<p>Computationally, it is structured numerical data.</p>
+<h2>Trap 3 — “Every DIP pipeline follows the same sequence.”</h2>
+<p>False.</p>
+<p>Real systems select stages according to the task.</p>
+<h2>Trap 4 — “More processing is always better.”</h2>
+<p>False.</p>
+<p>An operation can remove useful information, create artifacts or make downstream analysis harder.</p>
+<h2>Trap 5 — “A better-looking image is always a better result.”</h2>
+<p>False.</p>
+<p>The right result depends on the task.</p>
+<p>A medical-processing pipeline and a photography pipeline may prefer very different outputs.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 01.36: Engineering Decision Example -->
+  <section id="s-01-36" class="section-block">
+    <div class="section-header">
+      <span class="section-num">01.36</span>
+      <h2>Engineering Decision Example</h2>
+      <button class="bookmark-btn" data-id="s-01-36" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose a grayscale document image contains weak text on an uneven background.</p>
+<p>Possible choices:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Global contrast enhancement
+        ↓
+may improve overall visibility
+
+Adaptive processing
+        ↓
+may better handle local illumination
+
+Thresholding
+        ↓
+may produce a binary document
+
+Morphology
+        ↓
+may clean small artifacts</code></pre>
+</div></p>
+<p>The important engineering question is not:</p>
+<blockquote>
+<p>“Which algorithm is most advanced?”</p>
+</blockquote>
+<p>It is:</p>
+<blockquote>
+<p><strong>“Which representation and operation best match the image conditions and the desired output?”</strong></p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 01.37: Connection to the Rest of the Book -->
+  <section id="s-01-37" class="section-block">
+    <div class="section-header">
+      <span class="section-num">01.37</span>
+      <h2>Connection to the Rest of the Book</h2>
+      <button class="bookmark-btn" data-id="s-01-37" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>This chapter establishes the vocabulary that later chapters will repeatedly reuse.</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>C01 Big Picture
+    ↓
+C02 Image Formation
+    ↓
+C03 Sampling &amp; Quantization
+    ↓
+C04 Representation
+    ↓
+C05 Colour &amp; File Formats
+    ↓
+C06–C14 Enhancement / Restoration
+    ↓
+C15–C20 Segmentation / Features
+    ↓
+C21–C24 Compression
+    ↓
+C25–C31 Intelligent Vision</code></pre>
+</div></p>
+<p>The sequence is not merely chronological.</p>
+<p>It reflects an increasing ability to:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>represent
+→ manipulate
+→ analyse
+→ compress
+→ understand</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 01.38: Cross-Book Bridges -->
+  <section id="s-01-38" class="section-block">
+    <div class="section-header">
+      <span class="section-num">01.38</span>
+      <h2>Cross-Book Bridges</h2>
+      <button class="bookmark-btn" data-id="s-01-38" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <blockquote>
+<p><strong>MATH BRIDGE — M02/M05</strong><br />
+Review functions, discrete coordinates and matrices before C03–C04.</p>
+<p><strong>LAB BRIDGE — LAB-U1-01</strong><br />
+Image I/O and colour conversion will make the abstract idea of “image representation” concrete.</p>
+<p><strong>PRACTICE BRIDGE</strong><br />
+Classify a given operation as point, local, global, geometric, transform-domain, structural or learned.</p>
+<p><strong>EXAM BRIDGE</strong><br />
+Be able to define DIP, distinguish image processing/analysis/computer vision, draw the general pipeline, and explain the role of image representation.</p>
+<p><strong>RESOURCE BRIDGE</strong><br />
+Use the course reference texts for formal classical DIP treatment.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 01.39: Quick Recall -->
+  <section id="s-01-39" class="section-block">
+    <div class="section-header">
+      <span class="section-num">01.39</span>
+      <h2>Quick Recall</h2>
+      <button class="bookmark-btn" data-id="s-01-39" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>The image</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>physical scene
+→ measurement
+→ digital representation</code></pre>
+</div></p>
+<h3>DIP</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>computational manipulation/analysis of digital image data</code></pre>
+</div></p>
+<h3>Three useful distinctions</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>processing → transform the representation
+analysis   → extract measurable structure
+vision     → infer meaning / scene information</code></pre>
+</div></p>
+<h3>Core image information</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>dimensions
+channels
+bit depth
+datatype
+range
+colour space
+resolution
+format
+compression</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 01.40: Chapter Checkpoint -->
+  <section id="s-01-40" class="section-block">
+    <div class="section-header">
+      <span class="section-num">01.40</span>
+      <h2>Chapter Checkpoint</h2>
+      <button class="bookmark-btn" data-id="s-01-40" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>You should now be able to answer:</p>
+<ol>
+<li>What is Digital Image Processing?</li>
+<li>Why is a digital image considered structured numerical data?</li>
+<li>Distinguish image processing from image analysis and computer vision.</li>
+<li>Draw a general DIP pipeline.</li>
+<li>What information does image metadata such as <code>1920×1080 RGB uint8</code> provide?</li>
+<li>Why does representation matter?</li>
+<li>Distinguish point, local and global operations.</li>
+<li>What is the difference between enhancement and restoration?</li>
+<li>Why is more processing not necessarily better?</li>
+<li>Why must image formation and digitisation be understood before advanced processing?</li>
+</ol>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 01.41: Final Mental Model -->
+  <section id="s-01-41" class="section-block">
+    <div class="section-header">
+      <span class="section-num">01.41</span>
+      <h2>Final Mental Model</h2>
+      <button class="bookmark-btn" data-id="s-01-41" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>A digital image is not the object itself.
+
+It is:
+
+     a measurement
+          ↓
+     represented numerically
+          ↓
+     manipulated mathematically
+          ↓
+     analysed computationally
+          ↓
+     converted into useful information
+          ↓
+     and sometimes into a decision.</code></pre>
+</div></p>
+<p>That is the foundation of the entire DIP MiniBook.</p>
+    </div>
+  </section>
+
+      <!-- Chapter End Package -->
+      <section class="chapter-end-package">
+        <div class="chapter-nav-grid">
+          <a href="../index.html" class="chapter-nav-card">
+            <div class="chapter-nav-dir">← Previous</div>
+            <div class="chapter-nav-title">← Portal Home</div>
+          </a>
+          <a href="ch02-image-formation.html" class="chapter-nav-card next">
+            <div class="chapter-nav-dir">Next →</div>
+            <div class="chapter-nav-title">Next: Ch 2 — Image Formation & Acquisition →</div>
+          </a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- FLOATING TTS PANEL (SAFE MANUAL MODE ONLY) -->
+  <div id="tts-panel" style="position:fixed; bottom:20px; right:20px; background:var(--em-surface-1); border:1px solid var(--em-border); border-radius:var(--em-radius-md); padding:12px 16px; box-shadow:var(--sh-lg); z-index:var(--z-float); display:none; gap:10px; align-items:center;">
+    <button class="icon-btn" id="tts-play" title="Play / Pause" style="background:var(--em-accent); color:#fff; border-radius:50%; width:36px; height:36px;">▶</button>
+    <button class="icon-btn" id="tts-stop" title="Stop">⏹</button>
+    <div style="font-size:0.75rem; color:var(--em-text-muted);">
+      <span id="tts-status">Ready</span> · <span id="tts-rate-label">1.0x</span>
+    </div>
+  </div>
+
+  <script src="../assets/js/state.js"></script>
+  <script src="../assets/js/core.js"></script>
+  <script src="../assets/js/tts.js"></script>
+  <script src="../assets/js/glossary.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: document.documentElement.getAttribute('data-theme') === 'light' ? 'default' : 'dark'
+      });
+    });
+  </script>
+</body>
+</html>

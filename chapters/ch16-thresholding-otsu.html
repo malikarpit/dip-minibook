@@ -1,0 +1,2640 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Arpit">
+  <meta name="description" content="Chapter 16: Thresholding &amp; Otsu&#x27;s Method — Digital Image Processing MiniBook. Illumination Role, Basic Global Thresholding, Mathematical Derivation of Otsu&#x27;s Optimum Between-Class Variance, and Adaptive/Multiple Thresholding">
+  <title>C16: Thresholding &amp; Otsu&#x27;s Method | DIP MiniBook 📷 Arpit</title>
+
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <link rel="stylesheet" href="../assets/css/chapters.css">
+  <link rel="stylesheet" href="../assets/css/animations.css">
+  <link rel="stylesheet" href="../assets/css/timer.css">
+
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body data-chapter-id="ch16-thresholding-otsu">
+  <div id="progress-bar"></div>
+
+  <!-- Header -->
+  <header id="main-header">
+    <div class="header-left">
+      <button id="sidebar-toggle" class="icon-btn" aria-label="Toggle navigation drawer" title="Toggle Sidebar (S)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <a href="../index.html" class="brand-logo">
+        <div class="brand-icon">DIP</div>
+        <div class="brand-text">
+          <span class="main">Digital Image Processing</span>
+          <span class="sub">DU DSE-3 Engineering MiniBook</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="header-chapter-title">C16: Thresholding &amp; Otsu&#x27;s Method</div>
+
+    <div class="header-right">
+      <button id="reading-mode-btn" class="icon-btn" aria-label="Toggle reading focus mode" title="Focus Mode (F)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+          <line x1="8" y1="21" x2="16" y2="21"></line>
+          <line x1="12" y1="17" x2="12" y2="21"></line>
+        </svg>
+      </button>
+      <button id="tts-toggle" class="icon-btn" aria-label="Audio Reader" title="Audio Reader">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+        </svg>
+      </button>
+      <button id="theme-toggle" class="icon-btn" aria-label="Cycle theme" title="Theme (T)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="12" cy="12" r="4.5"></circle>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Sidebar Overlay -->
+  <div id="sidebar-overlay"></div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" aria-expanded="true">
+    <div class="sidebar-nav">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">General</div>
+        <a href="../index.html" class="sidebar-link">
+          <span class="link-icon">🏛️</span>
+          <span>Subject Portal</span>
+        </a>
+        <a href="../progress.html" class="sidebar-link">
+          <span class="link-icon">📊</span>
+          <span>Study Dashboard</span>
+        </a>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Current Chapter Sections</div>
+        <a href="#s-16-1" class="sidebar-link"><span class="link-icon">📌</span><span>16.1 Why Thresholding Matters</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-16-2" class="sidebar-link"><span class="link-icon">📌</span><span>16.2 Global Thresholding</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-16-3" class="sidebar-link"><span class="link-icon">📌</span><span>16.3 Worked Global Threshold</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-16-4" class="sidebar-link"><span class="link-icon">📌</span><span>16.4 Threshold Direction Matters</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-16-5" class="sidebar-link"><span class="link-icon">📌</span><span>16.5 Binary, Multi-Level and Range Thresholding</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-16-6" class="sidebar-link"><span class="link-icon">📌</span><span>16.6 Worked Range Threshold</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-16-7" class="sidebar-link"><span class="link-icon">📌</span><span>16.7 Histogram-Guided Threshold Selection</span> </a>
+      <a href="#s-16-8" class="sidebar-link"><span class="link-icon">📌</span><span>16.8 Why Histogram Shape Alone Is Not Enough</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-16-9" class="sidebar-link"><span class="link-icon">📌</span><span>16.9 Manual Threshold Selection</span> </a>
+      <a href="#s-16-10" class="sidebar-link"><span class="link-icon">📌</span><span>16.10 Iterative Threshold Selection</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-16-11" class="sidebar-link"><span class="link-icon">📌</span><span>16.11 Worked Iterative Threshold Example</span> </a>
+      <a href="#s-16-12" class="sidebar-link"><span class="link-icon">📌</span><span>16.12 Otsu&#x27;s Method</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-16-13" class="sidebar-link"><span class="link-icon">📌</span><span>16.13 Why Otsu Works Intuitively</span> </a>
+      <a href="#s-16-14" class="sidebar-link"><span class="link-icon">📌</span><span>16.14 Otsu&#x27;s Method Step-by-Step</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-16-15" class="sidebar-link"><span class="link-icon">📌</span><span>16.15 Otsu Worked Example</span> </a>
+      <a href="#s-16-16" class="sidebar-link"><span class="link-icon">📌</span><span>16.16 Otsu Limitations</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-16-17" class="sidebar-link"><span class="link-icon">📌</span><span>16.17 Multi-Level Otsu</span> </a>
+      <a href="#s-16-18" class="sidebar-link"><span class="link-icon">📌</span><span>16.18 Adaptive Thresholding</span> </a>
+      <a href="#s-16-19" class="sidebar-link"><span class="link-icon">📌</span><span>16.19 Local Mean Threshold</span> </a>
+      <a href="#s-16-20" class="sidebar-link"><span class="link-icon">📌</span><span>16.20 Worked Adaptive Threshold Example</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-16-21" class="sidebar-link"><span class="link-icon">📌</span><span>16.21 Adaptive Gaussian Threshold</span> </a>
+      <a href="#s-16-22" class="sidebar-link"><span class="link-icon">📌</span><span>16.22 Global vs Adaptive Thresholding</span> </a>
+      <a href="#s-16-23" class="sidebar-link"><span class="link-icon">📌</span><span>16.23 Adaptive Threshold Failure</span> </a>
+      <a href="#s-16-24" class="sidebar-link"><span class="link-icon">📌</span><span>16.24 Window Size Matters</span> </a>
+      <a href="#s-16-25" class="sidebar-link"><span class="link-icon">📌</span><span>16.25 Worked Window-Size Thought Experiment</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-16-26" class="sidebar-link"><span class="link-icon">📌</span><span>16.26 Sauvola-Style Thresholding</span> </a>
+      <a href="#s-16-27" class="sidebar-link"><span class="link-icon">📌</span><span>16.27 Why Variance Helps</span> </a>
+      <a href="#s-16-28" class="sidebar-link"><span class="link-icon">📌</span><span>16.28 Thresholding and Colour</span> </a>
+      <a href="#s-16-29" class="sidebar-link"><span class="link-icon">📌</span><span>16.29 Example — Hue Range Threshold</span> </a>
+      <a href="#s-16-30" class="sidebar-link"><span class="link-icon">📌</span><span>16.30 Thresholding and Noise</span> </a>
+      <a href="#s-16-31" class="sidebar-link"><span class="link-icon">📌</span><span>16.31 Hysteresis Thresholding</span> </a>
+      <a href="#s-16-32" class="sidebar-link"><span class="link-icon">📌</span><span>16.32 Double Thresholding Beyond Canny</span> </a>
+      <a href="#s-16-33" class="sidebar-link"><span class="link-icon">📌</span><span>16.33 Multi-Level Thresholding</span> </a>
+      <a href="#s-16-34" class="sidebar-link"><span class="link-icon">📌</span><span>16.34 Thresholding with Class Imbalance</span> </a>
+      <a href="#s-16-35" class="sidebar-link"><span class="link-icon">📌</span><span>16.35 Threshold Selection as an Optimization Problem</span> </a>
+      <a href="#s-16-36" class="sidebar-link"><span class="link-icon">📌</span><span>16.36 Entropy-Based Thresholding</span> </a>
+      <a href="#s-16-37" class="sidebar-link"><span class="link-icon">📌</span><span>16.37 Thresholding and Morphology</span> </a>
+      <a href="#s-16-38" class="sidebar-link"><span class="link-icon">📌</span><span>16.38 Example — Document Binarization</span> </a>
+      <a href="#s-16-39" class="sidebar-link"><span class="link-icon">📌</span><span>16.39 Example — Industrial Object Segmentation</span> </a>
+      <a href="#s-16-40" class="sidebar-link"><span class="link-icon">📌</span><span>16.40 Example — Unevenly Lit Surface</span> </a>
+      <a href="#s-16-41" class="sidebar-link"><span class="link-icon">📌</span><span>16.41 Thresholding and Illumination Correction</span> </a>
+      <a href="#s-16-42" class="sidebar-link"><span class="link-icon">📌</span><span>16.42 Threshold Parameter Sensitivity</span> </a>
+      <a href="#s-16-43" class="sidebar-link"><span class="link-icon">📌</span><span>16.43 Stability Analysis</span> </a>
+      <a href="#s-16-44" class="sidebar-link"><span class="link-icon">📌</span><span>16.44 Thresholding Pipeline</span> </a>
+      <a href="#s-16-45" class="sidebar-link"><span class="link-icon">📌</span><span>16.45 Implementation Pseudocode</span> </a>
+      <a href="#s-16-46" class="sidebar-link"><span class="link-icon">📌</span><span>16.46 Common Traps</span> </a>
+      <a href="#s-16-47" class="sidebar-link"><span class="link-icon">📌</span><span>16.47 Exam Formula Sheet</span> </a>
+      <a href="#s-16-48" class="sidebar-link"><span class="link-icon">📌</span><span>16.48 Exam-Style Problem — Otsu Class Statistics</span> </a>
+      <a href="#s-16-49" class="sidebar-link"><span class="link-icon">📌</span><span>16.49 Exam-Style Problem — Adaptive Threshold</span> </a>
+      <a href="#s-16-50" class="sidebar-link"><span class="link-icon">📌</span><span>16.50 Exam-Style Problem — Multi-Level Threshold</span> </a>
+      <a href="#s-16-51" class="sidebar-link"><span class="link-icon">📌</span><span>16.51 Engineering Insight — Thresholding Is a Feature Problem</span> </a>
+      <a href="#s-16-52" class="sidebar-link"><span class="link-icon">📌</span><span>16.52 Cross-Book Bridges</span> </a>
+      <a href="#s-16-53" class="sidebar-link"><span class="link-icon">📌</span><span>16.53 Quick Recall</span> </a>
+      <a href="#s-16-54" class="sidebar-link"><span class="link-icon">📌</span><span>16.54 Chapter Checkpoint</span> </a>
+      <a href="#s-16-55" class="sidebar-link"><span class="link-icon">📌</span><span>16.55 Part III Progression</span> </a>
+      <a href="#s-16-56" class="sidebar-link"><span class="link-icon">📌</span><span>16.56 Worked Example — 10-Mark University Model Answer: Otsu&#x27;s Optimum Global Thresholding</span> </a>
+      </div>
+
+      
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-i">Part I — The Image</div>
+      <a href="ch01-big-picture.html" class="sidebar-link"><span class="link-icon">01</span><span>The Big Picture</span></a>
+      <a href="ch02-image-formation.html" class="sidebar-link"><span class="link-icon">02</span><span>Formation & Acquisition</span></a>
+      <a href="ch03-sampling-quantization.html" class="sidebar-link"><span class="link-icon">03</span><span>Sampling & Quantization</span></a>
+      <a href="ch04-image-representation.html" class="sidebar-link"><span class="link-icon">04</span><span>Pixels, Matrices & Resolution</span></a>
+      <a href="ch05-colour-models-file-formats.html" class="sidebar-link"><span class="link-icon">05</span><span>Colour Models & Formats</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-ii">Part II — Improving the Image</div>
+      <a href="ch06-point-processing.html" class="sidebar-link"><span class="link-icon">06</span><span>Point Processing & Intensity</span></a>
+      <a href="ch07-histograms-equalization.html" class="sidebar-link"><span class="link-icon">07</span><span>Histograms & Equalization</span></a>
+      <a href="ch08-spatial-filtering.html" class="sidebar-link"><span class="link-icon">08</span><span>Spatial Filtering & Convolution</span></a>
+      <a href="ch09-smoothing-noise-reduction.html" class="sidebar-link"><span class="link-icon">09</span><span>Smoothing & Noise Reduction</span></a>
+      <a href="ch10-sharpening-edge-detection.html" class="sidebar-link"><span class="link-icon">10</span><span>Sharpening & Edge Detection</span></a>
+      <a href="ch11-geometric-transforms.html" class="sidebar-link"><span class="link-icon">11</span><span>Geometric Transforms</span></a>
+      <a href="ch12-fourier-transform.html" class="sidebar-link"><span class="link-icon">12</span><span>Fourier Transform & Frequency</span></a>
+      <a href="ch13-frequency-filtering.html" class="sidebar-link"><span class="link-icon">13</span><span>Frequency-Domain Filtering</span></a>
+      <a href="ch14-image-restoration.html" class="sidebar-link"><span class="link-icon">14</span><span>Restoration & Deblurring</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-iii">Part III — Understanding Content</div>
+      <a href="ch15-segmentation-fundamentals.html" class="sidebar-link"><span class="link-icon">15</span><span>Segmentation Fundamentals</span></a>
+      <a href="ch16-thresholding-otsu.html" class="sidebar-link active"><span class="link-icon">16</span><span>Thresholding & Otsu Method</span></a>
+      <a href="ch17-region-segmentation.html" class="sidebar-link"><span class="link-icon">17</span><span>Region-Based Segmentation</span></a>
+      <a href="ch18-mathematical-morphology.html" class="sidebar-link"><span class="link-icon">18</span><span>Mathematical Morphology</span></a>
+      <a href="ch19-features-descriptors.html" class="sidebar-link"><span class="link-icon">19</span><span>Image Features & Descriptors</span></a>
+      <a href="ch20-sift-surf-orb-hog.html" class="sidebar-link"><span class="link-icon">20</span><span>SIFT, SURF, ORB & HOG</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-iv">Part IV — Compressing Images</div>
+      <a href="ch21-compression-entropy.html" class="sidebar-link"><span class="link-icon">21</span><span>Compression & Entropy</span></a>
+      <a href="ch22-lossless-coding.html" class="sidebar-link"><span class="link-icon">22</span><span>Lossless: RLE & Huffman</span></a>
+      <a href="ch23-lossy-dct-jpeg.html" class="sidebar-link"><span class="link-icon">23</span><span>Lossy: DCT & JPEG</span></a>
+      <a href="ch24-wavelets-jpeg2000.html" class="sidebar-link"><span class="link-icon">24</span><span>Wavelets & JPEG 2000</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-v">Part V — Intelligent Vision</div>
+      <a href="ch25-image-classification.html" class="sidebar-link"><span class="link-icon">25</span><span>Image Classification</span></a>
+      <a href="ch26-cnns-image-processing.html" class="sidebar-link"><span class="link-icon">26</span><span>CNNs for Image Processing</span></a>
+      <a href="ch27-modern-vision-architectures.html" class="sidebar-link"><span class="link-icon">27</span><span>Modern Vision Architectures</span></a>
+      <a href="ch28-object-detection-yolo.html" class="sidebar-link"><span class="link-icon">28</span><span>Object Detection: YOLO</span></a>
+      <a href="ch29-image-denoising-autoencoders.html" class="sidebar-link"><span class="link-icon">29</span><span>Image Denoising Autoencoders</span></a>
+      <a href="ch30-video-motion-analysis.html" class="sidebar-link"><span class="link-icon">30</span><span>Video & Motion Analysis</span></a>
+      <a href="ch31-dip-applications-engineering.html" class="sidebar-link"><span class="link-icon">31</span><span>DIP Applications & Ethics</span></a>
+    </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-brand-mark">
+        <div class="mark">DU</div>
+        <div>
+          <strong>DSE-3 MiniBook</strong>
+          <div>University of Delhi</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mandatory Shell Wrapper -->
+  <div id="main-content">
+    <main class="chapter-content">
+      <!-- Chapter Hero -->
+      <div class="chapter-hero">
+        <div class="hero-meta">
+          <span class="part-badge part-iii">Understanding Content</span>
+          <span class="chapter-number">CHAPTER 16</span>
+          <span class="reading-time">⏱️ ~50 min read</span>
+          <span class="tag-badge tag-core">Highest Yield (10-mark guarantee)</span>
+        </div>
+        <h1 class="chapter-title">Thresholding &amp; Otsu&#x27;s Method</h1>
+        <p class="chapter-subtitle">
+          Illumination Role, Basic Global Thresholding, Mathematical Derivation of Otsu&#x27;s Optimum Between-Class Variance, and Adaptive/Multiple Thresholding
+        </p>
+
+        <div class="syllabus-anchor">
+          <span class="syllabus-anchor-label">DU Syllabus</span>
+          <span><strong>Thresholding:</strong> Role of illumination in thresholding, basic global thresholding algorithm, Otsu’s optimum global thresholding derivation, between-class variance maximization, separability measure eta, multiple thresholding, and variable/adaptive thresholding using moving averages and local statistics.</span>
+        </div>
+      </div>
+
+      <!-- In-Page TOC -->
+      <div class="chapter-checklist-card" style="margin-bottom:var(--em-space-8);">
+        <div class="checklist-title">
+          <span>Table of Contents &amp; Visual Section Map</span>
+          <span class="tag-badge tag-math">56 Deep Sections</span>
+        </div>
+        <ul class="part-chapters-list">
+          <li class="part-chapter-item"><a href="#s-16-1"><strong>16.1</strong> Why Thresholding Matters</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-16-2"><strong>16.2</strong> Global Thresholding</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-16-3"><strong>16.3</strong> Worked Global Threshold</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-16-4"><strong>16.4</strong> Threshold Direction Matters</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-16-5"><strong>16.5</strong> Binary, Multi-Level and Range Thresholding</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-16-6"><strong>16.6</strong> Worked Range Threshold</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-16-7"><strong>16.7</strong> Histogram-Guided Threshold Selection</a> </li>
+      <li class="part-chapter-item"><a href="#s-16-8"><strong>16.8</strong> Why Histogram Shape Alone Is Not Enough</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-16-9"><strong>16.9</strong> Manual Threshold Selection</a> </li>
+      <li class="part-chapter-item"><a href="#s-16-10"><strong>16.10</strong> Iterative Threshold Selection</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-16-11"><strong>16.11</strong> Worked Iterative Threshold Example</a> </li>
+      <li class="part-chapter-item"><a href="#s-16-12"><strong>16.12</strong> Otsu&#x27;s Method</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-16-13"><strong>16.13</strong> Why Otsu Works Intuitively</a> </li>
+      <li class="part-chapter-item"><a href="#s-16-14"><strong>16.14</strong> Otsu&#x27;s Method Step-by-Step</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-16-15"><strong>16.15</strong> Otsu Worked Example</a> </li>
+      <li class="part-chapter-item"><a href="#s-16-16"><strong>16.16</strong> Otsu Limitations</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-16-17"><strong>16.17</strong> Multi-Level Otsu</a> </li>
+      <li class="part-chapter-item"><a href="#s-16-18"><strong>16.18</strong> Adaptive Thresholding</a> </li>
+      <li class="part-chapter-item"><a href="#s-16-19"><strong>16.19</strong> Local Mean Threshold</a> </li>
+      <li class="part-chapter-item"><a href="#s-16-20"><strong>16.20</strong> Worked Adaptive Threshold Example</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-16-21"><strong>16.21</strong> Adaptive Gaussian Threshold</a> </li>
+      <li class="part-chapter-item"><a href="#s-16-22"><strong>16.22</strong> Global vs Adaptive Thresholding</a> </li>
+      <li class="part-chapter-item"><a href="#s-16-23"><strong>16.23</strong> Adaptive Threshold Failure</a> </li>
+      <li class="part-chapter-item"><a href="#s-16-24"><strong>16.24</strong> Window Size Matters</a> </li>
+      <li class="part-chapter-item"><a href="#s-16-25"><strong>16.25</strong> Worked Window-Size Thought Experiment</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-16-26"><strong>16.26</strong> Sauvola-Style Thresholding</a> </li>
+      <li class="part-chapter-item"><a href="#s-16-27"><strong>16.27</strong> Why Variance Helps</a> </li>
+      <li class="part-chapter-item"><a href="#s-16-28"><strong>16.28</strong> Thresholding and Colour</a> </li>
+      <li class="part-chapter-item"><a href="#s-16-29"><strong>16.29</strong> Example — Hue Range Threshold</a> </li>
+      <li class="part-chapter-item"><a href="#s-16-30"><strong>16.30</strong> Thresholding and Noise</a> </li>
+      <li class="part-chapter-item"><a href="#s-16-31"><strong>16.31</strong> Hysteresis Thresholding</a> </li>
+      <li class="part-chapter-item"><a href="#s-16-32"><strong>16.32</strong> Double Thresholding Beyond Canny</a> </li>
+      <li class="part-chapter-item"><a href="#s-16-33"><strong>16.33</strong> Multi-Level Thresholding</a> </li>
+      <li class="part-chapter-item"><a href="#s-16-34"><strong>16.34</strong> Thresholding with Class Imbalance</a> </li>
+      <li class="part-chapter-item"><a href="#s-16-35"><strong>16.35</strong> Threshold Selection as an Optimization Problem</a> </li>
+      <li class="part-chapter-item"><a href="#s-16-36"><strong>16.36</strong> Entropy-Based Thresholding</a> </li>
+      <li class="part-chapter-item"><a href="#s-16-37"><strong>16.37</strong> Thresholding and Morphology</a> </li>
+      <li class="part-chapter-item"><a href="#s-16-38"><strong>16.38</strong> Example — Document Binarization</a> </li>
+      <li class="part-chapter-item"><a href="#s-16-39"><strong>16.39</strong> Example — Industrial Object Segmentation</a> </li>
+      <li class="part-chapter-item"><a href="#s-16-40"><strong>16.40</strong> Example — Unevenly Lit Surface</a> </li>
+      <li class="part-chapter-item"><a href="#s-16-41"><strong>16.41</strong> Thresholding and Illumination Correction</a> </li>
+      <li class="part-chapter-item"><a href="#s-16-42"><strong>16.42</strong> Threshold Parameter Sensitivity</a> </li>
+      <li class="part-chapter-item"><a href="#s-16-43"><strong>16.43</strong> Stability Analysis</a> </li>
+      <li class="part-chapter-item"><a href="#s-16-44"><strong>16.44</strong> Thresholding Pipeline</a> </li>
+      <li class="part-chapter-item"><a href="#s-16-45"><strong>16.45</strong> Implementation Pseudocode</a> </li>
+      <li class="part-chapter-item"><a href="#s-16-46"><strong>16.46</strong> Common Traps</a> </li>
+      <li class="part-chapter-item"><a href="#s-16-47"><strong>16.47</strong> Exam Formula Sheet</a> </li>
+      <li class="part-chapter-item"><a href="#s-16-48"><strong>16.48</strong> Exam-Style Problem — Otsu Class Statistics</a> </li>
+      <li class="part-chapter-item"><a href="#s-16-49"><strong>16.49</strong> Exam-Style Problem — Adaptive Threshold</a> </li>
+      <li class="part-chapter-item"><a href="#s-16-50"><strong>16.50</strong> Exam-Style Problem — Multi-Level Threshold</a> </li>
+      <li class="part-chapter-item"><a href="#s-16-51"><strong>16.51</strong> Engineering Insight — Thresholding Is a Feature Problem</a> </li>
+      <li class="part-chapter-item"><a href="#s-16-52"><strong>16.52</strong> Cross-Book Bridges</a> </li>
+      <li class="part-chapter-item"><a href="#s-16-53"><strong>16.53</strong> Quick Recall</a> </li>
+      <li class="part-chapter-item"><a href="#s-16-54"><strong>16.54</strong> Chapter Checkpoint</a> </li>
+      <li class="part-chapter-item"><a href="#s-16-55"><strong>16.55</strong> Part III Progression</a> </li>
+      <li class="part-chapter-item"><a href="#s-16-56"><strong>16.56</strong> Worked Example — 10-Mark University Model Answer: Otsu&#x27;s Optimum Global Thresholding</a> </li>
+        </ul>
+      </div>
+
+      <div class="concept-hook" style="margin-bottom:var(--em-space-8);"><h1>Chapter 16 — Thresholding</h1>
+<blockquote>
+<p><strong>Chapter thesis</strong><br />
+Thresholding is a segmentation strategy that converts image values into labels by comparing them with one or more thresholds. Its apparent simplicity hides an important design problem: <strong>choosing a threshold that separates the desired populations under the image's illumination, noise, contrast and class-overlap conditions.</strong></p>
+</blockquote>
+<p><strong>Part III — Understanding Image Content</strong><br />
+<strong>Syllabus anchor:</strong> Unit III explicitly includes global thresholding and adaptive thresholding. fileciteturn4file0L41-L45</p>
+<hr /></div>
+
+      <!-- All Numbered Sections -->
+      
+  <!-- SECTION 16.1: Why Thresholding Matters -->
+  <section id="s-16-1" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.1</span>
+      <h2>Why Thresholding Matters</h2>
+      <button class="bookmark-btn" data-id="s-16-1" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Thresholding is one of the most important classical segmentation tools because it is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>simple
+fast
+interpretable
+easy to implement</code></pre>
+</div></p>
+<p>The core operation is:</p>
+<p>
+$$
+f(x,y)\xrightarrow{\text{threshold}}\text{label}
+$$
+</p>
+<p>For a binary mask:</p>
+<p>
+$$
+M(x,y)=
+\begin{cases}
+1,&f(x,y)\ge T\\
+0,&f(x,y)<T
+\end{cases}
+$$
+</p>
+<p>But the hard problem is:</p>
+<p>
+$$
+\boxed{\text{How do we choose }T?}
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.2: Global Thresholding -->
+  <section id="s-16-2" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.2</span>
+      <h2>Global Thresholding</h2>
+      <button class="bookmark-btn" data-id="s-16-2" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A <strong>global threshold</strong> uses one value $T$ for the entire image.</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>all pixels
+    ↓
+same T
+    ↓
+foreground / background</code></pre>
+</div></p>
+<p>This works best when:</p>
+<ul>
+<li>illumination is reasonably uniform,</li>
+<li>foreground/background intensities are separated,</li>
+<li>the histogram is informative.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.3: Worked Global Threshold -->
+  <section id="s-16-3" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.3</span>
+      <h2>Worked Global Threshold</h2>
+      <button class="bookmark-btn" data-id="s-16-3" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Given:</p>
+<p>
+$$
+I=
+\begin{bmatrix}
+20&30&40\\
+100&120&150\\
+180&200&220
+\end{bmatrix}
+$$
+</p>
+<p>Use:</p>
+<p>
+$$
+T=100
+$$
+</p>
+<p>with foreground defined as:</p>
+<p>
+$$
+I\ge100
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+M=
+\begin{bmatrix}
+0&0&0\\
+1&1&1\\
+1&1&1
+\end{bmatrix}
+$$
+</p>
+<p>Foreground area:</p>
+<p>
+$$
+6
+$$
+</p>
+<p>pixels.</p>
+<p>This is a direct pixel-level decision.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.4: Threshold Direction Matters -->
+  <section id="s-16-4" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.4</span>
+      <h2>Threshold Direction Matters</h2>
+      <button class="bookmark-btn" data-id="s-16-4" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The segmentation can instead be:</p>
+<p>
+$$
+M(x,y)=
+\begin{cases}
+1,&f(x,y)<T\\
+0,&f(x,y)\ge T
+\end{cases}
+$$
+</p>
+<p>This is useful when the foreground is darker than the background.</p>
+<p>Therefore:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>THRESHOLD VALUE
++
+THRESHOLD POLARITY</code></pre>
+</div></p>
+<p>both matter.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.5: Binary, Multi-Level and Range Thresholding -->
+  <section id="s-16-5" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.5</span>
+      <h2>Binary, Multi-Level and Range Thresholding</h2>
+      <button class="bookmark-btn" data-id="s-16-5" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Binary threshold</h3>
+<p>One threshold:</p>
+<p>
+$$
+T
+$$
+</p>
+<h3>Multi-level thresholding</h3>
+<p>Multiple thresholds:</p>
+<p>
+$$
+T_1<T_2<\cdots<T_K
+$$
+</p>
+<h3>Range threshold</h3>
+<p>Accept values within:</p>
+<p>
+$$
+T_{\min}\le f<T_{\max}
+$$
+</p>
+<p>Range thresholding is especially useful when the desired class occupies a middle intensity band.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.6: Worked Range Threshold -->
+  <section id="s-16-6" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.6</span>
+      <h2>Worked Range Threshold</h2>
+      <button class="bookmark-btn" data-id="s-16-6" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p>
+$$
+40\le f<80
+$$
+</p>
+<p>is the target range.</p>
+<p>For:</p>
+<p>
+$$
+I=
+\begin{bmatrix}
+20&50&90\\
+45&70&100\\
+30&60&85
+\end{bmatrix}
+$$
+</p>
+<p>the mask is:</p>
+<p>
+$$
+M=
+\begin{bmatrix}
+0&1&0\\
+1&1&0\\
+0&1&0
+\end{bmatrix}
+$$
+</p>
+<p>This selects a middle intensity band rather than everything above a single threshold.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.7: Histogram-Guided Threshold Selection -->
+  <section id="s-16-7" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.7</span>
+      <h2>Histogram-Guided Threshold Selection</h2>
+      <button class="bookmark-btn" data-id="s-16-7" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A histogram can reveal whether two populations are approximately separable.</p>
+<p>A common ideal pattern is bimodal:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>frequency
+  ↑
+  │    /\             /\
+  │   /  \           /  \
+  │__/    \_________/    \__
+  └────────────────────────→ intensity
+              ↑
+           possible T</code></pre>
+</div></p>
+<p>The valley between the modes can be a candidate threshold.</p>
+<p>But this heuristic can fail with:</p>
+<ul>
+<li>overlapping distributions,</li>
+<li>uneven illumination,</li>
+<li>skewed classes,</li>
+<li>noise,</li>
+<li>shadows.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.8: Why Histogram Shape Alone Is Not Enough -->
+  <section id="s-16-8" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.8</span>
+      <h2>Why Histogram Shape Alone Is Not Enough</h2>
+      <button class="bookmark-btn" data-id="s-16-8" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose foreground occupies only 5% of pixels.</p>
+<p>Its histogram peak may be small.</p>
+<p>A simple valley heuristic can therefore choose an inappropriate threshold.</p>
+<p>Likewise, two spatially distinct objects can have overlapping intensity distributions.</p>
+<p>The histogram does not know where the pixels are.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.9: Manual Threshold Selection -->
+  <section id="s-16-9" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.9</span>
+      <h2>Manual Threshold Selection</h2>
+      <button class="bookmark-btn" data-id="s-16-9" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The simplest method is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>inspect image
+→ inspect histogram
+→ choose T
+→ evaluate mask
+→ adjust T</code></pre>
+</div></p>
+<p>Advantages:</p>
+<ul>
+<li>easy,</li>
+<li>interpretable,</li>
+<li>useful for controlled laboratory images.</li>
+</ul>
+<p>Disadvantages:</p>
+<ul>
+<li>subjective,</li>
+<li>difficult to scale,</li>
+<li>sensitive to image changes.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.10: Iterative Threshold Selection -->
+  <section id="s-16-10" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.10</span>
+      <h2>Iterative Threshold Selection</h2>
+      <button class="bookmark-btn" data-id="s-16-10" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <blockquote>
+<p><strong>EXTENSION</strong></p>
+</blockquote>
+<p>One classical approach starts with an initial threshold and repeatedly updates it.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>initial T
+ ↓
+split image into two groups
+ ↓
+compute group means
+ ↓
+update T
+ ↓
+repeat until stable</code></pre>
+</div></p>
+<p>A common update is:</p>
+<p>
+$$
+T_{\text{new}}
+=
+\frac{\mu_1+\mu_2}{2}
+$$
+</p>
+<p>where $\mu_1,\mu_2$ are the means of the two classes induced by the current threshold.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.11: Worked Iterative Threshold Example -->
+  <section id="s-16-11" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.11</span>
+      <h2>Worked Iterative Threshold Example</h2>
+      <button class="bookmark-btn" data-id="s-16-11" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose current threshold produces two groups with means:</p>
+<p>
+$$
+\mu_1=50
+$$
+</p>
+<p>and:</p>
+<p>
+$$
+\mu_2=150
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+T_{\text{new}}
+=
+\frac{50+150}{2}
+=
+\boxed{100}
+$$
+</p>
+<p>Reapply at $T=100$, recompute the class means and continue until the threshold stabilizes.</p>
+<p>This is one form of iterative thresholding.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.12: Otsu&#x27;s Method -->
+  <section id="s-16-12" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.12</span>
+      <h2>Otsu&#x27;s Method</h2>
+      <button class="bookmark-btn" data-id="s-16-12" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Otsu's method chooses a threshold by maximizing the separation between two classes in terms of between-class variance.</p>
+<p>For a threshold $t$, define:</p>
+<p>
+$$
+w_0(t),\quad w_1(t)
+$$
+</p>
+<p>as class probabilities.</p>
+<p>Class means:</p>
+<p>
+$$
+\mu_0(t),\quad\mu_1(t)
+$$
+</p>
+<p>Overall mean:</p>
+<p>
+$$
+\mu_T
+$$
+</p>
+<p>The between-class variance is:</p>
+<p>
+$$
+\sigma_B^2(t)
+=
+w_0(t)w_1(t)
+[\mu_0(t)-\mu_1(t)]^2
+$$
+</p>
+<p>Otsu selects:</p>
+<p>
+$$
+\boxed{
+t^*=
+\arg\max_t
+\sigma_B^2(t)
+}
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.13: Why Otsu Works Intuitively -->
+  <section id="s-16-13" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.13</span>
+      <h2>Why Otsu Works Intuitively</h2>
+      <button class="bookmark-btn" data-id="s-16-13" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A good threshold should create two groups with:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>high within-group similarity
++
+large separation between group means</code></pre>
+</div></p>
+<p>Otsu formalizes this using between-class variance.</p>
+<p>A visually useful mental model is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>good split
+→ compact classes
+→ far-separated means</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.14: Otsu&#x27;s Method Step-by-Step -->
+  <section id="s-16-14" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.14</span>
+      <h2>Otsu&#x27;s Method Step-by-Step</h2>
+      <button class="bookmark-btn" data-id="s-16-14" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For each candidate threshold $t$:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>1. split histogram into class 0 and class 1
+2. compute class probabilities
+3. compute class means
+4. calculate between-class variance
+5. store score</code></pre>
+</div></p>
+<p>Choose the threshold with the maximum score.</p>
+<p>This can be done efficiently using cumulative histogram statistics.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.15: Otsu Worked Example -->
+  <section id="s-16-15" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.15</span>
+      <h2>Otsu Worked Example</h2>
+      <button class="bookmark-btn" data-id="s-16-15" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Consider four intensity levels:</p>
+<div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th style="text-align: right;">$r$</th>
+<th style="text-align: right;">probability</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.25</td>
+</tr>
+<tr>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.25</td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0.25</td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0.25</td>
+</tr>
+</tbody>
+</table></div>
+<p>Evaluate threshold after level 1:</p>
+<p>Class 0:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>0,1</code></pre>
+</div></p>
+<p>
+$$
+w_0=0.5
+$$
+</p>
+<p>
+$$
+\mu_0=\frac{0(0.25)+1(0.25)}{0.5}=0.5
+$$
+</p>
+<p>Class 1:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>2,3</code></pre>
+</div></p>
+<p>
+$$
+w_1=0.5
+$$
+</p>
+<p>
+$$
+\mu_1=\frac{2(0.25)+3(0.25)}{0.5}=2.5
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+\sigma_B^2
+=
+(0.5)(0.5)(0.5-2.5)^2
+$$
+</p>
+<p>
+$$
+=
+0.25(4)
+$$
+</p>
+<p>
+$$
+\boxed{1}
+$$
+</p>
+<p>This is a candidate score. Other thresholds can be evaluated and compared.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.16: Otsu Limitations -->
+  <section id="s-16-16" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.16</span>
+      <h2>Otsu Limitations</h2>
+      <button class="bookmark-btn" data-id="s-16-16" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Otsu often works well for approximately bimodal histograms.</p>
+<p>It can struggle when:</p>
+<ul>
+<li>class sizes are extremely unequal,</li>
+<li>illumination varies spatially,</li>
+<li>classes overlap strongly,</li>
+<li>more than two classes exist,</li>
+<li>noise distorts the histogram.</li>
+</ul>
+<p>Therefore:</p>
+<blockquote>
+<p>Otsu is a statistical threshold selector, not a universal segmentation algorithm.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.17: Multi-Level Otsu -->
+  <section id="s-16-17" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.17</span>
+      <h2>Multi-Level Otsu</h2>
+      <button class="bookmark-btn" data-id="s-16-17" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <blockquote>
+<p><strong>EXTENSION</strong></p>
+</blockquote>
+<p>Otsu's idea can be extended to multiple classes using multiple thresholds.</p>
+<p>For:</p>
+<p>
+$$
+T_1<T_2
+$$
+</p>
+<p>we can create:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>class 0: f &lt; T1
+class 1: T1 ≤ f &lt; T2
+class 2: f ≥ T2</code></pre>
+</div></p>
+<p>The optimization becomes more expensive as the number of thresholds grows.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.18: Adaptive Thresholding -->
+  <section id="s-16-18" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.18</span>
+      <h2>Adaptive Thresholding</h2>
+      <button class="bookmark-btn" data-id="s-16-18" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A global threshold assumes:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>one T works everywhere</code></pre>
+</div></p>
+<p>Adaptive thresholding instead computes a local threshold:</p>
+<p>
+$$
+T(x,y)
+$$
+</p>
+<p>The decision becomes:</p>
+<p>
+$$
+M(x,y)=
+\begin{cases}
+1,&f(x,y)\ge T(x,y)\\
+0,&f(x,y)<T(x,y)
+\end{cases}
+$$
+</p>
+<p>This is useful when illumination varies across the image.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.19: Local Mean Threshold -->
+  <section id="s-16-19" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.19</span>
+      <h2>Local Mean Threshold</h2>
+      <button class="bookmark-btn" data-id="s-16-19" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A simple adaptive method computes a local mean:</p>
+<p>
+$$
+\mu_L(x,y)
+$$
+</p>
+<p>and defines:</p>
+<p>
+$$
+T(x,y)=\mu_L(x,y)-C
+$$
+</p>
+<p>where $C$ is an offset.</p>
+<p>The exact sign and formula vary by implementation.</p>
+<p>The key idea is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>threshold follows local brightness</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.20: Worked Adaptive Threshold Example -->
+  <section id="s-16-20" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.20</span>
+      <h2>Worked Adaptive Threshold Example</h2>
+      <button class="bookmark-btn" data-id="s-16-20" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose a local 3×3 neighbourhood has mean:</p>
+<p>
+$$
+\mu_L=120
+$$
+</p>
+<p>and:</p>
+<p>
+$$
+C=10
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+T=120-10=110
+$$
+</p>
+<p>For a pixel with:</p>
+<p>
+$$
+f=115
+$$
+</p>
+<p>the pixel is classified as foreground under:</p>
+<p>
+$$
+f\ge T
+$$
+</p>
+<p>because:</p>
+<p>
+$$
+115\ge110
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.21: Adaptive Gaussian Threshold -->
+  <section id="s-16-21" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.21</span>
+      <h2>Adaptive Gaussian Threshold</h2>
+      <button class="bookmark-btn" data-id="s-16-21" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Instead of an equally weighted local mean, we can use a Gaussian-weighted average:</p>
+<p>
+$$
+\mu_G(x,y)
+=
+\sum_{s,t}w_G(s,t)f(x-s,y-t)
+$$
+</p>
+<p>with:</p>
+<p>
+$$
+\sum_{s,t}w_G(s,t)=1
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+T(x,y)=\mu_G(x,y)-C
+$$
+</p>
+<p>This gives nearby pixels greater influence.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.22: Global vs Adaptive Thresholding -->
+  <section id="s-16-22" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.22</span>
+      <h2>Global vs Adaptive Thresholding</h2>
+      <button class="bookmark-btn" data-id="s-16-22" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Property</th>
+<th>Global</th>
+<th>Adaptive</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>threshold</td>
+<td>one $T$</td>
+<td>$T(x,y)$</td>
+</tr>
+<tr>
+<td>assumption</td>
+<td>roughly uniform illumination</td>
+<td>local variation allowed</td>
+</tr>
+<tr>
+<td>complexity</td>
+<td>lower</td>
+<td>higher</td>
+</tr>
+<tr>
+<td>strength</td>
+<td>simple, interpretable</td>
+<td>handles uneven lighting better</td>
+</tr>
+<tr>
+<td>risk</td>
+<td>failure under illumination gradients</td>
+<td>parameter sensitivity/noise amplification</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.23: Adaptive Threshold Failure -->
+  <section id="s-16-23" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.23</span>
+      <h2>Adaptive Threshold Failure</h2>
+      <button class="bookmark-btn" data-id="s-16-23" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Adaptive thresholding is not automatically superior.</p>
+<p>It can produce:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>local false positives
+fragmented objects
+noise-driven regions
+halo-like boundaries</code></pre>
+</div></p>
+<p>when the window is:</p>
+<ul>
+<li>too small,</li>
+<li>too large,</li>
+<li>too sensitive.</li>
+</ul>
+<p>Parameter selection remains important.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.24: Window Size Matters -->
+  <section id="s-16-24" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.24</span>
+      <h2>Window Size Matters</h2>
+      <button class="bookmark-btn" data-id="s-16-24" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A local threshold uses a neighbourhood/window.</p>
+<h3>Small window</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>high local sensitivity
++
+noise sensitivity</code></pre>
+</div></p>
+<h3>Large window</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>more stable
++
+less responsive to local illumination</code></pre>
+</div></p>
+<p>This creates a scale tradeoff.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.25: Worked Window-Size Thought Experiment -->
+  <section id="s-16-25" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.25</span>
+      <h2>Worked Window-Size Thought Experiment</h2>
+      <button class="bookmark-btn" data-id="s-16-25" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Consider a page with slowly varying illumination.</p>
+<p>A:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>3×3</code></pre>
+</div></p>
+<p>window may respond strongly to individual letters and noise.</p>
+<p>A:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>51×51</code></pre>
+</div></p>
+<p>window can estimate broader background illumination more smoothly.</p>
+<p>The appropriate size should relate to:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>object stroke scale
++
+illumination variation scale
++
+noise scale</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.26: Sauvola-Style Thresholding -->
+  <section id="s-16-26" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.26</span>
+      <h2>Sauvola-Style Thresholding</h2>
+      <button class="bookmark-btn" data-id="s-16-26" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <blockquote>
+<p><strong>EXTENSION</strong></p>
+</blockquote>
+<p>Document binarization often uses local mean and local standard deviation.</p>
+<p>A representative formula is:</p>
+<p>
+$$
+T(x,y)
+=
+m(x,y)
+\left[
+1+k
+\left(
+\frac{s(x,y)}{R}-1
+\right)
+\right]
+$$
+</p>
+<p>where:</p>
+<ul>
+<li>$m$ = local mean,</li>
+<li>$s$ = local standard deviation,</li>
+<li>$R$ = dynamic-range/reference constant,</li>
+<li>$k$ = parameter.</li>
+</ul>
+<p>This is a more statistics-aware local threshold.</p>
+<p>It is especially useful for difficult document backgrounds.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.27: Why Variance Helps -->
+  <section id="s-16-27" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.27</span>
+      <h2>Why Variance Helps</h2>
+      <button class="bookmark-btn" data-id="s-16-27" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A region with:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>low mean
++
+low variance</code></pre>
+</div></p>
+<p>may represent a blank background.</p>
+<p>A region with:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>similar mean
++
+high local variance</code></pre>
+</div></p>
+<p>may contain text or texture.</p>
+<p>Thus local variance can provide information that the mean alone misses.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.28: Thresholding and Colour -->
+  <section id="s-16-28" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.28</span>
+      <h2>Thresholding and Colour</h2>
+      <button class="bookmark-btn" data-id="s-16-28" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Thresholding is not restricted to grayscale.</p>
+<p>You can threshold:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>R
+G
+B
+H
+S
+V
+luma
+colour distance</code></pre>
+</div></p>
+<p>The representation matters.</p>
+<p>For coloured objects, a threshold in HSV may be much easier to tune than one on a grayscale image.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.29: Example — Hue Range Threshold -->
+  <section id="s-16-29" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.29</span>
+      <h2>Example — Hue Range Threshold</h2>
+      <button class="bookmark-btn" data-id="s-16-29" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose a target object has hue around:</p>
+<p>
+$$
+H\in[350^\circ,10^\circ]
+$$
+</p>
+<p>because hue wraps around.</p>
+<p>A correct red mask needs two intervals:</p>
+<p>
+$$
+H\ge350^\circ
+$$
+</p>
+<p>or:</p>
+<p>
+$$
+H\le10^\circ
+$$
+</p>
+<p>This is a classic thresholding edge case.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.30: Thresholding and Noise -->
+  <section id="s-16-30" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.30</span>
+      <h2>Thresholding and Noise</h2>
+      <button class="bookmark-btn" data-id="s-16-30" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Noise near the threshold can flip labels:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>value just below T
+→ background
+
+value just above T
+→ foreground</code></pre>
+</div></p>
+<p>A small perturbation can therefore change a pixel's class.</p>
+<p>This is why:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>denoise
++
+threshold</code></pre>
+</div></p>
+<p>can often outperform:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>threshold</code></pre>
+</div></p>
+<p>alone.</p>
+<p>But denoising should preserve relevant boundaries.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.31: Hysteresis Thresholding -->
+  <section id="s-16-31" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.31</span>
+      <h2>Hysteresis Thresholding</h2>
+      <button class="bookmark-btn" data-id="s-16-31" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Canny uses two thresholds:</p>
+<p>
+$$
+T_L<T_H
+$$
+</p>
+<p>Pixels are categorized as:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>strong
+weak
+non-edge</code></pre>
+</div></p>
+<p>and weak pixels connected to strong ones can be retained.</p>
+<p>Although designed for edge detection, this provides a useful general lesson:</p>
+<blockquote>
+<p>Multiple thresholds plus connectivity can be more robust than one independent cutoff.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.32: Double Thresholding Beyond Canny -->
+  <section id="s-16-32" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.32</span>
+      <h2>Double Thresholding Beyond Canny</h2>
+      <button class="bookmark-btn" data-id="s-16-32" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <blockquote>
+<p><strong>EXTENSION</strong></p>
+</blockquote>
+<p>The same conceptual pattern can be used for segmentation where:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>high-confidence foreground
++
+possible foreground</code></pre>
+</div></p>
+<p>are differentiated.</p>
+<p>Connectivity then determines whether uncertain pixels belong to a confident region.</p>
+<p>This idea is useful in interactive and seeded segmentation methods.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.33: Multi-Level Thresholding -->
+  <section id="s-16-33" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.33</span>
+      <h2>Multi-Level Thresholding</h2>
+      <button class="bookmark-btn" data-id="s-16-33" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For:</p>
+<p>
+$$
+T_1<T_2
+$$
+</p>
+<p>define:</p>
+<p>
+$$
+M(x,y)=
+\begin{cases}
+0,&f<T_1\\
+1,&T_1\le f<T_2\\
+2,&f\ge T_2
+\end{cases}
+$$
+</p>
+<p>This partitions an image into three intensity classes.</p>
+<p>Applications include:</p>
+<ul>
+<li>multi-material images,</li>
+<li>grayscale scientific data,</li>
+<li>document/foreground/background separation.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.34: Thresholding with Class Imbalance -->
+  <section id="s-16-34" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.34</span>
+      <h2>Thresholding with Class Imbalance</h2>
+      <button class="bookmark-btn" data-id="s-16-34" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>background = 95%
+foreground = 5%</code></pre>
+</div></p>
+<p>A method optimized for total pixel agreement may prefer labeling everything background.</p>
+<p>Therefore:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>high pixel accuracy</code></pre>
+</div></p>
+<p>does not necessarily mean:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>good object segmentation</code></pre>
+</div></p>
+<p>Use IoU, Dice, precision/recall or task-specific measures when the foreground is small.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.35: Threshold Selection as an Optimization Problem -->
+  <section id="s-16-35" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.35</span>
+      <h2>Threshold Selection as an Optimization Problem</h2>
+      <button class="bookmark-btn" data-id="s-16-35" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A general thresholding formulation is:</p>
+<p>
+$$
+T^*=
+\arg\max_T
+J(T)
+$$
+</p>
+<p>where:</p>
+<p>
+$$
+J(T)
+$$
+</p>
+<p>is a separation criterion.</p>
+<p>Examples:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>between-class variance
+entropy-based score
+classification accuracy
+IoU on validation data</code></pre>
+</div></p>
+<p>This is a powerful abstraction.</p>
+<p>It turns thresholding from:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>pick a number</code></pre>
+</div></p>
+<p>into:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>optimize a criterion</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.36: Entropy-Based Thresholding -->
+  <section id="s-16-36" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.36</span>
+      <h2>Entropy-Based Thresholding</h2>
+      <button class="bookmark-btn" data-id="s-16-36" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <blockquote>
+<p><strong>EXTENSION</strong></p>
+</blockquote>
+<p>Some methods choose thresholds using information/entropy criteria.</p>
+<p>A simplified idea is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>choose threshold
+→ maximize useful information separation</code></pre>
+</div></p>
+<p>The exact formulas vary by method.</p>
+<p>The important conceptual extension is that threshold selection does not have to rely solely on mean/variance separation.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.37: Thresholding and Morphology -->
+  <section id="s-16-37" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.37</span>
+      <h2>Thresholding and Morphology</h2>
+      <button class="bookmark-btn" data-id="s-16-37" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>After thresholding:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>mask</code></pre>
+</div></p>
+<p>may contain defects:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>holes
+specks
+broken strokes
+small islands</code></pre>
+</div></p>
+<p>Morphology can be applied:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>threshold
+ ↓
+opening/closing
+ ↓
+clean mask</code></pre>
+</div></p>
+<p>This relationship is central to C18.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.38: Example — Document Binarization -->
+  <section id="s-16-38" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.38</span>
+      <h2>Example — Document Binarization</h2>
+      <button class="bookmark-btn" data-id="s-16-38" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Typical pipeline:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>document image
+ ↓
+grayscale
+ ↓
+optional denoise
+ ↓
+adaptive threshold
+ ↓
+morphological cleanup
+ ↓
+connected components
+ ↓
+OCR</code></pre>
+</div></p>
+<p>Potential failure causes:</p>
+<ul>
+<li>shadows,</li>
+<li>page texture,</li>
+<li>bleed-through,</li>
+<li>small font,</li>
+<li>uneven illumination.</li>
+</ul>
+<p>The threshold method should match the document conditions.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.39: Example — Industrial Object Segmentation -->
+  <section id="s-16-39" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.39</span>
+      <h2>Example — Industrial Object Segmentation</h2>
+      <button class="bookmark-btn" data-id="s-16-39" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose a dark component sits on a bright conveyor.</p>
+<p>A global threshold may work extremely well if:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>lighting is controlled
+background is stable
+object intensity is distinct</code></pre>
+</div></p>
+<p>This is why simple algorithms remain valuable in industrial environments.</p>
+<p>A more complex learned model is not automatically better if the simple rule is reliable and easier to validate.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.40: Example — Unevenly Lit Surface -->
+  <section id="s-16-40" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.40</span>
+      <h2>Example — Unevenly Lit Surface</h2>
+      <button class="bookmark-btn" data-id="s-16-40" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>left background = 50
+right background = 120</code></pre>
+</div></p>
+<p>with the object only slightly darker than its local background.</p>
+<p>A global threshold may fail because one threshold cannot follow both background levels.</p>
+<p>Adaptive thresholding can model:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>local background</code></pre>
+</div></p>
+<p>and therefore become more effective.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.41: Thresholding and Illumination Correction -->
+  <section id="s-16-41" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.41</span>
+      <h2>Thresholding and Illumination Correction</h2>
+      <button class="bookmark-btn" data-id="s-16-41" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>An alternative to adaptive thresholding is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>estimate illumination
+       ↓
+correct image
+       ↓
+global threshold</code></pre>
+</div></p>
+<p>For example:</p>
+<p>
+$$
+f_{\text{corrected}}
+=
+\frac{f}{i}
+$$
+</p>
+<p>under a suitable multiplicative illumination model and with safe handling of zero/near-zero values.</p>
+<p>Thus adaptive thresholding is not the only solution to uneven illumination.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.42: Threshold Parameter Sensitivity -->
+  <section id="s-16-42" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.42</span>
+      <h2>Threshold Parameter Sensitivity</h2>
+      <button class="bookmark-btn" data-id="s-16-42" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A useful experiment is to sweep:</p>
+<p>
+$$
+T-10,\quad T-5,\quad T,\quad T+5,\quad T+10
+$$
+</p>
+<p>and compare masks.</p>
+<p>If a tiny threshold change produces huge object changes:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>class distributions overlap strongly</code></pre>
+</div></p>
+<p>or the image is near a critical decision boundary.</p>
+<p>This sensitivity is itself diagnostic information.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.43: Stability Analysis -->
+  <section id="s-16-43" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.43</span>
+      <h2>Stability Analysis</h2>
+      <button class="bookmark-btn" data-id="s-16-43" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For adaptive thresholding, similarly vary:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>window size
+C
+Gaussian sigma</code></pre>
+</div></p>
+<p>A robust method should not collapse under tiny parameter changes unless the task itself is highly sensitive.</p>
+<p>This is a practical engineering test.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.44: Thresholding Pipeline -->
+  <section id="s-16-44" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.44</span>
+      <h2>Thresholding Pipeline</h2>
+      <button class="bookmark-btn" data-id="s-16-44" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A disciplined workflow:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>INPUT
+ ↓
+inspect histogram / image
+ ↓
+choose representation
+ ↓
+choose global or adaptive method
+ ↓
+choose polarity
+ ↓
+choose threshold parameters
+ ↓
+generate mask
+ ↓
+optional morphology
+ ↓
+connected components
+ ↓
+evaluate</code></pre>
+</div></p>
+<p>This makes thresholding reproducible.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.45: Implementation Pseudocode -->
+  <section id="s-16-45" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.45</span>
+      <h2>Implementation Pseudocode</h2>
+      <button class="bookmark-btn" data-id="s-16-45" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Global</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>for each pixel:
+    if value &gt;= T:
+        mask = 1
+    else:
+        mask = 0</code></pre>
+</div></p>
+<h3>Adaptive</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>for each pixel:
+    compute local statistic
+    compute T(x,y)
+    compare pixel against local threshold</code></pre>
+</div></p>
+<h3>Otsu-style</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>compute histogram
+for each candidate threshold:
+    compute class statistics
+    compute objective
+choose threshold with best objective</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.46: Common Traps -->
+  <section id="s-16-46" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.46</span>
+      <h2>Common Traps</h2>
+      <button class="bookmark-btn" data-id="s-16-46" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h2>Trap 1 — “Otsu is always optimal.”</h2>
+<p>False.</p>
+<p>It optimizes its statistical criterion under its assumptions, not every segmentation objective.</p>
+<h2>Trap 2 — “Adaptive thresholding always beats global thresholding.”</h2>
+<p>False.</p>
+<p>Controlled uniform illumination can favour a global rule.</p>
+<h2>Trap 3 — “A threshold changes image quality.”</h2>
+<p>Its primary goal is label separation, not image enhancement.</p>
+<h2>Trap 4 — “Histogram valley always gives the correct threshold.”</h2>
+<p>False.</p>
+<p>Histograms can be skewed, noisy and class-imbalanced.</p>
+<h2>Trap 5 — “Threshold 128 is universal for 8-bit images.”</h2>
+<p>False.</p>
+<p>The correct threshold depends on image content and representation.</p>
+<h2>Trap 6 — “More thresholds give better segmentation.”</h2>
+<p>Not necessarily.</p>
+<p>Too many classes can produce over-segmentation.</p>
+<h2>Trap 7 — “Thresholding is only for grayscale.”</h2>
+<p>False.</p>
+<p>Colour and feature-space thresholding are common.</p>
+<h2>Trap 8 — “Changing the threshold fixes feature overlap.”</h2>
+<p>False.</p>
+<p>If the chosen feature distributions overlap substantially, no single threshold can produce perfect separation.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.47: Exam Formula Sheet -->
+  <section id="s-16-47" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.47</span>
+      <h2>Exam Formula Sheet</h2>
+      <button class="bookmark-btn" data-id="s-16-47" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Global threshold</h3>
+<p>
+$$
+\boxed{
+M(x,y)=
+\begin{cases}
+1,&f(x,y)\ge T\\
+0,&f(x,y)<T
+\end{cases}
+}
+$$
+</p>
+<h3>Range threshold</h3>
+<p>
+$$
+\boxed{
+M=
+1
+\quad\text{if}\quad
+T_{\min}\le f<T_{\max}
+}
+$$
+</p>
+<h3>Otsu between-class variance</h3>
+<p>
+$$
+\boxed{
+\sigma_B^2(t)
+=
+w_0(t)w_1(t)
+[\mu_0(t)-\mu_1(t)]^2
+}
+$$
+</p>
+<h3>Otsu threshold</h3>
+<p>
+$$
+\boxed{
+t^*=\arg\max_t\sigma_B^2(t)
+}
+$$
+</p>
+<h3>Adaptive threshold</h3>
+<p>
+$$
+\boxed{
+M(x,y)=
+\begin{cases}
+1,&f(x,y)\ge T(x,y)\\
+0,&f(x,y)<T(x,y)
+\end{cases}
+}
+$$
+</p>
+<h3>Local-mean form</h3>
+<p>
+$$
+\boxed{
+T(x,y)=\mu_L(x,y)-C
+}
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.48: Exam-Style Problem — Otsu Class Statistics -->
+  <section id="s-16-48" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.48</span>
+      <h2>Exam-Style Problem — Otsu Class Statistics</h2>
+      <button class="bookmark-btn" data-id="s-16-48" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose a threshold divides the image into:</p>
+<p>
+$$
+w_0=0.4,\qquad w_1=0.6
+$$
+</p>
+<p>with:</p>
+<p>
+$$
+\mu_0=40,\qquad\mu_1=160
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+\sigma_B^2
+=
+(0.4)(0.6)(40-160)^2
+$$
+</p>
+<p>
+$$
+=
+0.24(120^2)
+$$
+</p>
+<p>
+$$
+=
+0.24(14400)
+$$
+</p>
+<p>
+$$
+\boxed{3456}
+$$
+</p>
+<p>This is the between-class variance score for that threshold.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.49: Exam-Style Problem — Adaptive Threshold -->
+  <section id="s-16-49" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.49</span>
+      <h2>Exam-Style Problem — Adaptive Threshold</h2>
+      <button class="bookmark-btn" data-id="s-16-49" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Local mean:</p>
+<p>
+$$
+\mu_L=150
+$$
+</p>
+<p>and:</p>
+<p>
+$$
+C=20
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+T=150-20
+$$
+</p>
+<p>
+$$
+\boxed{130}
+$$
+</p>
+<p>For pixel:</p>
+<p>
+$$
+f=140
+$$
+</p>
+<p>the pixel becomes foreground under:</p>
+<p>
+$$
+f\ge T
+$$
+</p>
+<p>because:</p>
+<p>
+$$
+140\ge130
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.50: Exam-Style Problem — Multi-Level Threshold -->
+  <section id="s-16-50" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.50</span>
+      <h2>Exam-Style Problem — Multi-Level Threshold</h2>
+      <button class="bookmark-btn" data-id="s-16-50" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Let:</p>
+<p>
+$$
+T_1=50,\qquad T_2=100
+$$
+</p>
+<p>For a pixel:</p>
+<p>
+$$
+f=75
+$$
+</p>
+<p>it belongs to:</p>
+<p>
+$$
+50\le f<100
+$$
+</p>
+<p>and therefore receives the middle class label.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.51: Engineering Insight — Thresholding Is a Feature Problem -->
+  <section id="s-16-51" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.51</span>
+      <h2>Engineering Insight — Thresholding Is a Feature Problem</h2>
+      <button class="bookmark-btn" data-id="s-16-51" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose you are thresholding grayscale intensity.</p>
+<p>You have chosen:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>feature = intensity</code></pre>
+</div></p>
+<p>The threshold is only useful if intensity separates the desired classes.</p>
+<p>A better workflow can be:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>change representation
+→ choose better feature
+→ then threshold</code></pre>
+</div></p>
+<p>For example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>RGB
+→ HSV
+→ hue threshold</code></pre>
+</div></p>
+<p>can outperform:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>RGB
+→ grayscale
+→ intensity threshold</code></pre>
+</div></p>
+<p>for a colour-defined object.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.52: Cross-Book Bridges -->
+  <section id="s-16-52" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.52</span>
+      <h2>Cross-Book Bridges</h2>
+      <button class="bookmark-btn" data-id="s-16-52" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <blockquote>
+<p><strong>C06 BRIDGE</strong><br />
+Thresholding can be understood as a piecewise point transformation.</p>
+<p><strong>C07 BRIDGE</strong><br />
+Histogram shape provides evidence for whether global thresholding may work.</p>
+<p><strong>C09 BRIDGE</strong><br />
+Noise near the threshold can produce label instability; preprocessing can help.</p>
+<p><strong>C10 BRIDGE</strong><br />
+Edge information can complement threshold-based region separation.</p>
+<p><strong>C15 BRIDGE</strong><br />
+Thresholding implements the general pixel-to-label idea introduced in segmentation fundamentals.</p>
+<p><strong>C17 BRIDGE</strong><br />
+When a single threshold fails, region-based methods incorporate spatial connectivity and homogeneity.</p>
+<p><strong>C18 BRIDGE</strong><br />
+Morphological operations clean masks generated by thresholding.</p>
+<p><strong>LAB BRIDGE</strong><br />
+Compare manual, iterative, Otsu and adaptive thresholding under controlled image conditions.</p>
+<p><strong>PRACTICE BRIDGE</strong><br />
+Solve binary/range/multi-level thresholds, Otsu calculations and adaptive-threshold problems.</p>
+<p><strong>EXAM BRIDGE</strong><br />
+Know global vs adaptive thresholding, Otsu's criterion, local threshold equations, histogram-based reasoning and failure cases.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.53: Quick Recall -->
+  <section id="s-16-53" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.53</span>
+      <h2>Quick Recall</h2>
+      <button class="bookmark-btn" data-id="s-16-53" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>GLOBAL
+→ one T
+
+ADAPTIVE
+→ T(x,y)
+
+OTSU
+→ maximize between-class variance
+
+RANGE
+→ keep values inside interval
+
+MULTI-LEVEL
+→ several thresholds
+
+KEY FAILURE
+→ class distributions overlap
+or
+→ illumination varies</code></pre>
+</div></p>
+<p>Core rule:</p>
+<blockquote>
+<p><strong>Do not ask only “What is the threshold?” Ask “Why should this threshold separate the intended classes?”</strong></p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.54: Chapter Checkpoint -->
+  <section id="s-16-54" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.54</span>
+      <h2>Chapter Checkpoint</h2>
+      <button class="bookmark-btn" data-id="s-16-54" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <ol>
+<li>Define thresholding.</li>
+<li>Differentiate global and adaptive thresholding.</li>
+<li>Explain threshold polarity.</li>
+<li>Calculate a binary mask from a threshold.</li>
+<li>Explain range and multi-level thresholding.</li>
+<li>How can a histogram guide threshold selection?</li>
+<li>Why can histogram-valley thresholding fail?</li>
+<li>Explain iterative threshold selection.</li>
+<li>Derive the Otsu between-class variance.</li>
+<li>Explain Otsu's intuition.</li>
+<li>Why can Otsu fail under severe illumination variation?</li>
+<li>Write the adaptive threshold formulation.</li>
+<li>Explain how local mean thresholding works.</li>
+<li>Why does window size matter?</li>
+<li>Compare global and adaptive thresholding.</li>
+<li>Explain thresholding in a colour space.</li>
+<li>Why can preprocessing improve thresholding?</li>
+<li>What happens when class distributions overlap strongly?</li>
+<li>How can IoU/Dice evaluate a thresholded mask?</li>
+<li>Design an experiment comparing global, Otsu and adaptive thresholding.</li>
+</ol>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 16.55: Part III Progression -->
+  <section id="s-16-55" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.55</span>
+      <h2>Part III Progression</h2>
+      <button class="bookmark-btn" data-id="s-16-55" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The current knowledge chain is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>C15
+SEGMENTATION FUNDAMENTALS
+        ↓
+C16
+THRESHOLDING</code></pre>
+</div></p>
+<p>Next:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>C17
+REGION-BASED SEGMENTATION
+        ↓
+C18
+MATHEMATICAL MORPHOLOGY
+        ↓
+C19
+IMAGE FEATURES + DESCRIPTORS
+        ↓
+C20
+SIFT / SURF / ORB / HOG</code></pre>
+</div></p>
+<p>The central progression is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>pixel decision
+→
+adaptive pixel decision
+→
+connected regions
+→
+shape manipulation
+→
+measurable features
+→
+robust local descriptors</code></pre>
+</div></p>
+<p>That moves the MiniBook from basic segmentation into classical computer vision.</p>
+    </div>
+  </section>
+
+  <!-- SECTION 16.56: Worked Example — 10-Mark University Model Answer: Otsu&#x27;s Optimum Global Thresholding -->
+  <section id="s-16-56" class="section-block">
+    <div class="section-header">
+      <span class="section-num">16.56</span>
+      <h2>Worked Example — 10-Mark University Model Answer: Otsu&#x27;s Optimum Global Thresholding</h2>
+      <button class="bookmark-btn" data-id="s-16-56" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Problem Statement</h3>
+<p>An 8-gray-level digital image ($L = 8$, gray levels $i \in \{0, 1, 2, 3, 4, 5, 6, 7\}$) of size $1000$ pixels has the following intensity histogram:</p>
+<div class="table-wrap">
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th>Gray Level $i$</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Count $n_i$</strong></td><td>100</td><td>200</td><td>300</td><td>150</td><td>50</td><td>100</td><td>50</td><td>50</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<ol>
+<li>State the objective function of Otsu's thresholding method.</li>
+<li>Calculate the global mean level $\mu_G$ of the image.</li>
+<li>Compute the cumulative probabilities $\omega_1(k)$, cumulative means $\mu(k)$, and the between-class variance $\sigma_B^2(k)$ for candidate thresholds $k \in \{1, 2, 3, 4\}$.</li>
+<li>Identify the optimum threshold $k^*$ that maximizes the between-class variance.</li>
+</ol>
+<h3>Step-by-Step Mathematical Solution</h3>
+<div class="worked-example">
+  <div class="worked-example-header">
+    <span class="worked-example-title">Numerical Examination Trace</span>
+    <span class="tag-badge tag-exam">10-MARK UNIVERSITY MODEL ANSWER</span>
+  </div>
+  <p><strong>1. Otsu's Objective Function:</strong><br>
+  Otsu's algorithm finds the threshold $k^*$ that maximizes the between-class variance $\sigma_B^2(k)$:
+  
+$$\sigma_B^2(k) = \frac{[\mu_G \omega_1(k) - \mu(k)]^2}{\omega_1(k)(1 - \omega_1(k))}$$
+
+  where $\omega_1(k) = \sum_{i=0}^k p_i$ is the background class probability, $\mu(k) = \sum_{i=0}^k i p_i$ is the cumulative mean, and $\mu_G = \sum_{i=0}^{L-1} i p_i$ is the global mean.</p>
+
+  <p><strong>2. Global Mean $\mu_G$ Calculation:</strong><br>
+  Total pixels $N = 1000$. Normalized histogram probabilities $p_i = n_i / 1000$:<br>
+  $p_0 = 0.10, \ p_1 = 0.20, \ p_2 = 0.30, \ p_3 = 0.15, \ p_4 = 0.05, \ p_5 = 0.10, \ p_6 = 0.05, \ p_7 = 0.05$.<br>
+  
+$$\mu_G = \sum_{i=0}^7 i p_i = 0(0.10) + 1(0.20) + 2(0.30) + 3(0.15) + 4(0.05) + 5(0.10) + 6(0.05) + 7(0.05)$$
+
+  
+$$\mu_G = 0.00 + 0.20 + 0.60 + 0.45 + 0.20 + 0.50 + 0.30 + 0.35 = \mathbf{2.60}$$
+</p>
+
+  <p><strong>3. Step-by-Step Evaluation for Candidate Thresholds:</strong></p>
+  <div class="table-wrap">
+    <table class="comparison-table">
+      <thead>
+        <tr>
+          <th>Threshold $k$</th>
+          <th>$\omega_1(k) = \sum_{i=0}^k p_i$</th>
+          <th>$1 - \omega_1(k)$</th>
+          <th>$\mu(k) = \sum_{i=0}^k i p_i$</th>
+          <th>$\mu_G \omega_1(k) - \mu(k)$</th>
+          <th>Numerator $[\dots]^2$</th>
+          <th>Denominator $\omega_1(1-\omega_1)$</th>
+          <th>$\sigma_B^2(k)$</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>$k = 1$</strong></td>
+          <td>$0.10 + 0.20 = 0.30$</td>
+          <td>$0.70$</td>
+          <td>$0(0.10) + 1(0.20) = 0.20$</td>
+          <td>$2.60(0.30) - 0.20 = 0.58$</td>
+          <td>$0.58^2 = 0.3364$</td>
+          <td>$0.30 \times 0.70 = 0.2100$</td>
+          <td><strong>1.6019</strong></td>
+        </tr>
+        <tr>
+          <td><strong>$k = 2$</strong></td>
+          <td>$0.30 + 0.30 = 0.60$</td>
+          <td>$0.40$</td>
+          <td>$0.20 + 2(0.30) = 0.80$</td>
+          <td>$2.60(0.60) - 0.80 = 0.76$</td>
+          <td>$0.76^2 = 0.5776$</td>
+          <td>$0.60 \times 0.40 = 0.2400$</td>
+          <td><strong>2.4067</strong></td>
+        </tr>
+        <tr>
+          <td><strong>$k = 3$</strong></td>
+          <td>$0.60 + 0.15 = 0.75$</td>
+          <td>$0.25$</td>
+          <td>$0.80 + 3(0.15) = 1.25$</td>
+          <td>$2.60(0.75) - 1.25 = 0.70$</td>
+          <td>$0.70^2 = 0.4900$</td>
+          <td>$0.75 \times 0.25 = 0.1875$</td>
+          <td><strong>2.6133</strong></td>
+        </tr>
+        <tr>
+          <td><strong>$k = 4$</strong></td>
+          <td>$0.75 + 0.05 = 0.80$</td>
+          <td>$0.20$</td>
+          <td>$1.25 + 4(0.05) = 1.45$</td>
+          <td>$2.60(0.80) - 1.45 = 0.63$</td>
+          <td>$0.63^2 = 0.3969$</td>
+          <td>$0.80 \times 0.20 = 0.1600$</td>
+          <td><strong>2.4806</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p><strong>4. Optimum Threshold Determination:</strong><br>
+  Comparing the calculated between-class variances:<br>
+  - $\sigma_B^2(1) = 1.6019$<br>
+  - $\sigma_B^2(2) = 2.4067$<br>
+  - $\sigma_B^2(3) = \mathbf{2.6133}$ (Maximum Peak)<br>
+  - $\sigma_B^2(4) = 2.4806$<br>
+  
+$$\therefore \text{Optimum Otsu Threshold } k^* = 3$$
+
+  Pixels with intensities $0, 1, 2, 3$ are assigned to the background class ($C_1$), and pixels with intensities $4, 5, 6, 7$ are assigned to the foreground class ($C_2$).</p>
+</div>
+    </div>
+  </section>
+
+      <!-- Chapter End Package -->
+      <section class="chapter-end-package">
+        <div class="chapter-nav-grid">
+          <a href="ch15-segmentation-fundamentals.html" class="chapter-nav-card">
+            <div class="chapter-nav-dir">← Previous</div>
+            <div class="chapter-nav-title">← Ch 15 — Segmentation Fundamentals</div>
+          </a>
+          <a href="ch17-region-segmentation.html" class="chapter-nav-card next">
+            <div class="chapter-nav-dir">Next →</div>
+            <div class="chapter-nav-title">Next: Ch 17 — Region-Based Segmentation →</div>
+          </a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- FLOATING TTS PANEL (SAFE MANUAL MODE ONLY) -->
+  <div id="tts-panel" style="position:fixed; bottom:20px; right:20px; background:var(--em-surface-1); border:1px solid var(--em-border); border-radius:var(--em-radius-md); padding:12px 16px; box-shadow:var(--sh-lg); z-index:var(--z-float); display:none; gap:10px; align-items:center;">
+    <button class="icon-btn" id="tts-play" title="Play / Pause" style="background:var(--em-accent); color:#fff; border-radius:50%; width:36px; height:36px;">▶</button>
+    <button class="icon-btn" id="tts-stop" title="Stop">⏹</button>
+    <div style="font-size:0.75rem; color:var(--em-text-muted);">
+      <span id="tts-status">Ready</span> · <span id="tts-rate-label">1.0x</span>
+    </div>
+  </div>
+
+  <script src="../assets/js/state.js"></script>
+  <script src="../assets/js/core.js"></script>
+  <script src="../assets/js/tts.js"></script>
+  <script src="../assets/js/glossary.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: document.documentElement.getAttribute('data-theme') === 'light' ? 'default' : 'dark'
+      });
+    });
+  </script>
+</body>
+</html>

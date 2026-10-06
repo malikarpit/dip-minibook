@@ -1,0 +1,2541 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Arpit">
+  <meta name="description" content="Chapter 28: Object Detection &amp; YOLO — Digital Image Processing MiniBook. Classification vs Localization vs Detection, Bounding Box Coordinates $[x,y,w,h]$, Intersection over Union (IoU), Non-Maximum Suppression (NMS), YOLO $S \times S$ Unified Grid Regression, and Multi-Task Loss">
+  <title>C28: Object Detection &amp; YOLO | DIP MiniBook 📷 Arpit</title>
+
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <link rel="stylesheet" href="../assets/css/chapters.css">
+  <link rel="stylesheet" href="../assets/css/animations.css">
+  <link rel="stylesheet" href="../assets/css/timer.css">
+
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body data-chapter-id="ch28-object-detection-yolo">
+  <div id="progress-bar"></div>
+
+  <!-- Header -->
+  <header id="main-header">
+    <div class="header-left">
+      <button id="sidebar-toggle" class="icon-btn" aria-label="Toggle navigation drawer" title="Toggle Sidebar (S)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <a href="../index.html" class="brand-logo">
+        <div class="brand-icon">DIP</div>
+        <div class="brand-text">
+          <span class="main">Digital Image Processing</span>
+          <span class="sub">DU DSE-3 Engineering MiniBook</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="header-chapter-title">C28: Object Detection &amp; YOLO</div>
+
+    <div class="header-right">
+      <button id="reading-mode-btn" class="icon-btn" aria-label="Toggle reading focus mode" title="Focus Mode (F)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+          <line x1="8" y1="21" x2="16" y2="21"></line>
+          <line x1="12" y1="17" x2="12" y2="21"></line>
+        </svg>
+      </button>
+      <button id="tts-toggle" class="icon-btn" aria-label="Audio Reader" title="Audio Reader">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+        </svg>
+      </button>
+      <button id="theme-toggle" class="icon-btn" aria-label="Cycle theme" title="Theme (T)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="12" cy="12" r="4.5"></circle>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Sidebar Overlay -->
+  <div id="sidebar-overlay"></div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" aria-expanded="true">
+    <div class="sidebar-nav">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">General</div>
+        <a href="../index.html" class="sidebar-link">
+          <span class="link-icon">🏛️</span>
+          <span>Subject Portal</span>
+        </a>
+        <a href="../progress.html" class="sidebar-link">
+          <span class="link-icon">📊</span>
+          <span>Study Dashboard</span>
+        </a>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Current Chapter Sections</div>
+        <a href="#s-28-1" class="sidebar-link"><span class="link-icon">📌</span><span>28.1 Why This Chapter Exists</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-28-2" class="sidebar-link"><span class="link-icon">📌</span><span>28.2 Learning Contract</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-28-3" class="sidebar-link"><span class="link-icon">📌</span><span>28.3 Classification vs Detection</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-28-4" class="sidebar-link"><span class="link-icon">📌</span><span>28.4 Detection Output</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-28-5" class="sidebar-link"><span class="link-icon">📌</span><span>28.5 Bounding Box</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-28-6" class="sidebar-link"><span class="link-icon">📌</span><span>28.6 Worked Bounding-Box Example</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-28-7" class="sidebar-link"><span class="link-icon">📌</span><span>28.7 Alternative Box Representations</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-28-8" class="sidebar-link"><span class="link-icon">📌</span><span>28.8 Confidence Score</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-28-9" class="sidebar-link"><span class="link-icon">📌</span><span>28.9 Detection Threshold</span> </a>
+      <a href="#s-28-10" class="sidebar-link"><span class="link-icon">📌</span><span>28.10 Ground Truth vs Prediction</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-28-11" class="sidebar-link"><span class="link-icon">📌</span><span>28.11 Intersection over Union (IoU)</span> </a>
+      <a href="#s-28-12" class="sidebar-link"><span class="link-icon">📌</span><span>28.12 Worked IoU Example</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-28-13" class="sidebar-link"><span class="link-icon">📌</span><span>28.13 IoU with Coordinates</span> </a>
+      <a href="#s-28-14" class="sidebar-link"><span class="link-icon">📌</span><span>28.14 Non-Maximum Suppression</span> </a>
+      <a href="#s-28-15" class="sidebar-link"><span class="link-icon">📌</span><span>28.15 Simple NMS Example</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-28-16" class="sidebar-link"><span class="link-icon">📌</span><span>28.16 Why NMS Is Needed</span> </a>
+      <a href="#s-28-17" class="sidebar-link"><span class="link-icon">📌</span><span>28.17 One-Stage vs Two-Stage Detection</span> </a>
+      <a href="#s-28-18" class="sidebar-link"><span class="link-icon">📌</span><span>28.18 YOLO — The Core Idea</span> </a>
+      <a href="#s-28-19" class="sidebar-link"><span class="link-icon">📌</span><span>28.19 Why YOLO Is Associated with Real-Time Detection</span> </a>
+      <a href="#s-28-20" class="sidebar-link"><span class="link-icon">📌</span><span>28.20 YOLO Is a Family</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-28-21" class="sidebar-link"><span class="link-icon">📌</span><span>28.21 YOLO Detection Pipeline</span> </a>
+      <a href="#s-28-22" class="sidebar-link"><span class="link-icon">📌</span><span>28.22 Detection Anatomy</span> </a>
+      <a href="#s-28-23" class="sidebar-link"><span class="link-icon">📌</span><span>28.23 Class Score and Box Quality Are Different</span> </a>
+      <a href="#s-28-24" class="sidebar-link"><span class="link-icon">📌</span><span>28.24 Detection Evaluation</span> </a>
+      <a href="#s-28-25" class="sidebar-link"><span class="link-icon">📌</span><span>28.25 Precision and Recall for Detection</span> </a>
+      <a href="#s-28-26" class="sidebar-link"><span class="link-icon">📌</span><span>28.26 Mean Average Precision — Conceptual Introduction</span> </a>
+      <a href="#s-28-27" class="sidebar-link"><span class="link-icon">📌</span><span>28.27 Practical YOLO Example</span> </a>
+      <a href="#s-28-28" class="sidebar-link"><span class="link-icon">📌</span><span>28.28 Image-Level vs Object-Level Output</span> </a>
+      <a href="#s-28-29" class="sidebar-link"><span class="link-icon">📌</span><span>28.29 Video Detection</span> </a>
+      <a href="#s-28-30" class="sidebar-link"><span class="link-icon">📌</span><span>28.30 Detection vs Tracking</span> </a>
+      <a href="#s-28-31" class="sidebar-link"><span class="link-icon">📌</span><span>28.31 Practical 9 — Syllabus Alignment</span> </a>
+      <a href="#s-28-32" class="sidebar-link"><span class="link-icon">📌</span><span>28.32 Why a Pretrained Model Is Appropriate</span> </a>
+      <a href="#s-28-33" class="sidebar-link"><span class="link-icon">📌</span><span>28.33 Implementation Architecture</span> </a>
+      <a href="#s-28-34" class="sidebar-link"><span class="link-icon">📌</span><span>28.34 Python/OpenCV-Style Webcam Pipeline</span> </a>
+      <a href="#s-28-35" class="sidebar-link"><span class="link-icon">📌</span><span>28.35 Why Model Version Must Be Recorded</span> </a>
+      <a href="#s-28-36" class="sidebar-link"><span class="link-icon">📌</span><span>28.36 Preprocessing and Input Resolution</span> </a>
+      <a href="#s-28-37" class="sidebar-link"><span class="link-icon">📌</span><span>28.37 Letterboxing</span> </a>
+      <a href="#s-28-38" class="sidebar-link"><span class="link-icon">📌</span><span>28.38 Common Detection Errors</span> </a>
+      <a href="#s-28-39" class="sidebar-link"><span class="link-icon">📌</span><span>28.39 Confidence Threshold Trade-off</span> </a>
+      <a href="#s-28-40" class="sidebar-link"><span class="link-icon">📌</span><span>28.40 Small Object Problem</span> </a>
+      <a href="#s-28-41" class="sidebar-link"><span class="link-icon">📌</span><span>28.41 Occlusion</span> </a>
+      <a href="#s-28-42" class="sidebar-link"><span class="link-icon">📌</span><span>28.42 Real-Time Performance</span> </a>
+      <a href="#s-28-43" class="sidebar-link"><span class="link-icon">📌</span><span>28.43 Latency vs Throughput</span> </a>
+      <a href="#s-28-44" class="sidebar-link"><span class="link-icon">📌</span><span>28.44 Detection Pipeline Bottlenecks</span> </a>
+      <a href="#s-28-45" class="sidebar-link"><span class="link-icon">📌</span><span>28.45 Model Size Trade-off</span> </a>
+      <a href="#s-28-46" class="sidebar-link"><span class="link-icon">📌</span><span>28.46 Classification Backbone vs Detector</span> </a>
+      <a href="#s-28-47" class="sidebar-link"><span class="link-icon">📌</span><span>28.47 Exam Lens</span> </a>
+      <a href="#s-28-48" class="sidebar-link"><span class="link-icon">📌</span><span>28.48 Numerical Practice — IoU</span> </a>
+      <a href="#s-28-49" class="sidebar-link"><span class="link-icon">📌</span><span>28.49 Numerical Practice — FPS</span> </a>
+      <a href="#s-28-50" class="sidebar-link"><span class="link-icon">📌</span><span>28.50 Chapter Checkpoint</span> </a>
+      <a href="#s-28-51" class="sidebar-link"><span class="link-icon">📌</span><span>28.51 One-Page Recall Sheet</span> </a>
+      <a href="#s-28-52" class="sidebar-link"><span class="link-icon">📌</span><span>28.52 Cross-Book Links</span> </a>
+      <a href="#s-28-53" class="sidebar-link"><span class="link-icon">📌</span><span>28.53 Final Chapter Summary</span> </a>
+      <a href="#s-28-54" class="sidebar-link"><span class="link-icon">📌</span><span>28.54 Worked Example — 10-Mark University Model Answer: Intersection over Union (IoU) &amp; Non-Maximum Suppression (NMS)</span> </a>
+      <a href="#s-28-55" class="sidebar-link"><span class="link-icon">📌</span><span>28.55 YOLO Grid-Based Unified Detection Pipeline</span> </a>
+      </div>
+
+      
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-i">Part I — The Image</div>
+      <a href="ch01-big-picture.html" class="sidebar-link"><span class="link-icon">01</span><span>The Big Picture</span></a>
+      <a href="ch02-image-formation.html" class="sidebar-link"><span class="link-icon">02</span><span>Formation & Acquisition</span></a>
+      <a href="ch03-sampling-quantization.html" class="sidebar-link"><span class="link-icon">03</span><span>Sampling & Quantization</span></a>
+      <a href="ch04-image-representation.html" class="sidebar-link"><span class="link-icon">04</span><span>Pixels, Matrices & Resolution</span></a>
+      <a href="ch05-colour-models-file-formats.html" class="sidebar-link"><span class="link-icon">05</span><span>Colour Models & Formats</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-ii">Part II — Improving the Image</div>
+      <a href="ch06-point-processing.html" class="sidebar-link"><span class="link-icon">06</span><span>Point Processing & Intensity</span></a>
+      <a href="ch07-histograms-equalization.html" class="sidebar-link"><span class="link-icon">07</span><span>Histograms & Equalization</span></a>
+      <a href="ch08-spatial-filtering.html" class="sidebar-link"><span class="link-icon">08</span><span>Spatial Filtering & Convolution</span></a>
+      <a href="ch09-smoothing-noise-reduction.html" class="sidebar-link"><span class="link-icon">09</span><span>Smoothing & Noise Reduction</span></a>
+      <a href="ch10-sharpening-edge-detection.html" class="sidebar-link"><span class="link-icon">10</span><span>Sharpening & Edge Detection</span></a>
+      <a href="ch11-geometric-transforms.html" class="sidebar-link"><span class="link-icon">11</span><span>Geometric Transforms</span></a>
+      <a href="ch12-fourier-transform.html" class="sidebar-link"><span class="link-icon">12</span><span>Fourier Transform & Frequency</span></a>
+      <a href="ch13-frequency-filtering.html" class="sidebar-link"><span class="link-icon">13</span><span>Frequency-Domain Filtering</span></a>
+      <a href="ch14-image-restoration.html" class="sidebar-link"><span class="link-icon">14</span><span>Restoration & Deblurring</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-iii">Part III — Understanding Content</div>
+      <a href="ch15-segmentation-fundamentals.html" class="sidebar-link"><span class="link-icon">15</span><span>Segmentation Fundamentals</span></a>
+      <a href="ch16-thresholding-otsu.html" class="sidebar-link"><span class="link-icon">16</span><span>Thresholding & Otsu Method</span></a>
+      <a href="ch17-region-segmentation.html" class="sidebar-link"><span class="link-icon">17</span><span>Region-Based Segmentation</span></a>
+      <a href="ch18-mathematical-morphology.html" class="sidebar-link"><span class="link-icon">18</span><span>Mathematical Morphology</span></a>
+      <a href="ch19-features-descriptors.html" class="sidebar-link"><span class="link-icon">19</span><span>Image Features & Descriptors</span></a>
+      <a href="ch20-sift-surf-orb-hog.html" class="sidebar-link"><span class="link-icon">20</span><span>SIFT, SURF, ORB & HOG</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-iv">Part IV — Compressing Images</div>
+      <a href="ch21-compression-entropy.html" class="sidebar-link"><span class="link-icon">21</span><span>Compression & Entropy</span></a>
+      <a href="ch22-lossless-coding.html" class="sidebar-link"><span class="link-icon">22</span><span>Lossless: RLE & Huffman</span></a>
+      <a href="ch23-lossy-dct-jpeg.html" class="sidebar-link"><span class="link-icon">23</span><span>Lossy: DCT & JPEG</span></a>
+      <a href="ch24-wavelets-jpeg2000.html" class="sidebar-link"><span class="link-icon">24</span><span>Wavelets & JPEG 2000</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-v">Part V — Intelligent Vision</div>
+      <a href="ch25-image-classification.html" class="sidebar-link"><span class="link-icon">25</span><span>Image Classification</span></a>
+      <a href="ch26-cnns-image-processing.html" class="sidebar-link"><span class="link-icon">26</span><span>CNNs for Image Processing</span></a>
+      <a href="ch27-modern-vision-architectures.html" class="sidebar-link"><span class="link-icon">27</span><span>Modern Vision Architectures</span></a>
+      <a href="ch28-object-detection-yolo.html" class="sidebar-link active"><span class="link-icon">28</span><span>Object Detection: YOLO</span></a>
+      <a href="ch29-image-denoising-autoencoders.html" class="sidebar-link"><span class="link-icon">29</span><span>Image Denoising Autoencoders</span></a>
+      <a href="ch30-video-motion-analysis.html" class="sidebar-link"><span class="link-icon">30</span><span>Video & Motion Analysis</span></a>
+      <a href="ch31-dip-applications-engineering.html" class="sidebar-link"><span class="link-icon">31</span><span>DIP Applications & Ethics</span></a>
+    </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-brand-mark">
+        <div class="mark">DU</div>
+        <div>
+          <strong>DSE-3 MiniBook</strong>
+          <div>University of Delhi</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mandatory Shell Wrapper -->
+  <div id="main-content">
+    <main class="chapter-content">
+      <!-- Chapter Hero -->
+      <div class="chapter-hero">
+        <div class="hero-meta">
+          <span class="part-badge part-v">Intelligent Vision</span>
+          <span class="chapter-number">CHAPTER 28</span>
+          <span class="reading-time">⏱️ ~60 min read</span>
+          <span class="tag-badge tag-core">Highest Yield (10-mark guarantee)</span>
+        </div>
+        <h1 class="chapter-title">Object Detection &amp; YOLO</h1>
+        <p class="chapter-subtitle">
+          Classification vs Localization vs Detection, Bounding Box Coordinates $[x,y,w,h]$, Intersection over Union (IoU), Non-Maximum Suppression (NMS), YOLO $S \times S$ Unified Grid Regression, and Multi-Task Loss
+        </p>
+
+        <div class="syllabus-anchor">
+          <span class="syllabus-anchor-label">DU Syllabus</span>
+          <span><strong>Object Detection:</strong> Localization vs detection, bounding box representation, Intersection over Union (IoU), Non-Maximum Suppression (NMS) algorithm, two-stage detectors (R-CNN family) vs single-stage detectors, YOLO (You Only Look Once) grid-based prediction architecture ($S \times S$ tensor), anchor boxes, multi-part loss function, and mean Average Precision (mAP).</span>
+        </div>
+      </div>
+
+      <!-- In-Page TOC -->
+      <div class="chapter-checklist-card" style="margin-bottom:var(--em-space-8);">
+        <div class="checklist-title">
+          <span>Table of Contents &amp; Visual Section Map</span>
+          <span class="tag-badge tag-math">55 Deep Sections</span>
+        </div>
+        <ul class="part-chapters-list">
+          <li class="part-chapter-item"><a href="#s-28-1"><strong>28.1</strong> Why This Chapter Exists</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-28-2"><strong>28.2</strong> Learning Contract</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-28-3"><strong>28.3</strong> Classification vs Detection</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-28-4"><strong>28.4</strong> Detection Output</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-28-5"><strong>28.5</strong> Bounding Box</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-28-6"><strong>28.6</strong> Worked Bounding-Box Example</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-28-7"><strong>28.7</strong> Alternative Box Representations</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-28-8"><strong>28.8</strong> Confidence Score</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-28-9"><strong>28.9</strong> Detection Threshold</a> </li>
+      <li class="part-chapter-item"><a href="#s-28-10"><strong>28.10</strong> Ground Truth vs Prediction</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-28-11"><strong>28.11</strong> Intersection over Union (IoU)</a> </li>
+      <li class="part-chapter-item"><a href="#s-28-12"><strong>28.12</strong> Worked IoU Example</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-28-13"><strong>28.13</strong> IoU with Coordinates</a> </li>
+      <li class="part-chapter-item"><a href="#s-28-14"><strong>28.14</strong> Non-Maximum Suppression</a> </li>
+      <li class="part-chapter-item"><a href="#s-28-15"><strong>28.15</strong> Simple NMS Example</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-28-16"><strong>28.16</strong> Why NMS Is Needed</a> </li>
+      <li class="part-chapter-item"><a href="#s-28-17"><strong>28.17</strong> One-Stage vs Two-Stage Detection</a> </li>
+      <li class="part-chapter-item"><a href="#s-28-18"><strong>28.18</strong> YOLO — The Core Idea</a> </li>
+      <li class="part-chapter-item"><a href="#s-28-19"><strong>28.19</strong> Why YOLO Is Associated with Real-Time Detection</a> </li>
+      <li class="part-chapter-item"><a href="#s-28-20"><strong>28.20</strong> YOLO Is a Family</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-28-21"><strong>28.21</strong> YOLO Detection Pipeline</a> </li>
+      <li class="part-chapter-item"><a href="#s-28-22"><strong>28.22</strong> Detection Anatomy</a> </li>
+      <li class="part-chapter-item"><a href="#s-28-23"><strong>28.23</strong> Class Score and Box Quality Are Different</a> </li>
+      <li class="part-chapter-item"><a href="#s-28-24"><strong>28.24</strong> Detection Evaluation</a> </li>
+      <li class="part-chapter-item"><a href="#s-28-25"><strong>28.25</strong> Precision and Recall for Detection</a> </li>
+      <li class="part-chapter-item"><a href="#s-28-26"><strong>28.26</strong> Mean Average Precision — Conceptual Introduction</a> </li>
+      <li class="part-chapter-item"><a href="#s-28-27"><strong>28.27</strong> Practical YOLO Example</a> </li>
+      <li class="part-chapter-item"><a href="#s-28-28"><strong>28.28</strong> Image-Level vs Object-Level Output</a> </li>
+      <li class="part-chapter-item"><a href="#s-28-29"><strong>28.29</strong> Video Detection</a> </li>
+      <li class="part-chapter-item"><a href="#s-28-30"><strong>28.30</strong> Detection vs Tracking</a> </li>
+      <li class="part-chapter-item"><a href="#s-28-31"><strong>28.31</strong> Practical 9 — Syllabus Alignment</a> </li>
+      <li class="part-chapter-item"><a href="#s-28-32"><strong>28.32</strong> Why a Pretrained Model Is Appropriate</a> </li>
+      <li class="part-chapter-item"><a href="#s-28-33"><strong>28.33</strong> Implementation Architecture</a> </li>
+      <li class="part-chapter-item"><a href="#s-28-34"><strong>28.34</strong> Python/OpenCV-Style Webcam Pipeline</a> </li>
+      <li class="part-chapter-item"><a href="#s-28-35"><strong>28.35</strong> Why Model Version Must Be Recorded</a> </li>
+      <li class="part-chapter-item"><a href="#s-28-36"><strong>28.36</strong> Preprocessing and Input Resolution</a> </li>
+      <li class="part-chapter-item"><a href="#s-28-37"><strong>28.37</strong> Letterboxing</a> </li>
+      <li class="part-chapter-item"><a href="#s-28-38"><strong>28.38</strong> Common Detection Errors</a> </li>
+      <li class="part-chapter-item"><a href="#s-28-39"><strong>28.39</strong> Confidence Threshold Trade-off</a> </li>
+      <li class="part-chapter-item"><a href="#s-28-40"><strong>28.40</strong> Small Object Problem</a> </li>
+      <li class="part-chapter-item"><a href="#s-28-41"><strong>28.41</strong> Occlusion</a> </li>
+      <li class="part-chapter-item"><a href="#s-28-42"><strong>28.42</strong> Real-Time Performance</a> </li>
+      <li class="part-chapter-item"><a href="#s-28-43"><strong>28.43</strong> Latency vs Throughput</a> </li>
+      <li class="part-chapter-item"><a href="#s-28-44"><strong>28.44</strong> Detection Pipeline Bottlenecks</a> </li>
+      <li class="part-chapter-item"><a href="#s-28-45"><strong>28.45</strong> Model Size Trade-off</a> </li>
+      <li class="part-chapter-item"><a href="#s-28-46"><strong>28.46</strong> Classification Backbone vs Detector</a> </li>
+      <li class="part-chapter-item"><a href="#s-28-47"><strong>28.47</strong> Exam Lens</a> </li>
+      <li class="part-chapter-item"><a href="#s-28-48"><strong>28.48</strong> Numerical Practice — IoU</a> </li>
+      <li class="part-chapter-item"><a href="#s-28-49"><strong>28.49</strong> Numerical Practice — FPS</a> </li>
+      <li class="part-chapter-item"><a href="#s-28-50"><strong>28.50</strong> Chapter Checkpoint</a> </li>
+      <li class="part-chapter-item"><a href="#s-28-51"><strong>28.51</strong> One-Page Recall Sheet</a> </li>
+      <li class="part-chapter-item"><a href="#s-28-52"><strong>28.52</strong> Cross-Book Links</a> </li>
+      <li class="part-chapter-item"><a href="#s-28-53"><strong>28.53</strong> Final Chapter Summary</a> </li>
+      <li class="part-chapter-item"><a href="#s-28-54"><strong>28.54</strong> Worked Example — 10-Mark University Model Answer: Intersection over Union (IoU) &amp; Non-Maximum Suppression (NMS)</a> </li>
+      <li class="part-chapter-item"><a href="#s-28-55"><strong>28.55</strong> YOLO Grid-Based Unified Detection Pipeline</a> </li>
+        </ul>
+      </div>
+
+      <div class="concept-hook" style="margin-bottom:var(--em-space-8);"><h1>C28 — Object Detection and YOLO</h1>
+<blockquote>
+<p><strong>Chapter thesis:</strong> Object detection extends image classification by predicting both what objects are present and where they occur, usually through class labels, bounding boxes, and confidence scores.</p>
+</blockquote>
+<hr /></div>
+
+      <!-- All Numbered Sections -->
+      
+  <!-- SECTION 28.1: Why This Chapter Exists -->
+  <section id="s-28-1" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.1</span>
+      <h2>Why This Chapter Exists</h2>
+      <button class="bookmark-btn" data-id="s-28-1" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Classification answers:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>What is in the image?</code></pre>
+</div></p>
+<p>Object detection answers:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>What objects are present?
+Where are they?
+How confident is the detector?</code></pre>
+</div></p>
+<p>The university syllabus explicitly includes:</p>
+<ul>
+<li>Image Classification and Object Detection;</li>
+<li>YOLO as a pretrained model;</li>
+<li>a practical on real-time object detection using YOLO. fileciteturn4file0L48-L52 fileciteturn4file0L80-L84</li>
+</ul>
+<p>Therefore this chapter must cover both:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>detection theory
++
+YOLO practical workflow</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 28.2: Learning Contract -->
+  <section id="s-28-2" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.2</span>
+      <h2>Learning Contract</h2>
+      <button class="bookmark-btn" data-id="s-28-2" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>After this chapter, you should be able to:</p>
+<ul>
+<li>define object detection;</li>
+<li>distinguish classification, detection and segmentation;</li>
+<li>explain bounding boxes;</li>
+<li>explain class labels and confidence scores;</li>
+<li>represent a bounding box using coordinates;</li>
+<li>calculate intersection over union (IoU);</li>
+<li>explain predicted vs ground-truth boxes;</li>
+<li>explain non-maximum suppression conceptually;</li>
+<li>understand one-stage vs two-stage detection at a high level;</li>
+<li>explain the core idea behind YOLO;</li>
+<li>explain why YOLO is associated with real-time detection;</li>
+<li>understand why “YOLO” refers to a family rather than one immutable implementation;</li>
+<li>run a pretrained YOLO model on an image/video/webcam;</li>
+<li>interpret detections;</li>
+<li>identify common detection failures;</li>
+<li>evaluate detections using appropriate concepts.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 28.3: Classification vs Detection -->
+  <section id="s-28-3" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.3</span>
+      <h2>Classification vs Detection</h2>
+      <button class="bookmark-btn" data-id="s-28-3" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose an image contains:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>car + person + bicycle</code></pre>
+</div></p>
+<h3>Classification</h3>
+<p>May produce:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>&quot;street scene&quot;</code></pre>
+</div></p>
+<p>or a single class depending on the task.</p>
+<h3>Detection</h3>
+<p>Produces multiple object hypotheses:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>person → box
+car    → box
+bicycle → box</code></pre>
+</div></p>
+<p>So:</p>
+<p>
+$$
+\boxed{\text{Detection}=\text{classification}+\text{localization}}
+$$
+</p>
+<p>This is an introductory mental model, not a claim that every detector is literally composed of two independent algorithms.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 28.4: Detection Output -->
+  <section id="s-28-4" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.4</span>
+      <h2>Detection Output</h2>
+      <button class="bookmark-btn" data-id="s-28-4" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A typical detection for one object contains:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>class
+bounding box
+confidence</code></pre>
+</div></p>
+<p>Example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>person
+x1 = 120
+y1 = 85
+x2 = 310
+y2 = 420
+confidence = 0.94</code></pre>
+</div></p>
+<p>The detector may output many such records.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 28.5: Bounding Box -->
+  <section id="s-28-5" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.5</span>
+      <h2>Bounding Box</h2>
+      <button class="bookmark-btn" data-id="s-28-5" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A common rectangular bounding box uses:</p>
+<p>
+$$
+(x_1,y_1,x_2,y_2)
+$$
+</p>
+<p>where:</p>
+<ul>
+<li>$(x_1,y_1)$ = top-left;</li>
+<li>$(x_2,y_2)$ = bottom-right.</li>
+</ul>
+<p>Width:</p>
+<p>
+$$
+w=x_2-x_1.
+$$
+</p>
+<p>Height:</p>
+<p>
+$$
+h=y_2-y_1.
+$$
+</p>
+<p>Area:</p>
+<p>
+$$
+A=wh.
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 28.6: Worked Bounding-Box Example -->
+  <section id="s-28-6" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.6</span>
+      <h2>Worked Bounding-Box Example</h2>
+      <button class="bookmark-btn" data-id="s-28-6" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p>
+$$
+(x_1,y_1)=(100,50)
+$$
+</p>
+<p>and:</p>
+<p>
+$$
+(x_2,y_2)=(300,250).
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+w=300-100=200
+$$
+</p>
+<p>
+$$
+h=250-50=200.
+$$
+</p>
+<p>Area:</p>
+<p>
+$$
+A=200\times200
+=
+\boxed{40{,}000}.
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 28.7: Alternative Box Representations -->
+  <section id="s-28-7" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.7</span>
+      <h2>Alternative Box Representations</h2>
+      <button class="bookmark-btn" data-id="s-28-7" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Some models/APIs use:</p>
+<p>
+$$
+(x_c,y_c,w,h)
+$$
+</p>
+<p>where:</p>
+<ul>
+<li>$x_c,y_c$ = center;</li>
+<li>$w,h$ = width and height.</li>
+</ul>
+<p>Conversions:</p>
+<p>
+$$
+x_1=x_c-\frac{w}{2}
+$$
+</p>
+<p>
+$$
+y_1=y_c-\frac{h}{2}
+$$
+</p>
+<p>
+$$
+x_2=x_c+\frac{w}{2}
+$$
+</p>
+<p>
+$$
+y_2=y_c+\frac{h}{2}.
+$$
+</p>
+<p>This is important when reading annotation formats.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 28.8: Confidence Score -->
+  <section id="s-28-8" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.8</span>
+      <h2>Confidence Score</h2>
+      <button class="bookmark-btn" data-id="s-28-8" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A detector often provides a score indicating how strongly the model supports a detection hypothesis.</p>
+<p>A simplified interpretation is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>high confidence
+→ stronger model score
+
+low confidence
+→ weaker detection</code></pre>
+</div></p>
+<p>Do not assume confidence is perfectly calibrated probability.</p>
+<p>It is best interpreted as a model output used to rank/filter detections.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 28.9: Detection Threshold -->
+  <section id="s-28-9" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.9</span>
+      <h2>Detection Threshold</h2>
+      <button class="bookmark-btn" data-id="s-28-9" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A practical detector commonly applies a confidence threshold.</p>
+<p>For example:</p>
+<p>
+$$
+t=0.50.
+$$
+</p>
+<p>Then:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>0.92 → keep
+0.73 → keep
+0.41 → reject</code></pre>
+</div></p>
+<p>The appropriate threshold depends on the application.</p>
+<p>Lower threshold:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>more detections
++
+more false positives</code></pre>
+</div></p>
+<p>Higher threshold:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>fewer detections
++
+potentially more missed objects</code></pre>
+</div></p>
+<p>This is a precision–recall trade-off.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 28.10: Ground Truth vs Prediction -->
+  <section id="s-28-10" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.10</span>
+      <h2>Ground Truth vs Prediction</h2>
+      <button class="bookmark-btn" data-id="s-28-10" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For evaluation:</p>
+<h3>Ground truth</h3>
+<p>The correct annotation supplied by the dataset.</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>class = car
+box = reference rectangle</code></pre>
+</div></p>
+<h3>Prediction</h3>
+<p>The detector's output.</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>class = car
+box = predicted rectangle
+confidence = ...</code></pre>
+</div></p>
+<p>Evaluation asks:</p>
+<blockquote>
+<p>How closely does the prediction agree with the ground truth?</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 28.11: Intersection over Union (IoU) -->
+  <section id="s-28-11" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.11</span>
+      <h2>Intersection over Union (IoU)</h2>
+      <button class="bookmark-btn" data-id="s-28-11" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>IoU measures overlap between two boxes:</p>
+<p>
+$$
+\boxed{
+IoU=
+\frac{\text{intersection area}}
+{\text{union area}}
+}
+$$
+</p>
+<p>where:</p>
+<p>
+$$
+\text{union}
+=
+A_{\text{pred}}
++
+A_{\text{gt}}
+-
+A_{\text{intersection}}.
+$$
+</p>
+<p>IoU ranges from:</p>
+<p>
+$$
+0\le IoU\le1.
+$$
+</p>
+<p>Interpretation:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>0 → no overlap
+1 → identical boxes</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 28.12: Worked IoU Example -->
+  <section id="s-28-12" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.12</span>
+      <h2>Worked IoU Example</h2>
+      <button class="bookmark-btn" data-id="s-28-12" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Ground-truth box area = 1000
+Predicted box area     = 900
+Intersection area      = 700</code></pre>
+</div></p>
+<p>Union:</p>
+<p>
+$$
+1000+900-700=1200.
+$$
+</p>
+<p>Therefore:</p>
+<p>
+$$
+IoU=\frac{700}{1200}
+\approx0.5833.
+$$
+</p>
+<p>So:</p>
+<p>
+$$
+\boxed{IoU\approx0.583}.
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 28.13: IoU with Coordinates -->
+  <section id="s-28-13" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.13</span>
+      <h2>IoU with Coordinates</h2>
+      <button class="bookmark-btn" data-id="s-28-13" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p>Ground truth:</p>
+<p>
+$$
+(10,10,50,50)
+$$
+</p>
+<p>Prediction:</p>
+<p>
+$$
+(20,20,60,60).
+$$
+</p>
+<p>Ground-truth area:</p>
+<p>
+$$
+40\times40=1600.
+$$
+</p>
+<p>Prediction area:</p>
+<p>
+$$
+40\times40=1600.
+$$
+</p>
+<p>Intersection:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>x overlap = 20 to 50 → 30
+y overlap = 20 to 50 → 30</code></pre>
+</div></p>
+<p>so:</p>
+<p>
+$$
+A_{\cap}=30\times30=900.
+$$
+</p>
+<p>Union:</p>
+<p>
+$$
+1600+1600-900=2300.
+$$
+</p>
+<p>Thus:</p>
+<p>
+$$
+IoU=\frac{900}{2300}
+\approx0.391.
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 28.14: Non-Maximum Suppression -->
+  <section id="s-28-14" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.14</span>
+      <h2>Non-Maximum Suppression</h2>
+      <button class="bookmark-btn" data-id="s-28-14" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A detector may produce multiple overlapping boxes for the same object.</p>
+<p>Example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>person
+ ┌───────────────┐
+ │   box A       │
+ │   ┌───────────┐
+ │   │ box B     │
+ │   └───────────┘
+ └───────────────┘</code></pre>
+</div></p>
+<p>Non-maximum suppression (NMS) removes redundant detections.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>1. rank boxes by confidence
+2. keep highest-scoring box
+3. remove highly overlapping boxes
+4. repeat</code></pre>
+</div></p>
+<p>The overlap threshold is typically based on IoU.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 28.15: Simple NMS Example -->
+  <section id="s-28-15" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.15</span>
+      <h2>Simple NMS Example</h2>
+      <button class="bookmark-btn" data-id="s-28-15" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose three boxes have:</p>
+<div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Box</th>
+<th style="text-align: right;">Confidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A</td>
+<td style="text-align: right;">0.92</td>
+</tr>
+<tr>
+<td>B</td>
+<td style="text-align: right;">0.81</td>
+</tr>
+<tr>
+<td>C</td>
+<td style="text-align: right;">0.40</td>
+</tr>
+</tbody>
+</table></div>
+<p>and A/B overlap strongly.</p>
+<p>A simplified NMS process:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>keep A
+compare B to A
+if IoU &gt; threshold → suppress B
+retain C if it survives threshold rules</code></pre>
+</div></p>
+<p>The exact implementation may use class-aware or class-agnostic suppression and modern variants may use different suppression strategies.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 28.16: Why NMS Is Needed -->
+  <section id="s-28-16" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.16</span>
+      <h2>Why NMS Is Needed</h2>
+      <button class="bookmark-btn" data-id="s-28-16" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Neural detectors often produce several nearby hypotheses because multiple spatial locations/features can respond to the same object.</p>
+<p>Without suppression:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>one object
+→ many boxes</code></pre>
+</div></p>
+<p>With NMS:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>one object
+→ preferred box</code></pre>
+</div></p>
+<p>This improves the usability of detection output.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 28.17: One-Stage vs Two-Stage Detection -->
+  <section id="s-28-17" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.17</span>
+      <h2>One-Stage vs Two-Stage Detection</h2>
+      <button class="bookmark-btn" data-id="s-28-17" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A useful high-level distinction is:</p>
+<h3>Two-stage</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>region proposals
+→ classify/refine proposals</code></pre>
+</div></p>
+<h3>One-stage</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image
+→ dense/direct prediction</code></pre>
+</div></p>
+<p>Two-stage methods can emphasize localization/refinement quality.</p>
+<p>One-stage methods are often attractive for simpler real-time inference pipelines.</p>
+<p>YOLO belongs to the one-stage family conceptually.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 28.18: YOLO — The Core Idea -->
+  <section id="s-28-18" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.18</span>
+      <h2>YOLO — The Core Idea</h2>
+      <button class="bookmark-btn" data-id="s-28-18" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>YOLO stands for:</p>
+<blockquote>
+<p><strong>You Only Look Once</strong></p>
+</blockquote>
+<p>The historical idea was to treat object detection as a direct prediction problem from the full image in one unified network.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>whole image
+     ↓
+CNN / detection network
+     ↓
+object predictions
+     ↓
+boxes + classes + confidence</code></pre>
+</div></p>
+<p>This differs from older pipelines that explicitly generated candidate regions and then classified them separately.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 28.19: Why YOLO Is Associated with Real-Time Detection -->
+  <section id="s-28-19" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.19</span>
+      <h2>Why YOLO Is Associated with Real-Time Detection</h2>
+      <button class="bookmark-btn" data-id="s-28-19" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The original YOLO family emphasized a unified detection pipeline with speed as a major objective.</p>
+<p>The broad engineering idea is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>single integrated inference
+→ efficient processing
+→ suitable for real-time/near-real-time systems</code></pre>
+</div></p>
+<p>Actual speed depends on:</p>
+<ul>
+<li>model variant;</li>
+<li>hardware;</li>
+<li>input resolution;</li>
+<li>implementation;</li>
+<li>preprocessing/postprocessing;</li>
+<li>acceleration backend.</li>
+</ul>
+<p>Therefore:</p>
+<blockquote>
+<p><strong>“YOLO = always real-time” is too simplistic.</strong></p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 28.20: YOLO Is a Family -->
+  <section id="s-28-20" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.20</span>
+      <h2>YOLO Is a Family</h2>
+      <button class="bookmark-btn" data-id="s-28-20" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A critical modern understanding is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>YOLO
+≠
+one immutable algorithm</code></pre>
+</div></p>
+<p>The YOLO family has evolved through many versions and implementations.</p>
+<p>Differences can include:</p>
+<ul>
+<li>backbone;</li>
+<li>neck;</li>
+<li>detection head;</li>
+<li>box representation;</li>
+<li>training losses;</li>
+<li>data augmentation;</li>
+<li>inference strategy;</li>
+<li>model size;</li>
+<li>supported tasks.</li>
+</ul>
+<p>For this course, understand <strong>the general YOLO detection concept</strong> and then identify the concrete implementation used in the practical.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 28.21: YOLO Detection Pipeline -->
+  <section id="s-28-21" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.21</span>
+      <h2>YOLO Detection Pipeline</h2>
+      <button class="bookmark-btn" data-id="s-28-21" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A practical YOLO system can be understood as:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Input image / frame
+       ↓
+Resize / preprocess
+       ↓
+YOLO model
+       ↓
+raw detection predictions
+       ↓
+confidence filtering
+       ↓
+NMS / postprocessing
+       ↓
+final boxes
+       ↓
+class labels + scores
+       ↓
+visualized output</code></pre>
+</div></p>
+<p>This is the most useful operational diagram for the practical.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 28.22: Detection Anatomy -->
+  <section id="s-28-22" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.22</span>
+      <h2>Detection Anatomy</h2>
+      <button class="bookmark-btn" data-id="s-28-22" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For each final detection:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>┌───────────────────────────┐
+│        person             │
+│      confidence           │
+│                           │
+│   x1,y1        x2,y1      │
+│      ┌──────────────┐     │
+│      │    object    │     │
+│      └──────────────┘     │
+│   x1,y2        x2,y2      │
+└───────────────────────────┘</code></pre>
+</div></p>
+<p>The output combines:</p>
+<p>
+$$
+\boxed{\text{what}+\text{where}+\text{score}}
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 28.23: Class Score and Box Quality Are Different -->
+  <section id="s-28-23" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.23</span>
+      <h2>Class Score and Box Quality Are Different</h2>
+      <button class="bookmark-btn" data-id="s-28-23" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A model may be highly confident that:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>object = car</code></pre>
+</div></p>
+<p>while its box is poorly localized.</p>
+<p>Similarly, the box can be spatially good but the class can be wrong.</p>
+<p>Therefore detection quality has multiple dimensions:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>classification quality
++
+localization quality</code></pre>
+</div></p>
+<p>This is why IoU and classification metrics both matter.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 28.24: Detection Evaluation -->
+  <section id="s-28-24" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.24</span>
+      <h2>Detection Evaluation</h2>
+      <button class="bookmark-btn" data-id="s-28-24" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>At a simplified level, a detection is considered a correct match when:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>predicted class matches
++
+IoU exceeds chosen criterion</code></pre>
+</div></p>
+<p>Unmatched predictions may become false positives.</p>
+<p>Unmatched ground-truth objects may become false negatives.</p>
+<p>The exact matching and evaluation protocol depends on the benchmark.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 28.25: Precision and Recall for Detection -->
+  <section id="s-28-25" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.25</span>
+      <h2>Precision and Recall for Detection</h2>
+      <button class="bookmark-btn" data-id="s-28-25" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Conceptually:</p>
+<p>
+$$
+\text{Precision}
+=
+\frac{TP}{TP+FP}
+$$
+</p>
+<p>
+$$
+\text{Recall}
+=
+\frac{TP}{TP+FN}.
+$$
+</p>
+<h3>High precision</h3>
+<p>Few false alarms.</p>
+<h3>High recall</h3>
+<p>Few missed objects.</p>
+<p>A surveillance system may prefer higher recall in some situations, while another system may prioritize avoiding false alarms.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 28.26: Mean Average Precision — Conceptual Introduction -->
+  <section id="s-28-26" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.26</span>
+      <h2>Mean Average Precision — Conceptual Introduction</h2>
+      <button class="bookmark-btn" data-id="s-28-26" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Object-detection benchmarks often use <strong>AP</strong> and <strong>mAP</strong>.</p>
+<p>At a high level:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>prediction ranking by confidence
+        ↓
+precision–recall behaviour
+        ↓
+area / summary measure
+        ↓
+AP per class
+        ↓
+mAP across classes</code></pre>
+</div></p>
+<p>Different detection benchmarks specify different IoU thresholds and averaging procedures.</p>
+<p>Do not treat “mAP” as one universal formula independent of evaluation protocol.</p>
+<p>For this syllabus, understanding what it measures is more important than reproducing every benchmark convention.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 28.27: Practical YOLO Example -->
+  <section id="s-28-27" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.27</span>
+      <h2>Practical YOLO Example</h2>
+      <button class="bookmark-btn" data-id="s-28-27" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose an image produces:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>person  0.94  [100,80,250,420]
+car     0.87  [300,200,580,390]
+dog     0.61  [650,220,760,410]</code></pre>
+</div></p>
+<p>After thresholding at 0.70:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>person
+car</code></pre>
+</div></p>
+<p>remain.</p>
+<p>The dog is removed.</p>
+<p>If two person boxes overlap strongly, NMS may retain only the best one.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 28.28: Image-Level vs Object-Level Output -->
+  <section id="s-28-28" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.28</span>
+      <h2>Image-Level vs Object-Level Output</h2>
+      <button class="bookmark-btn" data-id="s-28-28" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Classification:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image → one/few class labels</code></pre>
+</div></p>
+<p>Detection:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image
+→ object 1
+→ object 2
+→ object 3
+→ ...</code></pre>
+</div></p>
+<p>Therefore one image can contain many detections.</p>
+<p>This is a fundamental task difference.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 28.29: Video Detection -->
+  <section id="s-28-29" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.29</span>
+      <h2>Video Detection</h2>
+      <button class="bookmark-btn" data-id="s-28-29" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For video:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Frame 1
+→ YOLO
+→ detections
+
+Frame 2
+→ YOLO
+→ detections
+
+Frame 3
+→ YOLO
+→ detections</code></pre>
+</div></p>
+<p>This can produce a real-time stream of predictions.</p>
+<p>Detection itself does not automatically provide persistent object identity across frames.</p>
+<p>That is a tracking problem.</p>
+<p>This distinction becomes important in C30.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 28.30: Detection vs Tracking -->
+  <section id="s-28-30" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.30</span>
+      <h2>Detection vs Tracking</h2>
+      <button class="bookmark-btn" data-id="s-28-30" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Detection</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>What objects are here?
+Where are they now?</code></pre>
+</div></p>
+<h3>Tracking</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Is this the same object as before?
+Where did it move?</code></pre>
+</div></p>
+<p>A system may combine:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>YOLO detection
++
+tracker</code></pre>
+</div></p>
+<p>to maintain object identities across frames.</p>
+<p>C30 will address motion analysis and tracking.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 28.31: Practical 9 — Syllabus Alignment -->
+  <section id="s-28-31" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.31</span>
+      <h2>Practical 9 — Syllabus Alignment</h2>
+      <button class="bookmark-btn" data-id="s-28-31" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The university practical states:</p>
+<blockquote>
+<p><strong>Object Detection using YOLO — Detect objects in real-time using YOLO.</strong> fileciteturn4file0L80-L84</p>
+</blockquote>
+<p>The requirements include:</p>
+<ul>
+<li>Python;</li>
+<li>pretrained YOLO weights;</li>
+<li>webcam.</li>
+</ul>
+<p>Therefore the lab should explicitly demonstrate:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>webcam
+ ↓
+frame capture
+ ↓
+preprocessing
+ ↓
+pretrained YOLO
+ ↓
+detections
+ ↓
+confidence filtering
+ ↓
+NMS/postprocessing
+ ↓
+bounding boxes
+ ↓
+labels
+ ↓
+real-time display</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 28.32: Why a Pretrained Model Is Appropriate -->
+  <section id="s-28-32" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.32</span>
+      <h2>Why a Pretrained Model Is Appropriate</h2>
+      <button class="bookmark-btn" data-id="s-28-32" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The practical explicitly mentions pretrained YOLO weights. fileciteturn4file0L80-L84</p>
+<p>For an introductory engineering lab, using pretrained weights makes it possible to study:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>model loading
++
+inference
++
+detection output
++
+real-time pipeline</code></pre>
+</div></p>
+<p>without requiring a complete detector to be trained from scratch.</p>
+<p>Training a YOLO detector is a substantially different practical problem.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 28.33: Implementation Architecture -->
+  <section id="s-28-33" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.33</span>
+      <h2>Implementation Architecture</h2>
+      <button class="bookmark-btn" data-id="s-28-33" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A robust practical program can be structured as:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>capture.py
+    ↓
+preprocess
+    ↓
+detector.py
+    ↓
+postprocess.py
+    ↓
+visualize.py
+    ↓
+main.py</code></pre>
+</div></p>
+<p>Or, for a smaller lab:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>load model
+→ open webcam
+→ read frame
+→ infer
+→ filter
+→ draw
+→ display</code></pre>
+</div></p>
+<p>The second is sufficient for a university demonstration, while modular structure is better for reusable engineering code.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 28.34: Python/OpenCV-Style Webcam Pipeline -->
+  <section id="s-28-34" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.34</span>
+      <h2>Python/OpenCV-Style Webcam Pipeline</h2>
+      <button class="bookmark-btn" data-id="s-28-34" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A generic implementation can be:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>python</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>from __future__ import annotations
+
+import cv2
+
+
+def main() -&gt; None:
+    capture = cv2.VideoCapture(0)
+
+    if not capture.isOpened():
+        raise RuntimeError(&quot;Could not open webcam.&quot;)
+
+    try:
+        while True:
+            ok, frame = capture.read()
+
+            if not ok:
+                raise RuntimeError(&quot;Could not read webcam frame.&quot;)
+
+            # Run the chosen YOLO model here.
+            # The exact API depends on the model implementation.
+            #
+            # detections = model(frame)
+
+            # Visualize detections here.
+
+            cv2.imshow(&quot;YOLO&quot;, frame)
+
+            if cv2.waitKey(1) &amp; 0xFF == ord(&quot;q&quot;):
+                break
+    finally:
+        capture.release()
+        cv2.destroyAllWindows()
+
+
+if __name__ == &quot;__main__&quot;:
+    main()</code></pre>
+</div></p>
+<p>The detection call is intentionally abstract because the syllabus specifies YOLO rather than one specific library/version.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 28.35: Why Model Version Must Be Recorded -->
+  <section id="s-28-35" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.35</span>
+      <h2>Why Model Version Must Be Recorded</h2>
+      <button class="bookmark-btn" data-id="s-28-35" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A lab report should record:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>model family
+model variant
+weights/source
+input size
+confidence threshold
+IoU/NMS threshold
+hardware
+software/library version</code></pre>
+</div></p>
+<p>Otherwise:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>&quot;YOLO worked&quot;</code></pre>
+</div></p>
+<p>is not a reproducible experiment.</p>
+<p>This is particularly important because YOLO is a family, not one fixed implementation.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 28.36: Preprocessing and Input Resolution -->
+  <section id="s-28-36" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.36</span>
+      <h2>Preprocessing and Input Resolution</h2>
+      <button class="bookmark-btn" data-id="s-28-36" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Detection models often resize input frames before inference.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>webcam frame
+640×480
+   ↓
+resize / letterbox
+model input dimensions
+   ↓
+inference</code></pre>
+</div></p>
+<p>The system then maps detections back to the original frame coordinates.</p>
+<p>Incorrect coordinate scaling can cause boxes to appear shifted or incorrectly sized.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 28.37: Letterboxing -->
+  <section id="s-28-37" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.37</span>
+      <h2>Letterboxing</h2>
+      <button class="bookmark-btn" data-id="s-28-37" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A common preprocessing strategy preserves aspect ratio by:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>resize while preserving ratio
++
+pad remaining area</code></pre>
+</div></p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>original
+┌──────────────┐
+│              │
+│              │
+└──────────────┘
+
+resize + pad
+
+┌────────────────┐
+│  ████████████  │
+│  ████████████  │
+│                │
+└────────────────┘</code></pre>
+</div></p>
+<p>Exact preprocessing depends on the model implementation.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 28.38: Common Detection Errors -->
+  <section id="s-28-38" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.38</span>
+      <h2>Common Detection Errors</h2>
+      <button class="bookmark-btn" data-id="s-28-38" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>False positive</h3>
+<p>Detector reports an object that is not present.</p>
+<h3>False negative</h3>
+<p>Object is present but detector misses it.</p>
+<h3>Localization error</h3>
+<p>Correct class but poor bounding box.</p>
+<h3>Class confusion</h3>
+<p>Correct region but incorrect class.</p>
+<h3>Duplicate detections</h3>
+<p>Multiple boxes for the same object.</p>
+<h3>Small-object failure</h3>
+<p>Tiny objects contain limited visual evidence.</p>
+<h3>Occlusion</h3>
+<p>Part of an object is hidden.</p>
+<h3>Domain shift</h3>
+<p>Training and deployment environments differ.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 28.39: Confidence Threshold Trade-off -->
+  <section id="s-28-39" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.39</span>
+      <h2>Confidence Threshold Trade-off</h2>
+      <button class="bookmark-btn" data-id="s-28-39" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose detections have:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>0.97
+0.89
+0.58
+0.42
+0.31</code></pre>
+</div></p>
+<p>Threshold 0.50:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>0.97
+0.89
+0.58</code></pre>
+</div></p>
+<p>Threshold 0.80:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>0.97
+0.89</code></pre>
+</div></p>
+<p>The higher threshold removes weaker detections but may also remove real objects.</p>
+<p>Thus:</p>
+<p>
+$$
+\boxed{\text{threshold selection is an application decision}}
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 28.40: Small Object Problem -->
+  <section id="s-28-40" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.40</span>
+      <h2>Small Object Problem</h2>
+      <button class="bookmark-btn" data-id="s-28-40" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose a person occupies only:</p>
+<p>
+$$
+12\times18
+$$
+</p>
+<p>pixels of a high-resolution frame.</p>
+<p>After resizing into a model input, the object may contain very little detail.</p>
+<p>This can make detection difficult.</p>
+<p>Possible engineering responses include:</p>
+<ul>
+<li>suitable input resolution;</li>
+<li>model choice;</li>
+<li>multi-scale features;</li>
+<li>better data;</li>
+<li>task-specific tuning.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 28.41: Occlusion -->
+  <section id="s-28-41" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.41</span>
+      <h2>Occlusion</h2>
+      <button class="bookmark-btn" data-id="s-28-41" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Consider:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>person A
+██████████
+
+person B behind A
+   █████</code></pre>
+</div></p>
+<p>The visible evidence for B is incomplete.</p>
+<p>Detectors must infer object presence from partial evidence.</p>
+<p>This is a fundamental computer-vision challenge, not simply an implementation bug.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 28.42: Real-Time Performance -->
+  <section id="s-28-42" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.42</span>
+      <h2>Real-Time Performance</h2>
+      <button class="bookmark-btn" data-id="s-28-42" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Frame rate depends on:</p>
+<p>
+$$
+FPS
+=
+\frac{\text{processed frames}}
+{\text{time}}.
+$$
+</p>
+<p>For example, if a system processes 150 frames in 5 seconds:</p>
+<p>
+$$
+FPS=\frac{150}{5}=30.
+$$
+</p>
+<p>This is an average throughput measure.</p>
+<p>It does not guarantee uniform frame latency.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 28.43: Latency vs Throughput -->
+  <section id="s-28-43" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.43</span>
+      <h2>Latency vs Throughput</h2>
+      <button class="bookmark-btn" data-id="s-28-43" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Throughput</h3>
+<p>How many frames per second can be processed.</p>
+<h3>Latency</h3>
+<p>How long one frame takes to move through the pipeline.</p>
+<p>A system can have good average throughput but still experience occasional large latency spikes.</p>
+<p>For real-time applications, both matter.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 28.44: Detection Pipeline Bottlenecks -->
+  <section id="s-28-44" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.44</span>
+      <h2>Detection Pipeline Bottlenecks</h2>
+      <button class="bookmark-btn" data-id="s-28-44" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A webcam system spends time in:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>capture
+→ preprocessing
+→ model inference
+→ postprocessing
+→ drawing
+→ display</code></pre>
+</div></p>
+<p>Optimizing only inference may not maximize end-to-end FPS.</p>
+<p>This is an important engineering insight.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 28.45: Model Size Trade-off -->
+  <section id="s-28-45" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.45</span>
+      <h2>Model Size Trade-off</h2>
+      <button class="bookmark-btn" data-id="s-28-45" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>YOLO-style systems often provide multiple model sizes or capacity levels.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>smaller model
+→ faster
+→ less compute
+→ potentially lower accuracy
+
+larger model
+→ slower
+→ more compute
+→ potentially higher accuracy</code></pre>
+</div></p>
+<p>The actual trade-off varies by model family and hardware.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 28.46: Classification Backbone vs Detector -->
+  <section id="s-28-46" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.46</span>
+      <h2>Classification Backbone vs Detector</h2>
+      <button class="bookmark-btn" data-id="s-28-46" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>C27 introduced VGG/ResNet as CNN architecture families.</p>
+<p>A detector adds detection-specific output logic:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>backbone
+ ↓
+feature maps
+ ↓
+detection head
+ ↓
+boxes + class scores</code></pre>
+</div></p>
+<p>YOLO is commonly described as an integrated detection architecture family rather than simply “a classifier with boxes added afterward.”</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 28.47: Exam Lens -->
+  <section id="s-28-47" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.47</span>
+      <h2>Exam Lens</h2>
+      <button class="bookmark-btn" data-id="s-28-47" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h2>2-mark questions</h2>
+<p><strong>Define object detection.</strong><br />
+The task of identifying object classes and locating object instances in an image, commonly using bounding boxes.</p>
+<p><strong>What is IoU?</strong></p>
+<p>
+$$
+IoU=
+\frac{A_{\cap}}{A_{\cup}}.
+$$
+</p>
+<p><strong>What is NMS?</strong><br />
+A postprocessing method that suppresses redundant overlapping detections.</p>
+<p><strong>Expand YOLO.</strong><br />
+You Only Look Once.</p>
+<hr />
+<h1>48. 5-Mark Question</h1>
+<h3>Differentiate image classification and object detection.</h3>
+<p>Use:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>classification
+→ image-level class
+
+object detection
+→ multiple object instances
+→ class + location + confidence</code></pre>
+</div></p>
+<p>Then explain bounding boxes.</p>
+<hr />
+<h1>49. 10-Mark Question</h1>
+<h3>Explain YOLO object detection.</h3>
+<p>Recommended structure:</p>
+<ol>
+<li>detection problem;</li>
+<li>bounding boxes;</li>
+<li>class prediction;</li>
+<li>confidence scores;</li>
+<li>YOLO concept;</li>
+<li>preprocessing;</li>
+<li>model inference;</li>
+<li>predictions;</li>
+<li>thresholding;</li>
+<li>NMS;</li>
+<li>final detections;</li>
+<li>real-time video workflow;</li>
+<li>advantages;</li>
+<li>limitations;</li>
+<li>deployment considerations.</li>
+</ol>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 28.48: Numerical Practice — IoU -->
+  <section id="s-28-48" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.48</span>
+      <h2>Numerical Practice — IoU</h2>
+      <button class="bookmark-btn" data-id="s-28-48" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Ground truth:</p>
+<p>
+$$
+(0,0,100,100)
+$$
+</p>
+<p>Prediction:</p>
+<p>
+$$
+(50,50,150,150).
+$$
+</p>
+<p>Calculate:</p>
+<ol>
+<li>intersection area;</li>
+<li>union area;</li>
+<li>IoU.</li>
+</ol>
+<p>Intersection:</p>
+<p>
+$$
+50\times50=2500.
+$$
+</p>
+<p>Each box area:</p>
+<p>
+$$
+100\times100=10{,}000.
+$$
+</p>
+<p>Union:</p>
+<p>
+$$
+10{,}000+10{,}000-2500
+=
+17{,}500.
+$$
+</p>
+<p>Therefore:</p>
+<p>
+$$
+IoU=
+\frac{2500}{17{,}500}
+=
+\boxed{0.142857\ldots}.
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 28.49: Numerical Practice — FPS -->
+  <section id="s-28-49" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.49</span>
+      <h2>Numerical Practice — FPS</h2>
+      <button class="bookmark-btn" data-id="s-28-49" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A detector processes:</p>
+<p>
+$$
+240
+$$
+</p>
+<p>frames in:</p>
+<p>
+$$
+8
+$$
+</p>
+<p>seconds.</p>
+<p>Then:</p>
+<p>
+$$
+FPS=\frac{240}{8}
+=
+\boxed{30}.
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 28.50: Chapter Checkpoint -->
+  <section id="s-28-50" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.50</span>
+      <h2>Chapter Checkpoint</h2>
+      <button class="bookmark-btn" data-id="s-28-50" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Q1</h3>
+<p>What information does a detection output contain that ordinary classification does not?</p>
+<h3>Q2</h3>
+<p>Why is IoU needed?</p>
+<h3>Q3</h3>
+<p>Why can a high confidence score coexist with a poor box?</p>
+<h3>Q4</h3>
+<p>What problem does NMS solve?</p>
+<h3>Q5</h3>
+<p>Why is YOLO called a family rather than one immutable algorithm?</p>
+<h3>Q6</h3>
+<p>Why must the concrete YOLO model/version be recorded in a lab report?</p>
+<h3>Q7</h3>
+<p>Why can raising the confidence threshold increase precision but reduce recall?</p>
+<h3>Q8</h3>
+<p>What is the difference between detection and tracking?</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 28.51: One-Page Recall Sheet -->
+  <section id="s-28-51" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.51</span>
+      <h2>One-Page Recall Sheet</h2>
+      <button class="bookmark-btn" data-id="s-28-51" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>OBJECT DETECTION
+│
+├── Output
+│   ├── class
+│   ├── bounding box
+│   └── confidence
+│
+├── Box
+│   ├── x1,y1
+│   └── x2,y2
+│
+├── Evaluation
+│   ├── IoU
+│   ├── precision
+│   ├── recall
+│   └── AP / mAP
+│
+├── Postprocessing
+│   ├── confidence threshold
+│   └── NMS
+│
+└── YOLO
+    ├── one-stage family
+    ├── unified detection
+    ├── real-time focus
+    └── version/model dependent</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 28.52: Cross-Book Links -->
+  <section id="s-28-52" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.52</span>
+      <h2>Cross-Book Links</h2>
+      <button class="bookmark-btn" data-id="s-28-52" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Layer</th>
+<th>Connection</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MAIN</td>
+<td>C28 explains detection and YOLO</td>
+</tr>
+<tr>
+<td>MATH</td>
+<td>Bounding boxes, IoU, FPS</td>
+</tr>
+<tr>
+<td>LAB</td>
+<td>Practical 9 — real-time YOLO detection</td>
+</tr>
+<tr>
+<td>CODE</td>
+<td>Python + webcam + pretrained weights</td>
+</tr>
+<tr>
+<td>EXAM</td>
+<td>Classification vs detection, YOLO pipeline</td>
+</tr>
+<tr>
+<td>PRACTICE</td>
+<td>IoU calculations, threshold reasoning, NMS</td>
+</tr>
+<tr>
+<td>RESOURCE</td>
+<td>Course-specified deep-learning/computer-vision references</td>
+</tr>
+<tr>
+<td>ASSETS</td>
+<td>Detection anatomy, IoU diagram, YOLO pipeline, NMS illustration</td>
+</tr>
+<tr>
+<td>MASTER</td>
+<td>Dependency into C30 video/motion and completion of YOLO practical branch</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 28.53: Final Chapter Summary -->
+  <section id="s-28-53" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.53</span>
+      <h2>Final Chapter Summary</h2>
+      <button class="bookmark-btn" data-id="s-28-53" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The key transformation from classification to detection is:</p>
+<p>
+$$
+\boxed{
+\text{What?}
+\rightarrow
+\text{What + Where?}
+}
+$$
+</p>
+<p>A typical detection output contains:</p>
+<p>
+$$
+\boxed{
+\text{class}+\text{box}+\text{confidence}
+}
+$$
+</p>
+<p>The central geometric evaluation concept is:</p>
+<p>
+$$
+\boxed{
+IoU=
+\frac{\text{intersection}}
+{\text{union}}
+}
+$$
+</p>
+<p>The practical YOLO pipeline is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>webcam
+→ frame
+→ preprocess
+→ YOLO
+→ confidence filtering
+→ NMS
+→ boxes + labels
+→ display</code></pre>
+</div></p>
+<p>The university syllabus specifically requires YOLO and a real-time YOLO object-detection practical, so the chapter and lab must preserve that direct connection. fileciteturn4file0L48-L52 fileciteturn4file0L80-L84</p>
+<p>The next transition is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>C28
+detect objects in one frame
+        ↓
+C30
+understand change and motion across frames</code></pre>
+</div></p>
+<p>Before that, C29 covers another advanced syllabus requirement:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image denoising
++
+autoencoders</code></pre>
+</div></p>
+<hr />
+<p><strong>Next chapter:</strong> C29 — Image Denoising with Autoencoders</p>
+    </div>
+  </section>
+
+  <!-- SECTION 28.54: Worked Example — 10-Mark University Model Answer: Intersection over Union (IoU) &amp; Non-Maximum Suppression (NMS) -->
+  <section id="s-28-54" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.54</span>
+      <h2>Worked Example — 10-Mark University Model Answer: Intersection over Union (IoU) &amp; Non-Maximum Suppression (NMS)</h2>
+      <button class="bookmark-btn" data-id="s-28-54" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Problem Statement</h3>
+<p>In an automated traffic surveillance system, an object detector outputs candidate bounding boxes for a detected vehicle. Bounding boxes are parameterized as $[x_{min}, y_{min}, x_{max}, y_{max}]$ with corresponding vehicle detection confidence scores:
+- <strong>Box A:</strong> $[50, 50, 150, 200]$, Confidence $S_A = 0.92$
+- <strong>Box B:</strong> $[60, 55, 155, 205]$, Confidence $S_B = 0.85$
+- <strong>Box C:</strong> $[55, 60, 160, 210]$, Confidence $S_C = 0.78$
+- <strong>Box D:</strong> $[220, 100, 310, 220]$, Confidence $S_D = 0.88$
+1. Define the <strong>Intersection over Union (IoU)</strong> metric mathematically and state its role as a localization fidelity measure.
+2. Compute the exact area of Box A, Box B, their intersection area, and the resulting $IoU(A, B)$.
+3. Trace the <strong>Non-Maximum Suppression (NMS)</strong> algorithm on candidate set $\{A, B, C, D\}$ with an NMS suppression threshold of $\tau = 0.50$.
+4. Specify the final retained detection bounding boxes with their confidence scores.</p>
+<h3>Step-by-Step Mathematical Solution</h3>
+<div class="worked-example">
+  <div class="worked-example-header">
+    <span class="worked-example-title">Numerical Examination Trace</span>
+    <span class="tag-badge tag-exam">10-MARK UNIVERSITY MODEL ANSWER</span>
+  </div>
+  <p><strong>1. Mathematical Definition of IoU:</strong><br>
+  For two bounding boxes $B_1$ and $B_2$, the Jaccard Index / Intersection over Union is:
+  
+$$IoU(B_1, B_2) = \frac{\text{Area}(B_1 \cap B_2)}{\text{Area}(B_1 \cup B_2)} = \frac{\text{Area}(B_1 \cap B_2)}{\text{Area}(B_1) + \text{Area}(B_2) - \text{Area}(B_1 \cap B_2)}$$
+
+  $IoU$ ranges between $0.0$ (disjoint boxes) and $1.0$ (identical geometry). In standard evaluation (PASCAL VOC / COCO), a detection is considered a True Positive if $IoU \ge 0.50$.</p>
+
+  <p><strong>2. Detailed Area and IoU Computations for Box A and Box B:</strong><br>
+  - <strong>Box A:</strong> $[x_{min}, y_{min}, x_{max}, y_{max}] = [50, 50, 150, 200]$
+    
+$$\text{Width } W_A = 150 - 50 = 100, \qquad \text{Height } H_A = 200 - 50 = 150$$
+
+    
+$$\text{Area}(A) = 100 \times 150 = \mathbf{15,000 \text{ pixels}^2}$$
+
+  - <strong>Box B:</strong> $[x_{min}, y_{min}, x_{max}, y_{max}] = [60, 55, 155, 205]$
+    
+$$\text{Width } W_B = 155 - 60 = 95, \qquad \text{Height } H_B = 205 - 55 = 150$$
+
+    
+$$\text{Area}(B) = 95 \times 150 = \mathbf{14,250 \text{ pixels}^2}$$
+
+  - <strong>Intersection Box $(A \cap B)$:</strong>
+    
+$$x_{min}^{\cap} = \max(50, 60) = 60, \qquad y_{min}^{\cap} = \max(50, 55) = 55$$
+
+    
+$$x_{max}^{\cap} = \min(150, 155) = 150, \qquad y_{max}^{\cap} = \min(200, 205) = 200$$
+
+    
+$$\text{Width } W_{\cap} = 150 - 60 = 90, \qquad \text{Height } H_{\cap} = 200 - 55 = 145$$
+
+    
+$$\text{Area}(A \cap B) = 90 \times 145 = \mathbf{13,050 \text{ pixels}^2}$$
+
+  - <strong>Union Area:</strong>
+    
+$$\text{Area}(A \cup B) = 15,000 + 14,250 - 13,050 = \mathbf{16,200 \text{ pixels}^2}$$
+
+  - <strong>$IoU(A, B)$:</strong>
+    
+$$IoU(A, B) = \frac{13,050}{16,200} = \mathbf{0.8056 \ (80.56\%)}$$
+</p>
+
+  <p><strong>3. Step-by-Step NMS Algorithm Trace ($\tau = 0.50$):</strong><br>
+  - <strong>Step 1: Sort candidates in descending order of confidence:</strong>
+    
+$$\mathcal{B} = [A (0.92), D (0.88), B (0.85), C (0.78)], \qquad \mathcal{D}_{\text{final}} = \emptyset$$
+
+  - <strong>Step 2: Select candidate with highest confidence:</strong> Select <strong>Box A (0.92)</strong>.
+    Add Box A to $\mathcal{D}_{\text{final}} = \{A\}$. Remove A from $\mathcal{B}$.
+    Compute IoU between Box A and remaining boxes in $\mathcal{B}$:
+    - $IoU(A, D)$: Box D has $x \in [220, 310]$, Box A has $x \in [50, 150]$. Completely disjoint! $IoU(A, D) = 0.0 < 0.50 \implies$ <strong>Keep Box D</strong>.
+    - $IoU(A, B) = 0.8056 > 0.50 \implies$ <strong>Suppress Box B!</strong>
+    - $IoU(A, C)$: Box C has $W_{\cap} = 150 - 55 = 95, H_{\cap} = 200 - 60 = 140 \implies \text{Area}_{\cap} = 13,300$.
+      $\text{Area}(C) = (160 - 55) \times (210 - 60) = 105 \times 150 = 15,750$.
+      $IoU(A, C) = \frac{13,300}{15,000 + 15,750 - 13,300} = \frac{13,300}{17,450} \approx 0.7622 > 0.50 \implies$ <strong>Suppress Box C!</strong>
+    Remaining list: $\mathcal{B} = [D (0.88)]$.
+  - <strong>Step 3: Process next highest candidate in $\mathcal{B}$</strong>: Select <strong>Box D (0.88)</strong>.
+    Add Box D to $\mathcal{D}_{\text{final}} = \{A, D\}$. Remove D from $\mathcal{B}$.
+    No candidate boxes remain in $\mathcal{B}$. Terminate.</p>
+
+  <p><strong>4. Final Detections Retained:</strong><br>
+  - <strong>Vehicle 1:</strong> Box A $[50, 50, 150, 200]$, Confidence $\mathbf{0.92}$<br>
+  - <strong>Vehicle 2:</strong> Box D $[220, 100, 310, 220]$, Confidence $\mathbf{0.88}$<br>
+  Redundant overlapping predictions B and C were successfully eliminated.</p>
+</div>
+    </div>
+  </section>
+
+  <!-- SECTION 28.55: YOLO Grid-Based Unified Detection Pipeline -->
+  <section id="s-28-55" class="section-block">
+    <div class="section-header">
+      <span class="section-num">28.55</span>
+      <h2>YOLO Grid-Based Unified Detection Pipeline</h2>
+      <button class="bookmark-btn" data-id="s-28-55" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="diagram-box"><div class="mermaid">
+graph TD
+    Img["Input Image 448x448x3"] --> Backbone["Darknet CNN Backbone"]
+    Backbone --> Grid["SxS Grid Division (7x7)"]
+    Grid --> Tensor["Output 3D Tensor: S x S x (B*5 + C)<br>7 x 7 x (2*5 + 20) = 7 x 7 x 30"]
+    Tensor --> Boxes["Bounding Box Predictions<br>[x, y, w, h, Confidence]"]
+    Tensor --> Probs["Class Conditional Probabilities<br>P(Class | Object)"]
+    Boxes --> NMS["Non-Maximum Suppression (NMS)<br>IoU Threshold = 0.5"]
+    Probs --> NMS
+    NMS --> Final["Final Bounding Boxes & Labels"]
+</div></div></p>
+    </div>
+  </section>
+
+      <!-- Chapter End Package -->
+      <section class="chapter-end-package">
+        <div class="chapter-nav-grid">
+          <a href="ch27-modern-vision-architectures.html" class="chapter-nav-card">
+            <div class="chapter-nav-dir">← Previous</div>
+            <div class="chapter-nav-title">← Ch 27 — Modern Vision Architectures</div>
+          </a>
+          <a href="ch29-image-denoising-autoencoders.html" class="chapter-nav-card next">
+            <div class="chapter-nav-dir">Next →</div>
+            <div class="chapter-nav-title">Next: Ch 29 — Image Denoising with Autoencoders →</div>
+          </a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- FLOATING TTS PANEL (SAFE MANUAL MODE ONLY) -->
+  <div id="tts-panel" style="position:fixed; bottom:20px; right:20px; background:var(--em-surface-1); border:1px solid var(--em-border); border-radius:var(--em-radius-md); padding:12px 16px; box-shadow:var(--sh-lg); z-index:var(--z-float); display:none; gap:10px; align-items:center;">
+    <button class="icon-btn" id="tts-play" title="Play / Pause" style="background:var(--em-accent); color:#fff; border-radius:50%; width:36px; height:36px;">▶</button>
+    <button class="icon-btn" id="tts-stop" title="Stop">⏹</button>
+    <div style="font-size:0.75rem; color:var(--em-text-muted);">
+      <span id="tts-status">Ready</span> · <span id="tts-rate-label">1.0x</span>
+    </div>
+  </div>
+
+  <script src="../assets/js/state.js"></script>
+  <script src="../assets/js/core.js"></script>
+  <script src="../assets/js/tts.js"></script>
+  <script src="../assets/js/glossary.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: document.documentElement.getAttribute('data-theme') === 'light' ? 'default' : 'dark'
+      });
+    });
+  </script>
+</body>
+</html>

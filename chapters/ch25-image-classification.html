@@ -1,0 +1,2401 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Arpit">
+  <meta name="description" content="Chapter 25: Image Classification Foundations — Digital Image Processing MiniBook. Feature Space Mapping, Decision Boundaries, Distance Metric Classifiers (k-NN), Linear Classifiers, Softmax &amp; Cross-Entropy Loss, and Regularization">
+  <title>C25: Image Classification Foundations | DIP MiniBook 📷 Arpit</title>
+
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <link rel="stylesheet" href="../assets/css/chapters.css">
+  <link rel="stylesheet" href="../assets/css/animations.css">
+  <link rel="stylesheet" href="../assets/css/timer.css">
+
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body data-chapter-id="ch25-image-classification">
+  <div id="progress-bar"></div>
+
+  <!-- Header -->
+  <header id="main-header">
+    <div class="header-left">
+      <button id="sidebar-toggle" class="icon-btn" aria-label="Toggle navigation drawer" title="Toggle Sidebar (S)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <a href="../index.html" class="brand-logo">
+        <div class="brand-icon">DIP</div>
+        <div class="brand-text">
+          <span class="main">Digital Image Processing</span>
+          <span class="sub">DU DSE-3 Engineering MiniBook</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="header-chapter-title">C25: Image Classification Foundations</div>
+
+    <div class="header-right">
+      <button id="reading-mode-btn" class="icon-btn" aria-label="Toggle reading focus mode" title="Focus Mode (F)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+          <line x1="8" y1="21" x2="16" y2="21"></line>
+          <line x1="12" y1="17" x2="12" y2="21"></line>
+        </svg>
+      </button>
+      <button id="tts-toggle" class="icon-btn" aria-label="Audio Reader" title="Audio Reader">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+        </svg>
+      </button>
+      <button id="theme-toggle" class="icon-btn" aria-label="Cycle theme" title="Theme (T)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="12" cy="12" r="4.5"></circle>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Sidebar Overlay -->
+  <div id="sidebar-overlay"></div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" aria-expanded="true">
+    <div class="sidebar-nav">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">General</div>
+        <a href="../index.html" class="sidebar-link">
+          <span class="link-icon">🏛️</span>
+          <span>Subject Portal</span>
+        </a>
+        <a href="../progress.html" class="sidebar-link">
+          <span class="link-icon">📊</span>
+          <span>Study Dashboard</span>
+        </a>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Current Chapter Sections</div>
+        <a href="#s-25-1" class="sidebar-link"><span class="link-icon">📌</span><span>25.1 Why This Chapter Exists</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-25-2" class="sidebar-link"><span class="link-icon">📌</span><span>25.2 Learning Contract</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-25-3" class="sidebar-link"><span class="link-icon">📌</span><span>25.3 Classification as a Mapping</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-25-4" class="sidebar-link"><span class="link-icon">📌</span><span>25.4 What Is a Class?</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-25-5" class="sidebar-link"><span class="link-icon">📌</span><span>25.5 The Classification Pipeline</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-25-6" class="sidebar-link"><span class="link-icon">📌</span><span>25.6 Classification vs Detection vs Segmentation</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-25-7" class="sidebar-link"><span class="link-icon">📌</span><span>25.7 Single-Label vs Multi-Label Classification</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-25-8" class="sidebar-link"><span class="link-icon">📌</span><span>25.8 Classical Image Classification</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-25-9" class="sidebar-link"><span class="link-icon">📌</span><span>25.9 Feature Vector</span> </a>
+      <a href="#s-25-10" class="sidebar-link"><span class="link-icon">📌</span><span>25.10 Learned Feature Representation</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-25-11" class="sidebar-link"><span class="link-icon">📌</span><span>25.11 Dataset Structure</span> </a>
+      <a href="#s-25-12" class="sidebar-link"><span class="link-icon">📌</span><span>25.12 Training, Validation and Test</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-25-13" class="sidebar-link"><span class="link-icon">📌</span><span>25.13 Why Data Splitting Matters</span> </a>
+      <a href="#s-25-14" class="sidebar-link"><span class="link-icon">📌</span><span>25.14 Preprocessing</span> </a>
+      <a href="#s-25-15" class="sidebar-link"><span class="link-icon">📌</span><span>25.15 Normalization Example</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-25-16" class="sidebar-link"><span class="link-icon">📌</span><span>25.16 Class Scores and Probabilities</span> </a>
+      <a href="#s-25-17" class="sidebar-link"><span class="link-icon">📌</span><span>25.17 Probability Output vs Confidence</span> </a>
+      <a href="#s-25-18" class="sidebar-link"><span class="link-icon">📌</span><span>25.18 Confusion Matrix</span> </a>
+      <a href="#s-25-19" class="sidebar-link"><span class="link-icon">📌</span><span>25.19 Accuracy</span> </a>
+      <a href="#s-25-20" class="sidebar-link"><span class="link-icon">📌</span><span>25.20 Precision, Recall and F1</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-25-21" class="sidebar-link"><span class="link-icon">📌</span><span>25.21 Worked Metric Example</span> </a>
+      <a href="#s-25-22" class="sidebar-link"><span class="link-icon">📌</span><span>25.22 Why Accuracy Can Mislead</span> </a>
+      <a href="#s-25-23" class="sidebar-link"><span class="link-icon">📌</span><span>25.23 Training Objective</span> </a>
+      <a href="#s-25-24" class="sidebar-link"><span class="link-icon">📌</span><span>25.24 Overfitting</span> </a>
+      <a href="#s-25-25" class="sidebar-link"><span class="link-icon">📌</span><span>25.25 Underfitting</span> </a>
+      <a href="#s-25-26" class="sidebar-link"><span class="link-icon">📌</span><span>25.26 Generalization</span> </a>
+      <a href="#s-25-27" class="sidebar-link"><span class="link-icon">📌</span><span>25.27 Image Classification with Classical Features</span> </a>
+      <a href="#s-25-28" class="sidebar-link"><span class="link-icon">📌</span><span>25.28 Why CNNs Became Important</span> </a>
+      <a href="#s-25-29" class="sidebar-link"><span class="link-icon">📌</span><span>25.29 Classification Example — MNIST</span> </a>
+      <a href="#s-25-30" class="sidebar-link"><span class="link-icon">📌</span><span>25.30 MNIST as a Classification Problem</span> </a>
+      <a href="#s-25-31" class="sidebar-link"><span class="link-icon">📌</span><span>25.31 End-to-End Classification Workflow</span> </a>
+      <a href="#s-25-32" class="sidebar-link"><span class="link-icon">📌</span><span>25.32 Error Analysis</span> </a>
+      <a href="#s-25-33" class="sidebar-link"><span class="link-icon">📌</span><span>25.33 Confusion Matrix for MNIST</span> </a>
+      <a href="#s-25-34" class="sidebar-link"><span class="link-icon">📌</span><span>25.34 Feature Learning vs Hand-Designed Features</span> </a>
+      <a href="#s-25-35" class="sidebar-link"><span class="link-icon">📌</span><span>25.35 Classification Failure Modes</span> </a>
+      <a href="#s-25-36" class="sidebar-link"><span class="link-icon">📌</span><span>25.36 Engineering Decision Example</span> </a>
+      <a href="#s-25-37" class="sidebar-link"><span class="link-icon">📌</span><span>25.37 Tensor View</span> </a>
+      <a href="#s-25-38" class="sidebar-link"><span class="link-icon">📌</span><span>25.38 Shape Example</span> </a>
+      <a href="#s-25-39" class="sidebar-link"><span class="link-icon">📌</span><span>25.39 Mini Classification Model</span> </a>
+      <a href="#s-25-40" class="sidebar-link"><span class="link-icon">📌</span><span>25.40 Keras Classification Skeleton</span> </a>
+      <a href="#s-25-41" class="sidebar-link"><span class="link-icon">📌</span><span>25.41 Why the Final Layer Has 10 Outputs</span> </a>
+      <a href="#s-25-42" class="sidebar-link"><span class="link-icon">📌</span><span>25.42 Worked Softmax Example</span> </a>
+      <a href="#s-25-43" class="sidebar-link"><span class="link-icon">📌</span><span>25.43 Why Classification Belongs After DIP Foundations</span> </a>
+      <a href="#s-25-44" class="sidebar-link"><span class="link-icon">📌</span><span>25.44 Exam Lens</span> </a>
+      <a href="#s-25-45" class="sidebar-link"><span class="link-icon">📌</span><span>25.45 Chapter Checkpoint</span> </a>
+      <a href="#s-25-46" class="sidebar-link"><span class="link-icon">📌</span><span>25.46 One-Page Recall Sheet</span> </a>
+      <a href="#s-25-47" class="sidebar-link"><span class="link-icon">📌</span><span>25.47 Cross-Book Links</span> </a>
+      <a href="#s-25-48" class="sidebar-link"><span class="link-icon">📌</span><span>25.48 Final Chapter Summary</span> </a>
+      <a href="#s-25-49" class="sidebar-link"><span class="link-icon">📌</span><span>25.49 Worked Example — 10-Mark University Model Answer: Distance Classifiers, Decision Boundaries &amp; Softmax Loss</span> </a>
+      <a href="#s-25-50" class="sidebar-link"><span class="link-icon">📌</span><span>25.50 Comprehensive Delhi University Examination Checklist &amp; Mark Distribution</span> </a>
+      </div>
+
+      
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-i">Part I — The Image</div>
+      <a href="ch01-big-picture.html" class="sidebar-link"><span class="link-icon">01</span><span>The Big Picture</span></a>
+      <a href="ch02-image-formation.html" class="sidebar-link"><span class="link-icon">02</span><span>Formation & Acquisition</span></a>
+      <a href="ch03-sampling-quantization.html" class="sidebar-link"><span class="link-icon">03</span><span>Sampling & Quantization</span></a>
+      <a href="ch04-image-representation.html" class="sidebar-link"><span class="link-icon">04</span><span>Pixels, Matrices & Resolution</span></a>
+      <a href="ch05-colour-models-file-formats.html" class="sidebar-link"><span class="link-icon">05</span><span>Colour Models & Formats</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-ii">Part II — Improving the Image</div>
+      <a href="ch06-point-processing.html" class="sidebar-link"><span class="link-icon">06</span><span>Point Processing & Intensity</span></a>
+      <a href="ch07-histograms-equalization.html" class="sidebar-link"><span class="link-icon">07</span><span>Histograms & Equalization</span></a>
+      <a href="ch08-spatial-filtering.html" class="sidebar-link"><span class="link-icon">08</span><span>Spatial Filtering & Convolution</span></a>
+      <a href="ch09-smoothing-noise-reduction.html" class="sidebar-link"><span class="link-icon">09</span><span>Smoothing & Noise Reduction</span></a>
+      <a href="ch10-sharpening-edge-detection.html" class="sidebar-link"><span class="link-icon">10</span><span>Sharpening & Edge Detection</span></a>
+      <a href="ch11-geometric-transforms.html" class="sidebar-link"><span class="link-icon">11</span><span>Geometric Transforms</span></a>
+      <a href="ch12-fourier-transform.html" class="sidebar-link"><span class="link-icon">12</span><span>Fourier Transform & Frequency</span></a>
+      <a href="ch13-frequency-filtering.html" class="sidebar-link"><span class="link-icon">13</span><span>Frequency-Domain Filtering</span></a>
+      <a href="ch14-image-restoration.html" class="sidebar-link"><span class="link-icon">14</span><span>Restoration & Deblurring</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-iii">Part III — Understanding Content</div>
+      <a href="ch15-segmentation-fundamentals.html" class="sidebar-link"><span class="link-icon">15</span><span>Segmentation Fundamentals</span></a>
+      <a href="ch16-thresholding-otsu.html" class="sidebar-link"><span class="link-icon">16</span><span>Thresholding & Otsu Method</span></a>
+      <a href="ch17-region-segmentation.html" class="sidebar-link"><span class="link-icon">17</span><span>Region-Based Segmentation</span></a>
+      <a href="ch18-mathematical-morphology.html" class="sidebar-link"><span class="link-icon">18</span><span>Mathematical Morphology</span></a>
+      <a href="ch19-features-descriptors.html" class="sidebar-link"><span class="link-icon">19</span><span>Image Features & Descriptors</span></a>
+      <a href="ch20-sift-surf-orb-hog.html" class="sidebar-link"><span class="link-icon">20</span><span>SIFT, SURF, ORB & HOG</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-iv">Part IV — Compressing Images</div>
+      <a href="ch21-compression-entropy.html" class="sidebar-link"><span class="link-icon">21</span><span>Compression & Entropy</span></a>
+      <a href="ch22-lossless-coding.html" class="sidebar-link"><span class="link-icon">22</span><span>Lossless: RLE & Huffman</span></a>
+      <a href="ch23-lossy-dct-jpeg.html" class="sidebar-link"><span class="link-icon">23</span><span>Lossy: DCT & JPEG</span></a>
+      <a href="ch24-wavelets-jpeg2000.html" class="sidebar-link"><span class="link-icon">24</span><span>Wavelets & JPEG 2000</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-v">Part V — Intelligent Vision</div>
+      <a href="ch25-image-classification.html" class="sidebar-link active"><span class="link-icon">25</span><span>Image Classification</span></a>
+      <a href="ch26-cnns-image-processing.html" class="sidebar-link"><span class="link-icon">26</span><span>CNNs for Image Processing</span></a>
+      <a href="ch27-modern-vision-architectures.html" class="sidebar-link"><span class="link-icon">27</span><span>Modern Vision Architectures</span></a>
+      <a href="ch28-object-detection-yolo.html" class="sidebar-link"><span class="link-icon">28</span><span>Object Detection: YOLO</span></a>
+      <a href="ch29-image-denoising-autoencoders.html" class="sidebar-link"><span class="link-icon">29</span><span>Image Denoising Autoencoders</span></a>
+      <a href="ch30-video-motion-analysis.html" class="sidebar-link"><span class="link-icon">30</span><span>Video & Motion Analysis</span></a>
+      <a href="ch31-dip-applications-engineering.html" class="sidebar-link"><span class="link-icon">31</span><span>DIP Applications & Ethics</span></a>
+    </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-brand-mark">
+        <div class="mark">DU</div>
+        <div>
+          <strong>DSE-3 MiniBook</strong>
+          <div>University of Delhi</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mandatory Shell Wrapper -->
+  <div id="main-content">
+    <main class="chapter-content">
+      <!-- Chapter Hero -->
+      <div class="chapter-hero">
+        <div class="hero-meta">
+          <span class="part-badge part-v">Intelligent Vision</span>
+          <span class="chapter-number">CHAPTER 25</span>
+          <span class="reading-time">⏱️ ~50 min read</span>
+          <span class="tag-badge tag-core">Highest Yield (10-mark guarantee)</span>
+        </div>
+        <h1 class="chapter-title">Image Classification Foundations</h1>
+        <p class="chapter-subtitle">
+          Feature Space Mapping, Decision Boundaries, Distance Metric Classifiers (k-NN), Linear Classifiers, Softmax &amp; Cross-Entropy Loss, and Regularization
+        </p>
+
+        <div class="syllabus-anchor">
+          <span class="syllabus-anchor-label">DU Syllabus</span>
+          <span><strong>Image Classification:</strong> Feature space mapping, decision boundaries, minimum distance classifier, k-Nearest Neighbors (k-NN) classification, linear classifier formulation ($W x + b$), Softmax function and categorical cross-entropy loss, bias-variance tradeoff, overfitting and regularization.</span>
+        </div>
+      </div>
+
+      <!-- In-Page TOC -->
+      <div class="chapter-checklist-card" style="margin-bottom:var(--em-space-8);">
+        <div class="checklist-title">
+          <span>Table of Contents &amp; Visual Section Map</span>
+          <span class="tag-badge tag-math">50 Deep Sections</span>
+        </div>
+        <ul class="part-chapters-list">
+          <li class="part-chapter-item"><a href="#s-25-1"><strong>25.1</strong> Why This Chapter Exists</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-25-2"><strong>25.2</strong> Learning Contract</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-25-3"><strong>25.3</strong> Classification as a Mapping</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-25-4"><strong>25.4</strong> What Is a Class?</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-25-5"><strong>25.5</strong> The Classification Pipeline</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-25-6"><strong>25.6</strong> Classification vs Detection vs Segmentation</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-25-7"><strong>25.7</strong> Single-Label vs Multi-Label Classification</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-25-8"><strong>25.8</strong> Classical Image Classification</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-25-9"><strong>25.9</strong> Feature Vector</a> </li>
+      <li class="part-chapter-item"><a href="#s-25-10"><strong>25.10</strong> Learned Feature Representation</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-25-11"><strong>25.11</strong> Dataset Structure</a> </li>
+      <li class="part-chapter-item"><a href="#s-25-12"><strong>25.12</strong> Training, Validation and Test</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-25-13"><strong>25.13</strong> Why Data Splitting Matters</a> </li>
+      <li class="part-chapter-item"><a href="#s-25-14"><strong>25.14</strong> Preprocessing</a> </li>
+      <li class="part-chapter-item"><a href="#s-25-15"><strong>25.15</strong> Normalization Example</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-25-16"><strong>25.16</strong> Class Scores and Probabilities</a> </li>
+      <li class="part-chapter-item"><a href="#s-25-17"><strong>25.17</strong> Probability Output vs Confidence</a> </li>
+      <li class="part-chapter-item"><a href="#s-25-18"><strong>25.18</strong> Confusion Matrix</a> </li>
+      <li class="part-chapter-item"><a href="#s-25-19"><strong>25.19</strong> Accuracy</a> </li>
+      <li class="part-chapter-item"><a href="#s-25-20"><strong>25.20</strong> Precision, Recall and F1</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-25-21"><strong>25.21</strong> Worked Metric Example</a> </li>
+      <li class="part-chapter-item"><a href="#s-25-22"><strong>25.22</strong> Why Accuracy Can Mislead</a> </li>
+      <li class="part-chapter-item"><a href="#s-25-23"><strong>25.23</strong> Training Objective</a> </li>
+      <li class="part-chapter-item"><a href="#s-25-24"><strong>25.24</strong> Overfitting</a> </li>
+      <li class="part-chapter-item"><a href="#s-25-25"><strong>25.25</strong> Underfitting</a> </li>
+      <li class="part-chapter-item"><a href="#s-25-26"><strong>25.26</strong> Generalization</a> </li>
+      <li class="part-chapter-item"><a href="#s-25-27"><strong>25.27</strong> Image Classification with Classical Features</a> </li>
+      <li class="part-chapter-item"><a href="#s-25-28"><strong>25.28</strong> Why CNNs Became Important</a> </li>
+      <li class="part-chapter-item"><a href="#s-25-29"><strong>25.29</strong> Classification Example — MNIST</a> </li>
+      <li class="part-chapter-item"><a href="#s-25-30"><strong>25.30</strong> MNIST as a Classification Problem</a> </li>
+      <li class="part-chapter-item"><a href="#s-25-31"><strong>25.31</strong> End-to-End Classification Workflow</a> </li>
+      <li class="part-chapter-item"><a href="#s-25-32"><strong>25.32</strong> Error Analysis</a> </li>
+      <li class="part-chapter-item"><a href="#s-25-33"><strong>25.33</strong> Confusion Matrix for MNIST</a> </li>
+      <li class="part-chapter-item"><a href="#s-25-34"><strong>25.34</strong> Feature Learning vs Hand-Designed Features</a> </li>
+      <li class="part-chapter-item"><a href="#s-25-35"><strong>25.35</strong> Classification Failure Modes</a> </li>
+      <li class="part-chapter-item"><a href="#s-25-36"><strong>25.36</strong> Engineering Decision Example</a> </li>
+      <li class="part-chapter-item"><a href="#s-25-37"><strong>25.37</strong> Tensor View</a> </li>
+      <li class="part-chapter-item"><a href="#s-25-38"><strong>25.38</strong> Shape Example</a> </li>
+      <li class="part-chapter-item"><a href="#s-25-39"><strong>25.39</strong> Mini Classification Model</a> </li>
+      <li class="part-chapter-item"><a href="#s-25-40"><strong>25.40</strong> Keras Classification Skeleton</a> </li>
+      <li class="part-chapter-item"><a href="#s-25-41"><strong>25.41</strong> Why the Final Layer Has 10 Outputs</a> </li>
+      <li class="part-chapter-item"><a href="#s-25-42"><strong>25.42</strong> Worked Softmax Example</a> </li>
+      <li class="part-chapter-item"><a href="#s-25-43"><strong>25.43</strong> Why Classification Belongs After DIP Foundations</a> </li>
+      <li class="part-chapter-item"><a href="#s-25-44"><strong>25.44</strong> Exam Lens</a> </li>
+      <li class="part-chapter-item"><a href="#s-25-45"><strong>25.45</strong> Chapter Checkpoint</a> </li>
+      <li class="part-chapter-item"><a href="#s-25-46"><strong>25.46</strong> One-Page Recall Sheet</a> </li>
+      <li class="part-chapter-item"><a href="#s-25-47"><strong>25.47</strong> Cross-Book Links</a> </li>
+      <li class="part-chapter-item"><a href="#s-25-48"><strong>25.48</strong> Final Chapter Summary</a> </li>
+      <li class="part-chapter-item"><a href="#s-25-49"><strong>25.49</strong> Worked Example — 10-Mark University Model Answer: Distance Classifiers, Decision Boundaries &amp; Softmax Loss</a> </li>
+      <li class="part-chapter-item"><a href="#s-25-50"><strong>25.50</strong> Comprehensive Delhi University Examination Checklist &amp; Mark Distribution</a> </li>
+        </ul>
+      </div>
+
+      <div class="concept-hook" style="margin-bottom:var(--em-space-8);"><h1>C25 — Image Classification</h1>
+<blockquote>
+<p><strong>Chapter thesis:</strong> Image classification maps an input image to a class decision, turning numerical image data into a categorical interpretation.</p>
+</blockquote>
+<hr /></div>
+
+      <!-- All Numbered Sections -->
+      
+  <!-- SECTION 25.1: Why This Chapter Exists -->
+  <section id="s-25-1" class="section-block">
+    <div class="section-header">
+      <span class="section-num">25.1</span>
+      <h2>Why This Chapter Exists</h2>
+      <button class="bookmark-btn" data-id="s-25-1" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Digital Image Processing begins by asking:</p>
+<blockquote>
+<p>How can we represent and manipulate an image?</p>
+</blockquote>
+<p>Advanced vision systems ask:</p>
+<blockquote>
+<p>What does the image contain?</p>
+</blockquote>
+<p><strong>Image classification</strong> is one of the first answers.</p>
+<p>A classifier receives an image and predicts a class:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image
+  ↓
+representation
+  ↓
+feature extraction / learned representation
+  ↓
+classifier
+  ↓
+class prediction</code></pre>
+</div></p>
+<p>Examples:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>digit image → &quot;7&quot;
+
+fruit image → &quot;apple&quot;
+
+road image → &quot;road&quot;
+
+medical image → &quot;class A&quot;</code></pre>
+</div></p>
+<p>The exact application varies, but the computational structure is similar.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 25.2: Learning Contract -->
+  <section id="s-25-2" class="section-block">
+    <div class="section-header">
+      <span class="section-num">25.2</span>
+      <h2>Learning Contract</h2>
+      <button class="bookmark-btn" data-id="s-25-2" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>After this chapter, you should be able to:</p>
+<ul>
+<li>define image classification;</li>
+<li>distinguish classification from detection and segmentation;</li>
+<li>explain class labels, features, training, validation and testing;</li>
+<li>distinguish classical feature-based pipelines from learned feature pipelines;</li>
+<li>explain supervised image classification;</li>
+<li>represent an image as a feature vector or tensor;</li>
+<li>understand class scores, probabilities and predicted labels;</li>
+<li>read a confusion matrix;</li>
+<li>calculate accuracy, precision, recall and F1 for simple cases;</li>
+<li>explain overfitting and generalization in image classification;</li>
+<li>trace a complete MNIST classification workflow;</li>
+<li>connect classical DIP features to CNN-based classification.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 25.3: Classification as a Mapping -->
+  <section id="s-25-3" class="section-block">
+    <div class="section-header">
+      <span class="section-num">25.3</span>
+      <h2>Classification as a Mapping</h2>
+      <button class="bookmark-btn" data-id="s-25-3" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Let an input image be:</p>
+<p>
+$$
+X.
+$$
+</p>
+<p>A classifier implements a function:</p>
+<p>
+$$
+f(X)\rightarrow y
+$$
+</p>
+<p>where:</p>
+<p>
+$$
+y\in\{1,2,\ldots,K\}
+$$
+</p>
+<p>is one of $K$ possible classes.</p>
+<p>For example:</p>
+<p>
+$$
+f(X_{\text{digit}})\rightarrow 7.
+$$
+</p>
+<p>The model does not literally “understand” the semantic concept in the human sense. It learns a mapping from image representations to target labels using examples.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 25.4: What Is a Class? -->
+  <section id="s-25-4" class="section-block">
+    <div class="section-header">
+      <span class="section-num">25.4</span>
+      <h2>What Is a Class?</h2>
+      <button class="bookmark-btn" data-id="s-25-4" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A <strong>class</strong> is a category assigned to an image under a particular task definition.</p>
+<p>Example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Classes:
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9</code></pre>
+</div></p>
+<p>for handwritten digit classification.</p>
+<p>The same image could belong to different classes under a different task.</p>
+<p>For example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>car image</code></pre>
+</div></p>
+<p>could be classified as:</p>
+<ul>
+<li>vehicle type;</li>
+<li>manufacturer;</li>
+<li>colour;</li>
+<li>road condition;</li>
+<li>scene category.</li>
+</ul>
+<p>Therefore:</p>
+<blockquote>
+<p><strong>Classification depends on the label definition, not only on the image.</strong></p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 25.5: The Classification Pipeline -->
+  <section id="s-25-5" class="section-block">
+    <div class="section-header">
+      <span class="section-num">25.5</span>
+      <h2>The Classification Pipeline</h2>
+      <button class="bookmark-btn" data-id="s-25-5" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A useful generic pipeline is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Raw image
+    ↓
+Preprocessing
+    ↓
+Representation
+    ↓
+Feature extraction
+    ↓
+Classifier
+    ↓
+Scores / probabilities
+    ↓
+Predicted class
+    ↓
+Evaluation</code></pre>
+</div></p>
+<p>In classical systems:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image
+→ manually designed features
+→ classifier</code></pre>
+</div></p>
+<p>In deep learning systems:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image
+→ learned features
+→ classifier</code></pre>
+</div></p>
+<p>The second architecture becomes the focus of C26.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 25.6: Classification vs Detection vs Segmentation -->
+  <section id="s-25-6" class="section-block">
+    <div class="section-header">
+      <span class="section-num">25.6</span>
+      <h2>Classification vs Detection vs Segmentation</h2>
+      <button class="bookmark-btn" data-id="s-25-6" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>This distinction is essential.</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Classification
+→ What is in the image?
+
+Detection
+→ What is present, and where?
+
+Segmentation
+→ Which pixels belong to which region/class?</code></pre>
+</div></p>
+<h3>Example</h3>
+<p>Suppose an image contains a cat and a dog.</p>
+<h3>Classification</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>cat + dog</code></pre>
+</div></p>
+<p>or, if the task permits only one label:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>&quot;animals&quot;</code></pre>
+</div></p>
+<h3>Object detection</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>cat → bounding box
+dog → bounding box</code></pre>
+</div></p>
+<h3>Semantic segmentation</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>cat pixels → cat
+dog pixels → dog
+background → background</code></pre>
+</div></p>
+<p>The output structure is different even when the same image is used.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 25.7: Single-Label vs Multi-Label Classification -->
+  <section id="s-25-7" class="section-block">
+    <div class="section-header">
+      <span class="section-num">25.7</span>
+      <h2>Single-Label vs Multi-Label Classification</h2>
+      <button class="bookmark-btn" data-id="s-25-7" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Single-label</h3>
+<p>One image receives one class.</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image → &quot;cat&quot;</code></pre>
+</div></p>
+<h3>Multi-label</h3>
+<p>One image can receive multiple class labels.</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image → {&quot;cat&quot;, &quot;sofa&quot;, &quot;indoor&quot;}</code></pre>
+</div></p>
+<p>The syllabus does not require a separate treatment of multi-label learning, but the distinction prevents confusion when reading modern computer-vision systems.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 25.8: Classical Image Classification -->
+  <section id="s-25-8" class="section-block">
+    <div class="section-header">
+      <span class="section-num">25.8</span>
+      <h2>Classical Image Classification</h2>
+      <button class="bookmark-btn" data-id="s-25-8" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A traditional pipeline might be:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image
+ ↓
+preprocessing
+ ↓
+feature extraction
+ ↓
+feature vector
+ ↓
+classifier
+ ↓
+label</code></pre>
+</div></p>
+<p>Features might include:</p>
+<ul>
+<li>intensity statistics;</li>
+<li>edges;</li>
+<li>corners;</li>
+<li>texture;</li>
+<li>shape;</li>
+<li>SIFT/HOG-style descriptors.</li>
+</ul>
+<p>This creates a direct connection to Part III.</p>
+<p>For example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>C19/C20
+hand-designed features
+        ↓
+C25
+classification using those features</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 25.9: Feature Vector -->
+  <section id="s-25-9" class="section-block">
+    <div class="section-header">
+      <span class="section-num">25.9</span>
+      <h2>Feature Vector</h2>
+      <button class="bookmark-btn" data-id="s-25-9" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose an image is represented by measurements:</p>
+<p>
+$$
+x_1,x_2,\ldots,x_n.
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+\mathbf{x}=
+[x_1,x_2,\ldots,x_n]^T
+$$
+</p>
+<p>is a feature vector.</p>
+<p>For example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>mean intensity
+edge density
+texture measure
+shape descriptor
+...</code></pre>
+</div></p>
+<p>can become a numerical vector.</p>
+<p>A classical classifier receives $\mathbf{x}$, not necessarily the raw image.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 25.10: Learned Feature Representation -->
+  <section id="s-25-10" class="section-block">
+    <div class="section-header">
+      <span class="section-num">25.10</span>
+      <h2>Learned Feature Representation</h2>
+      <button class="bookmark-btn" data-id="s-25-10" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Deep learning changes the architecture:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>raw image
+    ↓
+learned filters
+    ↓
+feature maps
+    ↓
+higher-level representation
+    ↓
+classifier</code></pre>
+</div></p>
+<p>Instead of manually specifying all useful features, the model learns intermediate representations from training data.</p>
+<p>This is the conceptual bridge from C25 to C26.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 25.11: Dataset Structure -->
+  <section id="s-25-11" class="section-block">
+    <div class="section-header">
+      <span class="section-num">25.11</span>
+      <h2>Dataset Structure</h2>
+      <button class="bookmark-btn" data-id="s-25-11" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A supervised classification dataset contains examples of:</p>
+<p>
+$$
+(X,y)
+$$
+</p>
+<p>where:</p>
+<ul>
+<li>$X$ = input image;</li>
+<li>$y$ = target label.</li>
+</ul>
+<p>Example:</p>
+<div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Image</th>
+<th>Label</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>handwritten 0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>handwritten 1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>handwritten 7</td>
+<td>7</td>
+</tr>
+</tbody>
+</table></div>
+<p>A training dataset should contain enough variation to represent the kinds of inputs expected at inference time.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 25.12: Training, Validation and Test -->
+  <section id="s-25-12" class="section-block">
+    <div class="section-header">
+      <span class="section-num">25.12</span>
+      <h2>Training, Validation and Test</h2>
+      <button class="bookmark-btn" data-id="s-25-12" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A standard workflow is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Dataset
+  │
+  ├── Training set
+  ├── Validation set
+  └── Test set</code></pre>
+</div></p>
+<h3>Training set</h3>
+<p>Used to fit model parameters.</p>
+<h3>Validation set</h3>
+<p>Used to make development decisions, such as:</p>
+<ul>
+<li>hyperparameter choices;</li>
+<li>model selection;</li>
+<li>early stopping.</li>
+</ul>
+<h3>Test set</h3>
+<p>Used for final evaluation after development choices are complete.</p>
+<p>The test set should not become an informal repeated tuning set.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 25.13: Why Data Splitting Matters -->
+  <section id="s-25-13" class="section-block">
+    <div class="section-header">
+      <span class="section-num">25.13</span>
+      <h2>Why Data Splitting Matters</h2>
+      <button class="bookmark-btn" data-id="s-25-13" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose a model is evaluated on images it has effectively memorized.</p>
+<p>A high score can then be misleading.</p>
+<p>The real question is:</p>
+<blockquote>
+<p>How well does the model perform on unseen examples drawn from the intended data distribution?</p>
+</blockquote>
+<p>This is <strong>generalization</strong>.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 25.14: Preprocessing -->
+  <section id="s-25-14" class="section-block">
+    <div class="section-header">
+      <span class="section-num">25.14</span>
+      <h2>Preprocessing</h2>
+      <button class="bookmark-btn" data-id="s-25-14" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Images may need preprocessing before classification.</p>
+<p>Common operations include:</p>
+<ul>
+<li>resizing;</li>
+<li>normalization;</li>
+<li>colour conversion;</li>
+<li>cropping;</li>
+<li>alignment;</li>
+<li>noise handling;</li>
+<li>data augmentation.</li>
+</ul>
+<p>For MNIST, for example, grayscale digit images can be normalized into a convenient numeric range before entering the CNN.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 25.15: Normalization Example -->
+  <section id="s-25-15" class="section-block">
+    <div class="section-header">
+      <span class="section-num">25.15</span>
+      <h2>Normalization Example</h2>
+      <button class="bookmark-btn" data-id="s-25-15" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose pixel values are stored in:</p>
+<p>
+$$
+0\le x\le255.
+$$
+</p>
+<p>A simple normalization is:</p>
+<p>
+$$
+x'=\frac{x}{255}.
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+0\le x'\le1.
+$$
+</p>
+<p>Example:</p>
+<p>
+$$
+x=128
+$$
+</p>
+<p>becomes:</p>
+<p>
+$$
+x'=\frac{128}{255}\approx0.502.
+$$
+</p>
+<p>Normalization does not change the semantic image content. It changes the numerical scale used by the model.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 25.16: Class Scores and Probabilities -->
+  <section id="s-25-16" class="section-block">
+    <div class="section-header">
+      <span class="section-num">25.16</span>
+      <h2>Class Scores and Probabilities</h2>
+      <button class="bookmark-btn" data-id="s-25-16" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A classifier may produce a score for each class.</p>
+<p>For ten classes:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>class 0 → score
+class 1 → score
+...
+class 9 → score</code></pre>
+</div></p>
+<p>The predicted class is commonly chosen as the class with the highest output score.</p>
+<p>For probability-style outputs:</p>
+<p>
+$$
+\hat y=
+\arg\max_k p(y=k\mid X).
+$$
+</p>
+<p>For example:</p>
+<div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Class</th>
+<th style="text-align: right;">Probability</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td style="text-align: right;">0.01</td>
+</tr>
+<tr>
+<td>1</td>
+<td style="text-align: right;">0.03</td>
+</tr>
+<tr>
+<td>2</td>
+<td style="text-align: right;">0.02</td>
+</tr>
+<tr>
+<td>3</td>
+<td style="text-align: right;">0.04</td>
+</tr>
+<tr>
+<td>4</td>
+<td style="text-align: right;">0.05</td>
+</tr>
+<tr>
+<td>5</td>
+<td style="text-align: right;">0.01</td>
+</tr>
+<tr>
+<td>6</td>
+<td style="text-align: right;">0.02</td>
+</tr>
+<tr>
+<td>7</td>
+<td style="text-align: right;"><strong>0.79</strong></td>
+</tr>
+<tr>
+<td>8</td>
+<td style="text-align: right;">0.02</td>
+</tr>
+<tr>
+<td>9</td>
+<td style="text-align: right;">0.01</td>
+</tr>
+</tbody>
+</table></div>
+<p>Prediction:</p>
+<p>
+$$
+\boxed{7}
+$$
+</p>
+<p>because it has the largest probability.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 25.17: Probability Output vs Confidence -->
+  <section id="s-25-17" class="section-block">
+    <div class="section-header">
+      <span class="section-num">25.17</span>
+      <h2>Probability Output vs Confidence</h2>
+      <button class="bookmark-btn" data-id="s-25-17" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A numerical output such as:</p>
+<p>
+$$
+0.79
+$$
+</p>
+<p>should not automatically be interpreted as:</p>
+<blockquote>
+<p>“The model is 79% certain in a perfectly calibrated sense.”</p>
+</blockquote>
+<p>Model probabilities can be poorly calibrated.</p>
+<p>For a university-level introduction, it is enough to understand:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>class score/probability distribution
+→ selected label</code></pre>
+</div></p>
+<p>while recognizing that probability calibration is a separate topic.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 25.18: Confusion Matrix -->
+  <section id="s-25-18" class="section-block">
+    <div class="section-header">
+      <span class="section-num">25.18</span>
+      <h2>Confusion Matrix</h2>
+      <button class="bookmark-btn" data-id="s-25-18" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For $K$ classes, a confusion matrix records:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>predicted class
+        ↓
+actual class → matrix</code></pre>
+</div></p>
+<p>For a binary case:</p>
+<div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th></th>
+<th style="text-align: right;">Predicted +</th>
+<th style="text-align: right;">Predicted −</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Actual +</td>
+<td style="text-align: right;">TP</td>
+<td style="text-align: right;">FN</td>
+</tr>
+<tr>
+<td>Actual −</td>
+<td style="text-align: right;">FP</td>
+<td style="text-align: right;">TN</td>
+</tr>
+</tbody>
+</table></div>
+<p>where:</p>
+<ul>
+<li>TP = true positive;</li>
+<li>TN = true negative;</li>
+<li>FP = false positive;</li>
+<li>FN = false negative.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 25.19: Accuracy -->
+  <section id="s-25-19" class="section-block">
+    <div class="section-header">
+      <span class="section-num">25.19</span>
+      <h2>Accuracy</h2>
+      <button class="bookmark-btn" data-id="s-25-19" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Accuracy is:</p>
+<p>
+$$
+\text{Accuracy}
+=
+\frac{TP+TN}
+{TP+TN+FP+FN}.
+$$
+</p>
+<p>For a multiclass confusion matrix:</p>
+<p>
+$$
+\text{Accuracy}
+=
+\frac{\sum_i C_{ii}}
+{\sum_{i,j} C_{ij}}.
+$$
+</p>
+<p>The diagonal contains correct classifications.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 25.20: Precision, Recall and F1 -->
+  <section id="s-25-20" class="section-block">
+    <div class="section-header">
+      <span class="section-num">25.20</span>
+      <h2>Precision, Recall and F1</h2>
+      <button class="bookmark-btn" data-id="s-25-20" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For a binary class:</p>
+<p>
+$$
+\text{Precision}
+=
+\frac{TP}{TP+FP}
+$$
+</p>
+<p>
+$$
+\text{Recall}
+=
+\frac{TP}{TP+FN}.
+$$
+</p>
+<p>F1 score is:</p>
+<p>
+$$
+F1=
+\frac{2PR}{P+R}.
+$$
+</p>
+<p>These are useful when the cost of false positives and false negatives differs.</p>
+<p>They are supporting evaluation concepts rather than separate syllabus headings.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 25.21: Worked Metric Example -->
+  <section id="s-25-21" class="section-block">
+    <div class="section-header">
+      <span class="section-num">25.21</span>
+      <h2>Worked Metric Example</h2>
+      <button class="bookmark-btn" data-id="s-25-21" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p>
+$$
+TP=90,\quad TN=850,\quad FP=30,\quad FN=30.
+$$
+</p>
+<p>Total:</p>
+<p>
+$$
+90+850+30+30=1000.
+$$
+</p>
+<p>Accuracy:</p>
+<p>
+$$
+\frac{90+850}{1000}
+=
+0.94
+$$
+</p>
+<p>or:</p>
+<p>
+$$
+\boxed{94\%}.
+$$
+</p>
+<p>Precision:</p>
+<p>
+$$
+\frac{90}{90+30}
+=
+0.75.
+$$
+</p>
+<p>Recall:</p>
+<p>
+$$
+\frac{90}{90+30}
+=
+0.75.
+$$
+</p>
+<p>Therefore:</p>
+<p>
+$$
+F1=0.75.
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 25.22: Why Accuracy Can Mislead -->
+  <section id="s-25-22" class="section-block">
+    <div class="section-header">
+      <span class="section-num">25.22</span>
+      <h2>Why Accuracy Can Mislead</h2>
+      <button class="bookmark-btn" data-id="s-25-22" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>990 images → class A
+10 images  → class B</code></pre>
+</div></p>
+<p>A classifier that always predicts A gets:</p>
+<p>
+$$
+99\%
+$$
+</p>
+<p>accuracy.</p>
+<p>Yet it completely fails to identify B.</p>
+<p>Therefore:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>accuracy alone
+≠
+complete evaluation</code></pre>
+</div></p>
+<p>This matters in imbalanced datasets.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 25.23: Training Objective -->
+  <section id="s-25-23" class="section-block">
+    <div class="section-header">
+      <span class="section-num">25.23</span>
+      <h2>Training Objective</h2>
+      <button class="bookmark-btn" data-id="s-25-23" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A classifier learns model parameters from training data.</p>
+<p>In a neural classification system, training often minimizes a loss such as cross-entropy.</p>
+<p>For one example with target class $y$:</p>
+<p>
+$$
+L=-\log p_y
+$$
+</p>
+<p>where $p_y$ is the predicted probability assigned to the correct class.</p>
+<p>If the correct class receives high probability:</p>
+<p>
+$$
+p_y\rightarrow1
+$$
+</p>
+<p>then:</p>
+<p>
+$$
+L\rightarrow0.
+$$
+</p>
+<p>If it receives a very small probability, the loss becomes large.</p>
+<p>The detailed neural optimization process is developed in C26.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 25.24: Overfitting -->
+  <section id="s-25-24" class="section-block">
+    <div class="section-header">
+      <span class="section-num">25.24</span>
+      <h2>Overfitting</h2>
+      <button class="bookmark-btn" data-id="s-25-24" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A model may perform very well on training data and poorly on unseen data.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>training performance
+        ↑
+        │      ______
+        │     /
+        │    /
+        │___/____________
+
+generalization
+        ↑
+        │    /\
+        │   /  \____
+        │__/___________</code></pre>
+</div></p>
+<p>Overfitting is encouraged by factors such as:</p>
+<ul>
+<li>insufficient data;</li>
+<li>excessive model capacity;</li>
+<li>noisy labels;</li>
+<li>excessive training;</li>
+<li>distribution mismatch.</li>
+</ul>
+<p>Possible responses include:</p>
+<ul>
+<li>more representative data;</li>
+<li>augmentation;</li>
+<li>regularization;</li>
+<li>simpler models;</li>
+<li>early stopping;</li>
+<li>better validation procedures.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 25.25: Underfitting -->
+  <section id="s-25-25" class="section-block">
+    <div class="section-header">
+      <span class="section-num">25.25</span>
+      <h2>Underfitting</h2>
+      <button class="bookmark-btn" data-id="s-25-25" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Underfitting occurs when the model is too limited to capture the relevant structure.</p>
+<p>Typical conceptual pattern:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>training performance → poor
+test performance     → poor</code></pre>
+</div></p>
+<p>The model has not learned enough useful structure.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 25.26: Generalization -->
+  <section id="s-25-26" class="section-block">
+    <div class="section-header">
+      <span class="section-num">25.26</span>
+      <h2>Generalization</h2>
+      <button class="bookmark-btn" data-id="s-25-26" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The true objective is not to memorize examples.</p>
+<p>It is to learn a useful decision function that works on unseen examples from the target problem.</p>
+<p>The ideal chain is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>training examples
+      ↓
+learn useful representation
+      ↓
+learn class boundaries
+      ↓
+generalize to unseen images</code></pre>
+</div></p>
+<p>This is why dataset quality is a first-class engineering concern.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 25.27: Image Classification with Classical Features -->
+  <section id="s-25-27" class="section-block">
+    <div class="section-header">
+      <span class="section-num">25.27</span>
+      <h2>Image Classification with Classical Features</h2>
+      <button class="bookmark-btn" data-id="s-25-27" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Consider classifying two types of objects:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Class A: circles
+Class B: squares</code></pre>
+</div></p>
+<p>A simple feature vector might contain:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>area
+perimeter
+circularity
+edge density</code></pre>
+</div></p>
+<p>A classical pipeline is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image
+→ segmentation / preprocessing
+→ shape feature extraction
+→ feature vector
+→ classifier
+→ class</code></pre>
+</div></p>
+<p>This demonstrates that classification does not inherently require CNNs.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 25.28: Why CNNs Became Important -->
+  <section id="s-25-28" class="section-block">
+    <div class="section-header">
+      <span class="section-num">25.28</span>
+      <h2>Why CNNs Became Important</h2>
+      <button class="bookmark-btn" data-id="s-25-28" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Raw images contain enormous numbers of pixels.</p>
+<p>A CNN can learn hierarchical representations:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>pixels
+ ↓
+edges / simple local patterns
+ ↓
+textures / motifs
+ ↓
+parts
+ ↓
+higher-level structures
+ ↓
+class evidence</code></pre>
+</div></p>
+<p>This allows the feature extractor and classifier to be learned jointly.</p>
+<p>C26 explains how.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 25.29: Classification Example — MNIST -->
+  <section id="s-25-29" class="section-block">
+    <div class="section-header">
+      <span class="section-num">25.29</span>
+      <h2>Classification Example — MNIST</h2>
+      <button class="bookmark-btn" data-id="s-25-29" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The university practical specifically asks for:</p>
+<blockquote>
+<p>CNN-based handwritten digit classification using the MNIST dataset. fileciteturn4file0L76-L80</p>
+</blockquote>
+<p>Conceptual workflow:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>MNIST image
+    ↓
+normalize
+    ↓
+tensor shape
+    ↓
+CNN
+    ↓
+feature maps
+    ↓
+classifier
+    ↓
+10 class scores
+    ↓
+argmax
+    ↓
+predicted digit</code></pre>
+</div></p>
+<p>A typical input example is represented as a grayscale image with spatial dimensions and a channel dimension.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 25.30: MNIST as a Classification Problem -->
+  <section id="s-25-30" class="section-block">
+    <div class="section-header">
+      <span class="section-num">25.30</span>
+      <h2>MNIST as a Classification Problem</h2>
+      <button class="bookmark-btn" data-id="s-25-30" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The labels are:</p>
+<p>
+$$
+\{0,1,2,\ldots,9\}.
+$$
+</p>
+<p>So:</p>
+<p>
+$$
+K=10.
+$$
+</p>
+<p>The model solves:</p>
+<p>
+$$
+f(X)\rightarrow\{0,\ldots,9\}.
+$$
+</p>
+<p>The input is visual, but the output is categorical.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 25.31: End-to-End Classification Workflow -->
+  <section id="s-25-31" class="section-block">
+    <div class="section-header">
+      <span class="section-num">25.31</span>
+      <h2>End-to-End Classification Workflow</h2>
+      <button class="bookmark-btn" data-id="s-25-31" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>1. Define classes
+2. Collect/load labeled images
+3. Inspect dataset
+4. Split train/validation/test
+5. Preprocess images
+6. Choose representation
+7. Build classifier
+8. Train
+9. Validate
+10. Test
+11. Inspect confusion matrix/errors
+12. Save model
+13. Run inference on unseen images</code></pre>
+</div></p>
+<p>This is the minimum useful engineering workflow.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 25.32: Error Analysis -->
+  <section id="s-25-32" class="section-block">
+    <div class="section-header">
+      <span class="section-num">25.32</span>
+      <h2>Error Analysis</h2>
+      <button class="bookmark-btn" data-id="s-25-32" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A percentage score is not enough.</p>
+<p>Inspect examples where the classifier fails:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>true class → 7
+prediction → 1</code></pre>
+</div></p>
+<p>Ask:</p>
+<ul>
+<li>Was the handwriting ambiguous?</li>
+<li>Was there noise?</li>
+<li>Was the image shifted?</li>
+<li>Was preprocessing inconsistent?</li>
+<li>Are some classes systematically confused?</li>
+</ul>
+<p>Error analysis turns evaluation into engineering knowledge.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 25.33: Confusion Matrix for MNIST -->
+  <section id="s-25-33" class="section-block">
+    <div class="section-header">
+      <span class="section-num">25.33</span>
+      <h2>Confusion Matrix for MNIST</h2>
+      <button class="bookmark-btn" data-id="s-25-33" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A 10×10 confusion matrix can reveal patterns such as:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>5 confused with 6
+3 confused with 8
+1 confused with 7</code></pre>
+</div></p>
+<p>The exact pattern depends on the model and dataset evaluation.</p>
+<p>The important idea is:</p>
+<blockquote>
+<p><strong>Off-diagonal entries show which classes the model confuses.</strong></p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 25.34: Feature Learning vs Hand-Designed Features -->
+  <section id="s-25-34" class="section-block">
+    <div class="section-header">
+      <span class="section-num">25.34</span>
+      <h2>Feature Learning vs Hand-Designed Features</h2>
+      <button class="bookmark-btn" data-id="s-25-34" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Aspect</th>
+<th>Classical pipeline</th>
+<th>CNN-style pipeline</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Input</td>
+<td>Raw image</td>
+<td>Raw image</td>
+</tr>
+<tr>
+<td>Feature design</td>
+<td>Human-designed</td>
+<td>Learned</td>
+</tr>
+<tr>
+<td>Intermediate representation</td>
+<td>Explicit feature vector</td>
+<td>Feature maps / learned representation</td>
+</tr>
+<tr>
+<td>Classifier</td>
+<td>Separate classical model often used</td>
+<td>Often trained jointly</td>
+</tr>
+<tr>
+<td>Adaptation</td>
+<td>Depends on selected features</td>
+<td>Features adapt to training objective</td>
+</tr>
+<tr>
+<td>Interpretability</td>
+<td>Often easier to describe</td>
+<td>Usually more distributed/complex</td>
+</tr>
+</tbody>
+</table></div>
+<p>Neither column is universally “better.” The choice depends on data, task, computational resources, and requirements.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 25.35: Classification Failure Modes -->
+  <section id="s-25-35" class="section-block">
+    <div class="section-header">
+      <span class="section-num">25.35</span>
+      <h2>Classification Failure Modes</h2>
+      <button class="bookmark-btn" data-id="s-25-35" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Distribution shift</h3>
+<p>Training images differ substantially from deployment images.</p>
+<h3>Label noise</h3>
+<p>Training labels contain mistakes.</p>
+<h3>Class imbalance</h3>
+<p>Some classes have far more examples than others.</p>
+<h3>Preprocessing mismatch</h3>
+<p>Training uses one transformation while deployment uses another.</p>
+<h3>Data leakage</h3>
+<p>Information from validation/test data influences model development improperly.</p>
+<h3>Overfitting</h3>
+<p>The model learns training-specific patterns rather than robust task structure.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 25.36: Engineering Decision Example -->
+  <section id="s-25-36" class="section-block">
+    <div class="section-header">
+      <span class="section-num">25.36</span>
+      <h2>Engineering Decision Example</h2>
+      <button class="bookmark-btn" data-id="s-25-36" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose you need to classify:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>100 categories
+1 million labeled images
+high compute budget</code></pre>
+</div></p>
+<p>A CNN/deep-learning approach is a natural candidate.</p>
+<p>Now suppose the dataset contains:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>200 images total
+simple geometric classes
+limited compute</code></pre>
+</div></p>
+<p>A classical feature-based solution may be sufficient.</p>
+<p>The right approach depends on the problem.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 25.37: Tensor View -->
+  <section id="s-25-37" class="section-block">
+    <div class="section-header">
+      <span class="section-num">25.37</span>
+      <h2>Tensor View</h2>
+      <button class="bookmark-btn" data-id="s-25-37" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A grayscale image can be represented as:</p>
+<p>
+$$
+H\times W
+$$
+</p>
+<p>or, in a deep-learning framework:</p>
+<p>
+$$
+H\times W\times C
+$$
+</p>
+<p>for channels-last representation.</p>
+<p>A batch adds another dimension:</p>
+<p>
+$$
+B\times H\times W\times C.
+$$
+</p>
+<p>For channels-first systems, the arrangement may be:</p>
+<p>
+$$
+B\times C\times H\times W.
+$$
+</p>
+<p>This convention difference matters greatly in implementation.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 25.38: Shape Example -->
+  <section id="s-25-38" class="section-block">
+    <div class="section-header">
+      <span class="section-num">25.38</span>
+      <h2>Shape Example</h2>
+      <button class="bookmark-btn" data-id="s-25-38" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose one grayscale image is:</p>
+<p>
+$$
+28\times28.
+$$
+</p>
+<p>With one channel:</p>
+<p>
+$$
+28\times28\times1.
+$$
+</p>
+<p>A batch of 64 images:</p>
+<p>
+$$
+64\times28\times28\times1
+$$
+</p>
+<p>in channels-last notation.</p>
+<p>In a channels-first framework:</p>
+<p>
+$$
+64\times1\times28\times28.
+$$
+</p>
+<p>Both represent the same logical information, but the memory/tensor dimension order differs.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 25.39: Mini Classification Model -->
+  <section id="s-25-39" class="section-block">
+    <div class="section-header">
+      <span class="section-num">25.39</span>
+      <h2>Mini Classification Model</h2>
+      <button class="bookmark-btn" data-id="s-25-39" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A simple conceptual neural classifier is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image
+ ↓
+feature extractor
+ ↓
+flatten / global representation
+ ↓
+dense classifier
+ ↓
+class scores</code></pre>
+</div></p>
+<p>C26 replaces the generic feature extractor with explicit CNN operations.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 25.40: Keras Classification Skeleton -->
+  <section id="s-25-40" class="section-block">
+    <div class="section-header">
+      <span class="section-num">25.40</span>
+      <h2>Keras Classification Skeleton</h2>
+      <button class="bookmark-btn" data-id="s-25-40" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The university practical specifies Python with TensorFlow/Keras. fileciteturn4file0L76-L80</p>
+<p>A simple architecture can be represented as:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>python</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>from tensorflow import keras
+from tensorflow.keras import layers
+
+model = keras.Sequential([
+    layers.Input(shape=(28, 28, 1)),
+    layers.Conv2D(32, 3, activation=&quot;relu&quot;),
+    layers.MaxPooling2D(),
+    layers.Conv2D(64, 3, activation=&quot;relu&quot;),
+    layers.MaxPooling2D(),
+    layers.Flatten(),
+    layers.Dense(128, activation=&quot;relu&quot;),
+    layers.Dense(10, activation=&quot;softmax&quot;),
+])
+
+model.summary()</code></pre>
+</div></p>
+<p>The exact architecture is one valid educational example, not a requirement that the syllabus mandates those exact layer counts.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 25.41: Why the Final Layer Has 10 Outputs -->
+  <section id="s-25-41" class="section-block">
+    <div class="section-header">
+      <span class="section-num">25.41</span>
+      <h2>Why the Final Layer Has 10 Outputs</h2>
+      <button class="bookmark-btn" data-id="s-25-41" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>MNIST has ten digit classes:</p>
+<p>
+$$
+0,\ldots,9.
+$$
+</p>
+<p>Therefore a multiclass classifier commonly produces ten class scores.</p>
+<p>With softmax:</p>
+<p>
+$$
+p_i=
+\frac{e^{z_i}}
+{\sum_{j=1}^{10}e^{z_j}}
+$$
+</p>
+<p>where $z_i$ is the score/logit for class $i$.</p>
+<p>The probabilities satisfy:</p>
+<p>
+$$
+\sum_i p_i=1.
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 25.42: Worked Softmax Example -->
+  <section id="s-25-42" class="section-block">
+    <div class="section-header">
+      <span class="section-num">25.42</span>
+      <h2>Worked Softmax Example</h2>
+      <button class="bookmark-btn" data-id="s-25-42" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose a three-class model produces logits:</p>
+<p>
+$$
+[2,1,0].
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+e^2\approx7.389,\quad e^1\approx2.718,\quad e^0=1.
+$$
+</p>
+<p>Sum:</p>
+<p>
+$$
+7.389+2.718+1=11.107.
+$$
+</p>
+<p>Probabilities are approximately:</p>
+<p>
+$$
+[0.665,\ 0.245,\ 0.090].
+$$
+</p>
+<p>Prediction:</p>
+<p>
+$$
+\boxed{\text{class 0}}
+$$
+</p>
+<p>because it has the highest probability.</p>
+<p>The same principle applies to ten MNIST classes.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 25.43: Why Classification Belongs After DIP Foundations -->
+  <section id="s-25-43" class="section-block">
+    <div class="section-header">
+      <span class="section-num">25.43</span>
+      <h2>Why Classification Belongs After DIP Foundations</h2>
+      <button class="bookmark-btn" data-id="s-25-43" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The sequence is intentional:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Part I
+→ what is an image?
+
+Part II
+→ how can we improve it?
+
+Part III
+→ how can we extract meaningful structure?
+
+Part IV
+→ how can we represent it efficiently?
+
+Part V
+→ how can we make decisions from it?</code></pre>
+</div></p>
+<p>Classification therefore acts as a bridge from classical image processing toward intelligent vision.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 25.44: Exam Lens -->
+  <section id="s-25-44" class="section-block">
+    <div class="section-header">
+      <span class="section-num">25.44</span>
+      <h2>Exam Lens</h2>
+      <button class="bookmark-btn" data-id="s-25-44" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h2>2-mark questions</h2>
+<p><strong>Define image classification.</strong><br />
+The task of assigning an input image to one or more predefined categories according to a learned or designed decision function.</p>
+<p><strong>What is a class label?</strong><br />
+A categorical target assigned to an image under a specified classification task.</p>
+<p><strong>What is a confusion matrix?</strong><br />
+A table that records actual versus predicted class outcomes.</p>
+<hr />
+<h2>5-mark question</h2>
+<h3>Differentiate classification, detection and segmentation.</h3>
+<p>Use:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>classification → image-level label
+detection       → labels + bounding boxes
+segmentation    → pixel-level regions/classes</code></pre>
+</div></p>
+<p>Then give one example.</p>
+<hr />
+<h2>10-mark question</h2>
+<h3>Explain an image-classification system.</h3>
+<p>Recommended sequence:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>dataset
+→ preprocessing
+→ representation
+→ feature extraction
+→ classifier
+→ prediction
+→ evaluation
+→ error analysis</code></pre>
+</div></p>
+<p>Then compare classical feature pipelines with CNN-based learning.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 25.45: Chapter Checkpoint -->
+  <section id="s-25-45" class="section-block">
+    <div class="section-header">
+      <span class="section-num">25.45</span>
+      <h2>Chapter Checkpoint</h2>
+      <button class="bookmark-btn" data-id="s-25-45" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Q1</h3>
+<p>What is the difference between classification and object detection?</p>
+<h3>Q2</h3>
+<p>Why can accuracy be misleading on highly imbalanced data?</p>
+<h3>Q3</h3>
+<p>For:</p>
+<p>
+$$
+TP=80,\ TN=900,\ FP=10,\ FN=10,
+$$
+</p>
+<p>calculate accuracy.</p>
+<h3>Q4</h3>
+<p>Why must preprocessing be kept consistent between training and inference?</p>
+<h3>Q5</h3>
+<p>Why does an MNIST classifier normally have ten output classes?</p>
+<h3>Q6</h3>
+<p>What does an off-diagonal confusion-matrix entry indicate?</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 25.46: One-Page Recall Sheet -->
+  <section id="s-25-46" class="section-block">
+    <div class="section-header">
+      <span class="section-num">25.46</span>
+      <h2>One-Page Recall Sheet</h2>
+      <button class="bookmark-btn" data-id="s-25-46" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>IMAGE CLASSIFICATION
+│
+├── Input
+│   └── image
+│
+├── Goal
+│   └── assign class
+│
+├── Pipeline
+│   image
+│    ↓
+│   preprocessing
+│    ↓
+│   representation
+│    ↓
+│   features
+│    ↓
+│   classifier
+│    ↓
+│   prediction
+│
+├── Evaluation
+│   ├── accuracy
+│   ├── precision
+│   ├── recall
+│   ├── F1
+│   └── confusion matrix
+│
+└── Deep-learning bridge
+    └── learned features → CNN</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 25.47: Cross-Book Links -->
+  <section id="s-25-47" class="section-block">
+    <div class="section-header">
+      <span class="section-num">25.47</span>
+      <h2>Cross-Book Links</h2>
+      <button class="bookmark-btn" data-id="s-25-47" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Layer</th>
+<th>Connection</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MAIN</td>
+<td>C25 establishes the classification task</td>
+</tr>
+<tr>
+<td>MATH</td>
+<td>Vector representation, softmax, metrics</td>
+</tr>
+<tr>
+<td>LAB</td>
+<td>Practical 8 — MNIST CNN classification</td>
+</tr>
+<tr>
+<td>CODE</td>
+<td>Dataset loading, preprocessing, model inference</td>
+</tr>
+<tr>
+<td>EXAM</td>
+<td>Classification vs detection/segmentation; evaluation</td>
+</tr>
+<tr>
+<td>PRACTICE</td>
+<td>Confusion matrices, metric calculations, architecture reasoning</td>
+</tr>
+<tr>
+<td>RESOURCE</td>
+<td>Course references for deep learning/computer vision</td>
+</tr>
+<tr>
+<td>ASSETS</td>
+<td>Classification pipelines, confusion matrices, tensor diagrams</td>
+</tr>
+<tr>
+<td>MASTER</td>
+<td>Dependency into C26–C28</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 25.48: Final Chapter Summary -->
+  <section id="s-25-48" class="section-block">
+    <div class="section-header">
+      <span class="section-num">25.48</span>
+      <h2>Final Chapter Summary</h2>
+      <button class="bookmark-btn" data-id="s-25-48" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The central mental model is:</p>
+<p>
+$$
+\boxed{
+\text{image}
+\rightarrow
+\text{representation}
+\rightarrow
+\text{decision}
+\rightarrow
+\text{class}
+}
+$$
+</p>
+<p>Classical systems often make the features explicitly.</p>
+<p>Deep-learning systems can learn representations directly from images.</p>
+<p>The university practical makes this transition concrete through:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>MNIST
+→ CNN
+→ handwritten-digit classification</code></pre>
+</div></p>
+<p>which is developed fully in the next chapter. fileciteturn4file0L76-L80</p>
+<hr />
+<p><strong>Next chapter:</strong> C26 — Convolutional Neural Networks</p>
+    </div>
+  </section>
+
+  <!-- SECTION 25.49: Worked Example — 10-Mark University Model Answer: Distance Classifiers, Decision Boundaries &amp; Softmax Loss -->
+  <section id="s-25-49" class="section-block">
+    <div class="section-header">
+      <span class="section-num">25.49</span>
+      <h2>Worked Example — 10-Mark University Model Answer: Distance Classifiers, Decision Boundaries &amp; Softmax Loss</h2>
+      <button class="bookmark-btn" data-id="s-25-49" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Problem Statement</h3>
+<p>A computer vision classifier maps extracted feature vectors $x \in \mathbb{R}^2$ representing normalized brightness and edge density into three distinct scene categories: $\omega_1$ (Urban), $\omega_2$ (Forest), and $\omega_3$ (Water). The prototype class mean vectors are:
+
+$$m_1 = \begin{bmatrix} 0.8 \\ 0.7 \end{bmatrix}, \qquad m_2 = \begin{bmatrix} 0.3 \\ 0.8 \end{bmatrix}, \qquad m_3 = \begin{bmatrix} 0.2 \\ 0.1 \end{bmatrix}$$
+
+An unknown query feature vector is observed as $x = \begin{bmatrix} 0.75 \\ 0.65 \end{bmatrix}$.
+1. Formulate the Minimum Distance Classifier decision rule based on Euclidean distance.
+2. Calculate the Euclidean distance $D_k(x)$ from query $x$ to all three class mean vectors and assign $x$ to the optimal class.
+3. Derive the equation of the linear decision boundary separating class $\omega_1$ and class $\omega_2$.
+4. Given raw classifier logit scores $z = [z_1, z_2, z_3] = [3.2, 1.1, -0.5]$, compute the normalized Softmax class posterior probabilities $P(\omega_k | x)$.
+5. If the true label is $\omega_1$ (one-hot target $y = [1, 0, 0]$), compute the categorical cross-entropy loss $\mathcal{L}_{CE}$.</p>
+<h3>Step-by-Step Mathematical Solution</h3>
+<div class="worked-example">
+  <div class="worked-example-header">
+    <span class="worked-example-title">Numerical Examination Trace</span>
+    <span class="tag-badge tag-exam">10-MARK UNIVERSITY MODEL ANSWER</span>
+  </div>
+  <p><strong>1. Minimum Distance Classifier Formulation:</strong><br>
+  For $K$ classes with mean vectors $m_k$, the squared Euclidean distance from an unknown vector $x$ is:
+  
+$$D_k^2(x) = \|x - m_k\|^2 = (x - m_k)^T (x - m_k) = x^T x - 2 m_k^T x + m_k^T m_k$$
+
+  Since $x^T x$ is identical for all candidate classes, minimizing distance is mathematically equivalent to maximizing the linear discriminant function:
+  
+$$d_k(x) = m_k^T x - \frac{1}{2} m_k^T m_k = w_k^T x + w_{k0}$$
+
+  where $w_k = m_k$ is the weight vector and $w_{k0} = -\frac{1}{2} \|m_k\|^2$ is the threshold bias.</p>
+
+  <p><strong>2. Distance Computations to Query $x = [0.75, 0.65]^T$:</strong><br>
+  - Distance to $m_1 = [0.8, 0.7]^T$:
+    
+$$\Delta_1 = x - m_1 = \begin{bmatrix} 0.75 - 0.80 \\ 0.65 - 0.70 \end{bmatrix} = \begin{bmatrix} -0.05 \\ -0.05 \end{bmatrix}$$
+
+    
+$$D_1(x) = \sqrt{(-0.05)^2 + (-0.05)^2} = \sqrt{0.0025 + 0.0025} = \sqrt{0.0050} \approx \mathbf{0.0707}$$
+
+  - Distance to $m_2 = [0.3, 0.8]^T$:
+    
+$$\Delta_2 = x - m_2 = \begin{bmatrix} 0.75 - 0.30 \\ 0.65 - 0.80 \end{bmatrix} = \begin{bmatrix} +0.45 \\ -0.15 \end{bmatrix}$$
+
+    
+$$D_2(x) = \sqrt{(0.45)^2 + (-0.15)^2} = \sqrt{0.2025 + 0.0225} = \sqrt{0.2250} \approx \mathbf{0.4743}$$
+
+  - Distance to $m_3 = [0.2, 0.1]^T$:
+    
+$$\Delta_3 = x - m_3 = \begin{bmatrix} 0.75 - 0.20 \\ 0.65 - 0.10 \end{bmatrix} = \begin{bmatrix} +0.55 \\ +0.55 \end{bmatrix}$$
+
+    
+$$D_3(x) = \sqrt{(0.55)^2 + (0.55)^2} = \sqrt{0.3025 + 0.3025} = \sqrt{0.6050} \approx \mathbf{0.7778}$$
+
+  <strong>Classification Decision:</strong> Since $D_1(x) = 0.0707 < D_2(x) < D_3(x)$, the query sample $x$ is unambiguously assigned to <strong>Class $\omega_1$ (Urban)</strong>.</p>
+
+  <p><strong>3. Linear Decision Boundary between $\omega_1$ and $\omega_2$:</strong><br>
+  The decision boundary corresponds to the locus of points equidistant from $m_1$ and $m_2$:
+  
+$$d_1(x) - d_2(x) = 0 \iff (m_1 - m_2)^T x - \frac{1}{2} (\|m_1\|^2 - \|m_2\|^2) = 0$$
+
+  Vector difference: $m_1 - m_2 = [0.8 - 0.3, 0.7 - 0.8]^T = [0.5, -0.1]^T$.<br>
+  Norms: $\|m_1\|^2 = 0.8^2 + 0.7^2 = 0.64 + 0.49 = 1.13$.<br>
+  $\|m_2\|^2 = 0.3^2 + 0.8^2 = 0.09 + 0.64 = 0.73$.<br>
+  Constant term: $\frac{1}{2}(1.13 - 0.73) = \frac{1}{2}(0.40) = 0.20$.<br>
+  
+$$0.5 x_1 - 0.1 x_2 - 0.20 = 0 \iff \mathbf{5 x_1 - x_2 - 2 = 0} \iff \mathbf{x_2 = 5 x_1 - 2}$$
+
+  This is a straight line perpendicular to the line segment connecting mean vectors $m_1$ and $m_2$, bisecting them at their midpoint.</p>
+
+  <p><strong>4. Softmax Class Posterior Probability Computation:</strong><br>
+  Given logits $z = [3.2, 1.1, -0.5]$:
+  
+$$e^{z_1} = e^{3.2} \approx 24.5325$$
+
+  
+$$e^{z_2} = e^{1.1} \approx 3.0042$$
+
+  
+$$e^{z_3} = e^{-0.5} \approx 0.6065$$
+
+  Normalization partition sum $\sum_{j=1}^3 e^{z_j} = 24.5325 + 3.0042 + 0.6065 = \mathbf{28.1432}$.<br>
+  Posterior probabilities:
+  
+$$P(\omega_1 | x) = \frac{24.5325}{28.1432} \approx \mathbf{0.8717 \ (87.17\%)}$$
+
+  
+$$P(\omega_2 | x) = \frac{3.0042}{28.1432} \approx \mathbf{0.1067 \ (10.67\%)}$$
+
+  
+$$P(\omega_3 | x) = \frac{0.6065}{28.1432} \approx \mathbf{0.0216 \ (2.16\%)}$$
+</p>
+
+  <p><strong>5. Categorical Cross-Entropy Loss:</strong><br>
+  
+$$\mathcal{L}_{CE} = -\sum_{k=1}^3 y_k \ln P(\omega_k | x) = -1 \cdot \ln(0.8717) - 0 - 0 = -\ln(0.8717) \approx \mathbf{0.1373 \text{ nats}}$$
+
+  The low cross-entropy loss indicates high model confidence in the correct ground truth class.</p>
+</div>
+    </div>
+  </section>
+
+  <!-- SECTION 25.50: Comprehensive Delhi University Examination Checklist &amp; Mark Distribution -->
+  <section id="s-25-50" class="section-block">
+    <div class="section-header">
+      <span class="section-num">25.50</span>
+      <h2>Comprehensive Delhi University Examination Checklist &amp; Mark Distribution</h2>
+      <button class="bookmark-btn" data-id="s-25-50" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="exam-checklist">
+  <h4>Delhi University Semester Examination Quick Revision & Marking Distribution</h4>
+  <ul>
+    <li><strong>Question 1 (10 Marks): Minimum Distance Classifier vs k-NN.</strong>
+      <ul>
+        <li>Definition of class mean prototype vectors and Euclidean distance discriminant formulation (3 Marks).</li>
+        <li>k-Nearest Neighbors majority voting algorithm and choice of $k$ (odd integer to prevent ties) (3 Marks).</li>
+        <li>Voronoi tessellation and piece-wise linear vs non-linear decision boundaries (2 Marks).</li>
+        <li>Computational complexity during inference ($O(K \cdot D)$ for prototype vs $O(N \cdot D)$ for k-NN) (2 Marks).</li>
+      </ul>
+    </li>
+    <li><strong>Question 2 (10 Marks): Softmax Activation & Cross-Entropy Loss.</strong>
+      <ul>
+        <li>Mathematical derivation of Softmax function and conversion of real logits $\mathbb{R}^K$ to valid probability simplex (3 Marks).</li>
+        <li>Derivation of the gradient of Cross-Entropy with respect to logits: $\frac{\partial \mathcal{L}}{\partial z_i} = P_i - y_i$ (4 Marks).</li>
+        <li>Numerical example demonstrating numerical stability using the log-sum-exp trick (3 Marks).</li>
+      </ul>
+    </li>
+  </ul>
+</div>
+    </div>
+  </section>
+
+      <!-- Chapter End Package -->
+      <section class="chapter-end-package">
+        <div class="chapter-nav-grid">
+          <a href="ch24-wavelets-jpeg2000.html" class="chapter-nav-card">
+            <div class="chapter-nav-dir">← Previous</div>
+            <div class="chapter-nav-title">← Ch 24 — JPEG Compression End to End</div>
+          </a>
+          <a href="ch26-cnns-image-processing.html" class="chapter-nav-card next">
+            <div class="chapter-nav-dir">Next →</div>
+            <div class="chapter-nav-title">Next: Ch 26 — Convolutional Neural Networks →</div>
+          </a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- FLOATING TTS PANEL (SAFE MANUAL MODE ONLY) -->
+  <div id="tts-panel" style="position:fixed; bottom:20px; right:20px; background:var(--em-surface-1); border:1px solid var(--em-border); border-radius:var(--em-radius-md); padding:12px 16px; box-shadow:var(--sh-lg); z-index:var(--z-float); display:none; gap:10px; align-items:center;">
+    <button class="icon-btn" id="tts-play" title="Play / Pause" style="background:var(--em-accent); color:#fff; border-radius:50%; width:36px; height:36px;">▶</button>
+    <button class="icon-btn" id="tts-stop" title="Stop">⏹</button>
+    <div style="font-size:0.75rem; color:var(--em-text-muted);">
+      <span id="tts-status">Ready</span> · <span id="tts-rate-label">1.0x</span>
+    </div>
+  </div>
+
+  <script src="../assets/js/state.js"></script>
+  <script src="../assets/js/core.js"></script>
+  <script src="../assets/js/tts.js"></script>
+  <script src="../assets/js/glossary.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: document.documentElement.getAttribute('data-theme') === 'light' ? 'default' : 'dark'
+      });
+    });
+  </script>
+</body>
+</html>

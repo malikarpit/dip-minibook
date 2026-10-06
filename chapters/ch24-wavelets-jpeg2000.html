@@ -1,0 +1,3141 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Arpit">
+  <meta name="description" content="Chapter 24: JPEG Compression End to End — Digital Image Processing MiniBook. The Complete Baseline Sequential JPEG Standard: YCbCr 4:2:0 Downsampling, $8 \times 8$ Block DCT, Psychovisual Quantization Matrices, DC DPCM Coding, AC Zigzag Scanning, and Zero-Run Huffman Coding">
+  <title>C24: JPEG Compression End to End | DIP MiniBook 📷 Arpit</title>
+
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <link rel="stylesheet" href="../assets/css/chapters.css">
+  <link rel="stylesheet" href="../assets/css/animations.css">
+  <link rel="stylesheet" href="../assets/css/timer.css">
+
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body data-chapter-id="ch24-wavelets-jpeg2000">
+  <div id="progress-bar"></div>
+
+  <!-- Header -->
+  <header id="main-header">
+    <div class="header-left">
+      <button id="sidebar-toggle" class="icon-btn" aria-label="Toggle navigation drawer" title="Toggle Sidebar (S)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <a href="../index.html" class="brand-logo">
+        <div class="brand-icon">DIP</div>
+        <div class="brand-text">
+          <span class="main">Digital Image Processing</span>
+          <span class="sub">DU DSE-3 Engineering MiniBook</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="header-chapter-title">C24: JPEG Compression End to End</div>
+
+    <div class="header-right">
+      <button id="reading-mode-btn" class="icon-btn" aria-label="Toggle reading focus mode" title="Focus Mode (F)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+          <line x1="8" y1="21" x2="16" y2="21"></line>
+          <line x1="12" y1="17" x2="12" y2="21"></line>
+        </svg>
+      </button>
+      <button id="tts-toggle" class="icon-btn" aria-label="Audio Reader" title="Audio Reader">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+        </svg>
+      </button>
+      <button id="theme-toggle" class="icon-btn" aria-label="Cycle theme" title="Theme (T)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="12" cy="12" r="4.5"></circle>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Sidebar Overlay -->
+  <div id="sidebar-overlay"></div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" aria-expanded="true">
+    <div class="sidebar-nav">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">General</div>
+        <a href="../index.html" class="sidebar-link">
+          <span class="link-icon">🏛️</span>
+          <span>Subject Portal</span>
+        </a>
+        <a href="../progress.html" class="sidebar-link">
+          <span class="link-icon">📊</span>
+          <span>Study Dashboard</span>
+        </a>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Current Chapter Sections</div>
+        <a href="#s-24-1" class="sidebar-link"><span class="link-icon">📌</span><span>24.1 Why This Chapter Exists</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-24-2" class="sidebar-link"><span class="link-icon">📌</span><span>24.2 Learning Contract</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-24-3" class="sidebar-link"><span class="link-icon">📌</span><span>24.3 What JPEG Is</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-24-4" class="sidebar-link"><span class="link-icon">📌</span><span>24.4 Why JPEG Became Important</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-24-5" class="sidebar-link"><span class="link-icon">📌</span><span>24.5 Master JPEG Encoding Pipeline</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-24-6" class="sidebar-link"><span class="link-icon">📌</span><span>24.6 The First Major Idea: Colour Conversion</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-24-7" class="sidebar-link"><span class="link-icon">📌</span><span>24.7 Why Separate Brightness and Colour?</span> </a>
+      <a href="#s-24-8" class="sidebar-link"><span class="link-icon">📌</span><span>24.8 Conceptual RGB → YCbCr-Style Transformation</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-24-9" class="sidebar-link"><span class="link-icon">📌</span><span>24.9 Worked Colour Example</span> </a>
+      <a href="#s-24-10" class="sidebar-link"><span class="link-icon">📌</span><span>24.10 Chroma Subsampling</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-24-11" class="sidebar-link"><span class="link-icon">📌</span><span>24.11 Why Chroma Subsampling Helps</span> </a>
+      <a href="#s-24-12" class="sidebar-link"><span class="link-icon">📌</span><span>24.12 Why Blocks Are Useful</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-24-13" class="sidebar-link"><span class="link-icon">📌</span><span>24.13 Boundary Handling</span> </a>
+      <a href="#s-24-14" class="sidebar-link"><span class="link-icon">📌</span><span>24.14 Level Shift</span> </a>
+      <a href="#s-24-15" class="sidebar-link"><span class="link-icon">📌</span><span>24.15 Why Level Shift Helps</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-24-16" class="sidebar-link"><span class="link-icon">📌</span><span>24.16 Apply the 2-D DCT</span> </a>
+      <a href="#s-24-17" class="sidebar-link"><span class="link-icon">📌</span><span>24.17 Interpreting an 8×8 DCT Matrix</span> </a>
+      <a href="#s-24-18" class="sidebar-link"><span class="link-icon">📌</span><span>24.18 Quantization — The Main Lossy Stage</span> </a>
+      <a href="#s-24-19" class="sidebar-link"><span class="link-icon">📌</span><span>24.19 Simplified Quantization Example</span> </a>
+      <a href="#s-24-20" class="sidebar-link"><span class="link-icon">📌</span><span>24.20 Why Quantization Produces Compression Opportunity</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-24-21" class="sidebar-link"><span class="link-icon">📌</span><span>24.21 Where Information Is Discarded</span> </a>
+      <a href="#s-24-22" class="sidebar-link"><span class="link-icon">📌</span><span>24.22 Quantization Strength and Quality</span> </a>
+      <a href="#s-24-23" class="sidebar-link"><span class="link-icon">📌</span><span>24.23 Quality Factor — Conceptual View</span> </a>
+      <a href="#s-24-24" class="sidebar-link"><span class="link-icon">📌</span><span>24.24 Zig-Zag Scan</span> </a>
+      <a href="#s-24-25" class="sidebar-link"><span class="link-icon">📌</span><span>24.25 DC Coding</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-24-26" class="sidebar-link"><span class="link-icon">📌</span><span>24.26 AC Coding</span> </a>
+      <a href="#s-24-27" class="sidebar-link"><span class="link-icon">📌</span><span>24.27 AC Run-Length Intuition</span> </a>
+      <a href="#s-24-28" class="sidebar-link"><span class="link-icon">📌</span><span>24.28 EOB — End of Block</span> </a>
+      <a href="#s-24-29" class="sidebar-link"><span class="link-icon">📌</span><span>24.29 Entropy Coding</span> </a>
+      <a href="#s-24-30" class="sidebar-link"><span class="link-icon">📌</span><span>24.30 JPEG Encoding — Full Conceptual View</span> </a>
+      <a href="#s-24-31" class="sidebar-link"><span class="link-icon">📌</span><span>24.31 JPEG Decoding — Reverse Direction</span> </a>
+      <a href="#s-24-32" class="sidebar-link"><span class="link-icon">📌</span><span>24.32 Dequantization</span> </a>
+      <a href="#s-24-33" class="sidebar-link"><span class="link-icon">📌</span><span>24.33 Inverse DCT</span> </a>
+      <a href="#s-24-34" class="sidebar-link"><span class="link-icon">📌</span><span>24.34 Clipping and Reconstruction</span> </a>
+      <a href="#s-24-35" class="sidebar-link"><span class="link-icon">📌</span><span>24.35 JPEG Artifacts</span> </a>
+      <a href="#s-24-36" class="sidebar-link"><span class="link-icon">📌</span><span>24.36 Quality–Size Trade-off</span> </a>
+      <a href="#s-24-37" class="sidebar-link"><span class="link-icon">📌</span><span>24.37 Worked Compression Example</span> </a>
+      <a href="#s-24-38" class="sidebar-link"><span class="link-icon">📌</span><span>24.38 Why JPEG Works Especially Well for Photographs</span> </a>
+      <a href="#s-24-39" class="sidebar-link"><span class="link-icon">📌</span><span>24.39 JPEG and PNG Are Not “Quality Levels”</span> </a>
+      <a href="#s-24-40" class="sidebar-link"><span class="link-icon">📌</span><span>24.40 JPEG vs. Lossless JPEG</span> </a>
+      <a href="#s-24-41" class="sidebar-link"><span class="link-icon">📌</span><span>24.41 JPEG Implementation Strategy</span> </a>
+      <a href="#s-24-42" class="sidebar-link"><span class="link-icon">📌</span><span>24.42 Python — Manual JPEG-Like Encoder Core</span> </a>
+      <a href="#s-24-43" class="sidebar-link"><span class="link-icon">📌</span><span>24.43 MATLAB — Manual JPEG-Like Block</span> </a>
+      <a href="#s-24-44" class="sidebar-link"><span class="link-icon">📌</span><span>24.44 Manual Implementation Validation</span> </a>
+      <a href="#s-24-45" class="sidebar-link"><span class="link-icon">📌</span><span>24.45 Difference Image</span> </a>
+      <a href="#s-24-46" class="sidebar-link"><span class="link-icon">📌</span><span>24.46 Quality Evaluation</span> </a>
+      <a href="#s-24-47" class="sidebar-link"><span class="link-icon">📌</span><span>24.47 Practical 7 — Experiment Blueprint</span> </a>
+      <a href="#s-24-48" class="sidebar-link"><span class="link-icon">📌</span><span>24.48 Full JPEG Reasoning Table</span> </a>
+      <a href="#s-24-49" class="sidebar-link"><span class="link-icon">📌</span><span>24.49 Common Traps</span> </a>
+      <a href="#s-24-50" class="sidebar-link"><span class="link-icon">📌</span><span>24.50 Exam Lens</span> </a>
+      <a href="#s-24-51" class="sidebar-link"><span class="link-icon">📌</span><span>24.51 Numerical Practice</span> </a>
+      <a href="#s-24-52" class="sidebar-link"><span class="link-icon">📌</span><span>24.52 Advanced Engineering Insight — Why 8×8?</span> </a>
+      <a href="#s-24-53" class="sidebar-link"><span class="link-icon">📌</span><span>24.53 Advanced Engineering Insight — DCT vs. “Frequency Filtering”</span> </a>
+      <a href="#s-24-54" class="sidebar-link"><span class="link-icon">📌</span><span>24.54 Advanced Engineering Insight — Quantization Tables</span> </a>
+      <a href="#s-24-55" class="sidebar-link"><span class="link-icon">📌</span><span>24.55 Advanced Engineering Insight — What JPEG Is Good At</span> </a>
+      <a href="#s-24-56" class="sidebar-link"><span class="link-icon">📌</span><span>24.56 Chapter Checkpoint</span> </a>
+      <a href="#s-24-57" class="sidebar-link"><span class="link-icon">📌</span><span>24.57 One-Page JPEG Recall Sheet</span> </a>
+      <a href="#s-24-58" class="sidebar-link"><span class="link-icon">📌</span><span>24.58 Cross-Book Links</span> </a>
+      <a href="#s-24-59" class="sidebar-link"><span class="link-icon">📌</span><span>24.59 Final Chapter Summary</span> </a>
+      <a href="#s-24-60" class="sidebar-link"><span class="link-icon">📌</span><span>24.60 Course Practical Mapping</span> </a>
+      <a href="#s-24-61" class="sidebar-link"><span class="link-icon">📌</span><span>24.61 Worked Example — 10-Mark University Model Answer: End-to-End Baseline JPEG Pipeline</span> </a>
+      </div>
+
+      
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-i">Part I — The Image</div>
+      <a href="ch01-big-picture.html" class="sidebar-link"><span class="link-icon">01</span><span>The Big Picture</span></a>
+      <a href="ch02-image-formation.html" class="sidebar-link"><span class="link-icon">02</span><span>Formation & Acquisition</span></a>
+      <a href="ch03-sampling-quantization.html" class="sidebar-link"><span class="link-icon">03</span><span>Sampling & Quantization</span></a>
+      <a href="ch04-image-representation.html" class="sidebar-link"><span class="link-icon">04</span><span>Pixels, Matrices & Resolution</span></a>
+      <a href="ch05-colour-models-file-formats.html" class="sidebar-link"><span class="link-icon">05</span><span>Colour Models & Formats</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-ii">Part II — Improving the Image</div>
+      <a href="ch06-point-processing.html" class="sidebar-link"><span class="link-icon">06</span><span>Point Processing & Intensity</span></a>
+      <a href="ch07-histograms-equalization.html" class="sidebar-link"><span class="link-icon">07</span><span>Histograms & Equalization</span></a>
+      <a href="ch08-spatial-filtering.html" class="sidebar-link"><span class="link-icon">08</span><span>Spatial Filtering & Convolution</span></a>
+      <a href="ch09-smoothing-noise-reduction.html" class="sidebar-link"><span class="link-icon">09</span><span>Smoothing & Noise Reduction</span></a>
+      <a href="ch10-sharpening-edge-detection.html" class="sidebar-link"><span class="link-icon">10</span><span>Sharpening & Edge Detection</span></a>
+      <a href="ch11-geometric-transforms.html" class="sidebar-link"><span class="link-icon">11</span><span>Geometric Transforms</span></a>
+      <a href="ch12-fourier-transform.html" class="sidebar-link"><span class="link-icon">12</span><span>Fourier Transform & Frequency</span></a>
+      <a href="ch13-frequency-filtering.html" class="sidebar-link"><span class="link-icon">13</span><span>Frequency-Domain Filtering</span></a>
+      <a href="ch14-image-restoration.html" class="sidebar-link"><span class="link-icon">14</span><span>Restoration & Deblurring</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-iii">Part III — Understanding Content</div>
+      <a href="ch15-segmentation-fundamentals.html" class="sidebar-link"><span class="link-icon">15</span><span>Segmentation Fundamentals</span></a>
+      <a href="ch16-thresholding-otsu.html" class="sidebar-link"><span class="link-icon">16</span><span>Thresholding & Otsu Method</span></a>
+      <a href="ch17-region-segmentation.html" class="sidebar-link"><span class="link-icon">17</span><span>Region-Based Segmentation</span></a>
+      <a href="ch18-mathematical-morphology.html" class="sidebar-link"><span class="link-icon">18</span><span>Mathematical Morphology</span></a>
+      <a href="ch19-features-descriptors.html" class="sidebar-link"><span class="link-icon">19</span><span>Image Features & Descriptors</span></a>
+      <a href="ch20-sift-surf-orb-hog.html" class="sidebar-link"><span class="link-icon">20</span><span>SIFT, SURF, ORB & HOG</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-iv">Part IV — Compressing Images</div>
+      <a href="ch21-compression-entropy.html" class="sidebar-link"><span class="link-icon">21</span><span>Compression & Entropy</span></a>
+      <a href="ch22-lossless-coding.html" class="sidebar-link"><span class="link-icon">22</span><span>Lossless: RLE & Huffman</span></a>
+      <a href="ch23-lossy-dct-jpeg.html" class="sidebar-link"><span class="link-icon">23</span><span>Lossy: DCT & JPEG</span></a>
+      <a href="ch24-wavelets-jpeg2000.html" class="sidebar-link active"><span class="link-icon">24</span><span>Wavelets & JPEG 2000</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-v">Part V — Intelligent Vision</div>
+      <a href="ch25-image-classification.html" class="sidebar-link"><span class="link-icon">25</span><span>Image Classification</span></a>
+      <a href="ch26-cnns-image-processing.html" class="sidebar-link"><span class="link-icon">26</span><span>CNNs for Image Processing</span></a>
+      <a href="ch27-modern-vision-architectures.html" class="sidebar-link"><span class="link-icon">27</span><span>Modern Vision Architectures</span></a>
+      <a href="ch28-object-detection-yolo.html" class="sidebar-link"><span class="link-icon">28</span><span>Object Detection: YOLO</span></a>
+      <a href="ch29-image-denoising-autoencoders.html" class="sidebar-link"><span class="link-icon">29</span><span>Image Denoising Autoencoders</span></a>
+      <a href="ch30-video-motion-analysis.html" class="sidebar-link"><span class="link-icon">30</span><span>Video & Motion Analysis</span></a>
+      <a href="ch31-dip-applications-engineering.html" class="sidebar-link"><span class="link-icon">31</span><span>DIP Applications & Ethics</span></a>
+    </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-brand-mark">
+        <div class="mark">DU</div>
+        <div>
+          <strong>DSE-3 MiniBook</strong>
+          <div>University of Delhi</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mandatory Shell Wrapper -->
+  <div id="main-content">
+    <main class="chapter-content">
+      <!-- Chapter Hero -->
+      <div class="chapter-hero">
+        <div class="hero-meta">
+          <span class="part-badge part-iv">Compressing Images</span>
+          <span class="chapter-number">CHAPTER 24</span>
+          <span class="reading-time">⏱️ ~60 min read</span>
+          <span class="tag-badge tag-core">Highest Yield (10-mark guarantee)</span>
+        </div>
+        <h1 class="chapter-title">JPEG Compression End to End</h1>
+        <p class="chapter-subtitle">
+          The Complete Baseline Sequential JPEG Standard: YCbCr 4:2:0 Downsampling, $8 \times 8$ Block DCT, Psychovisual Quantization Matrices, DC DPCM Coding, AC Zigzag Scanning, and Zero-Run Huffman Coding
+        </p>
+
+        <div class="syllabus-anchor">
+          <span class="syllabus-anchor-label">DU Syllabus</span>
+          <span><strong>The JPEG Compression Standard:</strong> Baseline sequential JPEG architecture, RGB to YCbCr conversion, 4:2:0 chroma subsampling, 8x8 block DCT, quantization tables and quality scaling factor, DC coefficient differential coding, AC coefficient zigzag scanning, run-length amplitude encoding, Huffman coding of intermediate symbols, and overview of wavelet-based JPEG 2000.</span>
+        </div>
+      </div>
+
+      <!-- In-Page TOC -->
+      <div class="chapter-checklist-card" style="margin-bottom:var(--em-space-8);">
+        <div class="checklist-title">
+          <span>Table of Contents &amp; Visual Section Map</span>
+          <span class="tag-badge tag-math">61 Deep Sections</span>
+        </div>
+        <ul class="part-chapters-list">
+          <li class="part-chapter-item"><a href="#s-24-1"><strong>24.1</strong> Why This Chapter Exists</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-24-2"><strong>24.2</strong> Learning Contract</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-24-3"><strong>24.3</strong> What JPEG Is</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-24-4"><strong>24.4</strong> Why JPEG Became Important</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-24-5"><strong>24.5</strong> Master JPEG Encoding Pipeline</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-24-6"><strong>24.6</strong> The First Major Idea: Colour Conversion</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-24-7"><strong>24.7</strong> Why Separate Brightness and Colour?</a> </li>
+      <li class="part-chapter-item"><a href="#s-24-8"><strong>24.8</strong> Conceptual RGB → YCbCr-Style Transformation</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-24-9"><strong>24.9</strong> Worked Colour Example</a> </li>
+      <li class="part-chapter-item"><a href="#s-24-10"><strong>24.10</strong> Chroma Subsampling</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-24-11"><strong>24.11</strong> Why Chroma Subsampling Helps</a> </li>
+      <li class="part-chapter-item"><a href="#s-24-12"><strong>24.12</strong> Why Blocks Are Useful</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-24-13"><strong>24.13</strong> Boundary Handling</a> </li>
+      <li class="part-chapter-item"><a href="#s-24-14"><strong>24.14</strong> Level Shift</a> </li>
+      <li class="part-chapter-item"><a href="#s-24-15"><strong>24.15</strong> Why Level Shift Helps</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-24-16"><strong>24.16</strong> Apply the 2-D DCT</a> </li>
+      <li class="part-chapter-item"><a href="#s-24-17"><strong>24.17</strong> Interpreting an 8×8 DCT Matrix</a> </li>
+      <li class="part-chapter-item"><a href="#s-24-18"><strong>24.18</strong> Quantization — The Main Lossy Stage</a> </li>
+      <li class="part-chapter-item"><a href="#s-24-19"><strong>24.19</strong> Simplified Quantization Example</a> </li>
+      <li class="part-chapter-item"><a href="#s-24-20"><strong>24.20</strong> Why Quantization Produces Compression Opportunity</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-24-21"><strong>24.21</strong> Where Information Is Discarded</a> </li>
+      <li class="part-chapter-item"><a href="#s-24-22"><strong>24.22</strong> Quantization Strength and Quality</a> </li>
+      <li class="part-chapter-item"><a href="#s-24-23"><strong>24.23</strong> Quality Factor — Conceptual View</a> </li>
+      <li class="part-chapter-item"><a href="#s-24-24"><strong>24.24</strong> Zig-Zag Scan</a> </li>
+      <li class="part-chapter-item"><a href="#s-24-25"><strong>24.25</strong> DC Coding</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-24-26"><strong>24.26</strong> AC Coding</a> </li>
+      <li class="part-chapter-item"><a href="#s-24-27"><strong>24.27</strong> AC Run-Length Intuition</a> </li>
+      <li class="part-chapter-item"><a href="#s-24-28"><strong>24.28</strong> EOB — End of Block</a> </li>
+      <li class="part-chapter-item"><a href="#s-24-29"><strong>24.29</strong> Entropy Coding</a> </li>
+      <li class="part-chapter-item"><a href="#s-24-30"><strong>24.30</strong> JPEG Encoding — Full Conceptual View</a> </li>
+      <li class="part-chapter-item"><a href="#s-24-31"><strong>24.31</strong> JPEG Decoding — Reverse Direction</a> </li>
+      <li class="part-chapter-item"><a href="#s-24-32"><strong>24.32</strong> Dequantization</a> </li>
+      <li class="part-chapter-item"><a href="#s-24-33"><strong>24.33</strong> Inverse DCT</a> </li>
+      <li class="part-chapter-item"><a href="#s-24-34"><strong>24.34</strong> Clipping and Reconstruction</a> </li>
+      <li class="part-chapter-item"><a href="#s-24-35"><strong>24.35</strong> JPEG Artifacts</a> </li>
+      <li class="part-chapter-item"><a href="#s-24-36"><strong>24.36</strong> Quality–Size Trade-off</a> </li>
+      <li class="part-chapter-item"><a href="#s-24-37"><strong>24.37</strong> Worked Compression Example</a> </li>
+      <li class="part-chapter-item"><a href="#s-24-38"><strong>24.38</strong> Why JPEG Works Especially Well for Photographs</a> </li>
+      <li class="part-chapter-item"><a href="#s-24-39"><strong>24.39</strong> JPEG and PNG Are Not “Quality Levels”</a> </li>
+      <li class="part-chapter-item"><a href="#s-24-40"><strong>24.40</strong> JPEG vs. Lossless JPEG</a> </li>
+      <li class="part-chapter-item"><a href="#s-24-41"><strong>24.41</strong> JPEG Implementation Strategy</a> </li>
+      <li class="part-chapter-item"><a href="#s-24-42"><strong>24.42</strong> Python — Manual JPEG-Like Encoder Core</a> </li>
+      <li class="part-chapter-item"><a href="#s-24-43"><strong>24.43</strong> MATLAB — Manual JPEG-Like Block</a> </li>
+      <li class="part-chapter-item"><a href="#s-24-44"><strong>24.44</strong> Manual Implementation Validation</a> </li>
+      <li class="part-chapter-item"><a href="#s-24-45"><strong>24.45</strong> Difference Image</a> </li>
+      <li class="part-chapter-item"><a href="#s-24-46"><strong>24.46</strong> Quality Evaluation</a> </li>
+      <li class="part-chapter-item"><a href="#s-24-47"><strong>24.47</strong> Practical 7 — Experiment Blueprint</a> </li>
+      <li class="part-chapter-item"><a href="#s-24-48"><strong>24.48</strong> Full JPEG Reasoning Table</a> </li>
+      <li class="part-chapter-item"><a href="#s-24-49"><strong>24.49</strong> Common Traps</a> </li>
+      <li class="part-chapter-item"><a href="#s-24-50"><strong>24.50</strong> Exam Lens</a> </li>
+      <li class="part-chapter-item"><a href="#s-24-51"><strong>24.51</strong> Numerical Practice</a> </li>
+      <li class="part-chapter-item"><a href="#s-24-52"><strong>24.52</strong> Advanced Engineering Insight — Why 8×8?</a> </li>
+      <li class="part-chapter-item"><a href="#s-24-53"><strong>24.53</strong> Advanced Engineering Insight — DCT vs. “Frequency Filtering”</a> </li>
+      <li class="part-chapter-item"><a href="#s-24-54"><strong>24.54</strong> Advanced Engineering Insight — Quantization Tables</a> </li>
+      <li class="part-chapter-item"><a href="#s-24-55"><strong>24.55</strong> Advanced Engineering Insight — What JPEG Is Good At</a> </li>
+      <li class="part-chapter-item"><a href="#s-24-56"><strong>24.56</strong> Chapter Checkpoint</a> </li>
+      <li class="part-chapter-item"><a href="#s-24-57"><strong>24.57</strong> One-Page JPEG Recall Sheet</a> </li>
+      <li class="part-chapter-item"><a href="#s-24-58"><strong>24.58</strong> Cross-Book Links</a> </li>
+      <li class="part-chapter-item"><a href="#s-24-59"><strong>24.59</strong> Final Chapter Summary</a> </li>
+      <li class="part-chapter-item"><a href="#s-24-60"><strong>24.60</strong> Course Practical Mapping</a> </li>
+      <li class="part-chapter-item"><a href="#s-24-61"><strong>24.61</strong> Worked Example — 10-Mark University Model Answer: End-to-End Baseline JPEG Pipeline</a> </li>
+        </ul>
+      </div>
+
+      <div class="concept-hook" style="margin-bottom:var(--em-space-8);"><h1>C24 — JPEG Compression End to End</h1>
+<blockquote>
+<p><strong>Chapter thesis:</strong> JPEG compresses photographic images by changing colour representation, exploiting spatial correlation with block DCT, discarding selected information through quantization, rearranging coefficients to expose zero runs, and then applying efficient entropy coding.</p>
+</blockquote>
+<hr /></div>
+
+      <!-- All Numbered Sections -->
+      
+  <!-- SECTION 24.1: Why This Chapter Exists -->
+  <section id="s-24-1" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.1</span>
+      <h2>Why This Chapter Exists</h2>
+      <button class="bookmark-btn" data-id="s-24-1" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The University syllabus explicitly requires:</p>
+<blockquote>
+<p><strong>JPEG Compression Steps and Implementation.</strong> fileciteturn4file0L41-L45</p>
+</blockquote>
+<p>The practical syllabus goes further by requiring students to <strong>implement JPEG compression steps manually</strong> using Python/NumPy/PIL or MATLAB. fileciteturn4file0L68-L74</p>
+<p>Therefore this chapter is not just a JPEG overview.</p>
+<p>You should finish it able to trace the data from:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>RGB image
+    ↓
+colour representation
+    ↓
+chroma handling
+    ↓
+8×8 blocks
+    ↓
+level shift
+    ↓
+DCT
+    ↓
+quantization
+    ↓
+zig-zag
+    ↓
+DC/AC coding
+    ↓
+entropy coding
+    ↓
+JPEG bitstream</code></pre>
+</div></p>
+<p>and the reverse process during decoding.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.2: Learning Contract -->
+  <section id="s-24-2" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.2</span>
+      <h2>Learning Contract</h2>
+      <button class="bookmark-btn" data-id="s-24-2" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>After this chapter, you should be able to:</p>
+<ul>
+<li>explain what JPEG is designed for;</li>
+<li>state why JPEG is usually considered lossy in its baseline photographic form;</li>
+<li>explain the full encoding and decoding pipelines;</li>
+<li>explain RGB-to-YCbCr-style colour conversion at a conceptual level;</li>
+<li>explain luminance and chrominance;</li>
+<li>explain chroma subsampling;</li>
+<li>explain 8×8 block processing;</li>
+<li>explain level shifting;</li>
+<li>apply the DCT stage conceptually;</li>
+<li>apply quantization to a small matrix;</li>
+<li>explain zig-zag ordering;</li>
+<li>explain DC and AC coefficient coding;</li>
+<li>explain zero-run coding;</li>
+<li>explain Huffman entropy coding;</li>
+<li>identify where information is discarded;</li>
+<li>calculate simplified compression metrics;</li>
+<li>implement the teaching pipeline in Python or MATLAB;</li>
+<li>diagnose common JPEG artifacts.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.3: What JPEG Is -->
+  <section id="s-24-3" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.3</span>
+      <h2>What JPEG Is</h2>
+      <button class="bookmark-btn" data-id="s-24-3" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>JPEG originally refers to a family of image coding standards associated with the Joint Photographic Experts Group.</p>
+<p>In everyday usage, “JPEG” often refers to files using the <code>.jpg</code> or <code>.jpeg</code> extension.</p>
+<p>For this course, the important focus is the baseline lossy photographic compression process.</p>
+<p>Do not treat every feature associated with the broader JPEG family as identical to baseline JPEG.</p>
+<p>This chapter teaches the <strong>conceptual baseline JPEG pipeline</strong> needed for the university course and practical.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.4: Why JPEG Became Important -->
+  <section id="s-24-4" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.4</span>
+      <h2>Why JPEG Became Important</h2>
+      <button class="bookmark-btn" data-id="s-24-4" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Photographs are large numerical datasets.</p>
+<p>A raw 24-bit RGB image requires approximately:</p>
+<p>
+$$
+24\text{ bits/pixel}.
+$$
+</p>
+<p>For large images, that becomes expensive in:</p>
+<ul>
+<li>storage;</li>
+<li>transmission;</li>
+<li>web delivery;</li>
+<li>camera systems;</li>
+<li>multimedia systems.</li>
+</ul>
+<p>JPEG exploits characteristics of natural photographs to reduce this cost while maintaining acceptable visual quality over a useful range of settings.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.5: Master JPEG Encoding Pipeline -->
+  <section id="s-24-5" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.5</span>
+      <h2>Master JPEG Encoding Pipeline</h2>
+      <button class="bookmark-btn" data-id="s-24-5" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The most useful diagram to memorize is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>RGB IMAGE
+   │
+   ▼
+Colour conversion
+   │
+   ▼
+Luminance + chrominance representation
+   │
+   ▼
+Optional chroma subsampling
+   │
+   ▼
+8×8 block partitioning
+   │
+   ▼
+Level shift
+   │
+   ▼
+2-D DCT
+   │
+   ▼
+Quantization
+   │
+   ▼
+Zig-zag scan
+   │
+   ├────► DC coding
+   │
+   └────► AC run/size coding
+             │
+             ▼
+      Entropy coding
+             │
+             ▼
+        JPEG bitstream</code></pre>
+</div></p>
+<p>This pipeline should become the backbone of your practical and exam answer.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.6: The First Major Idea: Colour Conversion -->
+  <section id="s-24-6" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.6</span>
+      <h2>The First Major Idea: Colour Conversion</h2>
+      <button class="bookmark-btn" data-id="s-24-6" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>JPEG commonly operates on a luminance/chrominance representation rather than directly compressing RGB independently.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>RGB
+ ↓
+Y   = luminance-like component
+Cb  = blue-difference chroma component
+Cr  = red-difference chroma component</code></pre>
+</div></p>
+<p>The exact equations and coding conventions can vary, but the underlying engineering idea is:</p>
+<blockquote>
+<p><strong>Brightness information and colour-difference information can be represented separately.</strong></p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.7: Why Separate Brightness and Colour? -->
+  <section id="s-24-7" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.7</span>
+      <h2>Why Separate Brightness and Colour?</h2>
+      <button class="bookmark-btn" data-id="s-24-7" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Human vision is generally more sensitive to spatial detail in luminance than to equally fine chrominance detail.</p>
+<p>This means a codec can often preserve luminance relatively carefully while reducing chrominance sampling or precision more aggressively.</p>
+<p>That motivates chroma subsampling.</p>
+<h3>Important warning</h3>
+<p>This does not mean chroma information is unimportant.</p>
+<p>It means the system can exploit a perceptual trade-off.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.8: Conceptual RGB → YCbCr-Style Transformation -->
+  <section id="s-24-8" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.8</span>
+      <h2>Conceptual RGB → YCbCr-Style Transformation</h2>
+      <button class="bookmark-btn" data-id="s-24-8" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A commonly encountered full-range conversion is conceptually represented by equations such as:</p>
+<p>
+$$
+Y=
+0.299R+0.587G+0.114B
+$$
+</p>
+<p>
+$$
+Cb=
+-0.168736R-0.331264G+0.5B+128
+$$
+</p>
+<p>
+$$
+Cr=
+0.5R-0.418688G-0.081312B+128.
+$$
+</p>
+<p>These equations are useful for understanding the separation of brightness and chroma.</p>
+<h3>Caveat</h3>
+<p>JPEG implementation details can involve specific range, offset, and sampling conventions. Different APIs may expose normalized or differently scaled variants.</p>
+<p>Therefore:</p>
+<blockquote>
+<p><strong>Do not assume that every RGB↔YCbCr function uses identical equations and ranges.</strong></p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.9: Worked Colour Example -->
+  <section id="s-24-9" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.9</span>
+      <h2>Worked Colour Example</h2>
+      <button class="bookmark-btn" data-id="s-24-9" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For a pure white pixel:</p>
+<p>
+$$
+R=G=B=255.
+$$
+</p>
+<p>Using the common full-range conceptual equations:</p>
+<p>
+$$
+Y=255.
+$$
+</p>
+<p>The chroma channels are approximately centered near their neutral value.</p>
+<p>This is intuitively sensible:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>white
+→ maximum brightness
+→ little colour difference</code></pre>
+</div></p>
+<p>For a grey pixel where:</p>
+<p>
+$$
+R=G=B,
+$$
+</p>
+<p>the chrominance difference is similarly near neutral.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.10: Chroma Subsampling -->
+  <section id="s-24-10" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.10</span>
+      <h2>Chroma Subsampling</h2>
+      <button class="bookmark-btn" data-id="s-24-10" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Once luminance and chrominance are separated, chroma may be sampled at lower spatial resolution.</p>
+<p>Common notation includes:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>4:4:4
+4:2:2
+4:2:0</code></pre>
+</div></p>
+<p>These describe relative sampling of luma and chroma components.</p>
+<h3>Conceptual comparison</h3>
+<div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Scheme</th>
+<th>Chroma resolution</th>
+<th>General effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4:4:4</td>
+<td>Full</td>
+<td>Highest chroma detail</td>
+</tr>
+<tr>
+<td>4:2:2</td>
+<td>Reduced horizontally</td>
+<td>Lower data</td>
+</tr>
+<tr>
+<td>4:2:0</td>
+<td>Reduced horizontally and vertically</td>
+<td>Greater data reduction</td>
+</tr>
+</tbody>
+</table></div>
+<p>The exact sample arrangement is standardized and should be treated carefully when implementing a real encoder.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.11: Why Chroma Subsampling Helps -->
+  <section id="s-24-11" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.11</span>
+      <h2>Why Chroma Subsampling Helps</h2>
+      <button class="bookmark-btn" data-id="s-24-11" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose a system can reduce chroma samples while keeping luminance detail relatively high.</p>
+<p>Then:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>less chroma data
++
+mostly preserved luma detail
+→
+lower total rate</code></pre>
+</div></p>
+<p>This is a form of controlled information reduction.</p>
+<p>It is one reason a JPEG representation can use significantly fewer bits than raw RGB.</p>
+<hr />
+<h1>12. 8×8 Block Partitioning</h1>
+<p>Each component is divided into small blocks.</p>
+<p>For baseline JPEG, the standard block size is:</p>
+<p>
+$$
+8\times8.
+$$
+</p>
+<p>Thus each block has:</p>
+<p>
+$$
+64
+$$
+</p>
+<p>samples.</p>
+<p>The transform is then applied block by block.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>large image
+┌─────────────────────────┐
+│ 8×8 │ 8×8 │ 8×8 │ ...  │
+├─────┼─────┼─────┼───────┤
+│ 8×8 │ 8×8 │ 8×8 │ ...  │
+├─────┼─────┼─────┼───────┤
+│ ...                         │
+└─────────────────────────┘</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.12: Why Blocks Are Useful -->
+  <section id="s-24-12" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.12</span>
+      <h2>Why Blocks Are Useful</h2>
+      <button class="bookmark-btn" data-id="s-24-12" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A local block is:</p>
+<ul>
+<li>small enough for efficient processing;</li>
+<li>large enough to capture meaningful local spatial variation;</li>
+<li>suitable for DCT basis representation.</li>
+</ul>
+<p>But blocking creates a known side effect.</p>
+<p>At high compression, adjacent blocks can reconstruct differently.</p>
+<p>This can produce:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>| block | block |
+| edges | edges |</code></pre>
+</div></p>
+<p>and visible square boundaries.</p>
+<p>This is the <strong>blocking artifact</strong>.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.13: Boundary Handling -->
+  <section id="s-24-13" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.13</span>
+      <h2>Boundary Handling</h2>
+      <button class="bookmark-btn" data-id="s-24-13" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Image dimensions are not always multiples of 8.</p>
+<p>Suppose:</p>
+<p>
+$$
+W=1017,\qquad H=769.
+$$
+</p>
+<p>Both dimensions require handling before forming complete 8×8 blocks.</p>
+<p>A teaching implementation may use padding.</p>
+<p>Possible policies include:</p>
+<ul>
+<li>zero padding;</li>
+<li>edge replication;</li>
+<li>reflection.</li>
+</ul>
+<p>A real codec has standardized implementation rules and signaling details.</p>
+<p>The learning point is:</p>
+<blockquote>
+<p><strong>Always define what happens at the image boundary.</strong></p>
+</blockquote>
+<p>Otherwise a manual implementation may silently produce shape or quality errors.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.14: Level Shift -->
+  <section id="s-24-14" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.14</span>
+      <h2>Level Shift</h2>
+      <button class="bookmark-btn" data-id="s-24-14" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For a typical 8-bit sample:</p>
+<p>
+$$
+0\le f\le255.
+$$
+</p>
+<p>The JPEG-style transform preparation centers the values:</p>
+<p>
+$$
+f'=f-128.
+$$
+</p>
+<p>Therefore:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>0   → -128
+64  → -64
+128 → 0
+192 → 64
+255 → 127</code></pre>
+</div></p>
+<p>This shifts the block around zero before the DCT.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.15: Why Level Shift Helps -->
+  <section id="s-24-15" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.15</span>
+      <h2>Why Level Shift Helps</h2>
+      <button class="bookmark-btn" data-id="s-24-15" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The DCT naturally works with positive and negative variations around a baseline.</p>
+<p>Centering the samples makes the numerical representation more convenient.</p>
+<p>Remember:</p>
+<blockquote>
+<p><strong>Level shifting is a preprocessing step; it is not the compression loss.</strong></p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.16: Apply the 2-D DCT -->
+  <section id="s-24-16" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.16</span>
+      <h2>Apply the 2-D DCT</h2>
+      <button class="bookmark-btn" data-id="s-24-16" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For each 8×8 block:</p>
+<p>
+$$
+F(u,v)
+=
+\alpha(u)\alpha(v)
+\sum_{x=0}^{7}
+\sum_{y=0}^{7}
+f'(x,y)
+\cos
+\left[
+\frac{(2x+1)u\pi}{16}
+\right]
+\cos
+\left[
+\frac{(2y+1)v\pi}{16}
+\right].
+$$
+</p>
+<p>The resulting block still contains 64 coefficients.</p>
+<p>The number of values has not magically fallen.</p>
+<p>What has changed is the <strong>representation</strong>.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.17: Interpreting an 8×8 DCT Matrix -->
+  <section id="s-24-17" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.17</span>
+      <h2>Interpreting an 8×8 DCT Matrix</h2>
+      <button class="bookmark-btn" data-id="s-24-17" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>┌───────────────────────────┐
+│ DC | low frequencies      │
+│────┼──────────────────────│
+│ low frequencies           │
+│                            │
+│      progressively         │
+│      higher frequencies    │
+└───────────────────────────┘</code></pre>
+</div></p>
+<p>The top-left coefficient:</p>
+<p>
+$$
+F(0,0)
+$$
+</p>
+<p>is the DC component.</p>
+<p>The remaining 63 are AC coefficients.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.18: Quantization — The Main Lossy Stage -->
+  <section id="s-24-18" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.18</span>
+      <h2>Quantization — The Main Lossy Stage</h2>
+      <button class="bookmark-btn" data-id="s-24-18" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Now apply a quantization matrix $Q$:</p>
+<p>
+$$
+\hat F(u,v)
+=
+\operatorname{round}
+\left(
+\frac{F(u,v)}{Q(u,v)}
+\right).
+$$
+</p>
+<p>During decoding:</p>
+<p>
+$$
+F_{\text{recon}}(u,v)
+=
+\hat F(u,v)Q(u,v).
+$$
+</p>
+<p>Because of rounding:</p>
+<p>
+$$
+F_{\text{recon}}\neq F
+$$
+</p>
+<p>in general.</p>
+<p>This is why the usual baseline JPEG process is lossy.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.19: Simplified Quantization Example -->
+  <section id="s-24-19" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.19</span>
+      <h2>Simplified Quantization Example</h2>
+      <button class="bookmark-btn" data-id="s-24-19" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p>
+$$
+F=
+\begin{bmatrix}
+400&40&12&5\\
+32&10&4&2\\
+15&5&2&1\\
+4&2&1&0
+\end{bmatrix}
+$$
+</p>
+<p>and for teaching we use:</p>
+<p>
+$$
+Q=
+\begin{bmatrix}
+10&10&16&20\\
+10&16&20&24\\
+16&20&24&28\\
+20&24&28&32
+\end{bmatrix}.
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+\hat F=
+\operatorname{round}(F/Q).
+$$
+</p>
+<p>Examples:</p>
+<p>
+$$
+400/10=40
+$$
+</p>
+<p>
+$$
+40/10=4
+$$
+</p>
+<p>
+$$
+12/16=0.75\rightarrow1
+$$
+</p>
+<p>
+$$
+5/20=0.25\rightarrow0.
+$$
+</p>
+<p>Several small coefficients become zero.</p>
+<p>The exact JPEG tables are standardized examples of this broader idea.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.20: Why Quantization Produces Compression Opportunity -->
+  <section id="s-24-20" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.20</span>
+      <h2>Why Quantization Produces Compression Opportunity</h2>
+      <button class="bookmark-btn" data-id="s-24-20" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Before quantization:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>many different coefficient values</code></pre>
+</div></p>
+<p>After quantization:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>fewer levels
++
+many zeros
++
+repeated small integer values</code></pre>
+</div></p>
+<p>This makes later coding much more efficient.</p>
+<p>Therefore:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>DCT
+→ exposes frequency structure
+
+Quantization
+→ reduces precision
+
+Zig-zag + RLE
+→ exposes zero runs
+
+Entropy coding
+→ exploits statistical frequency</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.21: Where Information Is Discarded -->
+  <section id="s-24-21" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.21</span>
+      <h2>Where Information Is Discarded</h2>
+      <button class="bookmark-btn" data-id="s-24-21" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The most important exam and viva question is:</p>
+<blockquote>
+<p><strong>Where does JPEG lose information?</strong></p>
+</blockquote>
+<p>For the conventional lossy pipeline, the major intentional loss comes from:</p>
+<p>
+$$
+\boxed{\text{quantization}}
+$$
+</p>
+<p>There can also be information reduction from chroma subsampling when used.</p>
+<p>The following stages are primarily representational/coding operations:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>DCT             → transform
+zig-zag         → ordering
+RLE             → lossless representation
+Huffman coding  → lossless coding</code></pre>
+</div></p>
+<p>This distinction should be explicitly remembered.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.22: Quantization Strength and Quality -->
+  <section id="s-24-22" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.22</span>
+      <h2>Quantization Strength and Quality</h2>
+      <button class="bookmark-btn" data-id="s-24-22" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Stronger quantization generally means:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>larger Q values
+→
+coarser coefficient representation
+→
+more information discarded
+→
+higher compression
+→
+potentially lower quality</code></pre>
+</div></p>
+<p>Weaker quantization generally means:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>smaller Q values
+→
+finer coefficient representation
+→
+less loss
+→
+larger compressed size
+→
+higher quality</code></pre>
+</div></p>
+<p>Thus:</p>
+<p>
+$$
+\boxed{
+\text{compression}
+\leftrightarrow
+\text{quality}
+}
+$$
+</p>
+<p>is not a fixed relationship; it is controlled by operating choices.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.23: Quality Factor — Conceptual View -->
+  <section id="s-24-23" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.23</span>
+      <h2>Quality Factor — Conceptual View</h2>
+      <button class="bookmark-btn" data-id="s-24-23" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Image software often exposes a “quality” parameter.</p>
+<p>Do not interpret:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>quality = 80</code></pre>
+</div></p>
+<p>as though it were universally:</p>
+<p>
+$$
+80\% \text{ of original image quality}.
+$$
+</p>
+<p>The parameter usually influences quantization tables or related encoder settings.</p>
+<p>Different encoders can map the same numerical quality setting differently.</p>
+<p>Therefore:</p>
+<blockquote>
+<p><strong>A quality number is an encoder parameter, not a universal perceptual measurement.</strong></p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.24: Zig-Zag Scan -->
+  <section id="s-24-24" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.24</span>
+      <h2>Zig-Zag Scan</h2>
+      <button class="bookmark-btn" data-id="s-24-24" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>After quantization, the coefficients are traversed in a standardized zig-zag order.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code> 0 → 1 → 5 → 6 → 14 → ...
+ ↓
+ 2 → 4 → 7 → 13 → ...
+ ↓
+ 3 → 8 → 12 → ...</code></pre>
+</div></p>
+<p>The exact JPEG zig-zag order should be implemented from a fixed table.</p>
+<p>The purpose is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>low-frequency coefficients
+→ early positions
+
+high-frequency coefficients
+→ later positions</code></pre>
+</div></p>
+<p>Since many high-frequency coefficients have become zero, long zero runs appear toward the end.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.25: DC Coding -->
+  <section id="s-24-25" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.25</span>
+      <h2>DC Coding</h2>
+      <button class="bookmark-btn" data-id="s-24-25" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The DC coefficient represents the block's average-like component.</p>
+<p>Neighbouring image blocks often have similar DC values.</p>
+<p>Instead of independently coding every DC coefficient, JPEG can code differences between successive DC values.</p>
+<p>Conceptually:</p>
+<p>
+$$
+\Delta DC_i=DC_i-DC_{i-1}.
+$$
+</p>
+<p>Example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>DC values:
+100, 102, 105, 104
+
+differences:
+100, +2, +3, -1</code></pre>
+</div></p>
+<p>The differences are often smaller and therefore easier to encode efficiently.</p>
+<p>This exploits inter-block correlation.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.26: AC Coding -->
+  <section id="s-24-26" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.26</span>
+      <h2>AC Coding</h2>
+      <button class="bookmark-btn" data-id="s-24-26" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The 63 remaining values are AC coefficients.</p>
+<p>After zig-zag scanning, there may be:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>12
+3
+0
+0
+0
+-2
+0
+0
+0
+0
+...</code></pre>
+</div></p>
+<p>Rather than storing every zero explicitly, JPEG represents zero runs together with information about the next nonzero coefficient.</p>
+<p>This is a more structured form of run-length coding than the simplest <code>(count, symbol)</code> example from C22.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.27: AC Run-Length Intuition -->
+  <section id="s-24-27" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.27</span>
+      <h2>AC Run-Length Intuition</h2>
+      <button class="bookmark-btn" data-id="s-24-27" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Consider:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>5, 0, 0, 0, 0, -2, 0, 0, 0, 0...</code></pre>
+</div></p>
+<p>Instead of:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>5,0,0,0,0,-2,0,0,0,0</code></pre>
+</div></p>
+<p>the encoder can conceptually represent:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>5
+→ zero-run = 4, value = -2
+→ ...</code></pre>
+</div></p>
+<p>The exact JPEG syntax uses categories/size information and special symbols such as <strong>EOB</strong> (End of Block). The teaching model is enough to understand why the representation becomes compact.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.28: EOB — End of Block -->
+  <section id="s-24-28" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.28</span>
+      <h2>EOB — End of Block</h2>
+      <button class="bookmark-btn" data-id="s-24-28" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>When all remaining coefficients are zero, JPEG does not need to list every remaining zero.</p>
+<p>It can indicate:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>no more nonzero AC coefficients</code></pre>
+</div></p>
+<p>with an end-of-block representation.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>nonzero
+→ zero run + next value
+→ zero run + next value
+→ EOB</code></pre>
+</div></p>
+<p>This can save many bits for smooth blocks.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.29: Entropy Coding -->
+  <section id="s-24-29" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.29</span>
+      <h2>Entropy Coding</h2>
+      <button class="bookmark-btn" data-id="s-24-29" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>After coefficient representation, symbols are entropy-coded.</p>
+<p>Baseline JPEG uses Huffman coding as one of its standard entropy-coding options.</p>
+<p>The information arriving here has already been transformed into a representation with favourable statistics.</p>
+<p>Thus:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>DCT
+→ transform correlation
+
+quantization
+→ many zeros / reduced precision
+
+zig-zag
+→ clusters zeros
+
+RLE
+→ compact zero-run symbols
+
+Huffman
+→ compact variable-length codes</code></pre>
+</div></p>
+<p>This is the complete logic of the pipeline.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.30: JPEG Encoding — Full Conceptual View -->
+  <section id="s-24-30" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.30</span>
+      <h2>JPEG Encoding — Full Conceptual View</h2>
+      <button class="bookmark-btn" data-id="s-24-30" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>                 ┌──────────────────────────────┐
+                 │            RGB IMAGE         │
+                 └──────────────┬───────────────┘
+                                ↓
+                    Colour conversion
+                                ↓
+                    Y / Cb / Cr-like data
+                                ↓
+                     Chroma subsampling
+                                ↓
+                       8×8 block split
+                                ↓
+                         Level shift
+                                ↓
+                           2-D DCT
+                                ↓
+                        64 coefficients
+                                ↓
+                         Quantization
+                                ↓
+                    mostly small/zero terms
+                                ↓
+                         Zig-zag order
+                                ↓
+                 ┌──────────────┴──────────────┐
+                 ↓                             ↓
+              DC coding                    AC coding
+                 │                        run/size/EOB
+                 └──────────────┬──────────────┘
+                                ↓
+                       Entropy coding
+                                ↓
+                        JPEG bitstream</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.31: JPEG Decoding — Reverse Direction -->
+  <section id="s-24-31" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.31</span>
+      <h2>JPEG Decoding — Reverse Direction</h2>
+      <button class="bookmark-btn" data-id="s-24-31" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The decoder performs the reverse logical operations:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>JPEG bitstream
+      ↓
+entropy decoding
+      ↓
+recover coefficient symbols
+      ↓
+inverse zig-zag
+      ↓
+dequantization
+      ↓
+inverse DCT
+      ↓
+undo level shift
+      ↓
+upsample chroma where necessary
+      ↓
+colour conversion
+      ↓
+reconstructed image</code></pre>
+</div></p>
+<p>The decoder does not recover information discarded during quantization.</p>
+<p>Therefore:</p>
+<p>
+$$
+\boxed{\text{decompression} \neq \text{restoration of the original}}
+$$
+</p>
+<p>It reconstructs the best image represented by the stored compressed information.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.32: Dequantization -->
+  <section id="s-24-32" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.32</span>
+      <h2>Dequantization</h2>
+      <button class="bookmark-btn" data-id="s-24-32" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>If the quantized coefficient is:</p>
+<p>
+$$
+\hat F(u,v),
+$$
+</p>
+<p>the decoder estimates:</p>
+<p>
+$$
+F'(u,v)=
+\hat F(u,v)Q(u,v).
+$$
+</p>
+<p>Example:</p>
+<p>Encoder:</p>
+<p>
+$$
+F=17,\quad Q=10
+$$
+</p>
+<p>
+$$
+\hat F=\operatorname{round}(1.7)=2.
+$$
+</p>
+<p>Decoder:</p>
+<p>
+$$
+F'=2(10)=20.
+$$
+</p>
+<p>Original:</p>
+<p>
+$$
+17.
+$$
+</p>
+<p>Reconstructed coefficient:</p>
+<p>
+$$
+20.
+$$
+</p>
+<p>The difference:</p>
+<p>
+$$
+20-17=3
+$$
+</p>
+<p>cannot be recovered from the compressed representation.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.33: Inverse DCT -->
+  <section id="s-24-33" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.33</span>
+      <h2>Inverse DCT</h2>
+      <button class="bookmark-btn" data-id="s-24-33" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>After dequantization, the inverse DCT reconstructs the block.</p>
+<p>Conceptually:</p>
+<p>
+$$
+f'(x,y)=
+\sum_{u=0}^{7}
+\sum_{v=0}^{7}
+\alpha(u)\alpha(v)
+F'(u,v)
+\cos
+\left[
+\frac{(2x+1)u\pi}{16}
+\right]
+\cos
+\left[
+\frac{(2y+1)v\pi}{16}
+\right].
+$$
+</p>
+<p>After inverse transform, the level shift is undone:</p>
+<p>
+$$
+f(x,y)=f'(x,y)+128.
+$$
+</p>
+<p>The exact implementation includes the relevant rounding/clipping rules.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.34: Clipping and Reconstruction -->
+  <section id="s-24-34" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.34</span>
+      <h2>Clipping and Reconstruction</h2>
+      <button class="bookmark-btn" data-id="s-24-34" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Numerical inverse operations can produce values outside the valid display range.</p>
+<p>For 8-bit samples, values are typically clipped/rounded back into:</p>
+<p>
+$$
+[0,255].
+$$
+</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>inverse transform
+→ floating-point values
+→ rounding
+→ clipping
+→ 8-bit samples</code></pre>
+</div></p>
+<p>This is another reason a manual implementation must be explicit about numeric types.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.35: JPEG Artifacts -->
+  <section id="s-24-35" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.35</span>
+      <h2>JPEG Artifacts</h2>
+      <button class="bookmark-btn" data-id="s-24-35" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>At stronger compression, you may observe:</p>
+<h3>Blocking</h3>
+<p>Square boundaries around 8×8 blocks.</p>
+<p>Cause:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>independent block processing
++
+strong coefficient quantization</code></pre>
+</div></p>
+<h3>Ringing</h3>
+<p>Oscillatory patterns near strong edges.</p>
+<p>Cause:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>loss of higher-frequency transform information</code></pre>
+</div></p>
+<h3>Colour artifacts</h3>
+<p>Can become more visible when chroma is strongly subsampled or compressed.</p>
+<h3>Loss of fine texture</h3>
+<p>Fine detail can disappear as higher-frequency coefficients are heavily quantized.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.36: Quality–Size Trade-off -->
+  <section id="s-24-36" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.36</span>
+      <h2>Quality–Size Trade-off</h2>
+      <button class="bookmark-btn" data-id="s-24-36" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Consider three conceptual JPEG settings:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>High quality
+→ large file
+→ fewer artifacts
+
+Medium quality
+→ smaller file
+→ moderate artifacts
+
+Low quality
+→ very small file
+→ visible loss</code></pre>
+</div></p>
+<p>This is not a guarantee that every image follows exactly the same visual progression, but it is the fundamental engineering trade-off.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.37: Worked Compression Example -->
+  <section id="s-24-37" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.37</span>
+      <h2>Worked Compression Example</h2>
+      <button class="bookmark-btn" data-id="s-24-37" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose an uncompressed image occupies:</p>
+<p>
+$$
+8\text{ MB}
+$$
+</p>
+<p>and the JPEG is:</p>
+<p>
+$$
+1.6\text{ MB}.
+$$
+</p>
+<p>Compression ratio:</p>
+<p>
+$$
+CR=\frac{8}{1.6}=5.
+$$
+</p>
+<p>Therefore:</p>
+<p>
+$$
+\boxed{5:1}
+$$
+</p>
+<p>Percentage reduction:</p>
+<p>
+$$
+\left(1-\frac{1.6}{8}\right)100
+$$
+</p>
+<p>
+$$
+=(1-0.2)100
+$$
+</p>
+<p>
+$$
+=\boxed{80\%}.
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.38: Why JPEG Works Especially Well for Photographs -->
+  <section id="s-24-38" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.38</span>
+      <h2>Why JPEG Works Especially Well for Photographs</h2>
+      <button class="bookmark-btn" data-id="s-24-38" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The pipeline matches statistical properties of natural images:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>RGB correlation
+     ↓
+colour transform / chroma reduction
+
+spatial correlation
+     ↓
+DCT
+
+fine detail can be less important perceptually
+     ↓
+quantization
+
+many small/zero coefficients
+     ↓
+zig-zag + RLE
+
+unequal symbol frequencies
+     ↓
+Huffman coding</code></pre>
+</div></p>
+<p>JPEG is therefore not “one compression trick.”</p>
+<p>It is a <strong>chain of complementary transformations</strong>.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.39: JPEG and PNG Are Not “Quality Levels” -->
+  <section id="s-24-39" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.39</span>
+      <h2>JPEG and PNG Are Not “Quality Levels”</h2>
+      <button class="bookmark-btn" data-id="s-24-39" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A frequent mistake is:</p>
+<blockquote>
+<p>“JPEG = compressed image, PNG = higher-quality JPEG.”</p>
+</blockquote>
+<p>This is incorrect.</p>
+<p>JPEG and PNG use fundamentally different compression approaches.</p>
+<p>At a high level:</p>
+<div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Property</th>
+<th>JPEG</th>
+<th>PNG</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Typical photographic use</td>
+<td>Strong</td>
+<td>Possible but often larger</td>
+</tr>
+<tr>
+<td>Typical compression</td>
+<td>Lossy in common photographic workflow</td>
+<td>Lossless</td>
+</tr>
+<tr>
+<td>Uses DCT</td>
+<td>Yes in baseline JPEG</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Transparency support</td>
+<td>Not the same as PNG</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Exact pixel recovery</td>
+<td>Not in lossy JPEG workflow</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Strong for sharp line/text graphics</td>
+<td>Can introduce artifacts</td>
+<td>Often excellent</td>
+</tr>
+</tbody>
+</table></div>
+<p>The file format choice depends on image content and requirements.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.40: JPEG vs. Lossless JPEG -->
+  <section id="s-24-40" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.40</span>
+      <h2>JPEG vs. Lossless JPEG</h2>
+      <button class="bookmark-btn" data-id="s-24-40" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Do not generalize:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>JPEG = always lossy</code></pre>
+</div></p>
+<p>The broader JPEG family includes lossless-related modes and extensions.</p>
+<p>For this university course, however, the practical “JPEG compression steps” usually refers to the familiar baseline photographic pipeline taught above.</p>
+<p>When answering an exam question, state your scope clearly if needed.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.41: JPEG Implementation Strategy -->
+  <section id="s-24-41" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.41</span>
+      <h2>JPEG Implementation Strategy</h2>
+      <button class="bookmark-btn" data-id="s-24-41" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The practical syllabus asks for manual JPEG compression steps. fileciteturn4file0L68-L74</p>
+<p>A good teaching implementation should <strong>not</strong> simply call:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>python</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>cv2.imwrite(&quot;out.jpg&quot;, image, [quality])</code></pre>
+</div></p>
+<p>and claim that the JPEG algorithm has been implemented.</p>
+<p>That tests library usage, not understanding.</p>
+<p>Instead, build the conceptual components:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>input
+→ convert colour
+→ choose one component
+→ split into 8×8 blocks
+→ level shift
+→ DCT
+→ quantize
+→ zig-zag
+→ RLE-like coefficient representation
+→ inspect output</code></pre>
+</div></p>
+<p>A complete standards-compliant JPEG writer is a substantially larger engineering project because the JPEG file structure, tables, markers, entropy coding, sampling factors, restart intervals, and bit packing must also be handled.</p>
+<p>For the course practical, a <strong>manual component-level implementation</strong> is an excellent learning target.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.42: Python — Manual JPEG-Like Encoder Core -->
+  <section id="s-24-42" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.42</span>
+      <h2>Python — Manual JPEG-Like Encoder Core</h2>
+      <button class="bookmark-btn" data-id="s-24-42" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>python</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>from __future__ import annotations
+
+from pathlib import Path
+
+import cv2
+import numpy as np
+from scipy.fft import dct
+
+
+Q_LUMA = np.array(
+    [
+        [16, 11, 10, 16, 24, 40, 51, 61],
+        [12, 12, 14, 19, 26, 58, 60, 55],
+        [14, 13, 16, 24, 40, 57, 69, 56],
+        [14, 17, 22, 29, 51, 87, 80, 62],
+        [18, 22, 37, 56, 68, 109, 103, 77],
+        [24, 35, 55, 64, 81, 104, 113, 92],
+        [49, 64, 78, 87, 103, 121, 120, 101],
+        [72, 92, 95, 98, 112, 100, 103, 99],
+    ],
+    dtype=np.float64,
+)
+
+ZIGZAG = [
+    (0, 0),
+    (0, 1), (1, 0),
+    (2, 0), (1, 1), (0, 2),
+    (0, 3), (1, 2), (2, 1), (3, 0),
+    (4, 0), (3, 1), (2, 2), (1, 3), (0, 4),
+    (0, 5), (1, 4), (2, 3), (3, 2), (4, 1), (5, 0),
+    (6, 0), (5, 1), (4, 2), (3, 3), (2, 4), (1, 5), (0, 6),
+    (0, 7), (1, 6), (2, 5), (3, 4), (4, 3), (5, 2), (6, 1), (7, 0),
+    (7, 1), (6, 2), (5, 3), (4, 4), (3, 5), (2, 6), (1, 7),
+    (2, 7), (3, 6), (4, 5), (5, 4), (6, 3), (7, 2),
+    (7, 3), (6, 4), (5, 5), (4, 6), (3, 7),
+    (4, 7), (5, 6), (6, 5), (7, 4),
+    (7, 5), (6, 6), (5, 7),
+    (6, 7), (7, 6),
+    (7, 7),
+]
+
+
+def dct2(block: np.ndarray) -&gt; np.ndarray:
+    tmp = dct(block, axis=0, norm=&quot;ortho&quot;)
+    return dct(tmp, axis=1, norm=&quot;ortho&quot;)
+
+
+def quantize(coeff: np.ndarray, qtable: np.ndarray) -&gt; np.ndarray:
+    return np.round(coeff / qtable).astype(np.int32)
+
+
+def zigzag_scan(block: np.ndarray) -&gt; list[int]:
+    return [int(block[r, c]) for r, c in ZIGZAG]
+
+
+def rle_zeros(values: list[int]) -&gt; list[tuple[int, int]]:
+    output: list[tuple[int, int]] = []
+    run = 0
+
+    for value in values:
+        if value == 0:
+            run += 1
+        else:
+            output.append((run, value))
+            run = 0
+
+    return output
+
+
+image_path = Path(&quot;sample.png&quot;)
+image = cv2.imread(str(image_path), cv2.IMREAD_GRAYSCALE)
+
+if image is None:
+    raise FileNotFoundError(f&quot;Could not read {image_path}&quot;)
+
+block = image[:8, :8].astype(np.float64) - 128.0
+
+coeff = dct2(block)
+qcoeff = quantize(coeff, Q_LUMA)
+sequence = zigzag_scan(qcoeff)
+
+print(&quot;Input 8×8 block:&quot;)
+print(block.astype(int))
+
+print(&quot;\nQuantized coefficients:&quot;)
+print(qcoeff)
+
+print(&quot;\nZig-zag sequence:&quot;)
+print(sequence)
+
+print(&quot;\nNon-zero run/value pairs:&quot;)
+print(rle_zeros(sequence))</code></pre>
+</div></p>
+<p>This is a <strong>JPEG-like educational core</strong>, not a complete <code>.jpg</code> file writer.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.43: MATLAB — Manual JPEG-Like Block -->
+  <section id="s-24-43" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.43</span>
+      <h2>MATLAB — Manual JPEG-Like Block</h2>
+      <button class="bookmark-btn" data-id="s-24-43" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>matlab</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>img = imread(&#x27;sample.png&#x27;);
+
+if ndims(img) == 3
+    img = rgb2gray(img);
+end
+
+img = double(img);
+
+% Select one 8x8 block for demonstration.
+block = img(1:8, 1:8);
+
+% JPEG-style level shift.
+shifted = block - 128;
+
+% DCT.
+coeff = dct2(shifted);
+
+% Simplified demonstration quantization table.
+Q = [
+    16 11 10 16 24 40 51 61;
+    12 12 14 19 26 58 60 55;
+    14 13 16 24 40 57 69 56;
+    14 17 22 29 51 87 80 62;
+    18 22 37 56 68 109 103 77;
+    24 35 55 64 81 104 113 92;
+    49 64 78 87 103 121 120 101;
+    72 92 95 98 112 100 103 99
+];
+
+qcoeff = round(coeff ./ Q);
+
+disp(&#x27;Original block:&#x27;);
+disp(block);
+
+disp(&#x27;DCT coefficients:&#x27;);
+disp(coeff);
+
+disp(&#x27;Quantized coefficients:&#x27;);
+disp(qcoeff);</code></pre>
+</div></p>
+<p>This allows the practical student to inspect:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>original block
+→ DCT coefficients
+→ quantized coefficients</code></pre>
+</div></p>
+<p>before implementing the remaining scan/coding stages.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.44: Manual Implementation Validation -->
+  <section id="s-24-44" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.44</span>
+      <h2>Manual Implementation Validation</h2>
+      <button class="bookmark-btn" data-id="s-24-44" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A good implementation should produce evidence at each stage.</p>
+<p>Save or display:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>1. original image
+2. Y / luminance image
+3. one 8×8 block
+4. shifted block
+5. DCT coefficient matrix
+6. quantized coefficient matrix
+7. zig-zag sequence
+8. run/value sequence
+9. reconstructed block
+10. reconstructed image
+11. difference image
+12. final file-size comparison</code></pre>
+</div></p>
+<p>This is much stronger than displaying only the final JPEG.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.45: Difference Image -->
+  <section id="s-24-45" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.45</span>
+      <h2>Difference Image</h2>
+      <button class="bookmark-btn" data-id="s-24-45" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>To inspect reconstruction error:</p>
+<p>
+$$
+D(x,y)=I(x,y)-\hat I(x,y).
+$$
+</p>
+<p>For visualization:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>python</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>difference = cv2.absdiff(original, reconstructed)</code></pre>
+</div></p>
+<p>A heatmap or amplified display can show where compression changed the image.</p>
+<p>Remember:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>difference image
+≠
+original image</code></pre>
+</div></p>
+<p>It is a diagnostic representation.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.46: Quality Evaluation -->
+  <section id="s-24-46" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.46</span>
+      <h2>Quality Evaluation</h2>
+      <button class="bookmark-btn" data-id="s-24-46" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Useful measurements include:</p>
+<p>
+$$
+MSE=
+\frac{1}{MN}
+\sum_{x,y}
+(I-\hat I)^2
+$$
+</p>
+<p>and:</p>
+<p>
+$$
+PSNR=
+10\log_{10}
+\left(
+\frac{255^2}{MSE}
+\right)
+$$
+</p>
+<p>for 8-bit images.</p>
+<p>A stronger practical evaluation compares:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>file size
++
+compression ratio
++
+MSE
++
+PSNR
++
+visual artifact inspection</code></pre>
+</div></p>
+<p>This connects directly to C21.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.47: Practical 7 — Experiment Blueprint -->
+  <section id="s-24-47" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.47</span>
+      <h2>Practical 7 — Experiment Blueprint</h2>
+      <button class="bookmark-btn" data-id="s-24-47" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The university practical states:</p>
+<blockquote>
+<p>Implement JPEG compression steps manually using Python (NumPy, PIL) or MATLAB. fileciteturn4file0L68-L74</p>
+</blockquote>
+<h3>Objective</h3>
+<p>Understand and implement the principal stages of JPEG-style image compression.</p>
+<h3>Suggested sequence</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>1. Load image
+2. Convert to suitable colour representation
+3. Select luminance / colour components
+4. Apply optional chroma sampling
+5. Pad dimensions if needed
+6. Divide into 8×8 blocks
+7. Level shift
+8. DCT
+9. Quantization
+10. Zig-zag scan
+11. DC / AC representation
+12. Run-length handling
+13. Entropy coding concept
+14. Decode
+15. Reconstruct image
+16. Compare size and quality</code></pre>
+</div></p>
+<h3>Evidence</h3>
+<div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Evidence</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Original image</td>
+<td>Baseline</td>
+</tr>
+<tr>
+<td>One raw block</td>
+<td>Understand spatial data</td>
+</tr>
+<tr>
+<td>DCT block</td>
+<td>Understand transform</td>
+</tr>
+<tr>
+<td>Quantized block</td>
+<td>See information reduction</td>
+</tr>
+<tr>
+<td>Zig-zag sequence</td>
+<td>Understand coefficient ordering</td>
+</tr>
+<tr>
+<td>RLE output</td>
+<td>Understand zero-run coding</td>
+</tr>
+<tr>
+<td>Reconstruction</td>
+<td>Verify decoder</td>
+</tr>
+<tr>
+<td>Difference</td>
+<td>Localize distortion</td>
+</tr>
+<tr>
+<td>MSE/PSNR</td>
+<td>Numerical evaluation</td>
+</tr>
+<tr>
+<td>File-size comparison</td>
+<td>Compression measurement</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.48: Full JPEG Reasoning Table -->
+  <section id="s-24-48" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.48</span>
+      <h2>Full JPEG Reasoning Table</h2>
+      <button class="bookmark-btn" data-id="s-24-48" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Stage</th>
+<th>Input</th>
+<th>Output</th>
+<th>Main purpose</th>
+<th>Lossy?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Colour conversion</td>
+<td>RGB</td>
+<td>Y/Cb/Cr-like components</td>
+<td>separate brightness/chroma</td>
+<td>No by itself</td>
+</tr>
+<tr>
+<td>Chroma subsampling</td>
+<td>Full chroma</td>
+<td>fewer chroma samples</td>
+<td>reduce data</td>
+<td>Can discard information</td>
+</tr>
+<tr>
+<td>Blocking</td>
+<td>image</td>
+<td>8×8 blocks</td>
+<td>local processing</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Level shift</td>
+<td>samples</td>
+<td>centered samples</td>
+<td>prepare transform</td>
+<td>No</td>
+</tr>
+<tr>
+<td>DCT</td>
+<td>pixels</td>
+<td>coefficients</td>
+<td>expose frequency structure</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Quantization</td>
+<td>coefficients</td>
+<td>reduced-precision coefficients</td>
+<td>compress/remove less-important detail</td>
+<td><strong>Yes</strong></td>
+</tr>
+<tr>
+<td>Zig-zag</td>
+<td>coefficient matrix</td>
+<td>ordered sequence</td>
+<td>expose low→high frequency structure</td>
+<td>No</td>
+</tr>
+<tr>
+<td>RLE</td>
+<td>sequence</td>
+<td>run/value symbols</td>
+<td>compress zero runs</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Huffman</td>
+<td>symbols</td>
+<td>bitstream</td>
+<td>efficient coding</td>
+<td>No</td>
+</tr>
+</tbody>
+</table></div>
+<p>This is one of the most important tables in the chapter.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.49: Common Traps -->
+  <section id="s-24-49" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.49</span>
+      <h2>Common Traps</h2>
+      <button class="bookmark-btn" data-id="s-24-49" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="trap-box"><div class="trap-title"><span>⚠️</span> Trap 1 — DCT itself is the lossy step.</div>
+
+Not necessarily.
+
+DCT can be inverted.
+
+</div>
+
+<div class="trap-box"><div class="trap-title"><span>⚠️</span> Trap 2 — JPEG stores transformed coefficients directly without quantization.</div>
+
+Baseline JPEG quantizes the DCT coefficients before entropy coding.
+
+</div>
+
+<div class="trap-box"><div class="trap-title"><span>⚠️</span> Trap 3 — Huffman coding causes the visual loss.</div>
+
+No.
+
+Huffman coding is lossless coding of the already-selected symbols.
+
+</div>
+
+<div class="trap-box"><div class="trap-title"><span>⚠️</span> Trap 4 — Zig-zag compresses by itself.</div>
+
+No.
+
+It rearranges coefficients so zero runs become easier to encode.
+
+</div>
+
+<div class="trap-box"><div class="trap-title"><span>⚠️</span> Trap 5 — JPEG compression ratio is fixed.</div>
+
+No.
+
+It depends on image content, chroma sampling, quantization, encoder settings, and overhead.
+
+</div>
+
+<div class="trap-box"><div class="trap-title"><span>⚠️</span> Trap 6 — Quality 90 means 90% original quality.</div>
+
+No.
+
+It is an encoder-specific setting.
+
+</div>
+
+<div class="trap-box"><div class="trap-title"><span>⚠️</span> Trap 7 — All JPEG images have exactly the same internal tables.</div>
+
+No.
+
+Quantization and Huffman tables can vary, and JPEG supports different sampling/configuration details.
+
+</div>
+
+<div class="trap-box"><div class="trap-title"><span>⚠️</span> Trap 8 — A JPEG decoder can reconstruct discarded details.</div>
+
+No.
+
+Information removed during lossy encoding cannot be recovered exactly.
+
+</div>
+
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.50: Exam Lens -->
+  <section id="s-24-50" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.50</span>
+      <h2>Exam Lens</h2>
+      <button class="bookmark-btn" data-id="s-24-50" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h2>2-mark questions</h2>
+<p><strong>What is JPEG?</strong><br />
+A widely used image coding standard/family whose common baseline photographic workflow combines colour representation, 8×8 DCT, quantization, coefficient coding, and entropy coding.</p>
+<p><strong>What is the JPEG block size in baseline JPEG?</strong></p>
+<p>
+$$
+\boxed{8\times8}
+$$
+</p>
+<p><strong>Where does the primary lossy operation occur?</strong></p>
+<p>
+$$
+\boxed{\text{Quantization}}
+$$
+</p>
+<p><strong>What is zig-zag scanning used for?</strong><br />
+To order DCT coefficients so that low-frequency coefficients appear earlier and zero runs are concentrated toward the end.</p>
+<hr />
+<h1>52. 5-Mark Answer Pattern</h1>
+<h3>Explain JPEG compression.</h3>
+<p>Write:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>RGB
+→ colour conversion
+→ chroma subsampling
+→ 8×8 blocking
+→ level shift
+→ DCT
+→ quantization
+→ zig-zag
+→ DC/AC run coding
+→ Huffman coding
+→ bitstream</code></pre>
+</div></p>
+<p>Then state:</p>
+<blockquote>
+<p>Quantization is the principal lossy stage in the conventional baseline workflow.</p>
+</blockquote>
+<hr />
+<h1>53. 10-Mark Answer Pattern</h1>
+<h3>Explain JPEG compression and decompression in detail.</h3>
+<p>Use these sections:</p>
+<ol>
+<li>Need for JPEG;</li>
+<li>colour conversion;</li>
+<li>chroma subsampling;</li>
+<li>8×8 blocking;</li>
+<li>level shifting;</li>
+<li>DCT;</li>
+<li>quantization;</li>
+<li>zig-zag scanning;</li>
+<li>DC coding;</li>
+<li>AC run-length coding;</li>
+<li>Huffman entropy coding;</li>
+<li>JPEG bitstream;</li>
+<li>decoding reverse path;</li>
+<li>where loss occurs;</li>
+<li>quality/compression trade-off;</li>
+<li>artifacts.</li>
+</ol>
+<p>This structure gives an examiner a clear end-to-end answer.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.51: Numerical Practice -->
+  <section id="s-24-51" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.51</span>
+      <h2>Numerical Practice</h2>
+      <button class="bookmark-btn" data-id="s-24-51" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose one coefficient is:</p>
+<p>
+$$
+F=73
+$$
+</p>
+<p>and:</p>
+<p>
+$$
+Q=16.
+$$
+</p>
+<p>Quantized coefficient:</p>
+<p>
+$$
+\hat F=
+\operatorname{round}
+\left(
+\frac{73}{16}
+\right).
+$$
+</p>
+<p>
+$$
+73/16=4.5625
+$$
+</p>
+<p>so:</p>
+<p>
+$$
+\boxed{\hat F=5}.
+$$
+</p>
+<p>Decoder estimate:</p>
+<p>
+$$
+F'=5\times16=80.
+$$
+</p>
+<p>Thus the coefficient error is:</p>
+<p>
+$$
+80-73=7.
+$$
+</p>
+<p>This tiny example captures the central mechanism of JPEG's lossy compression.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.52: Advanced Engineering Insight — Why 8×8? -->
+  <section id="s-24-52" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.52</span>
+      <h2>Advanced Engineering Insight — Why 8×8?</h2>
+      <button class="bookmark-btn" data-id="s-24-52" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The 8×8 choice balances:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>local adaptation
++
+transform efficiency
++
+computational cost
++
+artifact behaviour</code></pre>
+</div></p>
+<p>Larger blocks can capture broader spatial structure but may have greater computational cost and different artifact characteristics.</p>
+<p>Smaller blocks provide more locality but can be less efficient for broader correlations.</p>
+<p>JPEG standardizes 8×8 DCT blocks in its baseline architecture rather than leaving block size arbitrary.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.53: Advanced Engineering Insight — DCT vs. “Frequency Filtering” -->
+  <section id="s-24-53" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.53</span>
+      <h2>Advanced Engineering Insight — DCT vs. “Frequency Filtering”</h2>
+      <button class="bookmark-btn" data-id="s-24-53" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>C13 used frequency-domain filters to modify an image.</p>
+<p>JPEG uses DCT coefficients differently.</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Frequency filtering:
+→ intentionally retain/remove frequency regions
+→ output a modified image
+
+JPEG transform coding:
+→ represent image using frequency coefficients
+→ quantize selected coefficients
+→ encode efficiently</code></pre>
+</div></p>
+<p>The mathematical language overlaps, but the engineering objective differs.</p>
+<p>This is a useful bridge between the enhancement and compression parts of the MiniBook.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.54: Advanced Engineering Insight — Quantization Tables -->
+  <section id="s-24-54" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.54</span>
+      <h2>Advanced Engineering Insight — Quantization Tables</h2>
+      <button class="bookmark-btn" data-id="s-24-54" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A quantization matrix controls how aggressively each coefficient is quantized.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>small Q
+→ finer precision
+→ preserve more detail
+
+large Q
+→ coarser precision
+→ stronger compression</code></pre>
+</div></p>
+<p>The table can vary with:</p>
+<ul>
+<li>luminance/chroma;</li>
+<li>encoder quality settings;</li>
+<li>implementation;</li>
+<li>application needs.</li>
+</ul>
+<p>This is why JPEG can operate at many rate–quality points.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.55: Advanced Engineering Insight — What JPEG Is Good At -->
+  <section id="s-24-55" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.55</span>
+      <h2>Advanced Engineering Insight — What JPEG Is Good At</h2>
+      <button class="bookmark-btn" data-id="s-24-55" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>JPEG is particularly strong for:</p>
+<ul>
+<li>natural photographs;</li>
+<li>camera images;</li>
+<li>web photos;</li>
+<li>general-purpose photographic storage.</li>
+</ul>
+<p>JPEG is less attractive when exact preservation of:</p>
+<ul>
+<li>hard edges;</li>
+<li>text;</li>
+<li>line drawings;</li>
+<li>transparency;</li>
+<li>pixel-level numerical values</li>
+</ul>
+<p>is required.</p>
+<p>The correct decision always depends on application constraints.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.56: Chapter Checkpoint -->
+  <section id="s-24-56" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.56</span>
+      <h2>Chapter Checkpoint</h2>
+      <button class="bookmark-btn" data-id="s-24-56" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Q1 — Pipeline</h3>
+<p>Arrange:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>DCT
+Huffman coding
+quantization
+zig-zag
+colour conversion
+8×8 blocking</code></pre>
+</div></p>
+<h3>Q2 — Loss</h3>
+<p>Which operation primarily causes irreversible coefficient loss?</p>
+<h3>Q3 — Reasoning</h3>
+<p>Why does zig-zag scanning make RLE more effective?</p>
+<h3>Q4 — Practical</h3>
+<p>Why is merely calling a JPEG library function insufficient for the “manual JPEG compression steps” practical?</p>
+<h3>Q5 — Numerical</h3>
+<p>If an 8 MB raw image becomes a 1 MB JPEG, calculate:</p>
+<p>
+$$
+CR
+$$
+</p>
+<p>and percentage reduction.</p>
+<h3>Q6 — Interpretation</h3>
+<p>Why can a JPEG with a much smaller file size still look acceptable?</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.57: One-Page JPEG Recall Sheet -->
+  <section id="s-24-57" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.57</span>
+      <h2>One-Page JPEG Recall Sheet</h2>
+      <button class="bookmark-btn" data-id="s-24-57" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>JPEG
+│
+├── RGB
+│   ↓
+├── Y / Cb / Cr-style representation
+│   ↓
+├── Chroma subsampling
+│   ↓
+├── 8×8 blocks
+│   ↓
+├── Level shift
+│   ↓
+├── DCT
+│   ↓
+├── Quantization  ← PRIMARY LOSS
+│   ↓
+├── Zig-zag
+│   ↓
+├── DC / AC coding
+│   ├── DC differences
+│   └── AC zero runs + EOB
+│   ↓
+├── Huffman entropy coding
+│   ↓
+└── JPEG bitstream
+
+DECODE
+bitstream
+→ entropy decode
+→ inverse coefficient ordering
+→ dequantize
+→ inverse DCT
+→ undo level shift
+→ chroma upsample
+→ colour conversion
+→ image</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.58: Cross-Book Links -->
+  <section id="s-24-58" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.58</span>
+      <h2>Cross-Book Links</h2>
+      <button class="bookmark-btn" data-id="s-24-58" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Layer</th>
+<th>Connection</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MAIN</td>
+<td>C24 is the complete JPEG teaching chapter</td>
+</tr>
+<tr>
+<td>MATH</td>
+<td>DCT, quantization, compression metrics</td>
+</tr>
+<tr>
+<td>LAB</td>
+<td>Practical 7 — manual JPEG compression</td>
+</tr>
+<tr>
+<td>CODE</td>
+<td>Python/NumPy/MATLAB component implementation</td>
+</tr>
+<tr>
+<td>EXAM</td>
+<td>Full pipeline, loss location, numerical compression</td>
+</tr>
+<tr>
+<td>PRACTICE</td>
+<td>Pipeline ordering, coefficient calculations, debugging</td>
+</tr>
+<tr>
+<td>RESOURCE</td>
+<td>Gonzalez &amp; Woods; Szeliski; course practical requirements</td>
+</tr>
+<tr>
+<td>ASSETS</td>
+<td>JPEG pipeline, 8×8 blocks, DCT matrix, quantization, zig-zag</td>
+</tr>
+<tr>
+<td>MASTER</td>
+<td>Completes the Unit III compression branch</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.59: Final Chapter Summary -->
+  <section id="s-24-59" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.59</span>
+      <h2>Final Chapter Summary</h2>
+      <button class="bookmark-btn" data-id="s-24-59" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>JPEG is best understood as a <strong>pipeline of cooperating operations</strong>:</p>
+<p>
+$$
+\boxed{
+\text{colour representation}
+\rightarrow
+\text{sampling}
+\rightarrow
+\text{DCT}
+\rightarrow
+\text{quantization}
+\rightarrow
+\text{coefficient coding}
+\rightarrow
+\text{entropy coding}
+}
+$$
+</p>
+<p>The single most important fact is:</p>
+<p>
+$$
+\boxed{
+\text{Quantization is where the principal intentional coefficient information loss occurs}
+}
+$$
+</p>
+<p>The second most important fact is:</p>
+<p>
+$$
+\boxed{
+\text{DCT does not itself reduce the number of coefficients; it creates a representation that is easier to compress}
+}
+$$
+</p>
+<p>And the third is:</p>
+<p>
+$$
+\boxed{
+\text{JPEG compression is not one algorithmic step—it is a pipeline}
+}
+$$
+</p>
+<p>That pipeline connects everything learned in this part:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>C21
+Compression fundamentals
+      ↓
+C22
+Entropy + RLE + Huffman
+      ↓
+C23
+DCT + transform coding
+      ↓
+C24
+JPEG end to end</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 24.60: Course Practical Mapping -->
+  <section id="s-24-60" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.60</span>
+      <h2>Course Practical Mapping</h2>
+      <button class="bookmark-btn" data-id="s-24-60" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The syllabus's seventh practical is explicitly:</p>
+<blockquote>
+<p><strong>Image Compression — Implement JPEG compression steps manually.</strong> fileciteturn4file0L68-L74</p>
+</blockquote>
+<p>Therefore this chapter should be used together with:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>C21 → why compression
+C22 → coding foundations
+C23 → DCT mathematics
+C24 → JPEG pipeline
+LAB-07 → experiment execution
+CODE-07 → reusable implementation
+EXAM-UNIT-III → exam answer
+PRACTICE-JPEG → problem solving</code></pre>
+</div></p>
+<hr />
+<p><strong>Part IV core compression theory is now complete: C21 → C24.</strong></p>
+<p><strong>Next set:</strong> C25 + C26 — Image Classification and Convolutional Neural Networks.</p>
+    </div>
+  </section>
+
+  <!-- SECTION 24.61: Worked Example — 10-Mark University Model Answer: End-to-End Baseline JPEG Pipeline -->
+  <section id="s-24-61" class="section-block">
+    <div class="section-header">
+      <span class="section-num">24.61</span>
+      <h2>Worked Example — 10-Mark University Model Answer: End-to-End Baseline JPEG Pipeline</h2>
+      <button class="bookmark-btn" data-id="s-24-61" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Problem Statement</h3>
+<p>A $8 \times 8$ grayscale image block undergoes baseline sequential JPEG encoding.
+1. Formulate the level shifting operation and state why it is applied prior to DCT.
+2. Given a quantized $8 \times 8$ DCT coefficient matrix $F_q$, explain the purpose of Zigzag Scanning.
+3. Trace the zigzag sequence and encode the non-zero AC coefficients into Run-Length Amplitude intermediate symbols $((run, size), amplitude)$ ending with an End-of-Block (EOB) marker.
+4. Explain why chroma subsampling (4:2:0) is imperceptible to human observers.</p>
+<h3>Step-by-Step Mathematical Solution</h3>
+<div class="worked-example">
+  <div class="worked-example-header">
+    <span class="worked-example-title">Numerical Examination Trace</span>
+    <span class="tag-badge tag-exam">10-MARK UNIVERSITY MODEL ANSWER</span>
+  </div>
+  <p><strong>1. Level Shifting ($f - 128$):</strong><br>
+  For an 8-bit unsigned input $f(x, y) \in [0, 255]$, the baseline JPEG standard shifts intensities to zero-mean signed values $[-128, +127]$:
+  
+$$f_{shifted}(x, y) = f(x, y) - 128$$
+
+  <em>Rationale:</em> Zero-centering ensures that the DC coefficient $C(0, 0)$ is balanced symmetrically around zero, reducing the dynamic range required for DC differential prediction and preventing arithmetic overflow.</p>
+
+  <p><strong>2. Psychovisual Quantization and Zigzag Scanning:</strong><br>
+  Division by the luminance quantization matrix $Q(u, v)$ zeros out almost all high-frequency diagonal coefficients.
+  Consider a typical quantized block:
+  
+$$F_q = \begin{bmatrix}
+  -26 & -3 & -2 & 0 & 0 & 0 & 0 & 0 \\
+  1 & -1 & 0 & 0 & 0 & 0 & 0 & 0 \\
+  0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 \\
+  0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+  0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+  0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+  0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+  0 & 0 & 0 & 0 & 0 & 0 & 0 & 0
+  \end{bmatrix}$$
+</p>
+
+  <p>Zigzag scanning traverses the matrix along diagonal paths of increasing spatial frequency $(u + v)$:<br>
+  $(0,0) \to (0,1) \to (1,0) \to (2,0) \to (1,1) \to (0,2) \to (0,3) \to (1,2) \to (2,1) \to (3,0) \dots$<br>
+  This orders coefficients from lowest to highest frequency, concentrating the few surviving non-zero coefficients at the beginning of the stream and grouping all zeros into a continuous terminal run.</p>
+
+  <p><strong>3. 1D Zigzag Traversal & Intermediate Symbol Encoding:</strong><br>
+  - DC Term: $F_q(0, 0) = -26$ (encoded differentially against previous block DC).<br>
+  - AC Sequence:
+  
+$$\text{Pos 1: } (0, 1) = -3$$
+
+  
+$$\text{Pos 2: } (1, 0) = +1$$
+
+  
+$$\text{Pos 3: } (2, 0) = 0$$
+
+  
+$$\text{Pos 4: } (1, 1) = -1$$
+
+  
+$$\text{Pos 5: } (0, 2) = -2$$
+
+  
+$$\text{Pos 6: } (0, 3) = 0, \ (1, 2) = 0, \ (2, 1) = +1$$
+
+  
+$$\text{Pos 9..63: All Remaining 55 Coefficients are 0}$$
+</p>
+
+  <p><strong>Run-Length Intermediate Symbols $((run, size), amplitude)$:</strong><br>
+  1. Value $-3$: Zero run $= 0$, magnitude $3 \implies size = 2$, amplitude code for $-3$ is `00` $\implies \mathbf{((0, 2), -3)}$<br>
+  2. Value $+1$: Zero run $= 0$, magnitude $1 \implies size = 1$, amplitude code `1` $\implies \mathbf{((0, 1), +1)}$<br>
+  3. Value $-1$ (after 1 zero at $(2,0)$): Zero run $= 1$, magnitude $1 \implies size = 1$, code `0` $\implies \mathbf{((1, 1), -1)}$<br>
+  4. Value $-2$: Zero run $= 0$, magnitude $2 \implies size = 2$, code `01` $\implies \mathbf{((0, 2), -2)}$<br>
+  5. Value $+1$ (after 2 zeros at $(0,3)$ and $(1,2)$): Zero run $= 2$, magnitude $1 \implies size = 1$, code `1` $\implies \mathbf{((2, 1), +1)}$<br>
+  6. Remaining coefficients are all zero $\implies \mathbf{(0, 0) \ [EOB - End \ of \ Block]}$</p>
+  <p>Instead of transmitting 63 numbers, the entire AC spectrum is compressed into just 5 compact symbol pairs and a single 4-bit EOB code!</p>
+
+  <p><strong>4. Psychovisual Basis of 4:2:0 Chroma Subsampling:</strong><br>
+  The human retina contains approximately 120 million rod photoreceptors (sensitive to luminance/intensity) but only 6 to 7 million cone photoreceptors (sensitive to chrominance/color).
+  Consequently, human visual acuity for spatial chromatic detail is less than half that for luminance.
+  Downsampling $Cb$ and $Cr$ channels by a factor of 2 horizontally and vertically (4:2:0) discards 50% of the raw color data with zero perceptible degradation under natural viewing conditions.</p>
+</div>
+    </div>
+  </section>
+
+      <!-- Chapter End Package -->
+      <section class="chapter-end-package">
+        <div class="chapter-nav-grid">
+          <a href="ch23-lossy-dct-jpeg.html" class="chapter-nav-card">
+            <div class="chapter-nav-dir">← Previous</div>
+            <div class="chapter-nav-title">← Ch 23 — Transform Coding & DCT</div>
+          </a>
+          <a href="ch25-image-classification.html" class="chapter-nav-card next">
+            <div class="chapter-nav-dir">Next →</div>
+            <div class="chapter-nav-title">Next: Ch 25 — Image Classification Foundations →</div>
+          </a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- FLOATING TTS PANEL (SAFE MANUAL MODE ONLY) -->
+  <div id="tts-panel" style="position:fixed; bottom:20px; right:20px; background:var(--em-surface-1); border:1px solid var(--em-border); border-radius:var(--em-radius-md); padding:12px 16px; box-shadow:var(--sh-lg); z-index:var(--z-float); display:none; gap:10px; align-items:center;">
+    <button class="icon-btn" id="tts-play" title="Play / Pause" style="background:var(--em-accent); color:#fff; border-radius:50%; width:36px; height:36px;">▶</button>
+    <button class="icon-btn" id="tts-stop" title="Stop">⏹</button>
+    <div style="font-size:0.75rem; color:var(--em-text-muted);">
+      <span id="tts-status">Ready</span> · <span id="tts-rate-label">1.0x</span>
+    </div>
+  </div>
+
+  <script src="../assets/js/state.js"></script>
+  <script src="../assets/js/core.js"></script>
+  <script src="../assets/js/tts.js"></script>
+  <script src="../assets/js/glossary.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: document.documentElement.getAttribute('data-theme') === 'light' ? 'default' : 'dark'
+      });
+    });
+  </script>
+</body>
+</html>

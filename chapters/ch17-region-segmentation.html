@@ -1,0 +1,2779 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Arpit">
+  <meta name="description" content="Chapter 17: Region-Based Segmentation — Digital Image Processing MiniBook. Axiomatic Segmentation Criteria, Region Growing (Seeds &amp; Stopping Criteria), Region Splitting &amp; Merging (Quadtree Hierarchy), and Watershed Transform">
+  <title>C17: Region-Based Segmentation | DIP MiniBook 📷 Arpit</title>
+
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <link rel="stylesheet" href="../assets/css/chapters.css">
+  <link rel="stylesheet" href="../assets/css/animations.css">
+  <link rel="stylesheet" href="../assets/css/timer.css">
+
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body data-chapter-id="ch17-region-segmentation">
+  <div id="progress-bar"></div>
+
+  <!-- Header -->
+  <header id="main-header">
+    <div class="header-left">
+      <button id="sidebar-toggle" class="icon-btn" aria-label="Toggle navigation drawer" title="Toggle Sidebar (S)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <a href="../index.html" class="brand-logo">
+        <div class="brand-icon">DIP</div>
+        <div class="brand-text">
+          <span class="main">Digital Image Processing</span>
+          <span class="sub">DU DSE-3 Engineering MiniBook</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="header-chapter-title">C17: Region-Based Segmentation</div>
+
+    <div class="header-right">
+      <button id="reading-mode-btn" class="icon-btn" aria-label="Toggle reading focus mode" title="Focus Mode (F)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+          <line x1="8" y1="21" x2="16" y2="21"></line>
+          <line x1="12" y1="17" x2="12" y2="21"></line>
+        </svg>
+      </button>
+      <button id="tts-toggle" class="icon-btn" aria-label="Audio Reader" title="Audio Reader">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+        </svg>
+      </button>
+      <button id="theme-toggle" class="icon-btn" aria-label="Cycle theme" title="Theme (T)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="12" cy="12" r="4.5"></circle>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Sidebar Overlay -->
+  <div id="sidebar-overlay"></div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" aria-expanded="true">
+    <div class="sidebar-nav">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">General</div>
+        <a href="../index.html" class="sidebar-link">
+          <span class="link-icon">🏛️</span>
+          <span>Subject Portal</span>
+        </a>
+        <a href="../progress.html" class="sidebar-link">
+          <span class="link-icon">📊</span>
+          <span>Study Dashboard</span>
+        </a>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Current Chapter Sections</div>
+        <a href="#s-17-1" class="sidebar-link"><span class="link-icon">📌</span><span>17.1 Why Region-Based Segmentation?</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-17-2" class="sidebar-link"><span class="link-icon">📌</span><span>17.2 What Is a Region?</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-17-3" class="sidebar-link"><span class="link-icon">📌</span><span>17.3 Region Segmentation Components</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-17-4" class="sidebar-link"><span class="link-icon">📌</span><span>17.4 Homogeneity Criteria</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-17-5" class="sidebar-link"><span class="link-icon">📌</span><span>17.5 Region Growing</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-17-6" class="sidebar-link"><span class="link-icon">📌</span><span>17.6 Basic Region-Growing Algorithm</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-17-7" class="sidebar-link"><span class="link-icon">📌</span><span>17.7 Membership Rule</span> </a>
+      <a href="#s-17-8" class="sidebar-link"><span class="link-icon">📌</span><span>17.8 Worked Region-Growing Example</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-17-9" class="sidebar-link"><span class="link-icon">📌</span><span>17.9 Why the Current Mean Matters</span> </a>
+      <a href="#s-17-10" class="sidebar-link"><span class="link-icon">📌</span><span>17.10 Seed Selection</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-17-11" class="sidebar-link"><span class="link-icon">📌</span><span>17.11 Manual vs Automatic Seeds</span> </a>
+      <a href="#s-17-12" class="sidebar-link"><span class="link-icon">📌</span><span>17.12 Multiple Seeds</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-17-13" class="sidebar-link"><span class="link-icon">📌</span><span>17.13 Region Growing and Connectivity</span> </a>
+      <a href="#s-17-14" class="sidebar-link"><span class="link-icon">📌</span><span>17.14 4-Connectivity</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-17-15" class="sidebar-link"><span class="link-icon">📌</span><span>17.15 8-Connectivity</span> </a>
+      <a href="#s-17-16" class="sidebar-link"><span class="link-icon">📌</span><span>17.16 Connectivity and Region Shape</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-17-17" class="sidebar-link"><span class="link-icon">📌</span><span>17.17 Stopping Criteria</span> </a>
+      <a href="#s-17-18" class="sidebar-link"><span class="link-icon">📌</span><span>17.18 Region Growing Failure — Leakage</span> </a>
+      <a href="#s-17-19" class="sidebar-link"><span class="link-icon">📌</span><span>17.19 Region Growing Failure — Fragmentation</span> </a>
+      <a href="#s-17-20" class="sidebar-link"><span class="link-icon">📌</span><span>17.20 Combining Homogeneity and Edge Evidence</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-17-21" class="sidebar-link"><span class="link-icon">📌</span><span>17.21 Region Splitting</span> </a>
+      <a href="#s-17-22" class="sidebar-link"><span class="link-icon">📌</span><span>17.22 Region Splitting Predicate</span> </a>
+      <a href="#s-17-23" class="sidebar-link"><span class="link-icon">📌</span><span>17.23 Region Merging</span> </a>
+      <a href="#s-17-24" class="sidebar-link"><span class="link-icon">📌</span><span>17.24 Split-and-Merge Workflow</span> </a>
+      <a href="#s-17-25" class="sidebar-link"><span class="link-icon">📌</span><span>17.25 Quadtree Representation</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-17-26" class="sidebar-link"><span class="link-icon">📌</span><span>17.26 Region Merging Criterion</span> </a>
+      <a href="#s-17-27" class="sidebar-link"><span class="link-icon">📌</span><span>17.27 Worked Merge Example</span> </a>
+      <a href="#s-17-28" class="sidebar-link"><span class="link-icon">📌</span><span>17.28 Region Splitting vs Region Growing</span> </a>
+      <a href="#s-17-29" class="sidebar-link"><span class="link-icon">📌</span><span>17.29 Region-Based vs Thresholding</span> </a>
+      <a href="#s-17-30" class="sidebar-link"><span class="link-icon">📌</span><span>17.30 Region-Based vs Edge-Based Segmentation</span> </a>
+      <a href="#s-17-31" class="sidebar-link"><span class="link-icon">📌</span><span>17.31 Region Adjacency Graph</span> </a>
+      <a href="#s-17-32" class="sidebar-link"><span class="link-icon">📌</span><span>17.32 Region Statistics</span> </a>
+      <a href="#s-17-33" class="sidebar-link"><span class="link-icon">📌</span><span>17.33 Worked Region Statistics</span> </a>
+      <a href="#s-17-34" class="sidebar-link"><span class="link-icon">📌</span><span>17.34 Region Growing with Colour</span> </a>
+      <a href="#s-17-35" class="sidebar-link"><span class="link-icon">📌</span><span>17.35 Why Colour Space Matters</span> </a>
+      <a href="#s-17-36" class="sidebar-link"><span class="link-icon">📌</span><span>17.36 Region Growing with Texture</span> </a>
+      <a href="#s-17-37" class="sidebar-link"><span class="link-icon">📌</span><span>17.37 Seeded vs Unseeded Segmentation</span> </a>
+      <a href="#s-17-38" class="sidebar-link"><span class="link-icon">📌</span><span>17.38 Practical Example — Medical-Style Region</span> </a>
+      <a href="#s-17-39" class="sidebar-link"><span class="link-icon">📌</span><span>17.39 Practical Example — Natural Scene</span> </a>
+      <a href="#s-17-40" class="sidebar-link"><span class="link-icon">📌</span><span>17.40 Region-Based Segmentation and Morphology</span> </a>
+      <a href="#s-17-41" class="sidebar-link"><span class="link-icon">📌</span><span>17.41 Computational Cost</span> </a>
+      <a href="#s-17-42" class="sidebar-link"><span class="link-icon">📌</span><span>17.42 Queue-Based Region Growing</span> </a>
+      <a href="#s-17-43" class="sidebar-link"><span class="link-icon">📌</span><span>17.43 Pseudocode — Queue Version</span> </a>
+      <a href="#s-17-44" class="sidebar-link"><span class="link-icon">📌</span><span>17.44 Boundary-Aware Region Growing</span> </a>
+      <a href="#s-17-45" class="sidebar-link"><span class="link-icon">📌</span><span>17.45 Parameter Sensitivity</span> </a>
+      <a href="#s-17-46" class="sidebar-link"><span class="link-icon">📌</span><span>17.46 Common Failure Patterns</span> </a>
+      <a href="#s-17-47" class="sidebar-link"><span class="link-icon">📌</span><span>17.47 Region Growing vs Adaptive Thresholding</span> </a>
+      <a href="#s-17-48" class="sidebar-link"><span class="link-icon">📌</span><span>17.48 Region Merging and Object Meaning</span> </a>
+      <a href="#s-17-49" class="sidebar-link"><span class="link-icon">📌</span><span>17.49 Segmentation Quality Measures</span> </a>
+      <a href="#s-17-50" class="sidebar-link"><span class="link-icon">📌</span><span>17.50 Worked Region IoU Example</span> </a>
+      <a href="#s-17-51" class="sidebar-link"><span class="link-icon">📌</span><span>17.51 Engineering Decision Tree</span> </a>
+      <a href="#s-17-52" class="sidebar-link"><span class="link-icon">📌</span><span>17.52 Reproducible Experiment</span> </a>
+      <a href="#s-17-53" class="sidebar-link"><span class="link-icon">📌</span><span>17.53 Common Traps</span> </a>
+      <a href="#s-17-54" class="sidebar-link"><span class="link-icon">📌</span><span>17.54 Exam Formula Sheet</span> </a>
+      <a href="#s-17-55" class="sidebar-link"><span class="link-icon">📌</span><span>17.55 Exam-Style Problem — Region Mean</span> </a>
+      <a href="#s-17-56" class="sidebar-link"><span class="link-icon">📌</span><span>17.56 Exam-Style Problem — Region Variance</span> </a>
+      <a href="#s-17-57" class="sidebar-link"><span class="link-icon">📌</span><span>17.57 Exam-Style Problem — Merge Criterion</span> </a>
+      <a href="#s-17-58" class="sidebar-link"><span class="link-icon">📌</span><span>17.58 Cross-Book Bridges</span> </a>
+      <a href="#s-17-59" class="sidebar-link"><span class="link-icon">📌</span><span>17.59 Quick Recall</span> </a>
+      <a href="#s-17-60" class="sidebar-link"><span class="link-icon">📌</span><span>17.60 Chapter Checkpoint</span> </a>
+      <a href="#s-17-61" class="sidebar-link"><span class="link-icon">📌</span><span>17.61 Connection Forward</span> </a>
+      <a href="#s-17-62" class="sidebar-link"><span class="link-icon">📌</span><span>17.62 Axiomatic Mathematical Criteria for Image Segmentation</span> </a>
+      <a href="#s-17-63" class="sidebar-link"><span class="link-icon">📌</span><span>17.63 Worked Example: Quadtree Split-and-Merge Algorithm Trace</span> </a>
+      </div>
+
+      
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-i">Part I — The Image</div>
+      <a href="ch01-big-picture.html" class="sidebar-link"><span class="link-icon">01</span><span>The Big Picture</span></a>
+      <a href="ch02-image-formation.html" class="sidebar-link"><span class="link-icon">02</span><span>Formation & Acquisition</span></a>
+      <a href="ch03-sampling-quantization.html" class="sidebar-link"><span class="link-icon">03</span><span>Sampling & Quantization</span></a>
+      <a href="ch04-image-representation.html" class="sidebar-link"><span class="link-icon">04</span><span>Pixels, Matrices & Resolution</span></a>
+      <a href="ch05-colour-models-file-formats.html" class="sidebar-link"><span class="link-icon">05</span><span>Colour Models & Formats</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-ii">Part II — Improving the Image</div>
+      <a href="ch06-point-processing.html" class="sidebar-link"><span class="link-icon">06</span><span>Point Processing & Intensity</span></a>
+      <a href="ch07-histograms-equalization.html" class="sidebar-link"><span class="link-icon">07</span><span>Histograms & Equalization</span></a>
+      <a href="ch08-spatial-filtering.html" class="sidebar-link"><span class="link-icon">08</span><span>Spatial Filtering & Convolution</span></a>
+      <a href="ch09-smoothing-noise-reduction.html" class="sidebar-link"><span class="link-icon">09</span><span>Smoothing & Noise Reduction</span></a>
+      <a href="ch10-sharpening-edge-detection.html" class="sidebar-link"><span class="link-icon">10</span><span>Sharpening & Edge Detection</span></a>
+      <a href="ch11-geometric-transforms.html" class="sidebar-link"><span class="link-icon">11</span><span>Geometric Transforms</span></a>
+      <a href="ch12-fourier-transform.html" class="sidebar-link"><span class="link-icon">12</span><span>Fourier Transform & Frequency</span></a>
+      <a href="ch13-frequency-filtering.html" class="sidebar-link"><span class="link-icon">13</span><span>Frequency-Domain Filtering</span></a>
+      <a href="ch14-image-restoration.html" class="sidebar-link"><span class="link-icon">14</span><span>Restoration & Deblurring</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-iii">Part III — Understanding Content</div>
+      <a href="ch15-segmentation-fundamentals.html" class="sidebar-link"><span class="link-icon">15</span><span>Segmentation Fundamentals</span></a>
+      <a href="ch16-thresholding-otsu.html" class="sidebar-link"><span class="link-icon">16</span><span>Thresholding & Otsu Method</span></a>
+      <a href="ch17-region-segmentation.html" class="sidebar-link active"><span class="link-icon">17</span><span>Region-Based Segmentation</span></a>
+      <a href="ch18-mathematical-morphology.html" class="sidebar-link"><span class="link-icon">18</span><span>Mathematical Morphology</span></a>
+      <a href="ch19-features-descriptors.html" class="sidebar-link"><span class="link-icon">19</span><span>Image Features & Descriptors</span></a>
+      <a href="ch20-sift-surf-orb-hog.html" class="sidebar-link"><span class="link-icon">20</span><span>SIFT, SURF, ORB & HOG</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-iv">Part IV — Compressing Images</div>
+      <a href="ch21-compression-entropy.html" class="sidebar-link"><span class="link-icon">21</span><span>Compression & Entropy</span></a>
+      <a href="ch22-lossless-coding.html" class="sidebar-link"><span class="link-icon">22</span><span>Lossless: RLE & Huffman</span></a>
+      <a href="ch23-lossy-dct-jpeg.html" class="sidebar-link"><span class="link-icon">23</span><span>Lossy: DCT & JPEG</span></a>
+      <a href="ch24-wavelets-jpeg2000.html" class="sidebar-link"><span class="link-icon">24</span><span>Wavelets & JPEG 2000</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-v">Part V — Intelligent Vision</div>
+      <a href="ch25-image-classification.html" class="sidebar-link"><span class="link-icon">25</span><span>Image Classification</span></a>
+      <a href="ch26-cnns-image-processing.html" class="sidebar-link"><span class="link-icon">26</span><span>CNNs for Image Processing</span></a>
+      <a href="ch27-modern-vision-architectures.html" class="sidebar-link"><span class="link-icon">27</span><span>Modern Vision Architectures</span></a>
+      <a href="ch28-object-detection-yolo.html" class="sidebar-link"><span class="link-icon">28</span><span>Object Detection: YOLO</span></a>
+      <a href="ch29-image-denoising-autoencoders.html" class="sidebar-link"><span class="link-icon">29</span><span>Image Denoising Autoencoders</span></a>
+      <a href="ch30-video-motion-analysis.html" class="sidebar-link"><span class="link-icon">30</span><span>Video & Motion Analysis</span></a>
+      <a href="ch31-dip-applications-engineering.html" class="sidebar-link"><span class="link-icon">31</span><span>DIP Applications & Ethics</span></a>
+    </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-brand-mark">
+        <div class="mark">DU</div>
+        <div>
+          <strong>DSE-3 MiniBook</strong>
+          <div>University of Delhi</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mandatory Shell Wrapper -->
+  <div id="main-content">
+    <main class="chapter-content">
+      <!-- Chapter Hero -->
+      <div class="chapter-hero">
+        <div class="hero-meta">
+          <span class="part-badge part-iii">Understanding Content</span>
+          <span class="chapter-number">CHAPTER 17</span>
+          <span class="reading-time">⏱️ ~50 min read</span>
+          <span class="tag-badge tag-core">High Yield (5–10 mark guarantee)</span>
+        </div>
+        <h1 class="chapter-title">Region-Based Segmentation</h1>
+        <p class="chapter-subtitle">
+          Axiomatic Segmentation Criteria, Region Growing (Seeds &amp; Stopping Criteria), Region Splitting &amp; Merging (Quadtree Hierarchy), and Watershed Transform
+        </p>
+
+        <div class="syllabus-anchor">
+          <span class="syllabus-anchor-label">DU Syllabus</span>
+          <span><strong>Region-Based Segmentation:</strong> Region segmentation criteria, region growing based on seed selection and similarity predicates, region splitting and merging using Quadtree hierarchical representation, and watershed segmentation algorithm using distance transforms and markers.</span>
+        </div>
+      </div>
+
+      <!-- In-Page TOC -->
+      <div class="chapter-checklist-card" style="margin-bottom:var(--em-space-8);">
+        <div class="checklist-title">
+          <span>Table of Contents &amp; Visual Section Map</span>
+          <span class="tag-badge tag-math">63 Deep Sections</span>
+        </div>
+        <ul class="part-chapters-list">
+          <li class="part-chapter-item"><a href="#s-17-1"><strong>17.1</strong> Why Region-Based Segmentation?</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-17-2"><strong>17.2</strong> What Is a Region?</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-17-3"><strong>17.3</strong> Region Segmentation Components</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-17-4"><strong>17.4</strong> Homogeneity Criteria</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-17-5"><strong>17.5</strong> Region Growing</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-17-6"><strong>17.6</strong> Basic Region-Growing Algorithm</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-17-7"><strong>17.7</strong> Membership Rule</a> </li>
+      <li class="part-chapter-item"><a href="#s-17-8"><strong>17.8</strong> Worked Region-Growing Example</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-17-9"><strong>17.9</strong> Why the Current Mean Matters</a> </li>
+      <li class="part-chapter-item"><a href="#s-17-10"><strong>17.10</strong> Seed Selection</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-17-11"><strong>17.11</strong> Manual vs Automatic Seeds</a> </li>
+      <li class="part-chapter-item"><a href="#s-17-12"><strong>17.12</strong> Multiple Seeds</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-17-13"><strong>17.13</strong> Region Growing and Connectivity</a> </li>
+      <li class="part-chapter-item"><a href="#s-17-14"><strong>17.14</strong> 4-Connectivity</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-17-15"><strong>17.15</strong> 8-Connectivity</a> </li>
+      <li class="part-chapter-item"><a href="#s-17-16"><strong>17.16</strong> Connectivity and Region Shape</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-17-17"><strong>17.17</strong> Stopping Criteria</a> </li>
+      <li class="part-chapter-item"><a href="#s-17-18"><strong>17.18</strong> Region Growing Failure — Leakage</a> </li>
+      <li class="part-chapter-item"><a href="#s-17-19"><strong>17.19</strong> Region Growing Failure — Fragmentation</a> </li>
+      <li class="part-chapter-item"><a href="#s-17-20"><strong>17.20</strong> Combining Homogeneity and Edge Evidence</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-17-21"><strong>17.21</strong> Region Splitting</a> </li>
+      <li class="part-chapter-item"><a href="#s-17-22"><strong>17.22</strong> Region Splitting Predicate</a> </li>
+      <li class="part-chapter-item"><a href="#s-17-23"><strong>17.23</strong> Region Merging</a> </li>
+      <li class="part-chapter-item"><a href="#s-17-24"><strong>17.24</strong> Split-and-Merge Workflow</a> </li>
+      <li class="part-chapter-item"><a href="#s-17-25"><strong>17.25</strong> Quadtree Representation</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-17-26"><strong>17.26</strong> Region Merging Criterion</a> </li>
+      <li class="part-chapter-item"><a href="#s-17-27"><strong>17.27</strong> Worked Merge Example</a> </li>
+      <li class="part-chapter-item"><a href="#s-17-28"><strong>17.28</strong> Region Splitting vs Region Growing</a> </li>
+      <li class="part-chapter-item"><a href="#s-17-29"><strong>17.29</strong> Region-Based vs Thresholding</a> </li>
+      <li class="part-chapter-item"><a href="#s-17-30"><strong>17.30</strong> Region-Based vs Edge-Based Segmentation</a> </li>
+      <li class="part-chapter-item"><a href="#s-17-31"><strong>17.31</strong> Region Adjacency Graph</a> </li>
+      <li class="part-chapter-item"><a href="#s-17-32"><strong>17.32</strong> Region Statistics</a> </li>
+      <li class="part-chapter-item"><a href="#s-17-33"><strong>17.33</strong> Worked Region Statistics</a> </li>
+      <li class="part-chapter-item"><a href="#s-17-34"><strong>17.34</strong> Region Growing with Colour</a> </li>
+      <li class="part-chapter-item"><a href="#s-17-35"><strong>17.35</strong> Why Colour Space Matters</a> </li>
+      <li class="part-chapter-item"><a href="#s-17-36"><strong>17.36</strong> Region Growing with Texture</a> </li>
+      <li class="part-chapter-item"><a href="#s-17-37"><strong>17.37</strong> Seeded vs Unseeded Segmentation</a> </li>
+      <li class="part-chapter-item"><a href="#s-17-38"><strong>17.38</strong> Practical Example — Medical-Style Region</a> </li>
+      <li class="part-chapter-item"><a href="#s-17-39"><strong>17.39</strong> Practical Example — Natural Scene</a> </li>
+      <li class="part-chapter-item"><a href="#s-17-40"><strong>17.40</strong> Region-Based Segmentation and Morphology</a> </li>
+      <li class="part-chapter-item"><a href="#s-17-41"><strong>17.41</strong> Computational Cost</a> </li>
+      <li class="part-chapter-item"><a href="#s-17-42"><strong>17.42</strong> Queue-Based Region Growing</a> </li>
+      <li class="part-chapter-item"><a href="#s-17-43"><strong>17.43</strong> Pseudocode — Queue Version</a> </li>
+      <li class="part-chapter-item"><a href="#s-17-44"><strong>17.44</strong> Boundary-Aware Region Growing</a> </li>
+      <li class="part-chapter-item"><a href="#s-17-45"><strong>17.45</strong> Parameter Sensitivity</a> </li>
+      <li class="part-chapter-item"><a href="#s-17-46"><strong>17.46</strong> Common Failure Patterns</a> </li>
+      <li class="part-chapter-item"><a href="#s-17-47"><strong>17.47</strong> Region Growing vs Adaptive Thresholding</a> </li>
+      <li class="part-chapter-item"><a href="#s-17-48"><strong>17.48</strong> Region Merging and Object Meaning</a> </li>
+      <li class="part-chapter-item"><a href="#s-17-49"><strong>17.49</strong> Segmentation Quality Measures</a> </li>
+      <li class="part-chapter-item"><a href="#s-17-50"><strong>17.50</strong> Worked Region IoU Example</a> </li>
+      <li class="part-chapter-item"><a href="#s-17-51"><strong>17.51</strong> Engineering Decision Tree</a> </li>
+      <li class="part-chapter-item"><a href="#s-17-52"><strong>17.52</strong> Reproducible Experiment</a> </li>
+      <li class="part-chapter-item"><a href="#s-17-53"><strong>17.53</strong> Common Traps</a> </li>
+      <li class="part-chapter-item"><a href="#s-17-54"><strong>17.54</strong> Exam Formula Sheet</a> </li>
+      <li class="part-chapter-item"><a href="#s-17-55"><strong>17.55</strong> Exam-Style Problem — Region Mean</a> </li>
+      <li class="part-chapter-item"><a href="#s-17-56"><strong>17.56</strong> Exam-Style Problem — Region Variance</a> </li>
+      <li class="part-chapter-item"><a href="#s-17-57"><strong>17.57</strong> Exam-Style Problem — Merge Criterion</a> </li>
+      <li class="part-chapter-item"><a href="#s-17-58"><strong>17.58</strong> Cross-Book Bridges</a> </li>
+      <li class="part-chapter-item"><a href="#s-17-59"><strong>17.59</strong> Quick Recall</a> </li>
+      <li class="part-chapter-item"><a href="#s-17-60"><strong>17.60</strong> Chapter Checkpoint</a> </li>
+      <li class="part-chapter-item"><a href="#s-17-61"><strong>17.61</strong> Connection Forward</a> </li>
+      <li class="part-chapter-item"><a href="#s-17-62"><strong>17.62</strong> Axiomatic Mathematical Criteria for Image Segmentation</a> </li>
+      <li class="part-chapter-item"><a href="#s-17-63"><strong>17.63</strong> Worked Example: Quadtree Split-and-Merge Algorithm Trace</a> </li>
+        </ul>
+      </div>
+
+      <div class="concept-hook" style="margin-bottom:var(--em-space-8);"><h1>Chapter 17 — Region-Based Segmentation</h1>
+<blockquote>
+<p><strong>Chapter thesis</strong><br />
+Thresholding makes a decision mainly from pixel values. Region-based segmentation adds spatial context by asking which neighbouring pixels belong together. The central idea is <strong>homogeneity + connectivity</strong>: a good region should be internally consistent according to a chosen criterion and spatially coherent according to a chosen connectivity rule.</p>
+</blockquote>
+<p><strong>Part III — Understanding Image Content</strong><br />
+<strong>Syllabus anchor:</strong> Unit III explicitly includes region-based segmentation after global/adaptive thresholding. fileciteturn4file0L41-L45</p>
+<hr /></div>
+
+      <!-- All Numbered Sections -->
+      
+  <!-- SECTION 17.1: Why Region-Based Segmentation? -->
+  <section id="s-17-1" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.1</span>
+      <h2>Why Region-Based Segmentation?</h2>
+      <button class="bookmark-btn" data-id="s-17-1" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>C16 showed that a threshold can classify pixels:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>pixel
+ ↓
+compare with T
+ ↓
+label</code></pre>
+</div></p>
+<p>But consider:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>same intensity
++
+different spatial locations</code></pre>
+</div></p>
+<p>A threshold cannot tell whether two equal-valued pixels belong to the same physical object.</p>
+<p>Region methods add:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>pixel value
++
+neighbours
++
+connectivity
++
+region statistics</code></pre>
+</div></p>
+<p>The conceptual shift is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>PIXEL DECISION
+       ↓
+NEIGHBOUR-AWARE DECISION
+       ↓
+REGION</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.2: What Is a Region? -->
+  <section id="s-17-2" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.2</span>
+      <h2>What Is a Region?</h2>
+      <button class="bookmark-btn" data-id="s-17-2" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A region $R$ is a connected set of image pixels that satisfies a chosen homogeneity or membership criterion.</p>
+<p>A useful conceptual definition is:</p>
+<p>
+$$
+P(R)=\text{true}
+$$
+</p>
+<p>where $P$ is the predicate that determines whether $R$ is sufficiently homogeneous.</p>
+<p>A region should typically be:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>connected
++
+internally homogeneous
++
+meaningful for the task</code></pre>
+</div></p>
+<p>These are design conditions, not universal mathematical requirements for every segmentation framework.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.3: Region Segmentation Components -->
+  <section id="s-17-3" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.3</span>
+      <h2>Region Segmentation Components</h2>
+      <button class="bookmark-btn" data-id="s-17-3" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A region-based method usually needs:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>1. feature / value representation
+2. connectivity definition
+3. homogeneity predicate
+4. initialization
+5. growth or partition strategy
+6. stopping criterion
+7. post-processing</code></pre>
+</div></p>
+<p>Therefore the algorithm is more than:</p>
+<blockquote>
+<p>“compare neighbouring pixels.”</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.4: Homogeneity Criteria -->
+  <section id="s-17-4" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.4</span>
+      <h2>Homogeneity Criteria</h2>
+      <button class="bookmark-btn" data-id="s-17-4" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A region can be considered homogeneous using:</p>
+<h3>Intensity difference</h3>
+<p>
+$$
+|f(x,y)-\mu_R|<\tau
+$$
+</p>
+<h3>Range</h3>
+<p>
+$$
+\max(R)-\min(R)<\tau
+$$
+</p>
+<h3>Variance</h3>
+<p>
+$$
+\sigma_R^2<\tau
+$$
+</p>
+<h3>Colour distance</h3>
+<p>
+$$
+\|\mathbf c-\boldsymbol\mu_R\|<\tau
+$$
+</p>
+<h3>Texture similarity</h3>
+<p>A task-specific texture descriptor can be used.</p>
+<p>The criterion should match the problem.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.5: Region Growing -->
+  <section id="s-17-5" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.5</span>
+      <h2>Region Growing</h2>
+      <button class="bookmark-btn" data-id="s-17-5" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Region growing starts with one or more seed points and expands a region by adding neighbouring pixels that satisfy the membership rule.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>seed
+ ↓
+inspect neighbours
+ ↓
+test homogeneity
+ ↓
+accept valid pixels
+ ↓
+new boundary
+ ↓
+repeat</code></pre>
+</div></p>
+<p>It is naturally spatial and can therefore outperform purely histogram-based methods when connected structure matters.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.6: Basic Region-Growing Algorithm -->
+  <section id="s-17-6" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.6</span>
+      <h2>Basic Region-Growing Algorithm</h2>
+      <button class="bookmark-btn" data-id="s-17-6" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Input:
+    image I
+    seed S
+    tolerance τ
+
+Initialize region R = {S}
+
+repeat:
+    inspect neighbours of R
+    for each candidate pixel p:
+        if p satisfies membership criterion:
+            add p to R
+until no more pixels are added
+
+return R</code></pre>
+</div></p>
+<p>This is a conceptual algorithm.</p>
+<p>Production implementations need explicit handling of:</p>
+<ul>
+<li>visited pixels,</li>
+<li>queues/stacks,</li>
+<li>boundary conditions,</li>
+<li>update strategy for region statistics.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.7: Membership Rule -->
+  <section id="s-17-7" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.7</span>
+      <h2>Membership Rule</h2>
+      <button class="bookmark-btn" data-id="s-17-7" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A simple rule is:</p>
+<p>
+$$
+|f(p)-\mu_R|<\tau
+$$
+</p>
+<p>where:</p>
+<ul>
+<li>$f(p)$ = candidate pixel value,</li>
+<li>$\mu_R$ = current region mean,</li>
+<li>$\tau$ = tolerance.</li>
+</ul>
+<p>This is adaptive during growth because $\mu_R$ can change as the region expands.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.8: Worked Region-Growing Example -->
+  <section id="s-17-8" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.8</span>
+      <h2>Worked Region-Growing Example</h2>
+      <button class="bookmark-btn" data-id="s-17-8" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Consider:</p>
+<p>
+$$
+I=
+\begin{bmatrix}
+10&11&12&90\\
+10&12&13&92\\
+11&13&14&91\\
+80&82&84&90
+\end{bmatrix}
+$$
+</p>
+<p>Seed:</p>
+<p>
+$$
+S=(1,1)
+$$
+</p>
+<p>assuming one-based matrix coordinates for this example.</p>
+<p>Initial region:</p>
+<p>
+$$
+R=\{10\}
+$$
+</p>
+<p>Take:</p>
+<p>
+$$
+\tau=5
+$$
+</p>
+<p>Early neighbours:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>10
+11
+12
+10
+12
+13
+...</code></pre>
+</div></p>
+<p>are close to the seed/region mean.</p>
+<p>Values around:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>80–92</code></pre>
+</div></p>
+<p>are much farther away.</p>
+<p>The region therefore tends to remain around the upper-left low-intensity structure.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.9: Why the Current Mean Matters -->
+  <section id="s-17-9" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.9</span>
+      <h2>Why the Current Mean Matters</h2>
+      <button class="bookmark-btn" data-id="s-17-9" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose the region contains:</p>
+<p>
+$$
+10,11,12,13
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+\mu_R=
+\frac{10+11+12+13}{4}
+=
+11.5
+$$
+</p>
+<p>For candidate:</p>
+<p>
+$$
+15
+$$
+</p>
+<p>the difference is:</p>
+<p>
+$$
+|15-11.5|=3.5
+$$
+</p>
+<p>If:</p>
+<p>
+$$
+\tau=5
+$$
+</p>
+<p>it passes.</p>
+<p>For:</p>
+<p>
+$$
+20
+$$
+</p>
+<p>we have:</p>
+<p>
+$$
+|20-11.5|=8.5
+$$
+</p>
+<p>so it fails.</p>
+<p>The membership boundary therefore moves with the region statistics.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.10: Seed Selection -->
+  <section id="s-17-10" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.10</span>
+      <h2>Seed Selection</h2>
+      <button class="bookmark-btn" data-id="s-17-10" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Seed selection is critical.</p>
+<p>A good seed should be:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>inside the desired region
++
+representative of it
++
+away from strong boundaries when possible</code></pre>
+</div></p>
+<p>A bad seed can:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>grow into the wrong region</code></pre>
+</div></p>
+<p>or fail to grow enough.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.11: Manual vs Automatic Seeds -->
+  <section id="s-17-11" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.11</span>
+      <h2>Manual vs Automatic Seeds</h2>
+      <button class="bookmark-btn" data-id="s-17-11" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Manual</h3>
+<p>User chooses:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>click point</code></pre>
+</div></p>
+<p>Useful for:</p>
+<ul>
+<li>interactive segmentation,</li>
+<li>demonstrations,</li>
+<li>difficult images.</li>
+</ul>
+<h3>Automatic</h3>
+<p>Seeds can be generated from:</p>
+<ul>
+<li>local extrema,</li>
+<li>threshold masks,</li>
+<li>connected components,</li>
+<li>feature detectors,</li>
+<li>prior models.</li>
+</ul>
+<p>Automatic seed generation makes the method scalable.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.12: Multiple Seeds -->
+  <section id="s-17-12" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.12</span>
+      <h2>Multiple Seeds</h2>
+      <button class="bookmark-btn" data-id="s-17-12" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For multiple regions:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>seed A
+seed B
+seed C</code></pre>
+</div></p>
+<p>all can grow.</p>
+<p>A common conceptual strategy is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>unassigned pixel
+→ evaluate nearby region candidates
+→ assign according to criterion</code></pre>
+</div></p>
+<p>This can produce a partition of the image.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.13: Region Growing and Connectivity -->
+  <section id="s-17-13" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.13</span>
+      <h2>Region Growing and Connectivity</h2>
+      <button class="bookmark-btn" data-id="s-17-13" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A candidate must usually satisfy:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>homogeneity
++
+connectivity</code></pre>
+</div></p>
+<p>A pixel with matching intensity but no path of valid neighbours should not automatically join the region.</p>
+<p>This is one of the strongest differences between:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>histogram-based classification</code></pre>
+</div></p>
+<p>and:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>region-based segmentation</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.14: 4-Connectivity -->
+  <section id="s-17-14" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.14</span>
+      <h2>4-Connectivity</h2>
+      <button class="bookmark-btn" data-id="s-17-14" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For pixel $P$:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>  N
+W P E
+  S</code></pre>
+</div></p>
+<p>Neighbours are:</p>
+<p>
+$$
+N,S,E,W
+$$
+</p>
+<p>This avoids diagonal-only connections.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.15: 8-Connectivity -->
+  <section id="s-17-15" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.15</span>
+      <h2>8-Connectivity</h2>
+      <button class="bookmark-btn" data-id="s-17-15" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Adds diagonal neighbours:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>NW N NE
+ W P E
+SW S SE</code></pre>
+</div></p>
+<p>This creates more connected structures.</p>
+<p>The choice should be deliberate.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.16: Connectivity and Region Shape -->
+  <section id="s-17-16" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.16</span>
+      <h2>Connectivity and Region Shape</h2>
+      <button class="bookmark-btn" data-id="s-17-16" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Consider:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>1 0
+0 1</code></pre>
+</div></p>
+<p>With 4-connectivity:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>two regions</code></pre>
+</div></p>
+<p>With 8-connectivity:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>one region</code></pre>
+</div></p>
+<p>Therefore connectivity changes topology.</p>
+<p>That is an important practical and exam observation.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.17: Stopping Criteria -->
+  <section id="s-17-17" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.17</span>
+      <h2>Stopping Criteria</h2>
+      <button class="bookmark-btn" data-id="s-17-17" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Region growth can stop when:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>no valid neighbours remain</code></pre>
+</div></p>
+<p>or when:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>region reaches desired size</code></pre>
+</div></p>
+<p>or:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>region statistics stop satisfying constraints</code></pre>
+</div></p>
+<p>or:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>boundary condition is encountered</code></pre>
+</div></p>
+<p>The stopping rule is part of the segmentation design.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.18: Region Growing Failure — Leakage -->
+  <section id="s-17-18" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.18</span>
+      <h2>Region Growing Failure — Leakage</h2>
+      <button class="bookmark-btn" data-id="s-17-18" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A major failure is <strong>region leakage</strong>.</p>
+<p>Suppose an object has a gradual intensity gradient:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>100 → 105 → 110 → 115 → 120</code></pre>
+</div></p>
+<p>and tolerance is too generous.</p>
+<p>The region may continue into background.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>target object
+████████████
+          █
+          █
+          █████ background</code></pre>
+</div></p>
+<p>This is a common reason to combine intensity similarity with edge or boundary constraints.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.19: Region Growing Failure — Fragmentation -->
+  <section id="s-17-19" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.19</span>
+      <h2>Region Growing Failure — Fragmentation</h2>
+      <button class="bookmark-btn" data-id="s-17-19" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>If tolerance is too small:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>one object
+→ several small regions</code></pre>
+</div></p>
+<p>This is over-segmentation.</p>
+<p>Therefore:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>small τ
+→ fragmentation risk
+
+large τ
+→ leakage risk</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.20: Combining Homogeneity and Edge Evidence -->
+  <section id="s-17-20" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.20</span>
+      <h2>Combining Homogeneity and Edge Evidence</h2>
+      <button class="bookmark-btn" data-id="s-17-20" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A stronger rule can use:</p>
+<p>
+$$
+|f(p)-\mu_R|<\tau
+$$
+</p>
+<p>and:</p>
+<p>
+$$
+|\nabla f(p)|<\gamma
+$$
+</p>
+<p>for growth across relatively smooth areas.</p>
+<p>This says:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>candidate is similar
++
+boundary crossing is not too strong</code></pre>
+</div></p>
+<p>The exact combined criterion depends on the application.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.21: Region Splitting -->
+  <section id="s-17-21" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.21</span>
+      <h2>Region Splitting</h2>
+      <button class="bookmark-btn" data-id="s-17-21" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Region splitting starts with a large region, often the full image, and tests whether it is homogeneous.</p>
+<p>If not:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>split</code></pre>
+</div></p>
+<p>The image is recursively partitioned.</p>
+<p>A conceptual quadtree split is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>┌─────────────┐
+│             │
+│             │
+│             │
+│             │
+└─────────────┘
+
+        ↓
+
+┌──────┬──────┐
+│      │      │
+├──────┼──────┤
+│      │      │
+└──────┴──────┘</code></pre>
+</div></p>
+<p>Each region is tested again.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.22: Region Splitting Predicate -->
+  <section id="s-17-22" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.22</span>
+      <h2>Region Splitting Predicate</h2>
+      <button class="bookmark-btn" data-id="s-17-22" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p>
+$$
+P(R)=
+\begin{cases}
+\text{true},&\sigma_R^2<\tau\\
+\text{false},&\sigma_R^2\ge\tau
+\end{cases}
+$$
+</p>
+<p>Then:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>variance low
+→ region acceptable
+
+variance high
+→ split region</code></pre>
+</div></p>
+<p>This is a simple statistical predicate.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.23: Region Merging -->
+  <section id="s-17-23" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.23</span>
+      <h2>Region Merging</h2>
+      <button class="bookmark-btn" data-id="s-17-23" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>After splitting, neighbouring regions with compatible statistics can be merged.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>split too much
+     ↓
+compare neighbouring regions
+     ↓
+merge compatible regions
+     ↓
+final segmentation</code></pre>
+</div></p>
+<p>This gives the classical:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>SPLIT + MERGE</code></pre>
+</div></p>
+<p>framework.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.24: Split-and-Merge Workflow -->
+  <section id="s-17-24" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.24</span>
+      <h2>Split-and-Merge Workflow</h2>
+      <button class="bookmark-btn" data-id="s-17-24" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>whole image
+    ↓
+test homogeneity
+    ↓
+split non-homogeneous regions
+    ↓
+obtain small regions
+    ↓
+test adjacent pairs
+    ↓
+merge compatible regions
+    ↓
+final region partition</code></pre>
+</div></p>
+<p>This method balances:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>under-segmentation
+↔
+over-segmentation</code></pre>
+</div></p>
+<p>through complementary operations.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.25: Quadtree Representation -->
+  <section id="s-17-25" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.25</span>
+      <h2>Quadtree Representation</h2>
+      <button class="bookmark-btn" data-id="s-17-25" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For square images, recursive four-way splitting naturally forms a quadtree.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>ROOT
+├── Q1
+│   ├── ...
+│   └── ...
+├── Q2
+├── Q3
+└── Q4</code></pre>
+</div></p>
+<p>The hierarchy stores:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>large homogeneous regions
++
+smaller subdivisions where needed</code></pre>
+</div></p>
+<p>This is useful for adaptive image representations.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.26: Region Merging Criterion -->
+  <section id="s-17-26" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.26</span>
+      <h2>Region Merging Criterion</h2>
+      <button class="bookmark-btn" data-id="s-17-26" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Two regions $R_1,R_2$ can be merged if their combined statistics satisfy a homogeneity predicate.</p>
+<p>For example:</p>
+<p>
+$$
+|\mu_{R_1}-\mu_{R_2}|<\tau
+$$
+</p>
+<p>This checks mean similarity.</p>
+<p>A more robust criterion can consider:</p>
+<ul>
+<li>variance,</li>
+<li>colour,</li>
+<li>texture,</li>
+<li>boundary strength,</li>
+<li>region size.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.27: Worked Merge Example -->
+  <section id="s-17-27" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.27</span>
+      <h2>Worked Merge Example</h2>
+      <button class="bookmark-btn" data-id="s-17-27" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p>
+$$
+\mu_{R_1}=100
+$$
+</p>
+<p>
+$$
+\mu_{R_2}=103
+$$
+</p>
+<p>and:</p>
+<p>
+$$
+\tau=5
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+|100-103|=3<5
+$$
+</p>
+<p>so the mean-similarity criterion allows a merge.</p>
+<p>If:</p>
+<p>
+$$
+\mu_{R_2}=110
+$$
+</p>
+<p>then:</p>
+<p>
+$$
+|100-110|=10
+$$
+</p>
+<p>and the regions remain separate under this criterion.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.28: Region Splitting vs Region Growing -->
+  <section id="s-17-28" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.28</span>
+      <h2>Region Splitting vs Region Growing</h2>
+      <button class="bookmark-btn" data-id="s-17-28" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Method</th>
+<th>Starting point</th>
+<th>Main action</th>
+<th>Main parameter</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>region growing</td>
+<td>seed(s)</td>
+<td>expand</td>
+<td>similarity/tolerance</td>
+</tr>
+<tr>
+<td>region splitting</td>
+<td>large regions</td>
+<td>divide</td>
+<td>homogeneity threshold</td>
+</tr>
+<tr>
+<td>merging</td>
+<td>small/adjacent regions</td>
+<td>combine</td>
+<td>compatibility threshold</td>
+</tr>
+<tr>
+<td>split-and-merge</td>
+<td>full image</td>
+<td>divide then combine</td>
+<td>both</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.29: Region-Based vs Thresholding -->
+  <section id="s-17-29" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.29</span>
+      <h2>Region-Based vs Thresholding</h2>
+      <button class="bookmark-btn" data-id="s-17-29" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Property</th>
+<th>Thresholding</th>
+<th>Region-based</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>core evidence</td>
+<td>value</td>
+<td>value + spatial context</td>
+</tr>
+<tr>
+<td>connectivity</td>
+<td>optional/post-process</td>
+<td>fundamental</td>
+</tr>
+<tr>
+<td>initialization</td>
+<td>threshold</td>
+<td>seed or initial partition</td>
+</tr>
+<tr>
+<td>illumination sensitivity</td>
+<td>high for global methods</td>
+<td>can be better with local criteria</td>
+</tr>
+<tr>
+<td>parameterization</td>
+<td>$T$</td>
+<td>seed, tolerance, homogeneity</td>
+</tr>
+<tr>
+<td>complexity</td>
+<td>low</td>
+<td>higher</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.30: Region-Based vs Edge-Based Segmentation -->
+  <section id="s-17-30" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.30</span>
+      <h2>Region-Based vs Edge-Based Segmentation</h2>
+      <button class="bookmark-btn" data-id="s-17-30" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Edge-based</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>find boundaries
+→ infer regions</code></pre>
+</div></p>
+<h3>Region-based</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>find coherent regions
+→ infer boundaries</code></pre>
+</div></p>
+<p>They are almost complementary strategies.</p>
+<p>A strong system can combine both.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.31: Region Adjacency Graph -->
+  <section id="s-17-31" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.31</span>
+      <h2>Region Adjacency Graph</h2>
+      <button class="bookmark-btn" data-id="s-17-31" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <blockquote>
+<p><strong>EXTENSION</strong></p>
+</blockquote>
+<p>Once the image is partitioned into regions, create a graph:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>node = region
+edge = adjacency</code></pre>
+</div></p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>R1 ── R2
+│     │
+R3 ── R4</code></pre>
+</div></p>
+<p>Each node can store:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>mean
+variance
+area
+colour
+texture</code></pre>
+</div></p>
+<p>Merging then becomes a graph operation.</p>
+<p>This creates a bridge between classical segmentation and graph-based image analysis.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.32: Region Statistics -->
+  <section id="s-17-32" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.32</span>
+      <h2>Region Statistics</h2>
+      <button class="bookmark-btn" data-id="s-17-32" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For region $R$:</p>
+<h3>Area</h3>
+<p>
+$$
+A_R=|R|
+$$
+</p>
+<h3>Mean</h3>
+<p>
+$$
+\mu_R=
+\frac1{|R|}
+\sum_{p\in R}f(p)
+$$
+</p>
+<h3>Variance</h3>
+<p>
+$$
+\sigma_R^2=
+\frac1{|R|}
+\sum_{p\in R}
+[f(p)-\mu_R]^2
+$$
+</p>
+<p>These statistics can drive segmentation decisions.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.33: Worked Region Statistics -->
+  <section id="s-17-33" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.33</span>
+      <h2>Worked Region Statistics</h2>
+      <button class="bookmark-btn" data-id="s-17-33" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose region values are:</p>
+<p>
+$$
+[10,12,11,13]
+$$
+</p>
+<p>Mean:</p>
+<p>
+$$
+\mu_R=
+\frac{46}{4}
+=
+11.5
+$$
+</p>
+<p>Variance:</p>
+<p>
+$$
+\sigma_R^2=
+\frac{
+(10-11.5)^2+
+(12-11.5)^2+
+(11-11.5)^2+
+(13-11.5)^2
+}{4}
+$$
+</p>
+<p>
+$$
+=
+\frac{2.25+0.25+0.25+2.25}{4}
+$$
+</p>
+<p>
+$$
+=
+\frac5{4}
+$$
+</p>
+<p>
+$$
+\boxed{1.25}
+$$
+</p>
+<p>The region is relatively homogeneous under this simple intensity criterion.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.34: Region Growing with Colour -->
+  <section id="s-17-34" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.34</span>
+      <h2>Region Growing with Colour</h2>
+      <button class="bookmark-btn" data-id="s-17-34" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For RGB:</p>
+<p>
+$$
+\mathbf c(p)=
+[R(p),G(p),B(p)]^T
+$$
+</p>
+<p>A simple criterion is:</p>
+<p>
+$$
+\|\mathbf c(p)-\boldsymbol\mu_R\|_2<\tau
+$$
+</p>
+<p>where $\boldsymbol\mu_R$ is the region's mean colour vector.</p>
+<p>This incorporates multiple channels.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.35: Why Colour Space Matters -->
+  <section id="s-17-35" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.35</span>
+      <h2>Why Colour Space Matters</h2>
+      <button class="bookmark-btn" data-id="s-17-35" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>If the RGB representation mixes brightness and chromatic changes unfavourably, a region criterion may become unstable under lighting variation.</p>
+<p>A different colour representation may improve separability.</p>
+<p>Therefore:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>region-growing rule
+depends on
+feature representation</code></pre>
+</div></p>
+<p>This links C05 to C17.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.36: Region Growing with Texture -->
+  <section id="s-17-36" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.36</span>
+      <h2>Region Growing with Texture</h2>
+      <button class="bookmark-btn" data-id="s-17-36" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A candidate pixel or local patch can be represented by:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>local mean
+local variance
+gradient statistics
+texture descriptor</code></pre>
+</div></p>
+<p>Then the membership condition can operate on that feature vector.</p>
+<p>Conceptually:</p>
+<p>
+$$
+\|\mathbf z(p)-\boldsymbol\mu_R\|<\tau
+$$
+</p>
+<p>where $\mathbf z$ is a chosen feature vector.</p>
+<p>This is a bridge toward feature-based segmentation.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.37: Seeded vs Unseeded Segmentation -->
+  <section id="s-17-37" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.37</span>
+      <h2>Seeded vs Unseeded Segmentation</h2>
+      <button class="bookmark-btn" data-id="s-17-37" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Seeded</h3>
+<p>Starts from known seed points.</p>
+<p>Advantages:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>strong user/control
+specific target</code></pre>
+</div></p>
+<h3>Unseeded</h3>
+<p>Automatically determines regions.</p>
+<p>Advantages:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>scalable
+less manual intervention</code></pre>
+</div></p>
+<p>The complexity shifts into:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>automatic initialization</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.38: Practical Example — Medical-Style Region -->
+  <section id="s-17-38" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.38</span>
+      <h2>Practical Example — Medical-Style Region</h2>
+      <button class="bookmark-btn" data-id="s-17-38" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose a target structure has approximately homogeneous intensity but is surrounded by a gradual intensity transition.</p>
+<p>A global threshold may fragment it.</p>
+<p>Region growing can use:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>seed inside target
++
+local similarity
++
+edge-aware stopping</code></pre>
+</div></p>
+<p>This may produce a more connected structure.</p>
+<p>But the exact performance depends on the image modality and noise.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.39: Practical Example — Natural Scene -->
+  <section id="s-17-39" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.39</span>
+      <h2>Practical Example — Natural Scene</h2>
+      <button class="bookmark-btn" data-id="s-17-39" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>sky
+trees
+buildings</code></pre>
+</div></p>
+<p>have overlapping intensities but different spatial structure.</p>
+<p>A region-growing criterion could exploit:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>intensity
++
+colour
++
+gradient</code></pre>
+</div></p>
+<p>However, complex natural scenes frequently violate simple homogeneity assumptions.</p>
+<p>Learned segmentation may then be preferable.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.40: Region-Based Segmentation and Morphology -->
+  <section id="s-17-40" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.40</span>
+      <h2>Region-Based Segmentation and Morphology</h2>
+      <button class="bookmark-btn" data-id="s-17-40" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>After region segmentation:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>small holes
+small islands
+gaps</code></pre>
+</div></p>
+<p>may remain.</p>
+<p>Morphological operations can refine the result.</p>
+<p>This connection becomes central in C18.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.41: Computational Cost -->
+  <section id="s-17-41" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.41</span>
+      <h2>Computational Cost</h2>
+      <button class="bookmark-btn" data-id="s-17-41" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A region-growing algorithm can approach:</p>
+<p>
+$$
+O(MN)
+$$
+</p>
+<p>for simple single-pass visitation, although practical cost depends on:</p>
+<ul>
+<li>neighbourhood size,</li>
+<li>data structures,</li>
+<li>feature computation,</li>
+<li>repeated statistics,</li>
+<li>multiple seeds.</li>
+</ul>
+<p>Split-and-merge can involve hierarchical recursion and graph operations.</p>
+<p>The complexity depends strongly on implementation.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.42: Queue-Based Region Growing -->
+  <section id="s-17-42" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.42</span>
+      <h2>Queue-Based Region Growing</h2>
+      <button class="bookmark-btn" data-id="s-17-42" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A robust implementation commonly maintains:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>queue
+visited mask
+region mask
+region statistics</code></pre>
+</div></p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>seed
+ ↓
+enqueue
+ ↓
+pop pixel
+ ↓
+inspect neighbours
+ ↓
+accept → enqueue
+ ↓
+repeat</code></pre>
+</div></p>
+<p>The visited structure prevents infinite revisiting.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.43: Pseudocode — Queue Version -->
+  <section id="s-17-43" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.43</span>
+      <h2>Pseudocode — Queue Version</h2>
+      <button class="bookmark-btn" data-id="s-17-43" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>initialize queue with seed
+initialize visited
+initialize region
+
+while queue not empty:
+
+    p = pop(queue)
+
+    for q in neighbours(p):
+
+        if q is already visited:
+            continue
+
+        mark q visited
+
+        if q satisfies membership criterion:
+            add q to region
+            push q into queue
+
+return region</code></pre>
+</div></p>
+<p>For a dynamic region-mean criterion, update the statistics when a pixel is accepted.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.44: Boundary-Aware Region Growing -->
+  <section id="s-17-44" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.44</span>
+      <h2>Boundary-Aware Region Growing</h2>
+      <button class="bookmark-btn" data-id="s-17-44" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A stronger pipeline can be:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>candidate q
+   ↓
+similarity test
+   ↓
+edge-strength test
+   ↓
+inside image?
+   ↓
+not previously visited?
+   ↓
+accept/reject</code></pre>
+</div></p>
+<p>This illustrates how several classical DIP chapters can be combined into one algorithm.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.45: Parameter Sensitivity -->
+  <section id="s-17-45" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.45</span>
+      <h2>Parameter Sensitivity</h2>
+      <button class="bookmark-btn" data-id="s-17-45" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Vary:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>seed
+tolerance τ
+connectivity
+window/feature scale
+edge constraint γ</code></pre>
+</div></p>
+<p>Then inspect:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>region area
+boundary
+leakage
+fragmentation
+IoU/Dice</code></pre>
+</div></p>
+<p>This shows whether the method is stable.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.46: Common Failure Patterns -->
+  <section id="s-17-46" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.46</span>
+      <h2>Common Failure Patterns</h2>
+      <button class="bookmark-btn" data-id="s-17-46" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Leakage</h3>
+<p>Tolerance too high.</p>
+<h3>Fragmentation</h3>
+<p>Tolerance too low.</p>
+<h3>Boundary stopping</h3>
+<p>Strong edge prevents desired growth.</p>
+<h3>Wrong seed</h3>
+<p>Starts outside the target.</p>
+<h3>Illumination drift</h3>
+<p>Region statistics change across the object.</p>
+<h3>Texture</h3>
+<p>Within-object texture violates homogeneity.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.47: Region Growing vs Adaptive Thresholding -->
+  <section id="s-17-47" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.47</span>
+      <h2>Region Growing vs Adaptive Thresholding</h2>
+      <button class="bookmark-btn" data-id="s-17-47" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Both use local information.</p>
+<p>But:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>adaptive threshold
+→ computes local decision threshold
+
+region growing
+→ explicitly builds connected regions</code></pre>
+</div></p>
+<p>The latter has stronger spatial identity.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.48: Region Merging and Object Meaning -->
+  <section id="s-17-48" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.48</span>
+      <h2>Region Merging and Object Meaning</h2>
+      <button class="bookmark-btn" data-id="s-17-48" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Two adjacent regions can be numerically similar but semantically different.</p>
+<p>Example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>two adjacent materials
+same mean intensity</code></pre>
+</div></p>
+<p>A blind merge would be incorrect.</p>
+<p>This is a reminder:</p>
+<blockquote>
+<p>Homogeneity is a numerical property; semantic identity is a task-level property.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.49: Segmentation Quality Measures -->
+  <section id="s-17-49" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.49</span>
+      <h2>Segmentation Quality Measures</h2>
+      <button class="bookmark-btn" data-id="s-17-49" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Once regions are produced, evaluate:</p>
+<p>
+$$
+IoU=
+\frac{|A\cap B|}{|A\cup B|}
+$$
+</p>
+<p>
+$$
+Dice=
+\frac{2|A\cap B|}
+{|A|+|B|}
+$$
+</p>
+<p>and if appropriate:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>boundary accuracy
+precision
+recall
+component count
+area error</code></pre>
+</div></p>
+<p>Different tasks require different metrics.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.50: Worked Region IoU Example -->
+  <section id="s-17-50" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.50</span>
+      <h2>Worked Region IoU Example</h2>
+      <button class="bookmark-btn" data-id="s-17-50" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Prediction area:</p>
+<p>
+$$
+|A|=120
+$$
+</p>
+<p>Ground truth:</p>
+<p>
+$$
+|B|=100
+$$
+</p>
+<p>Intersection:</p>
+<p>
+$$
+|A\cap B|=80
+$$
+</p>
+<p>Union:</p>
+<p>
+$$
+120+100-80=140
+$$
+</p>
+<p>Therefore:</p>
+<p>
+$$
+IoU=
+\frac{80}{140}
+$$
+</p>
+<p>
+$$
+\boxed{\approx0.5714}
+$$
+</p>
+<p>A reasonable overlap exists, but substantial segmentation error remains.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.51: Engineering Decision Tree -->
+  <section id="s-17-51" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.51</span>
+      <h2>Engineering Decision Tree</h2>
+      <button class="bookmark-btn" data-id="s-17-51" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Do regions have reasonably homogeneous interiors?
+        │
+       YES
+        ↓
+Can useful seeds be identified?
+        │
+       YES
+        ↓
+Region growing
+        │
+       NO
+        ↓
+Can image be recursively partitioned?
+        │
+       YES
+        ↓
+Split / split-and-merge
+        │
+       NO
+        ↓
+Use richer features or learned segmentation</code></pre>
+</div></p>
+<p>This is a conceptual selector, not a mandatory sequence.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.52: Reproducible Experiment -->
+  <section id="s-17-52" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.52</span>
+      <h2>Reproducible Experiment</h2>
+      <button class="bookmark-btn" data-id="s-17-52" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Record:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image
+preprocessing
+feature representation
+connectivity
+seed points
+homogeneity criterion
+tolerance
+stopping rule
+post-processing
+evaluation metric</code></pre>
+</div></p>
+<p>Without these, a region-growing result is difficult to reproduce.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.53: Common Traps -->
+  <section id="s-17-53" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.53</span>
+      <h2>Common Traps</h2>
+      <button class="bookmark-btn" data-id="s-17-53" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h2>Trap 1 — “Region growing is just thresholding repeatedly.”</h2>
+<p>False.</p>
+<p>Region growing explicitly uses connectivity and region evolution.</p>
+<h2>Trap 2 — “A similar-valued pixel always belongs to the same region.”</h2>
+<p>False.</p>
+<p>It must also satisfy the spatial/region membership logic.</p>
+<h2>Trap 3 — “Large tolerance is safer.”</h2>
+<p>False.</p>
+<p>It increases leakage.</p>
+<h2>Trap 4 — “Small tolerance is safer.”</h2>
+<p>False.</p>
+<p>It can fragment the target.</p>
+<h2>Trap 5 — “Seed selection doesn't matter.”</h2>
+<p>False.</p>
+<p>It can determine the entire growth path.</p>
+<h2>Trap 6 — “Split-and-merge always produces optimal regions.”</h2>
+<p>False.</p>
+<p>The result depends on the homogeneity and merging criteria.</p>
+<h2>Trap 7 — “4- and 8-connectivity are interchangeable.”</h2>
+<p>False.</p>
+<p>They can produce different component topology.</p>
+<h2>Trap 8 — “Region similarity equals semantic similarity.”</h2>
+<p>False.</p>
+<p>Two semantically different objects may be statistically similar.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.54: Exam Formula Sheet -->
+  <section id="s-17-54" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.54</span>
+      <h2>Exam Formula Sheet</h2>
+      <button class="bookmark-btn" data-id="s-17-54" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Region mean</h3>
+<p>
+$$
+\boxed{
+\mu_R=
+\frac1{|R|}
+\sum_{p\in R}f(p)
+}
+$$
+</p>
+<h3>Region variance</h3>
+<p>
+$$
+\boxed{
+\sigma_R^2=
+\frac1{|R|}
+\sum_{p\in R}
+[f(p)-\mu_R]^2
+}
+$$
+</p>
+<h3>Example homogeneity predicate</h3>
+<p>
+$$
+\boxed{
+|f(p)-\mu_R|<\tau
+}
+$$
+</p>
+<h3>Colour-vector predicate</h3>
+<p>
+$$
+\boxed{
+\|\mathbf c(p)-\boldsymbol\mu_R\|_2<\tau
+}
+$$
+</p>
+<h3>IoU</h3>
+<p>
+$$
+\boxed{
+IoU=
+\frac{|A\cap B|}
+{|A\cup B|}
+}
+$$
+</p>
+<h3>Dice</h3>
+<p>
+$$
+\boxed{
+Dice=
+\frac{2|A\cap B|}
+{|A|+|B|}
+}
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.55: Exam-Style Problem — Region Mean -->
+  <section id="s-17-55" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.55</span>
+      <h2>Exam-Style Problem — Region Mean</h2>
+      <button class="bookmark-btn" data-id="s-17-55" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Region values:</p>
+<p>
+$$
+[20,22,24,26]
+$$
+</p>
+<p>Mean:</p>
+<p>
+$$
+\mu_R=
+\frac{20+22+24+26}{4}
+$$
+</p>
+<p>
+$$
+=
+\frac{92}{4}
+$$
+</p>
+<p>
+$$
+\boxed{23}
+$$
+</p>
+<p>For candidate:</p>
+<p>
+$$
+p=27
+$$
+</p>
+<p>and:</p>
+<p>
+$$
+\tau=5
+$$
+</p>
+<p>difference:</p>
+<p>
+$$
+|27-23|=4<5
+$$
+</p>
+<p>so it is accepted under the stated criterion.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.56: Exam-Style Problem — Region Variance -->
+  <section id="s-17-56" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.56</span>
+      <h2>Exam-Style Problem — Region Variance</h2>
+      <button class="bookmark-btn" data-id="s-17-56" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Values:</p>
+<p>
+$$
+[10,12,14]
+$$
+</p>
+<p>Mean:</p>
+<p>
+$$
+\mu=12
+$$
+</p>
+<p>Variance:</p>
+<p>
+$$
+\sigma^2=
+\frac{
+(10-12)^2+
+(12-12)^2+
+(14-12)^2
+}{3}
+$$
+</p>
+<p>
+$$
+=
+\frac{4+0+4}{3}
+$$
+</p>
+<p>
+$$
+\boxed{\frac83\approx2.667}
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.57: Exam-Style Problem — Merge Criterion -->
+  <section id="s-17-57" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.57</span>
+      <h2>Exam-Style Problem — Merge Criterion</h2>
+      <button class="bookmark-btn" data-id="s-17-57" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Two neighbouring regions have:</p>
+<p>
+$$
+\mu_1=70,\qquad\mu_2=73
+$$
+</p>
+<p>If:</p>
+<p>
+$$
+\tau=5
+$$
+</p>
+<p>then:</p>
+<p>
+$$
+|\mu_1-\mu_2|=3<5
+$$
+</p>
+<p>so they can merge under the simple mean-similarity predicate.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.58: Cross-Book Bridges -->
+  <section id="s-17-58" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.58</span>
+      <h2>Cross-Book Bridges</h2>
+      <button class="bookmark-btn" data-id="s-17-58" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <blockquote>
+<p><strong>C15 BRIDGE</strong><br />
+Region-based methods implement the general segmentation idea using explicit connectivity and homogeneity.</p>
+<p><strong>C16 BRIDGE</strong><br />
+Thresholding provides candidate seeds and demonstrates the pixel-decision foundation.</p>
+<p><strong>C10 BRIDGE</strong><br />
+Gradient/edge strength can prevent region leakage across strong boundaries.</p>
+<p><strong>C18 BRIDGE</strong><br />
+Morphology cleans region masks and can connect/break structures according to shape.</p>
+<p><strong>C19–C20 BRIDGE</strong><br />
+Features can replace simple intensity as region-membership evidence.</p>
+<p><strong>LAB BRIDGE</strong><br />
+Implement seeded region growing, split-and-merge and compare 4/8-connectivity.</p>
+<p><strong>PRACTICE BRIDGE</strong><br />
+Calculate region statistics, trace region growth, analyze leakage/fragmentation and evaluate masks.</p>
+<p><strong>EXAM BRIDGE</strong><br />
+Explain region growing, seed selection, homogeneity predicates, region splitting/merging and connectivity.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.59: Quick Recall -->
+  <section id="s-17-59" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.59</span>
+      <h2>Quick Recall</h2>
+      <button class="bookmark-btn" data-id="s-17-59" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>REGION
+→ connected + homogeneous
+
+GROWING
+→ seed → expand
+
+SPLITTING
+→ large region → smaller regions
+
+MERGING
+→ compatible neighbours → larger regions
+
+KEY PARAMETERS
+→ seed
+→ connectivity
+→ tolerance
+→ homogeneity</code></pre>
+</div></p>
+<p>Core rule:</p>
+<blockquote>
+<p><strong>Region segmentation adds spatial identity to numerical similarity.</strong></p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.60: Chapter Checkpoint -->
+  <section id="s-17-60" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.60</span>
+      <h2>Chapter Checkpoint</h2>
+      <button class="bookmark-btn" data-id="s-17-60" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <ol>
+<li>Define a region.</li>
+<li>Why does region-based segmentation add information beyond thresholding?</li>
+<li>Define region growing.</li>
+<li>Write a basic homogeneity predicate.</li>
+<li>Explain why seed selection matters.</li>
+<li>Compare 4- and 8-connectivity.</li>
+<li>What causes region leakage?</li>
+<li>What causes region fragmentation?</li>
+<li>Explain region splitting.</li>
+<li>Explain region merging.</li>
+<li>Describe split-and-merge segmentation.</li>
+<li>What is a region adjacency graph?</li>
+<li>Calculate region mean and variance.</li>
+<li>How can colour-vector similarity drive region growing?</li>
+<li>How can gradient information constrain region growth?</li>
+<li>Compare thresholding, edge-based and region-based segmentation.</li>
+<li>Explain the effect of tolerance on leakage and fragmentation.</li>
+<li>How should a region-growing experiment be evaluated?</li>
+<li>Why is numerical homogeneity not the same as semantic identity?</li>
+<li>Design a region-based segmentation pipeline for an image with uneven illumination.</li>
+</ol>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 17.61: Connection Forward -->
+  <section id="s-17-61" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.61</span>
+      <h2>Connection Forward</h2>
+      <button class="bookmark-btn" data-id="s-17-61" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Region methods produce masks and connected regions, but those masks often contain:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>holes
+small specks
+broken boundaries
+thin protrusions</code></pre>
+</div></p>
+<p>The next chapter introduces a language for manipulating image shapes:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>C18
+MATHEMATICAL MORPHOLOGY
+
+structuring element
+→ erosion
+→ dilation
+→ opening
+→ closing
+→ boundary extraction
+→ connected shape reasoning</code></pre>
+</div></p>
+<p>This is the bridge from <strong>regions as data</strong> to <strong>shape as structure</strong>.</p>
+    </div>
+  </section>
+
+  <!-- SECTION 17.62: Axiomatic Mathematical Criteria for Image Segmentation -->
+  <section id="s-17-62" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.62</span>
+      <h2>Axiomatic Mathematical Criteria for Image Segmentation</h2>
+      <button class="bookmark-btn" data-id="s-17-62" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Let $R$ represent the entire image spatial domain. Image segmentation partitions $R$ into $n$ connected subregions $R_1, R_2, \dots, R_n$ such that:
+1. <strong>Completeness:</strong> Every pixel belongs to a region:
+   
+$$\bigcup_{i=1}^n R_i = R$$
+
+2. <strong>Connectivity:</strong> Points in region $R_i$ form a topologically connected set:
+   
+$$R_i \text{ is a connected region for } i = 1, 2, \dots, n$$
+
+3. <strong>Disjointness:</strong> Regions are mutually exclusive with zero spatial overlap:
+   
+$$R_i \cap R_j = \emptyset \quad \forall i \ne j$$
+
+4. <strong>Homogeneity:</strong> A logical predicate $P(R_i)$ evaluates to TRUE over every individual region:
+   
+$$P(R_i) = \text{TRUE} \quad \text{for } i = 1, 2, \dots, n$$
+
+5. <strong>Maximality (Distinguishability):</strong> Adjacent regions cannot be merged without violating homogeneity:
+   
+$$P(R_i \cup R_j) = \text{FALSE} \quad \text{for any adjacent regions } R_i \text{ and } R_j$$
+</p>
+    </div>
+  </section>
+
+  <!-- SECTION 17.63: Worked Example: Quadtree Split-and-Merge Algorithm Trace -->
+  <section id="s-17-63" class="section-block">
+    <div class="section-header">
+      <span class="section-num">17.63</span>
+      <h2>Worked Example: Quadtree Split-and-Merge Algorithm Trace</h2>
+      <button class="bookmark-btn" data-id="s-17-63" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Quadtree Hierarchical Representation</h3>
+<p>In split-and-merge segmentation, the image is modeled as a rooted 4-ary tree (Quadtree). If a block $R_k$ violates homogeneity predicate $P(R_k)$, it is split into 4 equal quadrants: $R_{k1}, R_{k2}, R_{k3}, R_{k4}$.
+Conversely, if two or more adjacent quadrants satisfy $P(R_a \cup R_b) = \text{TRUE}$, they are merged into a single region.</p>
+<div class="worked-example">
+  <div class="worked-example-header">
+    <span class="worked-example-title">Algorithmic Quadtree Trace</span>
+    <span class="tag-badge tag-algo">SPLIT-AND-MERGE DECISION PIPELINE</span>
+  </div>
+  <p><strong>Predicate Definition:</strong> $P(R) = \text{TRUE} \iff |z_{\max} - z_{\min}| \le 3$, where $z$ denotes pixel intensity.</p>
+  <p>Consider an $4 \times 4$ image block:
+  
+$$R = \begin{bmatrix}
+  10 & 11 & 50 & 52 \\
+  10 & 12 & 51 & 53 \\
+  11 & 10 & 12 & 10 \\
+  10 & 11 & 11 & 12
+  \end{bmatrix}$$
+</p>
+
+  <p><strong>Step 1: Test Root Block $R$:</strong><br>
+  $z_{\max} = 53, \ z_{\min} = 10 \implies |53 - 10| = 43 > 3$.<br>
+  $P(R) = \text{FALSE} \implies$ Split root into 4 quadrants ($2 \times 2$ blocks):<br>
+  - $R_1 \text{ (Top-Left)} = \begin{bmatrix} 10 & 11 \\ 10 & 12 \end{bmatrix} \implies |12 - 10| = 2 \le 3 \implies P(R_1) = \mathbf{TRUE}$ (Stop splitting).<br>
+  - $R_2 \text{ (Top-Right)} = \begin{bmatrix} 50 & 52 \\ 51 & 53 \end{bmatrix} \implies |53 - 50| = 3 \le 3 \implies P(R_2) = \mathbf{TRUE}$ (Stop splitting).<br>
+  - $R_3 \text{ (Bottom-Left)} = \begin{bmatrix} 11 & 10 \\ 10 & 11 \end{bmatrix} \implies |11 - 10| = 1 \le 3 \implies P(R_3) = \mathbf{TRUE}$ (Stop splitting).<br>
+  - $R_4 \text{ (Bottom-Right)} = \begin{bmatrix} 12 & 10 \\ 11 & 12 \end{bmatrix} \implies |12 - 10| = 2 \le 3 \implies P(R_4) = \mathbf{TRUE}$ (Stop splitting).</p>
+
+  <p><strong>Step 2: Merge Adjacency Test:</strong><br>
+  - Test $R_1$ and $R_3$: Both contain values around 10-12. Range of $R_1 \cup R_3$ is $[10, 12] \implies |12 - 10| = 2 \le 3 \implies P(R_1 \cup R_3) = \mathbf{TRUE} \implies$ Merge $R_1$ and $R_3$ into a single $4 \times 2$ region.<br>
+  - Test $(R_1 \cup R_3)$ and $R_4$: Combined range is $[10, 12] \implies |12 - 10| = 2 \le 3 \implies$ Merge into a 12-pixel L-shaped region.<br>
+  - Test with $R_2$: Range of $R_2$ is $[50, 53]$. Merging with any adjacent region yields $|53 - 10| = 43 > 3 \implies P = \mathbf{FALSE}$.<br>
+  
+$$\text{Final Segmentation: 2 Distinct Regions (Background } \sim 11, \text{ Object } \sim 51)$$
+</p>
+</div>
+    </div>
+  </section>
+
+      <!-- Chapter End Package -->
+      <section class="chapter-end-package">
+        <div class="chapter-nav-grid">
+          <a href="ch16-thresholding-otsu.html" class="chapter-nav-card">
+            <div class="chapter-nav-dir">← Previous</div>
+            <div class="chapter-nav-title">← Ch 16 — Thresholding & Otsu Method</div>
+          </a>
+          <a href="ch18-mathematical-morphology.html" class="chapter-nav-card next">
+            <div class="chapter-nav-dir">Next →</div>
+            <div class="chapter-nav-title">Next: Ch 18 — Mathematical Morphology →</div>
+          </a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- FLOATING TTS PANEL (SAFE MANUAL MODE ONLY) -->
+  <div id="tts-panel" style="position:fixed; bottom:20px; right:20px; background:var(--em-surface-1); border:1px solid var(--em-border); border-radius:var(--em-radius-md); padding:12px 16px; box-shadow:var(--sh-lg); z-index:var(--z-float); display:none; gap:10px; align-items:center;">
+    <button class="icon-btn" id="tts-play" title="Play / Pause" style="background:var(--em-accent); color:#fff; border-radius:50%; width:36px; height:36px;">▶</button>
+    <button class="icon-btn" id="tts-stop" title="Stop">⏹</button>
+    <div style="font-size:0.75rem; color:var(--em-text-muted);">
+      <span id="tts-status">Ready</span> · <span id="tts-rate-label">1.0x</span>
+    </div>
+  </div>
+
+  <script src="../assets/js/state.js"></script>
+  <script src="../assets/js/core.js"></script>
+  <script src="../assets/js/tts.js"></script>
+  <script src="../assets/js/glossary.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: document.documentElement.getAttribute('data-theme') === 'light' ? 'default' : 'dark'
+      });
+    });
+  </script>
+</body>
+</html>

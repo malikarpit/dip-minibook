@@ -1,0 +1,2786 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Arpit">
+  <meta name="description" content="Chapter 11: Geometric Transformations &amp; Interpolation — Digital Image Processing MiniBook. Forward vs Inverse Coordinate Mapping, 2D Affine Matrices in Homogeneous Coordinates, Nearest Neighbor, Bilinear, and Bicubic Interpolation">
+  <title>C11: Geometric Transformations &amp; Interpolation | DIP MiniBook 📷 Arpit</title>
+
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <link rel="stylesheet" href="../assets/css/chapters.css">
+  <link rel="stylesheet" href="../assets/css/animations.css">
+  <link rel="stylesheet" href="../assets/css/timer.css">
+
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body data-chapter-id="ch11-geometric-transforms">
+  <div id="progress-bar"></div>
+
+  <!-- Header -->
+  <header id="main-header">
+    <div class="header-left">
+      <button id="sidebar-toggle" class="icon-btn" aria-label="Toggle navigation drawer" title="Toggle Sidebar (S)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <a href="../index.html" class="brand-logo">
+        <div class="brand-icon">DIP</div>
+        <div class="brand-text">
+          <span class="main">Digital Image Processing</span>
+          <span class="sub">DU DSE-3 Engineering MiniBook</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="header-chapter-title">C11: Geometric Transformations &amp; Interpolation</div>
+
+    <div class="header-right">
+      <button id="reading-mode-btn" class="icon-btn" aria-label="Toggle reading focus mode" title="Focus Mode (F)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+          <line x1="8" y1="21" x2="16" y2="21"></line>
+          <line x1="12" y1="17" x2="12" y2="21"></line>
+        </svg>
+      </button>
+      <button id="tts-toggle" class="icon-btn" aria-label="Audio Reader" title="Audio Reader">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+        </svg>
+      </button>
+      <button id="theme-toggle" class="icon-btn" aria-label="Cycle theme" title="Theme (T)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="12" cy="12" r="4.5"></circle>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Sidebar Overlay -->
+  <div id="sidebar-overlay"></div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" aria-expanded="true">
+    <div class="sidebar-nav">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">General</div>
+        <a href="../index.html" class="sidebar-link">
+          <span class="link-icon">🏛️</span>
+          <span>Subject Portal</span>
+        </a>
+        <a href="../progress.html" class="sidebar-link">
+          <span class="link-icon">📊</span>
+          <span>Study Dashboard</span>
+        </a>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Current Chapter Sections</div>
+        <a href="#s-11-1" class="sidebar-link"><span class="link-icon">📌</span><span>11.1 Why Geometry Appears in DIP</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-11-2" class="sidebar-link"><span class="link-icon">📌</span><span>11.2 Coordinate Transformation</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-11-3" class="sidebar-link"><span class="link-icon">📌</span><span>11.3 Translation</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-11-4" class="sidebar-link"><span class="link-icon">📌</span><span>11.4 Worked Translation Example</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-11-5" class="sidebar-link"><span class="link-icon">📌</span><span>11.5 Why Translation Creates Empty Pixels</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-11-6" class="sidebar-link"><span class="link-icon">📌</span><span>11.6 Rotation</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-11-7" class="sidebar-link"><span class="link-icon">📌</span><span>11.7 Worked Rotation Example</span> </a>
+      <a href="#s-11-8" class="sidebar-link"><span class="link-icon">📌</span><span>11.8 Rotation About the Image Centre</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-11-9" class="sidebar-link"><span class="link-icon">📌</span><span>11.9 Why Order Matters</span> </a>
+      <a href="#s-11-10" class="sidebar-link"><span class="link-icon">📌</span><span>11.10 Scaling</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-11-11" class="sidebar-link"><span class="link-icon">📌</span><span>11.11 Worked Scaling Example</span> </a>
+      <a href="#s-11-12" class="sidebar-link"><span class="link-icon">📌</span><span>11.12 Reflection</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-11-13" class="sidebar-link"><span class="link-icon">📌</span><span>11.13 Shearing</span> </a>
+      <a href="#s-11-14" class="sidebar-link"><span class="link-icon">📌</span><span>11.14 Affine Transformation</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-11-15" class="sidebar-link"><span class="link-icon">📌</span><span>11.15 Why Homogeneous Coordinates Matter</span> </a>
+      <a href="#s-11-16" class="sidebar-link"><span class="link-icon">📌</span><span>11.16 Matrix Composition</span> </a>
+      <a href="#s-11-17" class="sidebar-link"><span class="link-icon">📌</span><span>11.17 Worked Composition Example</span> </a>
+      <a href="#s-11-18" class="sidebar-link"><span class="link-icon">📌</span><span>11.18 Inverse Mapping</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-11-19" class="sidebar-link"><span class="link-icon">📌</span><span>11.19 Why Inverse Mapping Is Usually Convenient</span> </a>
+      <a href="#s-11-20" class="sidebar-link"><span class="link-icon">📌</span><span>11.20 Forward vs Inverse</span> </a>
+      <a href="#s-11-21" class="sidebar-link"><span class="link-icon">📌</span><span>11.21 Why Interpolation Is Needed</span> </a>
+      <a href="#s-11-22" class="sidebar-link"><span class="link-icon">📌</span><span>11.22 Nearest-Neighbour Interpolation</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-11-23" class="sidebar-link"><span class="link-icon">📌</span><span>11.23 Bilinear Interpolation</span> </a>
+      <a href="#s-11-24" class="sidebar-link"><span class="link-icon">📌</span><span>11.24 Worked Bilinear Example</span> </a>
+      <a href="#s-11-25" class="sidebar-link"><span class="link-icon">📌</span><span>11.25 Why Bilinear Is Smoother</span> </a>
+      <a href="#s-11-26" class="sidebar-link"><span class="link-icon">📌</span><span>11.26 Bicubic Interpolation</span> </a>
+      <a href="#s-11-27" class="sidebar-link"><span class="link-icon">📌</span><span>11.27 Interpolation Is Not Reconstruction from Nothing</span> </a>
+      <a href="#s-11-28" class="sidebar-link"><span class="link-icon">📌</span><span>11.28 Downsampling vs Upsampling</span> </a>
+      <a href="#s-11-29" class="sidebar-link"><span class="link-icon">📌</span><span>11.29 Resize Pipeline</span> </a>
+      <a href="#s-11-30" class="sidebar-link"><span class="link-icon">📌</span><span>11.30 Rotation and Interpolation</span> </a>
+      <a href="#s-11-31" class="sidebar-link"><span class="link-icon">📌</span><span>11.31 Geometric Distortion</span> </a>
+      <a href="#s-11-32" class="sidebar-link"><span class="link-icon">📌</span><span>11.32 Image Registration</span> </a>
+      <a href="#s-11-33" class="sidebar-link"><span class="link-icon">📌</span><span>11.33 Feature-Based Registration</span> </a>
+      <a href="#s-11-34" class="sidebar-link"><span class="link-icon">📌</span><span>11.34 Perspective Transformation</span> </a>
+      <a href="#s-11-35" class="sidebar-link"><span class="link-icon">📌</span><span>11.35 Perspective Example</span> </a>
+      <a href="#s-11-36" class="sidebar-link"><span class="link-icon">📌</span><span>11.36 Geometric Transformation vs Intensity Transformation</span> </a>
+      <a href="#s-11-37" class="sidebar-link"><span class="link-icon">📌</span><span>11.37 Coordinate Conventions — Major Trap</span> </a>
+      <a href="#s-11-38" class="sidebar-link"><span class="link-icon">📌</span><span>11.38 Pixel-Centre Conventions</span> </a>
+      <a href="#s-11-39" class="sidebar-link"><span class="link-icon">📌</span><span>11.39 Half-Pixel and Alignment Issues</span> </a>
+      <a href="#s-11-40" class="sidebar-link"><span class="link-icon">📌</span><span>11.40 Boundary Handling in Resampling</span> </a>
+      <a href="#s-11-41" class="sidebar-link"><span class="link-icon">📌</span><span>11.41 Interpolation and Image Type</span> </a>
+      <a href="#s-11-42" class="sidebar-link"><span class="link-icon">📌</span><span>11.42 Interpolation and Edge Sharpness</span> </a>
+      <a href="#s-11-43" class="sidebar-link"><span class="link-icon">📌</span><span>11.43 Geometric Transformation Pipeline</span> </a>
+      <a href="#s-11-44" class="sidebar-link"><span class="link-icon">📌</span><span>11.44 Implementation Pseudocode</span> </a>
+      <a href="#s-11-45" class="sidebar-link"><span class="link-icon">📌</span><span>11.45 Worked Rotation Pipeline</span> </a>
+      <a href="#s-11-46" class="sidebar-link"><span class="link-icon">📌</span><span>11.46 Evaluation of Geometric Transforms</span> </a>
+      <a href="#s-11-47" class="sidebar-link"><span class="link-icon">📌</span><span>11.47 Common Traps</span> </a>
+      <a href="#s-11-48" class="sidebar-link"><span class="link-icon">📌</span><span>11.48 Exam Formula Sheet</span> </a>
+      <a href="#s-11-49" class="sidebar-link"><span class="link-icon">📌</span><span>11.49 Exam-Style Problem — Translation</span> </a>
+      <a href="#s-11-50" class="sidebar-link"><span class="link-icon">📌</span><span>11.50 Exam-Style Problem — Rotation</span> </a>
+      <a href="#s-11-51" class="sidebar-link"><span class="link-icon">📌</span><span>11.51 Exam-Style Problem — Bilinear Interpolation</span> </a>
+      <a href="#s-11-52" class="sidebar-link"><span class="link-icon">📌</span><span>11.52 Practical Design Example — Document Rectification</span> </a>
+      <a href="#s-11-53" class="sidebar-link"><span class="link-icon">📌</span><span>11.53 Practical Design Example — Image Registration</span> </a>
+      <a href="#s-11-54" class="sidebar-link"><span class="link-icon">📌</span><span>11.54 Connection to Frequency Domain</span> </a>
+      <a href="#s-11-55" class="sidebar-link"><span class="link-icon">📌</span><span>11.55 Cross-Book Bridges</span> </a>
+      <a href="#s-11-56" class="sidebar-link"><span class="link-icon">📌</span><span>11.56 Quick Recall</span> </a>
+      <a href="#s-11-57" class="sidebar-link"><span class="link-icon">📌</span><span>11.57 Chapter Checkpoint</span> </a>
+      <a href="#s-11-58" class="sidebar-link"><span class="link-icon">📌</span><span>11.58 Unit II Transition</span> </a>
+      <a href="#s-11-59" class="sidebar-link"><span class="link-icon">📌</span><span>11.59 Worked Example — 10-Mark University Model Answer: Bilinear Interpolation</span> </a>
+      </div>
+
+      
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-i">Part I — The Image</div>
+      <a href="ch01-big-picture.html" class="sidebar-link"><span class="link-icon">01</span><span>The Big Picture</span></a>
+      <a href="ch02-image-formation.html" class="sidebar-link"><span class="link-icon">02</span><span>Formation & Acquisition</span></a>
+      <a href="ch03-sampling-quantization.html" class="sidebar-link"><span class="link-icon">03</span><span>Sampling & Quantization</span></a>
+      <a href="ch04-image-representation.html" class="sidebar-link"><span class="link-icon">04</span><span>Pixels, Matrices & Resolution</span></a>
+      <a href="ch05-colour-models-file-formats.html" class="sidebar-link"><span class="link-icon">05</span><span>Colour Models & Formats</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-ii">Part II — Improving the Image</div>
+      <a href="ch06-point-processing.html" class="sidebar-link"><span class="link-icon">06</span><span>Point Processing & Intensity</span></a>
+      <a href="ch07-histograms-equalization.html" class="sidebar-link"><span class="link-icon">07</span><span>Histograms & Equalization</span></a>
+      <a href="ch08-spatial-filtering.html" class="sidebar-link"><span class="link-icon">08</span><span>Spatial Filtering & Convolution</span></a>
+      <a href="ch09-smoothing-noise-reduction.html" class="sidebar-link"><span class="link-icon">09</span><span>Smoothing & Noise Reduction</span></a>
+      <a href="ch10-sharpening-edge-detection.html" class="sidebar-link"><span class="link-icon">10</span><span>Sharpening & Edge Detection</span></a>
+      <a href="ch11-geometric-transforms.html" class="sidebar-link active"><span class="link-icon">11</span><span>Geometric Transforms</span></a>
+      <a href="ch12-fourier-transform.html" class="sidebar-link"><span class="link-icon">12</span><span>Fourier Transform & Frequency</span></a>
+      <a href="ch13-frequency-filtering.html" class="sidebar-link"><span class="link-icon">13</span><span>Frequency-Domain Filtering</span></a>
+      <a href="ch14-image-restoration.html" class="sidebar-link"><span class="link-icon">14</span><span>Restoration & Deblurring</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-iii">Part III — Understanding Content</div>
+      <a href="ch15-segmentation-fundamentals.html" class="sidebar-link"><span class="link-icon">15</span><span>Segmentation Fundamentals</span></a>
+      <a href="ch16-thresholding-otsu.html" class="sidebar-link"><span class="link-icon">16</span><span>Thresholding & Otsu Method</span></a>
+      <a href="ch17-region-segmentation.html" class="sidebar-link"><span class="link-icon">17</span><span>Region-Based Segmentation</span></a>
+      <a href="ch18-mathematical-morphology.html" class="sidebar-link"><span class="link-icon">18</span><span>Mathematical Morphology</span></a>
+      <a href="ch19-features-descriptors.html" class="sidebar-link"><span class="link-icon">19</span><span>Image Features & Descriptors</span></a>
+      <a href="ch20-sift-surf-orb-hog.html" class="sidebar-link"><span class="link-icon">20</span><span>SIFT, SURF, ORB & HOG</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-iv">Part IV — Compressing Images</div>
+      <a href="ch21-compression-entropy.html" class="sidebar-link"><span class="link-icon">21</span><span>Compression & Entropy</span></a>
+      <a href="ch22-lossless-coding.html" class="sidebar-link"><span class="link-icon">22</span><span>Lossless: RLE & Huffman</span></a>
+      <a href="ch23-lossy-dct-jpeg.html" class="sidebar-link"><span class="link-icon">23</span><span>Lossy: DCT & JPEG</span></a>
+      <a href="ch24-wavelets-jpeg2000.html" class="sidebar-link"><span class="link-icon">24</span><span>Wavelets & JPEG 2000</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-v">Part V — Intelligent Vision</div>
+      <a href="ch25-image-classification.html" class="sidebar-link"><span class="link-icon">25</span><span>Image Classification</span></a>
+      <a href="ch26-cnns-image-processing.html" class="sidebar-link"><span class="link-icon">26</span><span>CNNs for Image Processing</span></a>
+      <a href="ch27-modern-vision-architectures.html" class="sidebar-link"><span class="link-icon">27</span><span>Modern Vision Architectures</span></a>
+      <a href="ch28-object-detection-yolo.html" class="sidebar-link"><span class="link-icon">28</span><span>Object Detection: YOLO</span></a>
+      <a href="ch29-image-denoising-autoencoders.html" class="sidebar-link"><span class="link-icon">29</span><span>Image Denoising Autoencoders</span></a>
+      <a href="ch30-video-motion-analysis.html" class="sidebar-link"><span class="link-icon">30</span><span>Video & Motion Analysis</span></a>
+      <a href="ch31-dip-applications-engineering.html" class="sidebar-link"><span class="link-icon">31</span><span>DIP Applications & Ethics</span></a>
+    </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-brand-mark">
+        <div class="mark">DU</div>
+        <div>
+          <strong>DSE-3 MiniBook</strong>
+          <div>University of Delhi</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mandatory Shell Wrapper -->
+  <div id="main-content">
+    <main class="chapter-content">
+      <!-- Chapter Hero -->
+      <div class="chapter-hero">
+        <div class="hero-meta">
+          <span class="part-badge part-ii">Improving the Image</span>
+          <span class="chapter-number">CHAPTER 11</span>
+          <span class="reading-time">⏱️ ~50 min read</span>
+          <span class="tag-badge tag-core">High Yield (5–10 mark guarantee)</span>
+        </div>
+        <h1 class="chapter-title">Geometric Transformations &amp; Interpolation</h1>
+        <p class="chapter-subtitle">
+          Forward vs Inverse Coordinate Mapping, 2D Affine Matrices in Homogeneous Coordinates, Nearest Neighbor, Bilinear, and Bicubic Interpolation
+        </p>
+
+        <div class="syllabus-anchor">
+          <span class="syllabus-anchor-label">DU Syllabus</span>
+          <span><strong>Geometric Transformations & Interpolation:</strong> Forward mapping vs inverse mapping, transformation matrices in homogeneous coordinates (scaling, translation, rotation about arbitrary point, shear, reflection), affine transformations, image interpolation techniques (nearest-neighbor, bilinear, bicubic spline).</span>
+        </div>
+      </div>
+
+      <!-- In-Page TOC -->
+      <div class="chapter-checklist-card" style="margin-bottom:var(--em-space-8);">
+        <div class="checklist-title">
+          <span>Table of Contents &amp; Visual Section Map</span>
+          <span class="tag-badge tag-math">59 Deep Sections</span>
+        </div>
+        <ul class="part-chapters-list">
+          <li class="part-chapter-item"><a href="#s-11-1"><strong>11.1</strong> Why Geometry Appears in DIP</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-11-2"><strong>11.2</strong> Coordinate Transformation</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-11-3"><strong>11.3</strong> Translation</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-11-4"><strong>11.4</strong> Worked Translation Example</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-11-5"><strong>11.5</strong> Why Translation Creates Empty Pixels</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-11-6"><strong>11.6</strong> Rotation</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-11-7"><strong>11.7</strong> Worked Rotation Example</a> </li>
+      <li class="part-chapter-item"><a href="#s-11-8"><strong>11.8</strong> Rotation About the Image Centre</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-11-9"><strong>11.9</strong> Why Order Matters</a> </li>
+      <li class="part-chapter-item"><a href="#s-11-10"><strong>11.10</strong> Scaling</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-11-11"><strong>11.11</strong> Worked Scaling Example</a> </li>
+      <li class="part-chapter-item"><a href="#s-11-12"><strong>11.12</strong> Reflection</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-11-13"><strong>11.13</strong> Shearing</a> </li>
+      <li class="part-chapter-item"><a href="#s-11-14"><strong>11.14</strong> Affine Transformation</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-11-15"><strong>11.15</strong> Why Homogeneous Coordinates Matter</a> </li>
+      <li class="part-chapter-item"><a href="#s-11-16"><strong>11.16</strong> Matrix Composition</a> </li>
+      <li class="part-chapter-item"><a href="#s-11-17"><strong>11.17</strong> Worked Composition Example</a> </li>
+      <li class="part-chapter-item"><a href="#s-11-18"><strong>11.18</strong> Inverse Mapping</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-11-19"><strong>11.19</strong> Why Inverse Mapping Is Usually Convenient</a> </li>
+      <li class="part-chapter-item"><a href="#s-11-20"><strong>11.20</strong> Forward vs Inverse</a> </li>
+      <li class="part-chapter-item"><a href="#s-11-21"><strong>11.21</strong> Why Interpolation Is Needed</a> </li>
+      <li class="part-chapter-item"><a href="#s-11-22"><strong>11.22</strong> Nearest-Neighbour Interpolation</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-11-23"><strong>11.23</strong> Bilinear Interpolation</a> </li>
+      <li class="part-chapter-item"><a href="#s-11-24"><strong>11.24</strong> Worked Bilinear Example</a> </li>
+      <li class="part-chapter-item"><a href="#s-11-25"><strong>11.25</strong> Why Bilinear Is Smoother</a> </li>
+      <li class="part-chapter-item"><a href="#s-11-26"><strong>11.26</strong> Bicubic Interpolation</a> </li>
+      <li class="part-chapter-item"><a href="#s-11-27"><strong>11.27</strong> Interpolation Is Not Reconstruction from Nothing</a> </li>
+      <li class="part-chapter-item"><a href="#s-11-28"><strong>11.28</strong> Downsampling vs Upsampling</a> </li>
+      <li class="part-chapter-item"><a href="#s-11-29"><strong>11.29</strong> Resize Pipeline</a> </li>
+      <li class="part-chapter-item"><a href="#s-11-30"><strong>11.30</strong> Rotation and Interpolation</a> </li>
+      <li class="part-chapter-item"><a href="#s-11-31"><strong>11.31</strong> Geometric Distortion</a> </li>
+      <li class="part-chapter-item"><a href="#s-11-32"><strong>11.32</strong> Image Registration</a> </li>
+      <li class="part-chapter-item"><a href="#s-11-33"><strong>11.33</strong> Feature-Based Registration</a> </li>
+      <li class="part-chapter-item"><a href="#s-11-34"><strong>11.34</strong> Perspective Transformation</a> </li>
+      <li class="part-chapter-item"><a href="#s-11-35"><strong>11.35</strong> Perspective Example</a> </li>
+      <li class="part-chapter-item"><a href="#s-11-36"><strong>11.36</strong> Geometric Transformation vs Intensity Transformation</a> </li>
+      <li class="part-chapter-item"><a href="#s-11-37"><strong>11.37</strong> Coordinate Conventions — Major Trap</a> </li>
+      <li class="part-chapter-item"><a href="#s-11-38"><strong>11.38</strong> Pixel-Centre Conventions</a> </li>
+      <li class="part-chapter-item"><a href="#s-11-39"><strong>11.39</strong> Half-Pixel and Alignment Issues</a> </li>
+      <li class="part-chapter-item"><a href="#s-11-40"><strong>11.40</strong> Boundary Handling in Resampling</a> </li>
+      <li class="part-chapter-item"><a href="#s-11-41"><strong>11.41</strong> Interpolation and Image Type</a> </li>
+      <li class="part-chapter-item"><a href="#s-11-42"><strong>11.42</strong> Interpolation and Edge Sharpness</a> </li>
+      <li class="part-chapter-item"><a href="#s-11-43"><strong>11.43</strong> Geometric Transformation Pipeline</a> </li>
+      <li class="part-chapter-item"><a href="#s-11-44"><strong>11.44</strong> Implementation Pseudocode</a> </li>
+      <li class="part-chapter-item"><a href="#s-11-45"><strong>11.45</strong> Worked Rotation Pipeline</a> </li>
+      <li class="part-chapter-item"><a href="#s-11-46"><strong>11.46</strong> Evaluation of Geometric Transforms</a> </li>
+      <li class="part-chapter-item"><a href="#s-11-47"><strong>11.47</strong> Common Traps</a> </li>
+      <li class="part-chapter-item"><a href="#s-11-48"><strong>11.48</strong> Exam Formula Sheet</a> </li>
+      <li class="part-chapter-item"><a href="#s-11-49"><strong>11.49</strong> Exam-Style Problem — Translation</a> </li>
+      <li class="part-chapter-item"><a href="#s-11-50"><strong>11.50</strong> Exam-Style Problem — Rotation</a> </li>
+      <li class="part-chapter-item"><a href="#s-11-51"><strong>11.51</strong> Exam-Style Problem — Bilinear Interpolation</a> </li>
+      <li class="part-chapter-item"><a href="#s-11-52"><strong>11.52</strong> Practical Design Example — Document Rectification</a> </li>
+      <li class="part-chapter-item"><a href="#s-11-53"><strong>11.53</strong> Practical Design Example — Image Registration</a> </li>
+      <li class="part-chapter-item"><a href="#s-11-54"><strong>11.54</strong> Connection to Frequency Domain</a> </li>
+      <li class="part-chapter-item"><a href="#s-11-55"><strong>11.55</strong> Cross-Book Bridges</a> </li>
+      <li class="part-chapter-item"><a href="#s-11-56"><strong>11.56</strong> Quick Recall</a> </li>
+      <li class="part-chapter-item"><a href="#s-11-57"><strong>11.57</strong> Chapter Checkpoint</a> </li>
+      <li class="part-chapter-item"><a href="#s-11-58"><strong>11.58</strong> Unit II Transition</a> </li>
+      <li class="part-chapter-item"><a href="#s-11-59"><strong>11.59</strong> Worked Example — 10-Mark University Model Answer: Bilinear Interpolation</a> </li>
+        </ul>
+      </div>
+
+      <div class="concept-hook" style="margin-bottom:var(--em-space-8);"><h1>Chapter 11 — Geometric Transformations and Interpolation</h1>
+<blockquote>
+<p><strong>Chapter thesis</strong><br />
+A geometric transformation changes where image samples are located in the image plane. The transformation is defined mathematically in coordinates, but a transformed grid usually asks for values at locations that did not exist in the original image. <strong>Interpolation is therefore part of the resampling problem, not an optional visual afterthought.</strong></p>
+</blockquote>
+<p><strong>Part II — Improving the Image</strong></p>
+<blockquote>
+<p><strong>Scope note:</strong> The university Unit II scope centers on image enhancement/filtering; this chapter is included in the MiniBook architecture as a necessary engineering bridge between spatial processing and later frequency-domain/resampling work. fileciteturn4file0L36-L40</p>
+</blockquote>
+<hr /></div>
+
+      <!-- All Numbered Sections -->
+      
+  <!-- SECTION 11.1: Why Geometry Appears in DIP -->
+  <section id="s-11-1" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.1</span>
+      <h2>Why Geometry Appears in DIP</h2>
+      <button class="bookmark-btn" data-id="s-11-1" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>So far, most operations changed values while largely preserving the existing spatial grid.</p>
+<p>Examples:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>C06
+pixel value → new pixel value
+
+C07
+intensity distribution → new intensity mapping
+
+C08–C10
+local neighbourhood → new response</code></pre>
+</div></p>
+<p>Geometric transformations ask a different question:</p>
+<blockquote>
+<p><strong>Where should each image sample appear?</strong></p>
+</blockquote>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>ORIGINAL IMAGE
+      ↓
+coordinate transformation
+      ↓
+NEW IMAGE GRID
+      ↓
+interpolation / resampling
+      ↓
+TRANSFORMED IMAGE</code></pre>
+</div></p>
+<p>This is used in:</p>
+<ul>
+<li>resizing,</li>
+<li>rotation,</li>
+<li>translation,</li>
+<li>correction of geometric distortion,</li>
+<li>image registration,</li>
+<li>alignment,</li>
+<li>perspective transformation,</li>
+<li>mosaicing,</li>
+<li>vision pipelines.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.2: Coordinate Transformation -->
+  <section id="s-11-2" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.2</span>
+      <h2>Coordinate Transformation</h2>
+      <button class="bookmark-btn" data-id="s-11-2" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Let an input point be:</p>
+<p>
+$$
+\mathbf{p}
+=
+\begin{bmatrix}
+x\\y
+\end{bmatrix}
+$$
+</p>
+<p>A geometric transformation produces:</p>
+<p>
+$$
+\mathbf{p}'
+=
+T(\mathbf{p})
+$$
+</p>
+<p>or:</p>
+<p>
+$$
+\begin{bmatrix}
+x'\\y'
+\end{bmatrix}
+=
+T
+\left(
+\begin{bmatrix}
+x\\y
+\end{bmatrix}
+\right)
+$$
+</p>
+<p>The transformation acts on coordinates.</p>
+<p>The image values then have to be sampled at the appropriate positions.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.3: Translation -->
+  <section id="s-11-3" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.3</span>
+      <h2>Translation</h2>
+      <button class="bookmark-btn" data-id="s-11-3" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A translation shifts an image without changing its shape.</p>
+<p>
+$$
+x'=x+t_x
+$$
+</p>
+<p>
+$$
+y'=y+t_y
+$$
+</p>
+<p>where:</p>
+<ul>
+<li>$t_x$ = horizontal shift,</li>
+<li>$t_y$ = vertical shift.</li>
+</ul>
+<p>Matrix form:</p>
+<p>
+$$
+\begin{bmatrix}
+x'\\y'
+\end{bmatrix}
+=
+\begin{bmatrix}
+x\\y
+\end{bmatrix}
++
+\begin{bmatrix}
+t_x\\t_y
+\end{bmatrix}
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.4: Worked Translation Example -->
+  <section id="s-11-4" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.4</span>
+      <h2>Worked Translation Example</h2>
+      <button class="bookmark-btn" data-id="s-11-4" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p>
+$$
+(x,y)=(40,25)
+$$
+</p>
+<p>and:</p>
+<p>
+$$
+t_x=10,\qquad t_y=-5
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+x'=40+10=50
+$$
+</p>
+<p>
+$$
+y'=25-5=20
+$$
+</p>
+<p>So:</p>
+<p>
+$$
+\boxed{(40,25)\rightarrow(50,20)}
+$$
+</p>
+<p>The point moves right and upward under the stated coordinate convention.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.5: Why Translation Creates Empty Pixels -->
+  <section id="s-11-5" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.5</span>
+      <h2>Why Translation Creates Empty Pixels</h2>
+      <button class="bookmark-btn" data-id="s-11-5" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose a square image is shifted right.</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>ORIGINAL
+
+████████
+████████
+████████
+
+TRANSLATED
+
+   ██████
+   ██████
+   ██████</code></pre>
+</div></p>
+<p>New locations exist where no original sample was previously present.</p>
+<p>The output must decide what values to use in those locations.</p>
+<p>Possible approaches include:</p>
+<ul>
+<li>constant background,</li>
+<li>zero,</li>
+<li>replication,</li>
+<li>interpolation only where source data exist.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.6: Rotation -->
+  <section id="s-11-6" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.6</span>
+      <h2>Rotation</h2>
+      <button class="bookmark-btn" data-id="s-11-6" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For a 2-D rotation about the origin:</p>
+<p>
+$$
+x'=x\cos\theta-y\sin\theta
+$$
+</p>
+<p>
+$$
+y'=x\sin\theta+y\cos\theta
+$$
+</p>
+<p>Matrix form:</p>
+<p>
+$$
+\begin{bmatrix}
+x'\\y'
+\end{bmatrix}
+=
+\begin{bmatrix}
+\cos\theta&-\sin\theta\\
+\sin\theta&\cos\theta
+\end{bmatrix}
+\begin{bmatrix}
+x\\y
+\end{bmatrix}
+$$
+</p>
+<p>This is one of the most important transformation matrices in image geometry.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.7: Worked Rotation Example -->
+  <section id="s-11-7" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.7</span>
+      <h2>Worked Rotation Example</h2>
+      <button class="bookmark-btn" data-id="s-11-7" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Take:</p>
+<p>
+$$
+(x,y)=(1,0)
+$$
+</p>
+<p>and:</p>
+<p>
+$$
+\theta=90^\circ
+$$
+</p>
+<p>Since:</p>
+<p>
+$$
+\cos90^\circ=0
+$$
+</p>
+<p>
+$$
+\sin90^\circ=1
+$$
+</p>
+<p>we get:</p>
+<p>
+$$
+x'=1(0)-0(1)=0
+$$
+</p>
+<p>
+$$
+y'=1(1)+0(0)=1
+$$
+</p>
+<p>Therefore:</p>
+<p>
+$$
+\boxed{(1,0)\rightarrow(0,1)}
+$$
+</p>
+<p>under the standard Cartesian rotation convention.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.8: Rotation About the Image Centre -->
+  <section id="s-11-8" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.8</span>
+      <h2>Rotation About the Image Centre</h2>
+      <button class="bookmark-btn" data-id="s-11-8" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Real image rotation is usually intended around a centre, not the coordinate origin.</p>
+<p>A conceptual pipeline is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>translate centre to origin
+        ↓
+rotate
+        ↓
+translate back</code></pre>
+</div></p>
+<p>Mathematically:</p>
+<p>
+$$
+\mathbf{p}'=
+T(\mathbf{c})
+R(\theta)
+T(-\mathbf{c})
+\mathbf{p}
+$$
+</p>
+<p>where $T$ denotes translation and $R$ denotes rotation.</p>
+<p>The multiplication order is important.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.9: Why Order Matters -->
+  <section id="s-11-9" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.9</span>
+      <h2>Why Order Matters</h2>
+      <button class="bookmark-btn" data-id="s-11-9" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Consider:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>translate → rotate</code></pre>
+</div></p>
+<p>versus:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>rotate → translate</code></pre>
+</div></p>
+<p>They generally produce different results.</p>
+<p>Geometric transformations are not generally commutative:</p>
+<p>
+$$
+AB\ne BA
+$$
+</p>
+<p>This is an important engineering and exam concept.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.10: Scaling -->
+  <section id="s-11-10" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.10</span>
+      <h2>Scaling</h2>
+      <button class="bookmark-btn" data-id="s-11-10" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Scaling changes spatial dimensions.</p>
+<p>
+$$
+x'=s_xx
+$$
+</p>
+<p>
+$$
+y'=s_yy
+$$
+</p>
+<p>where:</p>
+<ul>
+<li>$s_x$ = horizontal scale,</li>
+<li>$s_y$ = vertical scale.</li>
+</ul>
+<p>If:</p>
+<p>
+$$
+s_x=s_y
+$$
+</p>
+<p>the scaling is isotropic/uniform.</p>
+<p>If:</p>
+<p>
+$$
+s_x\ne s_y
+$$
+</p>
+<p>the image is stretched differently in the two directions.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.11: Worked Scaling Example -->
+  <section id="s-11-11" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.11</span>
+      <h2>Worked Scaling Example</h2>
+      <button class="bookmark-btn" data-id="s-11-11" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p>
+$$
+(x,y)=(20,30)
+$$
+</p>
+<p>and:</p>
+<p>
+$$
+s_x=2,\qquad s_y=0.5
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+x'=2(20)=40
+$$
+</p>
+<p>
+$$
+y'=0.5(30)=15
+$$
+</p>
+<p>Therefore:</p>
+<p>
+$$
+\boxed{(20,30)\rightarrow(40,15)}
+$$
+</p>
+<p>The object is stretched horizontally and compressed vertically.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.12: Reflection -->
+  <section id="s-11-12" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.12</span>
+      <h2>Reflection</h2>
+      <button class="bookmark-btn" data-id="s-11-12" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Reflection reverses one coordinate.</p>
+<p>Horizontal-axis-style reflection:</p>
+<p>
+$$
+x'=x,\qquad y'=-y
+$$
+</p>
+<p>Vertical-axis-style reflection:</p>
+<p>
+$$
+x'=-x,\qquad y'=y
+$$
+</p>
+<p>The exact visual effect depends on the coordinate convention.</p>
+<p>Because image arrays frequently use downward-increasing row indices, direct matrix indexing and Cartesian diagrams must not be mixed carelessly.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.13: Shearing -->
+  <section id="s-11-13" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.13</span>
+      <h2>Shearing</h2>
+      <button class="bookmark-btn" data-id="s-11-13" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Horizontal shear:</p>
+<p>
+$$
+x'=x+sy
+$$
+</p>
+<p>
+$$
+y'=y
+$$
+</p>
+<p>Vertical shear:</p>
+<p>
+$$
+x'=x
+$$
+</p>
+<p>
+$$
+y'=y+sx
+$$
+</p>
+<p>Shearing changes angles and shape while preserving one axis direction in the basic transformation.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.14: Affine Transformation -->
+  <section id="s-11-14" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.14</span>
+      <h2>Affine Transformation</h2>
+      <button class="bookmark-btn" data-id="s-11-14" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A general affine transformation can combine:</p>
+<ul>
+<li>translation,</li>
+<li>rotation,</li>
+<li>scaling,</li>
+<li>reflection,</li>
+<li>shear.</li>
+</ul>
+<p>One common form:</p>
+<p>
+$$
+x'=a_{11}x+a_{12}y+t_x
+$$
+</p>
+<p>
+$$
+y'=a_{21}x+a_{22}y+t_y
+$$
+</p>
+<p>or in homogeneous coordinates:</p>
+<p>
+$$
+\begin{bmatrix}
+x'\\
+y'\\
+1
+\end{bmatrix}
+=
+\begin{bmatrix}
+a_{11}&a_{12}&t_x\\
+a_{21}&a_{22}&t_y\\
+0&0&1
+\end{bmatrix}
+\begin{bmatrix}
+x\\
+y\\
+1
+\end{bmatrix}
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.15: Why Homogeneous Coordinates Matter -->
+  <section id="s-11-15" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.15</span>
+      <h2>Why Homogeneous Coordinates Matter</h2>
+      <button class="bookmark-btn" data-id="s-11-15" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Homogeneous coordinates allow:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>linear transformation
++
+translation</code></pre>
+</div></p>
+<p>to be represented in one matrix multiplication.</p>
+<p>This is especially useful when composing multiple transformations.</p>
+<p>For example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>rotation
++
+scale
++
+translation</code></pre>
+</div></p>
+<p>can be combined into one transformation matrix.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.16: Matrix Composition -->
+  <section id="s-11-16" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.16</span>
+      <h2>Matrix Composition</h2>
+      <button class="bookmark-btn" data-id="s-11-16" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p>
+$$
+\mathbf{p}_1=A\mathbf{p}
+$$
+</p>
+<p>and:</p>
+<p>
+$$
+\mathbf{p}_2=B\mathbf{p}_1
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+\mathbf{p}_2=BA\mathbf{p}
+$$
+</p>
+<p>Therefore:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>first A
+then B
+
+→
+combined matrix BA</code></pre>
+</div></p>
+<p>Read matrix multiplication from right to left when interpreting sequential transformations.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.17: Worked Composition Example -->
+  <section id="s-11-17" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.17</span>
+      <h2>Worked Composition Example</h2>
+      <button class="bookmark-btn" data-id="s-11-17" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p>
+$$
+A=
+\begin{bmatrix}
+2&0\\
+0&2
+\end{bmatrix}
+$$
+</p>
+<p>is scaling by 2, and:</p>
+<p>
+$$
+B=
+\begin{bmatrix}
+0&-1\\
+1&0
+\end{bmatrix}
+$$
+</p>
+<p>is a 90° rotation.</p>
+<p>Then:</p>
+<p>
+$$
+BA
+=
+\begin{bmatrix}
+0&-1\\
+1&0
+\end{bmatrix}
+\begin{bmatrix}
+2&0\\
+0&2
+\end{bmatrix}
+$$
+</p>
+<p>
+$$
+=
+\begin{bmatrix}
+0&-2\\
+2&0
+\end{bmatrix}
+$$
+</p>
+<p>So the combined operation is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>scale by 2
+→ rotate 90°</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.18: Inverse Mapping -->
+  <section id="s-11-18" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.18</span>
+      <h2>Inverse Mapping</h2>
+      <button class="bookmark-btn" data-id="s-11-18" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A major implementation issue is deciding whether to map:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>source → destination</code></pre>
+</div></p>
+<p>or:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>destination → source</code></pre>
+</div></p>
+<p>The second approach is called <strong>inverse mapping</strong>.</p>
+<p>For each output coordinate:</p>
+<p>
+$$
+(x',y')
+$$
+</p>
+<p>find where it came from:</p>
+<p>
+$$
+(x,y)=T^{-1}(x',y')
+$$
+</p>
+<p>Then sample the source image at $(x,y)$.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.19: Why Inverse Mapping Is Usually Convenient -->
+  <section id="s-11-19" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.19</span>
+      <h2>Why Inverse Mapping Is Usually Convenient</h2>
+      <button class="bookmark-btn" data-id="s-11-19" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Forward mapping can produce:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>holes
+overlaps
+uneven coverage</code></pre>
+</div></p>
+<p>because source pixels may map between output grid locations.</p>
+<p>Inverse mapping instead asks:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>for every output pixel:
+    where should I sample the source?</code></pre>
+</div></p>
+<p>This naturally fills the output grid.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.20: Forward vs Inverse -->
+  <section id="s-11-20" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.20</span>
+      <h2>Forward vs Inverse</h2>
+      <button class="bookmark-btn" data-id="s-11-20" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Method</th>
+<th>Core question</th>
+<th>Common issue</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>forward mapping</td>
+<td>where does this source point go?</td>
+<td>holes/overlaps</td>
+</tr>
+<tr>
+<td>inverse mapping</td>
+<td>where did this output point come from?</td>
+<td>requires inverse transform</td>
+</tr>
+</tbody>
+</table></div>
+<p>For many practical image-warp implementations, inverse mapping with interpolation is the standard conceptual pattern.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.21: Why Interpolation Is Needed -->
+  <section id="s-11-21" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.21</span>
+      <h2>Why Interpolation Is Needed</h2>
+      <button class="bookmark-btn" data-id="s-11-21" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose inverse mapping asks for:</p>
+<p>
+$$
+f(12.4, 7.8)
+$$
+</p>
+<p>But the source image only contains samples at integer grid positions:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>(12,7)
+(12,8)
+(13,7)
+(13,8)</code></pre>
+</div></p>
+<p>There is no direct stored pixel at:</p>
+<p>
+$$
+(12.4,7.8)
+$$
+</p>
+<p>Therefore a resampling rule estimates the value.</p>
+<p>This is interpolation.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.22: Nearest-Neighbour Interpolation -->
+  <section id="s-11-22" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.22</span>
+      <h2>Nearest-Neighbour Interpolation</h2>
+      <button class="bookmark-btn" data-id="s-11-22" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Nearest-neighbour selects the closest source sample.</p>
+<p>For:</p>
+<p>
+$$
+(x,y)=(12.4,7.8)
+$$
+</p>
+<p>the nearest integer location is approximately:</p>
+<p>
+$$
+(12,8)
+$$
+</p>
+<p>So:</p>
+<p>
+$$
+f(12.4,7.8)\approx f(12,8)
+$$
+</p>
+<h3>Strength</h3>
+<ul>
+<li>very simple,</li>
+<li>fast,</li>
+<li>preserves discrete labels.</li>
+</ul>
+<h3>Weakness</h3>
+<ul>
+<li>blockiness,</li>
+<li>jagged edges,</li>
+<li>stair-step artifacts for natural images.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.23: Bilinear Interpolation -->
+  <section id="s-11-23" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.23</span>
+      <h2>Bilinear Interpolation</h2>
+      <button class="bookmark-btn" data-id="s-11-23" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Bilinear interpolation uses the four nearest neighbours:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Q11 ───── Q21
+│          │
+│  P(x,y)  │
+│          │
+Q12 ───── Q22</code></pre>
+</div></p>
+<p>Let the local fractional coordinates be:</p>
+<p>
+$$
+\alpha=x-x_0
+$$
+</p>
+<p>
+$$
+\beta=y-y_0
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+f(x,y)
+=
+(1-\alpha)(1-\beta)Q_{11}
++
+\alpha(1-\beta)Q_{21}
++
+(1-\alpha)\beta Q_{12}
++
+\alpha\beta Q_{22}
+$$
+</p>
+<p>This is a weighted average.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.24: Worked Bilinear Example -->
+  <section id="s-11-24" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.24</span>
+      <h2>Worked Bilinear Example</h2>
+      <button class="bookmark-btn" data-id="s-11-24" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose the four neighbouring values are:</p>
+<p>
+$$
+Q_{11}=10,\quad
+Q_{21}=20,\quad
+Q_{12}=30,\quad
+Q_{22}=40
+$$
+</p>
+<p>and:</p>
+<p>
+$$
+\alpha=0.25,\qquad\beta=0.5
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+f=
+(0.75)(0.5)(10)
++
+(0.25)(0.5)(20)
++
+(0.75)(0.5)(30)
++
+(0.25)(0.5)(40)
+$$
+</p>
+<p>
+$$
+=3.75+2.5+11.25+5
+$$
+</p>
+<p>
+$$
+\boxed{22.5}
+$$
+</p>
+<p>Depending on the destination representation, this may remain floating-point or be rounded.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.25: Why Bilinear Is Smoother -->
+  <section id="s-11-25" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.25</span>
+      <h2>Why Bilinear Is Smoother</h2>
+      <button class="bookmark-btn" data-id="s-11-25" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Nearest-neighbour chooses one sample.</p>
+<p>Bilinear uses four:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>one sample
+vs
+weighted local neighbourhood</code></pre>
+</div></p>
+<p>Therefore bilinear generally reduces blockiness.</p>
+<p>But interpolation cannot reconstruct details that were never sampled.</p>
+<p>It creates a smooth estimate from available samples.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.26: Bicubic Interpolation -->
+  <section id="s-11-26" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.26</span>
+      <h2>Bicubic Interpolation</h2>
+      <button class="bookmark-btn" data-id="s-11-26" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <blockquote>
+<p><strong>EXTENSION</strong></p>
+</blockquote>
+<p>Bicubic interpolation uses a larger neighbourhood, commonly based on 16 surrounding samples.</p>
+<p>It can produce smoother results than bilinear for many natural-image resizing tasks, but it is more computationally expensive and can introduce ringing/overshoot depending on the kernel.</p>
+<p>The exact mathematical kernel varies by implementation.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.27: Interpolation Is Not Reconstruction from Nothing -->
+  <section id="s-11-27" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.27</span>
+      <h2>Interpolation Is Not Reconstruction from Nothing</h2>
+      <button class="bookmark-btn" data-id="s-11-27" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A common misunderstanding is:</p>
+<blockquote>
+<p>“Bicubic creates new detail.”</p>
+</blockquote>
+<p>Not in the information-theoretic sense.</p>
+<p>Interpolation estimates values between known samples.</p>
+<p>It cannot recover spatial information that was never captured.</p>
+<p>This distinction connects back to C03:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>sampling loss
+→ interpolation cannot fully undo it</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.28: Downsampling vs Upsampling -->
+  <section id="s-11-28" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.28</span>
+      <h2>Downsampling vs Upsampling</h2>
+      <button class="bookmark-btn" data-id="s-11-28" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Upsampling</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>fewer samples
+→ more output grid points</code></pre>
+</div></p>
+<p>Interpolation is required to estimate many new samples.</p>
+<h3>Downsampling</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>many samples
+→ fewer output samples</code></pre>
+</div></p>
+<p>Anti-alias filtering may be required before decimation to prevent aliasing.</p>
+<p>Therefore:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>UP
+→ interpolation
+
+DOWN
+→ filtering + resampling</code></pre>
+</div></p>
+<p>as a useful conceptual rule.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.29: Resize Pipeline -->
+  <section id="s-11-29" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.29</span>
+      <h2>Resize Pipeline</h2>
+      <button class="bookmark-btn" data-id="s-11-29" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A robust resize workflow:</p>
+<h3>Upscaling</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>source image
+→ choose target grid
+→ inverse map
+→ interpolate
+→ output</code></pre>
+</div></p>
+<h3>Downscaling</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>source image
+→ low-pass / anti-alias filtering
+→ inverse map / resampling
+→ output</code></pre>
+</div></p>
+<p>The actual library implementation can combine these operations internally.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.30: Rotation and Interpolation -->
+  <section id="s-11-30" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.30</span>
+      <h2>Rotation and Interpolation</h2>
+      <button class="bookmark-btn" data-id="s-11-30" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A rotated image usually requires interpolation because the rotated output coordinates do not align exactly with the original integer grid.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>source grid
+████████
+████████
+████████
+
+rotate
+
+output grid
+╲██████╱
+ ╲████╱</code></pre>
+</div></p>
+<p>The values at the new positions must be estimated.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.31: Geometric Distortion -->
+  <section id="s-11-31" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.31</span>
+      <h2>Geometric Distortion</h2>
+      <button class="bookmark-btn" data-id="s-11-31" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Not every transformation is a simple rotation or scaling.</p>
+<p>Lens and camera geometry can produce nonlinear distortions such as:</p>
+<ul>
+<li>barrel distortion,</li>
+<li>pincushion distortion.</li>
+</ul>
+<p>A correction workflow can be:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>distorted image
+      ↓
+camera/distortion model
+      ↓
+inverse warp
+      ↓
+interpolation
+      ↓
+corrected image</code></pre>
+</div></p>
+<blockquote>
+<p><strong>Extension:</strong> Real distortion correction often uses calibration data rather than an arbitrary visual warp.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.32: Image Registration -->
+  <section id="s-11-32" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.32</span>
+      <h2>Image Registration</h2>
+      <button class="bookmark-btn" data-id="s-11-32" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Image registration aligns two or more images.</p>
+<p>Example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image A
+   +
+image B
+   ↓
+find transformation
+   ↓
+warp one image
+   ↓
+aligned images</code></pre>
+</div></p>
+<p>Applications include:</p>
+<ul>
+<li>medical imaging,</li>
+<li>satellite imagery,</li>
+<li>panorama creation,</li>
+<li>change detection,</li>
+<li>multi-sensor fusion.</li>
+</ul>
+<p>Registration is a major bridge from geometric processing to higher-level image analysis.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.33: Feature-Based Registration -->
+  <section id="s-11-33" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.33</span>
+      <h2>Feature-Based Registration</h2>
+      <button class="bookmark-btn" data-id="s-11-33" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A more advanced workflow is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image A
+→ detect features
+
+image B
+→ detect features
+
+match corresponding features
+        ↓
+estimate transformation
+        ↓
+warp image
+        ↓
+evaluate alignment</code></pre>
+</div></p>
+<p>SIFT, ORB and related descriptors later in the MiniBook provide tools that can support this process.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.34: Perspective Transformation -->
+  <section id="s-11-34" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.34</span>
+      <h2>Perspective Transformation</h2>
+      <button class="bookmark-btn" data-id="s-11-34" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>When a planar object is viewed from different viewpoints, an affine model may be insufficient.</p>
+<p>A projective/perspective transformation can be represented using a homography:</p>
+<p>
+$$
+\lambda
+\begin{bmatrix}
+x'\\y'\\1
+\end{bmatrix}
+=
+H
+\begin{bmatrix}
+x\\y\\1
+\end{bmatrix}
+$$
+</p>
+<p>where $H$ is a $3\times3$ matrix and $\lambda$ is a scale factor.</p>
+<p>This is useful for:</p>
+<ul>
+<li>document rectification,</li>
+<li>planar scene alignment,</li>
+<li>perspective correction.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.35: Perspective Example -->
+  <section id="s-11-35" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.35</span>
+      <h2>Perspective Example</h2>
+      <button class="bookmark-btn" data-id="s-11-35" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A photographed document may appear as:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>   ______
+  /     /
+ /_____/</code></pre>
+</div></p>
+<p>A homography can transform it toward:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>┌──────────┐
+│          │
+│ document │
+│          │
+└──────────┘</code></pre>
+</div></p>
+<p>The image is warped to approximate a frontal view.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.36: Geometric Transformation vs Intensity Transformation -->
+  <section id="s-11-36" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.36</span>
+      <h2>Geometric Transformation vs Intensity Transformation</h2>
+      <button class="bookmark-btn" data-id="s-11-36" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Property</th>
+<th>Geometric transformation</th>
+<th>Intensity transformation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>main change</td>
+<td>coordinates</td>
+<td>values</td>
+</tr>
+<tr>
+<td>example</td>
+<td>rotation</td>
+<td>negative</td>
+</tr>
+<tr>
+<td>core equation</td>
+<td>$\mathbf p'=T(\mathbf p)$</td>
+<td>$s=T(r)$</td>
+</tr>
+<tr>
+<td>interpolation</td>
+<td>often required</td>
+<td>generally not</td>
+</tr>
+<tr>
+<td>spatial arrangement</td>
+<td>changes</td>
+<td>usually preserved</td>
+</tr>
+<tr>
+<td>examples</td>
+<td>rotate, scale, warp</td>
+<td>log, gamma, contrast stretch</td>
+</tr>
+</tbody>
+</table></div>
+<p>This is an important conceptual distinction.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.37: Coordinate Conventions — Major Trap -->
+  <section id="s-11-37" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.37</span>
+      <h2>Coordinate Conventions — Major Trap</h2>
+      <button class="bookmark-btn" data-id="s-11-37" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Image arrays often use:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>row ↑ downward
+column → right</code></pre>
+</div></p>
+<p>Cartesian geometry often uses:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>x → right
+y ↑ upward</code></pre>
+</div></p>
+<p>Therefore a mathematical rotation can appear visually reversed if directly applied to row/column indices without conversion.</p>
+<p>Always define:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>x ↔ column
+y ↔ row</code></pre>
+</div></p>
+<p>and the sign convention before deriving the transformation.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.38: Pixel-Centre Conventions -->
+  <section id="s-11-38" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.38</span>
+      <h2>Pixel-Centre Conventions</h2>
+      <button class="bookmark-btn" data-id="s-11-38" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <blockquote>
+<p><strong>DEEP DIVE</strong></p>
+</blockquote>
+<p>Different systems can interpret coordinates as referring to:</p>
+<ul>
+<li>pixel centres,</li>
+<li>pixel corners,</li>
+<li>continuous image coordinates.</li>
+</ul>
+<p>This affects resizing and transformation alignment.</p>
+<p>For example, scaling around pixel centres versus array corners can produce a small but systematic shift.</p>
+<p>This is one reason seemingly identical resizing operations can differ across libraries.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.39: Half-Pixel and Alignment Issues -->
+  <section id="s-11-39" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.39</span>
+      <h2>Half-Pixel and Alignment Issues</h2>
+      <button class="bookmark-btn" data-id="s-11-39" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Consider a 2× image enlargement.</p>
+<p>A simplistic coordinate map may use:</p>
+<p>
+$$
+x'=2x
+$$
+</p>
+<p>Another system may map pixel centres using an offset such as:</p>
+<p>
+$$
+x'=2(x+0.5)-0.5
+$$
+</p>
+<p>The resulting sampling locations differ.</p>
+<blockquote>
+<p><strong>Engineering rule:</strong> When reproducing results across libraries, document the coordinate convention and interpolation geometry, not just the scale factor.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.40: Boundary Handling in Resampling -->
+  <section id="s-11-40" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.40</span>
+      <h2>Boundary Handling in Resampling</h2>
+      <button class="bookmark-btn" data-id="s-11-40" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A transformed coordinate may fall outside the source image.</p>
+<p>The implementation must decide:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>constant
+replicate
+reflect
+wrap
+transparent / invalid
+crop</code></pre>
+</div></p>
+<p>The correct policy depends on the application.</p>
+<p>For document warping, a constant background may be appropriate.</p>
+<p>For cyclic image domains, wrap-around can be appropriate.</p>
+<p>There is no universal choice.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.41: Interpolation and Image Type -->
+  <section id="s-11-41" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.41</span>
+      <h2>Interpolation and Image Type</h2>
+      <button class="bookmark-btn" data-id="s-11-41" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For a continuous-tone photograph:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>bilinear / bicubic</code></pre>
+</div></p>
+<p>are often reasonable candidates.</p>
+<p>For categorical label images:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>nearest-neighbour</code></pre>
+</div></p>
+<p>is usually preferred because interpolation between labels creates meaningless fractional classes.</p>
+<p>Example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>class 1
+class 2</code></pre>
+</div></p>
+<p>Bilinear interpolation might produce:</p>
+<p>
+$$
+1.5
+$$
+</p>
+<p>which is not a valid class label.</p>
+<p>This is a critical practical distinction.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.42: Interpolation and Edge Sharpness -->
+  <section id="s-11-42" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.42</span>
+      <h2>Interpolation and Edge Sharpness</h2>
+      <button class="bookmark-btn" data-id="s-11-42" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Interpolation can soften boundaries.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>nearest
+→ blocky but sharper transitions
+
+bilinear
+→ smoother but somewhat softer
+
+bicubic
+→ smoother; may preserve apparent sharpness differently</code></pre>
+</div></p>
+<p>The actual result depends on the image and implementation.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.43: Geometric Transformation Pipeline -->
+  <section id="s-11-43" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.43</span>
+      <h2>Geometric Transformation Pipeline</h2>
+      <button class="bookmark-btn" data-id="s-11-43" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A robust pipeline can be expressed as:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>INPUT IMAGE
+     ↓
+define coordinate convention
+     ↓
+define transformation
+     ↓
+choose forward/inverse mapping
+     ↓
+choose output grid
+     ↓
+map destination coordinates
+     ↓
+sample source
+     ↓
+interpolate
+     ↓
+handle boundaries
+     ↓
+write output
+     ↓
+evaluate geometry + image quality</code></pre>
+</div></p>
+<p>Every stage can affect the result.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.44: Implementation Pseudocode -->
+  <section id="s-11-44" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.44</span>
+      <h2>Implementation Pseudocode</h2>
+      <button class="bookmark-btn" data-id="s-11-44" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>for each output pixel (x&#x27;, y&#x27;):
+
+    source_coord = inverse_transform(x&#x27;, y&#x27;)
+
+    if source_coord is inside source image:
+        value = interpolate(source, source_coord)
+    else:
+        value = boundary_value
+
+    output[x&#x27;, y&#x27;] = value</code></pre>
+</div></p>
+<p>This compactly describes a large family of image-warp operations.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.45: Worked Rotation Pipeline -->
+  <section id="s-11-45" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.45</span>
+      <h2>Worked Rotation Pipeline</h2>
+      <button class="bookmark-btn" data-id="s-11-45" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose a grayscale image must be rotated by:</p>
+<p>
+$$
+30^\circ
+$$
+</p>
+<p>A conceptual implementation is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>1. define centre
+2. construct rotation matrix
+3. for each output pixel
+4. transform output coordinate back to source
+5. bilinearly interpolate
+6. handle out-of-bounds coordinates
+7. store output</code></pre>
+</div></p>
+<p>The rotation angle alone is therefore not the whole algorithm.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.46: Evaluation of Geometric Transforms -->
+  <section id="s-11-46" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.46</span>
+      <h2>Evaluation of Geometric Transforms</h2>
+      <button class="bookmark-btn" data-id="s-11-46" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A correct transformation should be evaluated for:</p>
+<h3>Geometry</h3>
+<ul>
+<li>expected position,</li>
+<li>expected orientation,</li>
+<li>expected scale.</li>
+</ul>
+<h3>Image quality</h3>
+<ul>
+<li>aliasing,</li>
+<li>blur,</li>
+<li>interpolation artifacts,</li>
+<li>holes,</li>
+<li>clipping.</li>
+</ul>
+<h3>Registration/alignment</h3>
+<ul>
+<li>landmark alignment,</li>
+<li>overlap,</li>
+<li>transformation residual error.</li>
+</ul>
+<p>A visually plausible image can still be geometrically incorrect.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.47: Common Traps -->
+  <section id="s-11-47" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.47</span>
+      <h2>Common Traps</h2>
+      <button class="bookmark-btn" data-id="s-11-47" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h2>Trap 1 — “Rotation only changes coordinates.”</h2>
+<p>Incomplete.</p>
+<p>After coordinate transformation, the output grid requires resampling.</p>
+<h2>Trap 2 — “Forward mapping always fills the output.”</h2>
+<p>False.</p>
+<p>It can produce holes and uneven coverage.</p>
+<h2>Trap 3 — “Interpolation restores lost detail.”</h2>
+<p>False.</p>
+<p>It estimates values from known samples.</p>
+<h2>Trap 4 — “Bilinear is always better than nearest neighbour.”</h2>
+<p>False.</p>
+<p>Nearest neighbour is often the correct choice for categorical labels.</p>
+<h2>Trap 5 — “Downsampling only needs interpolation.”</h2>
+<p>Incomplete.</p>
+<p>Anti-alias filtering is important when high-frequency content could alias.</p>
+<h2>Trap 6 — “Transformations can be reordered freely.”</h2>
+<p>False.</p>
+<p>Matrix transformations generally do not commute.</p>
+<h2>Trap 7 — “Image y-coordinate is always Cartesian y.”</h2>
+<p>False.</p>
+<p>Array row indexing often increases downward.</p>
+<h2>Trap 8 — “A resize factor fully specifies a resize operation.”</h2>
+<p>False.</p>
+<p>Coordinate convention, interpolation, anti-aliasing, rounding and boundary handling can differ.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.48: Exam Formula Sheet -->
+  <section id="s-11-48" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.48</span>
+      <h2>Exam Formula Sheet</h2>
+      <button class="bookmark-btn" data-id="s-11-48" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Translation</h3>
+<p>
+$$
+\boxed{
+x'=x+t_x,\quad y'=y+t_y
+}
+$$
+</p>
+<h3>Scaling</h3>
+<p>
+$$
+\boxed{
+x'=s_xx,\quad y'=s_yy
+}
+$$
+</p>
+<h3>Rotation</h3>
+<p>
+$$
+\boxed{
+x'=x\cos\theta-y\sin\theta
+}
+$$
+</p>
+<p>
+$$
+\boxed{
+y'=x\sin\theta+y\cos\theta
+}
+$$
+</p>
+<h3>Affine transformation</h3>
+<p>
+$$
+\boxed{
+\begin{bmatrix}
+x'\\y'\\1
+\end{bmatrix}
+=
+\begin{bmatrix}
+a_{11}&a_{12}&t_x\\
+a_{21}&a_{22}&t_y\\
+0&0&1
+\end{bmatrix}
+\begin{bmatrix}
+x\\y\\1
+\end{bmatrix}
+}
+$$
+</p>
+<h3>Bilinear interpolation</h3>
+<p>
+$$
+\boxed{
+f(x,y)
+=
+(1-\alpha)(1-\beta)Q_{11}
++
+\alpha(1-\beta)Q_{21}
++
+(1-\alpha)\beta Q_{12}
++
+\alpha\beta Q_{22}
+}
+$$
+</p>
+<h3>Homography</h3>
+<p>
+$$
+\boxed{
+\lambda\mathbf p'=H\mathbf p
+}
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.49: Exam-Style Problem — Translation -->
+  <section id="s-11-49" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.49</span>
+      <h2>Exam-Style Problem — Translation</h2>
+      <button class="bookmark-btn" data-id="s-11-49" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A pixel at:</p>
+<p>
+$$
+(25,40)
+$$
+</p>
+<p>is translated by:</p>
+<p>
+$$
+(10,-15)
+$$
+</p>
+<p>Find its new position.</p>
+<p>
+$$
+x'=25+10=35
+$$
+</p>
+<p>
+$$
+y'=40-15=25
+$$
+</p>
+<p>Therefore:</p>
+<p>
+$$
+\boxed{(35,25)}
+$$
+</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.50: Exam-Style Problem — Rotation -->
+  <section id="s-11-50" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.50</span>
+      <h2>Exam-Style Problem — Rotation</h2>
+      <button class="bookmark-btn" data-id="s-11-50" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Rotate:</p>
+<p>
+$$
+(2,1)
+$$
+</p>
+<p>by:</p>
+<p>
+$$
+90^\circ
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+x'=2(0)-1(1)=-1
+$$
+</p>
+<p>
+$$
+y'=2(1)+1(0)=2
+$$
+</p>
+<p>Therefore:</p>
+<p>
+$$
+\boxed{(-1,2)}
+$$
+</p>
+<p>under the standard Cartesian convention.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.51: Exam-Style Problem — Bilinear Interpolation -->
+  <section id="s-11-51" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.51</span>
+      <h2>Exam-Style Problem — Bilinear Interpolation</h2>
+      <button class="bookmark-btn" data-id="s-11-51" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Given:</p>
+<p>
+$$
+Q_{11}=10,\quad Q_{21}=30,\quad Q_{12}=20,\quad Q_{22}=40
+$$
+</p>
+<p>and:</p>
+<p>
+$$
+\alpha=\beta=0.5
+$$
+</p>
+<p>then:</p>
+<p>
+$$
+f=
+0.25(10)+0.25(30)+0.25(20)+0.25(40)
+$$
+</p>
+<p>
+$$
+=
+\frac{10+30+20+40}{4}
+$$
+</p>
+<p>
+$$
+\boxed{25}
+$$
+</p>
+<p>At the exact centre of the four samples, bilinear interpolation becomes their arithmetic mean.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.52: Practical Design Example — Document Rectification -->
+  <section id="s-11-52" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.52</span>
+      <h2>Practical Design Example — Document Rectification</h2>
+      <button class="bookmark-btn" data-id="s-11-52" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A photographed page may be skewed and viewed in perspective.</p>
+<p>A typical engineering pipeline:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>photo
+ ↓
+detect document corners
+ ↓
+estimate homography
+ ↓
+inverse warp
+ ↓
+bilinear/bicubic interpolation
+ ↓
+crop/standardize
+ ↓
+OCR or document processing</code></pre>
+</div></p>
+<p>The geometric correction is often as important as the later OCR model.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.53: Practical Design Example — Image Registration -->
+  <section id="s-11-53" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.53</span>
+      <h2>Practical Design Example — Image Registration</h2>
+      <button class="bookmark-btn" data-id="s-11-53" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose two satellite images of the same area are slightly shifted.</p>
+<p>Pipeline:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>image A
+image B
+  ↓
+detect/match features
+  ↓
+estimate transformation
+  ↓
+warp B
+  ↓
+compare aligned images</code></pre>
+</div></p>
+<p>Errors may arise from:</p>
+<ul>
+<li>incorrect feature matches,</li>
+<li>inappropriate transformation model,</li>
+<li>interpolation,</li>
+<li>non-rigid scene changes.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.54: Connection to Frequency Domain -->
+  <section id="s-11-54" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.54</span>
+      <h2>Connection to Frequency Domain</h2>
+      <button class="bookmark-btn" data-id="s-11-54" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Geometric transformation changes spatial coordinates.</p>
+<p>Fourier analysis changes the representation from:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>spatial domain</code></pre>
+</div></p>
+<p>to:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>frequency domain</code></pre>
+</div></p>
+<p>This gives the next conceptual transition:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>C11
+WHERE are samples?
+
+        ↓
+
+C12
+HOW does the image vary across spatial frequencies?</code></pre>
+</div></p>
+<p>This is the bridge into the frequency-domain half of Unit II.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.55: Cross-Book Bridges -->
+  <section id="s-11-55" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.55</span>
+      <h2>Cross-Book Bridges</h2>
+      <button class="bookmark-btn" data-id="s-11-55" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <blockquote>
+<p><strong>C03 BRIDGE</strong><br />
+Sampling explains why transformed coordinates usually require interpolation and why downsampling can alias.</p>
+<p><strong>C04 BRIDGE</strong><br />
+Image dimensions, datatype and channel layout determine how transformed images are stored.</p>
+<p><strong>C08 BRIDGE</strong><br />
+Spatial filtering is often used as anti-aliasing before downsampling.</p>
+<p><strong>C12–C13 BRIDGE</strong><br />
+Frequency-domain methods provide another way to understand spatial detail and filtering.</p>
+<p><strong>C19–C20 BRIDGE</strong><br />
+Feature descriptors can support registration and alignment.</p>
+<p><strong>C30 BRIDGE</strong><br />
+Video stabilization and frame alignment are geometric transformation problems.</p>
+<p><strong>LAB BRIDGE</strong><br />
+Implement translation, scaling, rotation and interpolation comparisons; inspect coordinate grids and boundary effects.</p>
+<p><strong>PRACTICE BRIDGE</strong><br />
+Solve transformation matrices, composition, inverse mapping and interpolation calculations.</p>
+<p><strong>EXAM BRIDGE</strong><br />
+Know translation/scaling/rotation equations, affine transformation, bilinear interpolation and the distinction between forward and inverse mapping.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.56: Quick Recall -->
+  <section id="s-11-56" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.56</span>
+      <h2>Quick Recall</h2>
+      <button class="bookmark-btn" data-id="s-11-56" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>GEOMETRY
+→ changes WHERE samples belong
+
+INTERPOLATION
+→ estimates values between known samples
+
+FORWARD MAP
+→ source → destination
+
+INVERSE MAP
+→ destination → source
+
+NEAREST
+→ one closest sample
+
+BILINEAR
+→ four neighbours
+
+AFFINE
+→ rotation + scale + shear + translation
+
+HOMOGRAPHY
+→ projective/perspective mapping</code></pre>
+</div></p>
+<p>Core rule:</p>
+<blockquote>
+<p><strong>A geometric transform is not complete until the new grid has been resampled.</strong></p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.57: Chapter Checkpoint -->
+  <section id="s-11-57" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.57</span>
+      <h2>Chapter Checkpoint</h2>
+      <button class="bookmark-btn" data-id="s-11-57" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <ol>
+<li>Define geometric transformation.</li>
+<li>Write translation equations.</li>
+<li>Write scaling equations.</li>
+<li>Derive the 2-D rotation matrix.</li>
+<li>Why is rotation about an image centre implemented using translations plus rotation?</li>
+<li>Why does transformation order matter?</li>
+<li>Define an affine transformation.</li>
+<li>Why are homogeneous coordinates useful?</li>
+<li>Compare forward and inverse mapping.</li>
+<li>Why is interpolation required after a geometric transformation?</li>
+<li>Explain nearest-neighbour interpolation.</li>
+<li>Derive/use the bilinear interpolation equation.</li>
+<li>Compare nearest, bilinear and bicubic interpolation.</li>
+<li>Why should categorical masks usually avoid bilinear interpolation?</li>
+<li>Why is anti-alias filtering important before downsampling?</li>
+<li>Explain the coordinate-convention problem in image arrays.</li>
+<li>What is a homography?</li>
+<li>Give one engineering application of image registration.</li>
+</ol>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 11.58: Unit II Transition -->
+  <section id="s-11-58" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.58</span>
+      <h2>Unit II Transition</h2>
+      <button class="bookmark-btn" data-id="s-11-58" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The spatial-domain processing sequence is now:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>C06
+INTENSITY TRANSFORMATIONS
+        ↓
+C07
+HISTOGRAMS
+        ↓
+C08
+SPATIAL FILTERING
+        ↓
+C09
+NOISE REDUCTION
+        ↓
+C10
+SHARPENING + EDGES
+        ↓
+C11
+GEOMETRIC TRANSFORMATIONS</code></pre>
+</div></p>
+<p>We are now ready for the frequency-domain representation:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>SPATIAL DOMAIN
+        ↓
+Fourier Transform
+        ↓
+FREQUENCY DOMAIN
+        ↓
+frequency filtering</code></pre>
+</div></p>
+<p>That is Chapter 12.</p>
+    </div>
+  </section>
+
+  <!-- SECTION 11.59: Worked Example — 10-Mark University Model Answer: Bilinear Interpolation -->
+  <section id="s-11-59" class="section-block">
+    <div class="section-header">
+      <span class="section-num">11.59</span>
+      <h2>Worked Example — 10-Mark University Model Answer: Bilinear Interpolation</h2>
+      <button class="bookmark-btn" data-id="s-11-59" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Problem Statement</h3>
+<p>An image scaling algorithm maps an output pixel $(x', y')$ back to a non-integer continuous coordinate $(x, y) = (3.4, 2.7)$ in the source image matrix $F$.
+The four surrounding integer grid points and their known pixel intensity values are:
+- Top-Left: $F(3, 2) = 100$
+- Top-Right: $F(4, 2) = 140$
+- Bottom-Left: $F(3, 3) = 110$
+- Bottom-Right: $F(4, 3) = 160$</p>
+<ol>
+<li>Derive the mathematical equation for 2D Bilinear Interpolation.</li>
+<li>Calculate the fractional coordinate offsets $\Delta x$ and $\Delta y$.</li>
+<li>Compute the interpolated pixel intensity at $(3.4, 2.7)$ with full step-by-step arithmetic.</li>
+<li>Compare Bilinear Interpolation with Nearest-Neighbor and Bicubic Interpolation in terms of computational complexity and perceptual sharpness.</li>
+</ol>
+<h3>Step-by-Step Mathematical Solution</h3>
+<div class="worked-example">
+  <div class="worked-example-header">
+    <span class="worked-example-title">Numerical Examination Trace</span>
+    <span class="tag-badge tag-exam">10-MARK UNIVERSITY MODEL ANSWER</span>
+  </div>
+  <p><strong>1. Mathematical Formula:</strong><br>
+  Let continuous coordinate $(x, y)$ lie inside unit cell $[x_1, x_2] \times [y_1, y_2]$ where $x_1 = 3, x_2 = 4, y_1 = 2, y_2 = 3$.<br>
+  Fractional horizontal offset: $\Delta x = x - x_1 = 3.4 - 3 = 0.4$.<br>
+  Fractional vertical offset: $\Delta y = y - y_1 = 2.7 - 2 = 0.7$.</p>
+
+  <p><strong>2. Two-Stage Interpolation Trace:</strong><br>
+  - <em>Stage 1: Horizontal Linear Interpolation along row $y_1 = 2$:</em>
+  
+$$f(x, y_1) = (1 - \Delta x) F(x_1, y_1) + \Delta x F(x_2, y_1)$$
+
+  
+$$f(3.4, 2) = (1 - 0.4)(100) + (0.4)(140) = 0.6(100) + 0.4(140) = 60 + 56 = 116$$
+
+
+  - <em>Stage 2: Horizontal Linear Interpolation along row $y_2 = 3$:</em>
+  
+$$f(x, y_2) = (1 - \Delta x) F(x_1, y_2) + \Delta x F(x_2, y_2)$$
+
+  
+$$f(3.4, 3) = (1 - 0.4)(110) + (0.4)(160) = 0.6(110) + 0.4(160) = 66 + 64 = 130$$
+
+
+  - <em>Stage 3: Vertical Linear Interpolation between the two intermediate values:</em>
+  
+$$f(x, y) = (1 - \Delta y) f(x, y_1) + \Delta y f(x, y_2)$$
+
+  
+$$f(3.4, 2.7) = (1 - 0.7)(116) + (0.7)(130) = 0.3(116) + 0.7(130) = 34.8 + 91.0 = 125.8$$
+
+  Rounding to the nearest 8-bit integer:
+  
+$$f(3.4, 2.7) = 126$$
+</p>
+
+  <p><strong>3. Direct 4-Point Bilinear Weighted Equation:</strong><br>
+  
+$$f(x, y) = (1-\Delta x)(1-\Delta y)F(3,2) + \Delta x(1-\Delta y)F(4,2) + (1-\Delta x)\Delta y F(3,3) + \Delta x \Delta y F(4,3)$$
+
+  
+$$f(3.4, 2.7) = (0.6)(0.3)(100) + (0.4)(0.3)(140) + (0.6)(0.7)(110) + (0.4)(0.7)(160)$$
+
+  
+$$f(3.4, 2.7) = 0.18(100) + 0.12(140) + 0.42(110) + 0.28(160)$$
+
+  
+$$f(3.4, 2.7) = 18.0 + 16.8 + 46.2 + 44.8 = 125.8 \to 126$$
+</p>
+
+  <p><strong>4. Algorithmic Comparison:</strong></p>
+  <div class="table-wrap">
+    <table class="comparison-table">
+      <thead>
+        <tr>
+          <th>Method</th>
+          <th>Support Kernel</th>
+          <th>Ops / Pixel</th>
+          <th>Visual Artifacts</th>
+          <th>Typical Use Case</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Nearest Neighbor</strong></td>
+          <td>$1 \times 1$ (Closest point)</td>
+          <td>0 math ops (Round index)</td>
+          <td>Severe blockiness, jagged staircase pixelation edges.</td>
+          <td>Real-time gaming, segmentation mask rescaling.</td>
+        </tr>
+        <tr>
+          <td><strong>Bilinear</strong></td>
+          <td>$2 \times 2$ (4 neighbors)</td>
+          <td>3 linear interpolations (8 mult, 6 add)</td>
+          <td>Smooth transitions; mild high-frequency blurring.</td>
+          <td>Real-time video scaling, mobile screen rendering.</td>
+        </tr>
+        <tr>
+          <td><strong>Bicubic</strong></td>
+          <td>$4 \times 4$ (16 neighbors)</td>
+          <td>16 cubic polynomial weights</td>
+          <td>Preserves edge sharpness and fine textures with minimal ringing.</td>
+          <td>Photoshop, print publication, satellite imagery.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+    </div>
+  </section>
+
+      <!-- Chapter End Package -->
+      <section class="chapter-end-package">
+        <div class="chapter-nav-grid">
+          <a href="ch10-sharpening-edge-detection.html" class="chapter-nav-card">
+            <div class="chapter-nav-dir">← Previous</div>
+            <div class="chapter-nav-title">← Ch 10 — Sharpening & Edge Detection</div>
+          </a>
+          <a href="ch12-fourier-transform.html" class="chapter-nav-card next">
+            <div class="chapter-nav-dir">Next →</div>
+            <div class="chapter-nav-title">Next: Ch 12 — Fourier Transform & Frequency Domain →</div>
+          </a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- FLOATING TTS PANEL (SAFE MANUAL MODE ONLY) -->
+  <div id="tts-panel" style="position:fixed; bottom:20px; right:20px; background:var(--em-surface-1); border:1px solid var(--em-border); border-radius:var(--em-radius-md); padding:12px 16px; box-shadow:var(--sh-lg); z-index:var(--z-float); display:none; gap:10px; align-items:center;">
+    <button class="icon-btn" id="tts-play" title="Play / Pause" style="background:var(--em-accent); color:#fff; border-radius:50%; width:36px; height:36px;">▶</button>
+    <button class="icon-btn" id="tts-stop" title="Stop">⏹</button>
+    <div style="font-size:0.75rem; color:var(--em-text-muted);">
+      <span id="tts-status">Ready</span> · <span id="tts-rate-label">1.0x</span>
+    </div>
+  </div>
+
+  <script src="../assets/js/state.js"></script>
+  <script src="../assets/js/core.js"></script>
+  <script src="../assets/js/tts.js"></script>
+  <script src="../assets/js/glossary.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: document.documentElement.getAttribute('data-theme') === 'light' ? 'default' : 'dark'
+      });
+    });
+  </script>
+</body>
+</html>

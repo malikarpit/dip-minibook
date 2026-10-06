@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Arpit">
+  <meta name="description" content="Digital Image Processing MiniBook — A Visual, Mathematical, and Algorithmic Self-Teaching Textbook for University of Delhi (DU) DSE-3 Computer Science">
+  <title>Digital Image Processing MiniBook 📷 | University of Delhi DSE-3</title>
+
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="stylesheet" href="assets/css/chapters.css">
+  <link rel="stylesheet" href="assets/css/animations.css">
+  <link rel="stylesheet" href="assets/css/timer.css">
+
+  <style>
+    .portal-hero {
+      text-align: center;
+      padding: var(--em-space-12) var(--em-space-6) var(--em-space-10);
+      background: var(--em-surface-1);
+      border: 1px solid var(--em-border);
+      border-radius: var(--em-radius-lg);
+      margin-bottom: var(--em-space-8);
+      box-shadow: var(--sh-md);
+      position: relative;
+      overflow: hidden;
+    }
+    .portal-hero::before {
+      content: "";
+      position: absolute;
+      top: -120px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 500px;
+      height: 240px;
+      background: radial-gradient(circle, rgba(2, 132, 199, 0.22) 0%, rgba(8, 145, 178, 0) 70%);
+      pointer-events: none;
+    }
+    .portal-badge-strip {
+      display: flex;
+      justify-content: center;
+      gap: var(--em-space-2);
+      flex-wrap: wrap;
+      margin-bottom: var(--em-space-4);
+    }
+    .portal-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.2rem, 5vw, 3.6rem);
+      font-weight: 700;
+      color: var(--em-text);
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      margin-bottom: var(--em-space-3);
+    }
+    .portal-subtitle {
+      font-size: 1.15rem;
+      color: var(--em-text-secondary);
+      max-width: 68ch;
+      margin: 0 auto var(--em-space-6);
+      line-height: 1.6;
+    }
+    .portal-actions {
+      display: flex;
+      justify-content: center;
+      gap: var(--em-space-3);
+      flex-wrap: wrap;
+    }
+    .portal-btn {
+      padding: 10px 22px;
+      border-radius: var(--em-radius-sm);
+      font-weight: 600;
+      font-size: 0.90rem;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all var(--em-motion-fast) var(--em-ease);
+      border: 1px solid transparent;
+    }
+    .portal-btn-primary {
+      background: linear-gradient(135deg, #0284C7, #0891B2);
+      color: #FFFFFF;
+      box-shadow: var(--sh-sm);
+    }
+    .portal-btn-primary:hover {
+      opacity: 0.92;
+      transform: translateY(-2px);
+      box-shadow: var(--sh-md);
+    }
+    .portal-btn-secondary {
+      background: var(--em-surface-2);
+      color: var(--em-text);
+      border-color: var(--em-border);
+    }
+    .portal-btn-secondary:hover {
+      background: var(--em-surface-3);
+      border-color: var(--em-border-strong);
+    }
+
+    /* Stats Strip */
+    .portal-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: var(--em-space-4);
+      margin-bottom: var(--em-space-8);
+    }
+    .stat-card {
+      background: var(--em-surface-1);
+      border: 1px solid var(--em-border);
+      border-radius: var(--em-radius-md);
+      padding: var(--em-space-4);
+      text-align: center;
+    }
+    .stat-val {
+      font-family: var(--font-mono);
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--em-accent-text);
+      line-height: 1.2;
+    }
+    .stat-label {
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: var(--em-text-muted);
+      margin-top: 4px;
+    }
+
+    /* Parts Grid */
+    .parts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: var(--em-space-6);
+      margin-bottom: var(--em-space-10);
+    }
+    .part-card {
+      background: var(--em-surface-1);
+      border: 1px solid var(--em-border);
+      border-radius: var(--em-radius-md);
+      padding: var(--em-space-6);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform var(--em-motion-fast) var(--em-ease),
+                  border-color var(--em-motion-fast) var(--em-ease),
+                  box-shadow var(--em-motion-fast) var(--em-ease);
+      border-top: 4px solid var(--part-accent, var(--em-accent));
+    }
+    .part-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--sh-md);
+      border-color: var(--part-border, var(--em-border-strong));
+      border-top-color: var(--part-accent, var(--em-accent));
+    }
+    .part-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--em-space-3);
+    }
+    .part-card-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--em-text);
+      margin-bottom: var(--em-space-2);
+      line-height: 1.3;
+    }
+    .part-card-desc {
+      font-size: 0.90rem;
+      line-height: 1.6;
+      color: var(--em-text-secondary);
+      margin-bottom: var(--em-space-4);
+    }
+    .part-chapters-list {
+      list-style: none;
+      padding-left: 0;
+      margin: 0 0 var(--em-space-5);
+      border-top: 1px solid var(--em-border);
+      padding-top: var(--em-space-3);
+    }
+    .part-chapter-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 0;
+      font-size: 0.86rem;
+    }
+    .part-chapter-item a {
+      color: var(--em-text);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color var(--em-motion-fast) var(--em-ease);
+    }
+    .part-chapter-item a:hover {
+      color: var(--em-accent-text);
+    }
+    .part-chapter-item .ch-tag {
+      font-family: var(--font-mono);
+      font-size: 0.70rem;
+      color: var(--em-text-muted);
+    }
+  </style>
+</head>
+<body data-chapter-id="portal">
+  <div id="progress-bar"></div>
+
+  <!-- Header -->
+  <header id="main-header">
+    <div class="header-left">
+      <button id="sidebar-toggle" class="icon-btn" aria-label="Toggle navigation drawer" title="Toggle Sidebar (S)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <a href="index.html" class="brand-logo">
+        <div class="brand-icon">DIP</div>
+        <div class="brand-text">
+          <span class="main">Digital Image Processing</span>
+          <span class="sub">DU DSE-3 Engineering MiniBook</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="header-chapter-title">Master Subject Portal</div>
+
+    <div class="header-right">
+      <button id="reading-mode-btn" class="icon-btn" aria-label="Toggle reading focus mode" title="Focus Mode (F)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+          <line x1="8" y1="21" x2="16" y2="21"></line>
+          <line x1="12" y1="17" x2="12" y2="21"></line>
+        </svg>
+      </button>
+      <button id="tts-toggle" class="icon-btn" aria-label="Audio Reader" title="Audio Reader">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+        </svg>
+      </button>
+      <button id="theme-toggle" class="icon-btn" aria-label="Cycle theme" title="Theme (T)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="12" cy="12" r="4.5"></circle>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Sidebar Overlay -->
+  <div id="sidebar-overlay"></div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" aria-expanded="true">
+    <div class="sidebar-nav">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">General</div>
+        <a href="index.html" class="sidebar-link active">
+          <span class="link-icon">🏛️</span>
+          <span>Subject Portal</span>
+        </a>
+        <a href="progress.html" class="sidebar-link">
+          <span class="link-icon">📊</span>
+          <span>Study Dashboard</span>
+        </a>
+      </div>
+
+      <!-- Part I -->
+      <div class="sidebar-section">
+        <div class="sidebar-section-label part-label part-i">Part I — The Image</div>
+        <a href="chapters/ch01-big-picture.html" class="sidebar-link">
+          <span class="link-icon">01</span>
+          <span>The Big Picture</span>
+        </a>
+        <a href="chapters/ch02-image-formation.html" class="sidebar-link">
+          <span class="link-icon">02</span>
+          <span>Formation &amp; Acquisition</span>
+        </a>
+        <a href="chapters/ch03-sampling-quantization.html" class="sidebar-link">
+          <span class="link-icon">03</span>
+          <span>Sampling &amp; Quantization</span>
+        </a>
+        <a href="chapters/ch04-image-representation.html" class="sidebar-link">
+          <span class="link-icon">04</span>
+          <span>Pixels, Matrices &amp; Resolution</span>
+        </a>
+        <a href="chapters/ch05-colour-models-file-formats.html" class="sidebar-link">
+          <span class="link-icon">05</span>
+          <span>Colour Models &amp; Formats</span>
+        </a>
+      </div>
+
+      <!-- Part II -->
+      <div class="sidebar-section">
+        <div class="sidebar-section-label part-label part-ii">Part II — Improving the Image</div>
+        <a href="chapters/ch06-point-processing.html" class="sidebar-link">
+          <span class="link-icon">06</span>
+          <span>Point Processing &amp; Intensity</span>
+        </a>
+        <a href="chapters/ch07-histograms-equalization.html" class="sidebar-link">
+          <span class="link-icon">07</span>
+          <span>Histograms &amp; Equalization</span>
+        </a>
+        <a href="chapters/ch08-spatial-filtering.html" class="sidebar-link">
+          <span class="link-icon">08</span>
+          <span>Spatial Filtering &amp; Convolution</span>
+        </a>
+        <a href="chapters/ch09-smoothing-noise-reduction.html" class="sidebar-link">
+          <span class="link-icon">09</span>
+          <span>Smoothing &amp; Noise Reduction</span>
+        </a>
+        <a href="chapters/ch10-sharpening-edge-detection.html" class="sidebar-link">
+          <span class="link-icon">10</span>
+          <span>Sharpening &amp; Edge Detection</span>
+        </a>
+        <a href="chapters/ch11-geometric-transforms.html" class="sidebar-link">
+          <span class="link-icon">11</span>
+          <span>Geometric Transforms</span>
+        </a>
+        <a href="chapters/ch12-fourier-transform.html" class="sidebar-link">
+          <span class="link-icon">12</span>
+          <span>Fourier Transform &amp; Frequency</span>
+        </a>
+        <a href="chapters/ch13-frequency-filtering.html" class="sidebar-link">
+          <span class="link-icon">13</span>
+          <span>Frequency-Domain Filtering</span>
+        </a>
+        <a href="chapters/ch14-image-restoration.html" class="sidebar-link">
+          <span class="link-icon">14</span>
+          <span>Restoration &amp; Deblurring</span>
+        </a>
+      </div>
+
+      <!-- Part III -->
+      <div class="sidebar-section">
+        <div class="sidebar-section-label part-label part-iii">Part III — Understanding Content</div>
+        <a href="chapters/ch15-segmentation-fundamentals.html" class="sidebar-link">
+          <span class="link-icon">15</span>
+          <span>Segmentation Fundamentals</span>
+        </a>
+        <a href="chapters/ch16-thresholding-otsu.html" class="sidebar-link">
+          <span class="link-icon">16</span>
+          <span>Thresholding &amp; Otsu</span>
+        </a>
+        <a href="chapters/ch17-region-segmentation.html" class="sidebar-link">
+          <span class="link-icon">17</span>
+          <span>Region Segmentation</span>
+        </a>
+        <a href="chapters/ch18-mathematical-morphology.html" class="sidebar-link">
+          <span class="link-icon">18</span>
+          <span>Mathematical Morphology</span>
+        </a>
+        <a href="chapters/ch19-features-descriptors.html" class="sidebar-link">
+          <span class="link-icon">19</span>
+          <span>Features &amp; Descriptors</span>
+        </a>
+        <a href="chapters/ch20-sift-surf-orb-hog.html" class="sidebar-link">
+          <span class="link-icon">20</span>
+          <span>SIFT, SURF, ORB &amp; HOG</span>
+        </a>
+      </div>
+
+      <!-- Part IV -->
+      <div class="sidebar-section">
+        <div class="sidebar-section-label part-label part-iv">Part IV — Compressing Images</div>
+        <a href="chapters/ch21-compression-entropy.html" class="sidebar-link">
+          <span class="link-icon">21</span>
+          <span>Compression &amp; Entropy</span>
+        </a>
+        <a href="chapters/ch22-lossless-coding.html" class="sidebar-link">
+          <span class="link-icon">22</span>
+          <span>Lossless: RLE &amp; Huffman</span>
+        </a>
+        <a href="chapters/ch23-lossy-dct-jpeg.html" class="sidebar-link">
+          <span class="link-icon">23</span>
+          <span>Lossy: DCT &amp; JPEG</span>
+        </a>
+        <a href="chapters/ch24-wavelets-jpeg2000.html" class="sidebar-link">
+          <span class="link-icon">24</span>
+          <span>Wavelets &amp; JPEG 2000</span>
+        </a>
+      </div>
+
+      <!-- Part V -->
+      <div class="sidebar-section">
+        <div class="sidebar-section-label part-label part-v">Part V — Intelligent Vision</div>
+        <a href="chapters/ch25-image-classification.html" class="sidebar-link">
+          <span class="link-icon">25</span>
+          <span>Image Classification</span>
+        </a>
+        <a href="chapters/ch26-cnns-image-processing.html" class="sidebar-link">
+          <span class="link-icon">26</span>
+          <span>CNNs for Vision</span>
+        </a>
+        <a href="chapters/ch27-modern-vision-architectures.html" class="sidebar-link">
+          <span class="link-icon">27</span>
+          <span>VGG &amp; ResNet</span>
+        </a>
+        <a href="chapters/ch28-object-detection-yolo.html" class="sidebar-link">
+          <span class="link-icon">28</span>
+          <span>Object Detection: YOLO</span>
+        </a>
+        <a href="chapters/ch29-image-denoising-autoencoders.html" class="sidebar-link">
+          <span class="link-icon">29</span>
+          <span>Autoencoders Denoising</span>
+        </a>
+        <a href="chapters/ch30-video-motion-analysis.html" class="sidebar-link">
+          <span class="link-icon">30</span>
+          <span>Video &amp; Motion Analysis</span>
+        </a>
+        <a href="chapters/ch31-dip-applications-engineering.html" class="sidebar-link">
+          <span class="link-icon">31</span>
+          <span>Applications &amp; Ethics</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-brand-mark">
+        <div class="mark">DU</div>
+        <div>
+          <strong>DSE-3 MiniBook</strong>
+          <div>University of Delhi</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mandatory Global Shell Wrapper -->
+  <div id="main-content">
+    <main class="chapter-content">
+      <!-- Portal Hero -->
+      <section class="portal-hero">
+        <div class="portal-badge-strip">
+          <span class="tag-badge tag-core">DU DSE-3 Syllabus</span>
+          <span class="tag-badge tag-math">4 Credits (3L + 1P)</span>
+          <span class="tag-badge tag-lab">Python &amp; OpenCV</span>
+          <span class="tag-badge tag-exam">GATE &amp; University Aligned</span>
+        </div>
+        <h1 class="portal-title">Digital Image Processing</h1>
+        <p class="portal-subtitle">
+          An interactive, visual, and mathematical self-teaching textbook. Rigorously mapped to the University of Delhi curriculum, featuring step-by-step matrix convolutions, frequency spectrum walkthroughs, and practical OpenCV implementations.
+        </p>
+        <div class="portal-actions">
+          <a href="chapters/ch01-big-picture.html" class="portal-btn portal-btn-primary">
+            <span>Start Chapter 01: The Big Picture</span>
+            <span>→</span>
+          </a>
+          <a href="progress.html" class="portal-btn portal-btn-secondary">
+            <span>Study Dashboard</span>
+            <span>📊</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- Stats Strip -->
+      <div class="portal-stats-grid">
+        <div class="stat-card">
+          <div class="stat-val">31</div>
+          <div class="stat-label">Total Chapters</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val">5</div>
+          <div class="stat-label">Core Parts</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val">10</div>
+          <div class="stat-label">OpenCV Labs</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val">100%</div>
+          <div class="stat-label">Syllabus Coverage</div>
+        </div>
+      </div>
+
+      <!-- Curriculum Overview -->
+      <div class="section-header">
+        <span class="section-num">MAP</span>
+        <h2>Curriculum Explorer &amp; Master Syllabus Map</h2>
+      </div>
+
+      <div class="parts-grid">
+        <!-- Part I -->
+        <div class="part-card part-i" id="part-1">
+          <div>
+            <div class="part-card-header">
+              <span class="part-badge">Part I · Active</span>
+              <span class="tag-badge tag-core">5 Chapters</span>
+            </div>
+            <h3 class="part-card-title">Part I — The Image</h3>
+            <p class="part-card-desc">
+              Foundational photon physics, illumination-reflectance models, 2D sampling lattice, Shannon-Nyquist theorems, amplitude quantization, and spatial coordinate conventions.
+            </p>
+            <ul class="part-chapters-list">
+              <li class="part-chapter-item">
+                <a href="chapters/ch01-big-picture.html">01. The Big Picture</a>
+                <span class="ch-tag">CORE · READY</span>
+              </li>
+              <li class="part-chapter-item">
+                <a href="chapters/ch02-image-formation.html">02. Formation &amp; Acquisition</a>
+                <span class="ch-tag">MATH · READY</span>
+              </li>
+              <li class="part-chapter-item">
+                <a href="chapters/ch03-sampling-quantization.html">03. Sampling &amp; Quantization</a>
+                <span class="ch-tag">MATH · READY</span>
+              </li>
+              <li class="part-chapter-item">
+                <a href="chapters/ch04-image-representation.html">04. Pixels, Matrices &amp; Resolution</a>
+                <span class="ch-tag">ALGO · READY</span>
+              </li>
+              <li class="part-chapter-item">
+                <a href="chapters/ch05-colour-models-file-formats.html">05. Colour Models &amp; Formats</a>
+                <span class="ch-tag">LAB · READY</span>
+              </li>
+            </ul>
+          </div>
+          <a href="chapters/ch01-big-picture.html" class="portal-btn portal-btn-secondary" style="width: 100%; justify-content: center;">
+            Explore Part I →
+          </a>
+        </div>
+
+        <!-- Part II -->
+        <div class="part-card part-ii" id="part-2">
+          <div>
+            <div class="part-card-header">
+              <span class="part-badge">Part II · Active</span>
+              <span class="tag-badge tag-core">9 Chapters</span>
+            </div>
+            <h3 class="part-card-title">Part II — Improving the Image</h3>
+            <p class="part-card-desc">
+              Point transformations, histogram equalization, spatial convolution, linear/nonlinear smoothing, Laplacian/Sobel edge detection, 2D Fourier transforms, and restoration deblurring.
+            </p>
+            <ul class="part-chapters-list">
+              <li class="part-chapter-item">
+                <a href="chapters/ch06-point-processing.html">06. Point Processing &amp; Intensity</a>
+                <span class="ch-tag">CORE · READY</span>
+              </li>
+              <li class="part-chapter-item">
+                <a href="chapters/ch07-histograms-equalization.html">07. Histograms &amp; Equalization</a>
+                <span class="ch-tag">MATH · READY</span>
+              </li>
+              <li class="part-chapter-item">
+                <a href="chapters/ch08-spatial-filtering.html">08. Spatial Filtering &amp; Convolution</a>
+                <span class="ch-tag">ALGO · READY</span>
+              </li>
+              <li class="part-chapter-item">
+                <a href="chapters/ch09-smoothing-noise-reduction.html">09. Smoothing &amp; Noise Reduction</a>
+                <span class="ch-tag">MATH · READY</span>
+              </li>
+              <li class="part-chapter-item">
+                <a href="chapters/ch10-sharpening-edge-detection.html">10. Sharpening &amp; Edge Detection</a>
+                <span class="ch-tag">MATH · READY</span>
+              </li>
+              <li class="part-chapter-item">
+                <a href="chapters/ch11-geometric-transforms.html">11. Geometric Transforms &amp; Interpolation</a>
+                <span class="ch-tag">ALGO · READY</span>
+              </li>
+              <li class="part-chapter-item">
+                <a href="chapters/ch12-fourier-transform.html">12. 2D Fourier Transform &amp; Frequency</a>
+                <span class="ch-tag">CORE · READY</span>
+              </li>
+              <li class="part-chapter-item">
+                <a href="chapters/ch13-frequency-filtering.html">13. Frequency-Domain Filtering</a>
+                <span class="ch-tag">MATH · READY</span>
+              </li>
+              <li class="part-chapter-item">
+                <a href="chapters/ch14-image-restoration.html">14. Restoration &amp; Deblurring</a>
+                <span class="ch-tag">MATH · READY</span>
+              </li>
+            </ul>
+          </div>
+          <a href="chapters/ch06-point-processing.html" class="portal-btn portal-btn-secondary" style="width: 100%; justify-content: center;">
+            Explore Part II →
+          </a>
+        </div>
+
+        <!-- Part III -->
+        <div class="part-card part-iii" id="part-3">
+          <div>
+            <div class="part-card-header">
+              <span class="part-badge">Part III · Active</span>
+              <span class="tag-badge tag-core">6 Chapters</span>
+            </div>
+            <h3 class="part-card-title">Part III — Understanding Image Content</h3>
+            <p class="part-card-desc">
+              Segmentation fundamentals, Otsu global thresholding, split-and-merge region growing, binary morphology (erosion/dilation), texture descriptors, and SIFT/SURF/HOG detectors.
+            </p>
+            <ul class="part-chapters-list">
+              <li class="part-chapter-item">
+                <a href="chapters/ch15-segmentation-fundamentals.html">15. Segmentation Fundamentals</a>
+                <span class="ch-tag">CORE · READY</span>
+              </li>
+              <li class="part-chapter-item">
+                <a href="chapters/ch16-thresholding-otsu.html">16. Thresholding &amp; Otsu Method</a>
+                <span class="ch-tag">MATH · READY</span>
+              </li>
+              <li class="part-chapter-item">
+                <a href="chapters/ch17-region-segmentation.html">17. Region-Based Segmentation</a>
+                <span class="ch-tag">ALGO · READY</span>
+              </li>
+              <li class="part-chapter-item">
+                <a href="chapters/ch18-mathematical-morphology.html">18. Mathematical Morphology</a>
+                <span class="ch-tag">MATH · READY</span>
+              </li>
+              <li class="part-chapter-item">
+                <a href="chapters/ch19-features-descriptors.html">19. Image Features &amp; Descriptors</a>
+                <span class="ch-tag">MATH · READY</span>
+              </li>
+              <li class="part-chapter-item">
+                <a href="chapters/ch20-sift-surf-orb-hog.html">20. SIFT, SURF, ORB &amp; HOG</a>
+                <span class="ch-tag">CORE · READY</span>
+              </li>
+            </ul>
+          </div>
+          <a href="chapters/ch15-segmentation-fundamentals.html" class="portal-btn portal-btn-secondary" style="width: 100%; justify-content: center;">
+            Explore Part III →
+          </a>
+        </div>
+
+        <!-- Part IV -->
+        <div class="part-card part-iv" id="part-4">
+          <div>
+            <div class="part-card-header">
+              <span class="part-badge">Part IV · Active</span>
+              <span class="tag-badge tag-core">4 Chapters</span>
+            </div>
+            <h3 class="part-card-title">Part IV — Compressing Images</h3>
+            <p class="part-card-desc">
+              Information entropy, Run-Length Encoding, Huffman variable-length coding, Discrete Cosine Transform (DCT), JPEG pipeline quantization, and multiresolution wavelet compression.
+            </p>
+            <ul class="part-chapters-list">
+              <li class="part-chapter-item">
+                <a href="chapters/ch21-compression-entropy.html">21. Compression Fundamentals &amp; Entropy</a>
+                <span class="ch-tag">MATH · READY</span>
+              </li>
+              <li class="part-chapter-item">
+                <a href="chapters/ch22-lossless-coding.html">22. Lossless Coding: RLE &amp; Huffman</a>
+                <span class="ch-tag">ALGO · READY</span>
+              </li>
+              <li class="part-chapter-item">
+                <a href="chapters/ch23-lossy-dct-jpeg.html">23. Lossy Compression: DCT &amp; JPEG</a>
+                <span class="ch-tag">CORE · READY</span>
+              </li>
+              <li class="part-chapter-item">
+                <a href="chapters/ch24-wavelets-jpeg2000.html">24. Wavelets &amp; JPEG 2000</a>
+                <span class="ch-tag">MATH · READY</span>
+              </li>
+            </ul>
+          </div>
+          <a href="chapters/ch21-compression-entropy.html" class="portal-btn portal-btn-secondary" style="width: 100%; justify-content: center;">
+            Explore Part IV →
+          </a>
+        </div>
+
+        <!-- Part V -->
+        <div class="part-card part-v" id="part-5">
+          <div>
+            <div class="part-card-header">
+              <span class="part-badge">Part V · Active</span>
+              <span class="tag-badge tag-core">7 Chapters</span>
+            </div>
+            <h3 class="part-card-title">Part V — Intelligent Vision</h3>
+            <p class="part-card-desc">
+              Classical image classification, convolutional neural networks (CNNs), VGG/ResNet deep architectures, YOLO real-time object detection, denoising autoencoders, video optical flow, and responsible AI.
+            </p>
+            <ul class="part-chapters-list">
+              <li class="part-chapter-item">
+                <a href="chapters/ch25-image-classification.html">25. Image Classification Foundations</a>
+                <span class="ch-tag">MATH · READY</span>
+              </li>
+              <li class="part-chapter-item">
+                <a href="chapters/ch26-cnns-image-processing.html">26. CNNs for Image Processing</a>
+                <span class="ch-tag">CORE · READY</span>
+              </li>
+              <li class="part-chapter-item">
+                <a href="chapters/ch27-modern-vision-architectures.html">27. Modern Vision Architectures (VGG &amp; ResNet)</a>
+                <span class="ch-tag">CORE · READY</span>
+              </li>
+              <li class="part-chapter-item">
+                <a href="chapters/ch28-object-detection-yolo.html">28. Object Detection &amp; YOLO</a>
+                <span class="ch-tag">ALGO · READY</span>
+              </li>
+              <li class="part-chapter-item">
+                <a href="chapters/ch29-image-denoising-autoencoders.html">29. Image Denoising with Autoencoders</a>
+                <span class="ch-tag">MATH · READY</span>
+              </li>
+              <li class="part-chapter-item">
+                <a href="chapters/ch30-video-motion-analysis.html">30. Video Processing &amp; Motion Analysis</a>
+                <span class="ch-tag">LAB · READY</span>
+              </li>
+              <li class="part-chapter-item">
+                <a href="chapters/ch31-dip-applications-engineering.html">31. DIP Applications, Engineering &amp; Ethics</a>
+                <span class="ch-tag">CORE · READY</span>
+              </li>
+            </ul>
+          </div>
+          <a href="chapters/ch25-image-classification.html" class="portal-btn portal-btn-secondary" style="width: 100%; justify-content: center;">
+            Explore Part V →
+          </a>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="assets/js/state.js"></script>
+  <script src="assets/js/core.js"></script>
+  <script src="assets/js/tts.js"></script>
+</body>
+</html>

@@ -1,0 +1,2032 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Arpit">
+  <meta name="description" content="Chapter 03: Spatial Sampling &amp; Quantization — Digital Image Processing MiniBook. Continuous to Discrete Coordinate Mapping, 2D Nyquist-Shannon Theorem, Spatial Aliasing, Bit Depth, and Quantization Noise">
+  <title>C03: Spatial Sampling &amp; Quantization | DIP MiniBook 📷 Arpit</title>
+
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <link rel="stylesheet" href="../assets/css/chapters.css">
+  <link rel="stylesheet" href="../assets/css/animations.css">
+  <link rel="stylesheet" href="../assets/css/timer.css">
+
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body data-chapter-id="ch03-sampling-quantization">
+  <div id="progress-bar"></div>
+
+  <!-- Header -->
+  <header id="main-header">
+    <div class="header-left">
+      <button id="sidebar-toggle" class="icon-btn" aria-label="Toggle navigation drawer" title="Toggle Sidebar (S)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <a href="../index.html" class="brand-logo">
+        <div class="brand-icon">DIP</div>
+        <div class="brand-text">
+          <span class="main">Digital Image Processing</span>
+          <span class="sub">DU DSE-3 Engineering MiniBook</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="header-chapter-title">C03: Spatial Sampling &amp; Quantization</div>
+
+    <div class="header-right">
+      <button id="reading-mode-btn" class="icon-btn" aria-label="Toggle reading focus mode" title="Focus Mode (F)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+          <line x1="8" y1="21" x2="16" y2="21"></line>
+          <line x1="12" y1="17" x2="12" y2="21"></line>
+        </svg>
+      </button>
+      <button id="tts-toggle" class="icon-btn" aria-label="Audio Reader" title="Audio Reader">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+        </svg>
+      </button>
+      <button id="theme-toggle" class="icon-btn" aria-label="Cycle theme" title="Theme (T)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="12" cy="12" r="4.5"></circle>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Sidebar Overlay -->
+  <div id="sidebar-overlay"></div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" aria-expanded="true">
+    <div class="sidebar-nav">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">General</div>
+        <a href="../index.html" class="sidebar-link">
+          <span class="link-icon">🏛️</span>
+          <span>Subject Portal</span>
+        </a>
+        <a href="../progress.html" class="sidebar-link">
+          <span class="link-icon">📊</span>
+          <span>Study Dashboard</span>
+        </a>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Current Chapter Sections</div>
+        <a href="#s-03-0" class="sidebar-link"><span class="link-icon">📌</span><span>03.0 Why This Chapter Matters</span> </a>
+      <a href="#s-03-1" class="sidebar-link"><span class="link-icon">📌</span><span>03.1 Continuous vs Digital Representation</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-03-2" class="sidebar-link"><span class="link-icon">📌</span><span>03.2 Sampling: What Is It?</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-03-3" class="sidebar-link"><span class="link-icon">📌</span><span>03.3 Sampling as a Coordinate Operation</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-03-4" class="sidebar-link"><span class="link-icon">📌</span><span>03.4 What Does “Higher Sampling” Actually Mean?</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-03-5" class="sidebar-link"><span class="link-icon">📌</span><span>03.5 Sampling and Image Resolution</span> </a>
+      <a href="#s-03-6" class="sidebar-link"><span class="link-icon">📌</span><span>03.6 Worked Example — Spatial Sampling</span> </a>
+      <a href="#s-03-7" class="sidebar-link"><span class="link-icon">📌</span><span>03.7 What Is Spatial Frequency?</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-03-8" class="sidebar-link"><span class="link-icon">📌</span><span>03.8 The Sampling Problem</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-03-9" class="sidebar-link"><span class="link-icon">📌</span><span>03.9 Nyquist–Shannon Sampling Idea</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-03-10" class="sidebar-link"><span class="link-icon">📌</span><span>03.10 Worked Example — Nyquist Requirement</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-03-11" class="sidebar-link"><span class="link-icon">📌</span><span>03.11 Aliasing: What It Looks Like</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-03-12" class="sidebar-link"><span class="link-icon">📌</span><span>03.12 Why Cameras Can Produce Moiré</span> </a>
+      <a href="#s-03-13" class="sidebar-link"><span class="link-icon">📌</span><span>03.13 Anti-Aliasing</span> </a>
+      <a href="#s-03-14" class="sidebar-link"><span class="link-icon">📌</span><span>03.14 Sampling Is Not the Same as Resizing</span> </a>
+      <a href="#s-03-15" class="sidebar-link"><span class="link-icon">📌</span><span>03.15 Quantization: What Is It?</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-03-16" class="sidebar-link"><span class="link-icon">📌</span><span>03.16 Number of Quantization Levels</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-03-17" class="sidebar-link"><span class="link-icon">📌</span><span>03.17 Worked Example — Bit Depth</span> </a>
+      <a href="#s-03-18" class="sidebar-link"><span class="link-icon">📌</span><span>03.18 Quantization Error</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-03-19" class="sidebar-link"><span class="link-icon">📌</span><span>03.19 Quantization Noise Intuition</span> </a>
+      <a href="#s-03-20" class="sidebar-link"><span class="link-icon">📌</span><span>03.20 Quantization and Bit Depth</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-03-21" class="sidebar-link"><span class="link-icon">📌</span><span>03.21 Sampling vs Quantization — The Critical Difference</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-03-22" class="sidebar-link"><span class="link-icon">📌</span><span>03.22 A Full Digitisation Pipeline</span> </a>
+      <a href="#s-03-23" class="sidebar-link"><span class="link-icon">📌</span><span>03.23 Worked Matrix Example — Sampling</span> </a>
+      <a href="#s-03-24" class="sidebar-link"><span class="link-icon">📌</span><span>03.24 Worked Quantization Example</span> </a>
+      <a href="#s-03-25" class="sidebar-link"><span class="link-icon">📌</span><span>03.25 Bit Depth vs Number of Pixels</span> </a>
+      <a href="#s-03-26" class="sidebar-link"><span class="link-icon">📌</span><span>03.26 A Useful Four-Quadrant Mental Model</span> </a>
+      <a href="#s-03-27" class="sidebar-link"><span class="link-icon">📌</span><span>03.27 Common Quantization Artifact — Banding</span> </a>
+      <a href="#s-03-28" class="sidebar-link"><span class="link-icon">📌</span><span>03.28 Common Sampling Artifact — Stair-Stepping</span> </a>
+      <a href="#s-03-29" class="sidebar-link"><span class="link-icon">📌</span><span>03.29 Why Resampling and Interpolation Appear Later</span> </a>
+      <a href="#s-03-30" class="sidebar-link"><span class="link-icon">📌</span><span>03.30 Image Acquisition and Anti-Aliasing</span> </a>
+      <a href="#s-03-31" class="sidebar-link"><span class="link-icon">📌</span><span>03.31 Engineering Decision Example</span> </a>
+      <a href="#s-03-32" class="sidebar-link"><span class="link-icon">📌</span><span>03.32 Common Traps</span> </a>
+      <a href="#s-03-33" class="sidebar-link"><span class="link-icon">📌</span><span>03.33 Engineering Insight — Information Can Be Lost Twice</span> </a>
+      <a href="#s-03-34" class="sidebar-link"><span class="link-icon">📌</span><span>03.34 Cross-Book Bridges</span> </a>
+      <a href="#s-03-35" class="sidebar-link"><span class="link-icon">📌</span><span>03.35 Quick Recall</span> </a>
+      <a href="#s-03-36" class="sidebar-link"><span class="link-icon">📌</span><span>03.36 Chapter Checkpoint</span> </a>
+      <a href="#s-03-37" class="sidebar-link"><span class="link-icon">📌</span><span>03.37 Connection Forward</span> </a>
+      <a href="#s-03-38" class="sidebar-link"><span class="link-icon">📌</span><span>03.38 Mathematical Derivation: 2D Nyquist-Shannon Sampling Theorem</span> </a>
+      <a href="#s-03-39" class="sidebar-link"><span class="link-icon">📌</span><span>03.39 Worked Example — 10-Mark University Exam Blueprint: Sampling &amp; Storage</span> </a>
+      <a href="#s-03-40" class="sidebar-link"><span class="link-icon">📌</span><span>03.40 Worked Example — Lloyd-Max Optimal Non-Uniform Quantizer Formulation</span> </a>
+      </div>
+
+      
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-i">Part I — The Image</div>
+      <a href="ch01-big-picture.html" class="sidebar-link"><span class="link-icon">01</span><span>The Big Picture</span></a>
+      <a href="ch02-image-formation.html" class="sidebar-link"><span class="link-icon">02</span><span>Formation & Acquisition</span></a>
+      <a href="ch03-sampling-quantization.html" class="sidebar-link active"><span class="link-icon">03</span><span>Sampling & Quantization</span></a>
+      <a href="ch04-image-representation.html" class="sidebar-link"><span class="link-icon">04</span><span>Pixels, Matrices & Resolution</span></a>
+      <a href="ch05-colour-models-file-formats.html" class="sidebar-link"><span class="link-icon">05</span><span>Colour Models & Formats</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-ii">Part II — Improving the Image</div>
+      <a href="ch06-point-processing.html" class="sidebar-link"><span class="link-icon">06</span><span>Point Processing & Intensity</span></a>
+      <a href="ch07-histograms-equalization.html" class="sidebar-link"><span class="link-icon">07</span><span>Histograms & Equalization</span></a>
+      <a href="ch08-spatial-filtering.html" class="sidebar-link"><span class="link-icon">08</span><span>Spatial Filtering & Convolution</span></a>
+      <a href="ch09-smoothing-noise-reduction.html" class="sidebar-link"><span class="link-icon">09</span><span>Smoothing & Noise Reduction</span></a>
+      <a href="ch10-sharpening-edge-detection.html" class="sidebar-link"><span class="link-icon">10</span><span>Sharpening & Edge Detection</span></a>
+      <a href="ch11-geometric-transforms.html" class="sidebar-link"><span class="link-icon">11</span><span>Geometric Transforms</span></a>
+      <a href="ch12-fourier-transform.html" class="sidebar-link"><span class="link-icon">12</span><span>Fourier Transform & Frequency</span></a>
+      <a href="ch13-frequency-filtering.html" class="sidebar-link"><span class="link-icon">13</span><span>Frequency-Domain Filtering</span></a>
+      <a href="ch14-image-restoration.html" class="sidebar-link"><span class="link-icon">14</span><span>Restoration & Deblurring</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-iii">Part III — Understanding Content</div>
+      <a href="ch15-segmentation-fundamentals.html" class="sidebar-link"><span class="link-icon">15</span><span>Segmentation Fundamentals</span></a>
+      <a href="ch16-thresholding-otsu.html" class="sidebar-link"><span class="link-icon">16</span><span>Thresholding & Otsu Method</span></a>
+      <a href="ch17-region-segmentation.html" class="sidebar-link"><span class="link-icon">17</span><span>Region-Based Segmentation</span></a>
+      <a href="ch18-mathematical-morphology.html" class="sidebar-link"><span class="link-icon">18</span><span>Mathematical Morphology</span></a>
+      <a href="ch19-features-descriptors.html" class="sidebar-link"><span class="link-icon">19</span><span>Image Features & Descriptors</span></a>
+      <a href="ch20-sift-surf-orb-hog.html" class="sidebar-link"><span class="link-icon">20</span><span>SIFT, SURF, ORB & HOG</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-iv">Part IV — Compressing Images</div>
+      <a href="ch21-compression-entropy.html" class="sidebar-link"><span class="link-icon">21</span><span>Compression & Entropy</span></a>
+      <a href="ch22-lossless-coding.html" class="sidebar-link"><span class="link-icon">22</span><span>Lossless: RLE & Huffman</span></a>
+      <a href="ch23-lossy-dct-jpeg.html" class="sidebar-link"><span class="link-icon">23</span><span>Lossy: DCT & JPEG</span></a>
+      <a href="ch24-wavelets-jpeg2000.html" class="sidebar-link"><span class="link-icon">24</span><span>Wavelets & JPEG 2000</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-v">Part V — Intelligent Vision</div>
+      <a href="ch25-image-classification.html" class="sidebar-link"><span class="link-icon">25</span><span>Image Classification</span></a>
+      <a href="ch26-cnns-image-processing.html" class="sidebar-link"><span class="link-icon">26</span><span>CNNs for Image Processing</span></a>
+      <a href="ch27-modern-vision-architectures.html" class="sidebar-link"><span class="link-icon">27</span><span>Modern Vision Architectures</span></a>
+      <a href="ch28-object-detection-yolo.html" class="sidebar-link"><span class="link-icon">28</span><span>Object Detection: YOLO</span></a>
+      <a href="ch29-image-denoising-autoencoders.html" class="sidebar-link"><span class="link-icon">29</span><span>Image Denoising Autoencoders</span></a>
+      <a href="ch30-video-motion-analysis.html" class="sidebar-link"><span class="link-icon">30</span><span>Video & Motion Analysis</span></a>
+      <a href="ch31-dip-applications-engineering.html" class="sidebar-link"><span class="link-icon">31</span><span>DIP Applications & Ethics</span></a>
+    </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-brand-mark">
+        <div class="mark">DU</div>
+        <div>
+          <strong>DSE-3 MiniBook</strong>
+          <div>University of Delhi</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mandatory Shell Wrapper -->
+  <div id="main-content">
+    <main class="chapter-content">
+      <!-- Chapter Hero -->
+      <div class="chapter-hero">
+        <div class="hero-meta">
+          <span class="part-badge part-i">The Image</span>
+          <span class="chapter-number">CHAPTER 03</span>
+          <span class="reading-time">⏱️ ~50 min read</span>
+          <span class="tag-badge tag-core">Highest Yield (10-mark guarantee)</span>
+        </div>
+        <h1 class="chapter-title">Spatial Sampling &amp; Quantization</h1>
+        <p class="chapter-subtitle">
+          Continuous to Discrete Coordinate Mapping, 2D Nyquist-Shannon Theorem, Spatial Aliasing, Bit Depth, and Quantization Noise
+        </p>
+
+        <div class="syllabus-anchor">
+          <span class="syllabus-anchor-label">DU Syllabus</span>
+          <span><strong>Sampling & Quantization:</strong> Spatial sampling lattice, Nyquist sampling theorem, spatial aliasing, Moiré patterns, uniform and non-uniform amplitude quantization, bit depth k, number of levels L=2^k, false contouring, and storage footprint calculations.</span>
+        </div>
+      </div>
+
+      <!-- In-Page TOC -->
+      <div class="chapter-checklist-card" style="margin-bottom:var(--em-space-8);">
+        <div class="checklist-title">
+          <span>Table of Contents &amp; Visual Section Map</span>
+          <span class="tag-badge tag-math">41 Deep Sections</span>
+        </div>
+        <ul class="part-chapters-list">
+          <li class="part-chapter-item"><a href="#s-03-0"><strong>03.0</strong> Why This Chapter Matters</a> </li>
+      <li class="part-chapter-item"><a href="#s-03-1"><strong>03.1</strong> Continuous vs Digital Representation</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-03-2"><strong>03.2</strong> Sampling: What Is It?</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-03-3"><strong>03.3</strong> Sampling as a Coordinate Operation</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-03-4"><strong>03.4</strong> What Does “Higher Sampling” Actually Mean?</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-03-5"><strong>03.5</strong> Sampling and Image Resolution</a> </li>
+      <li class="part-chapter-item"><a href="#s-03-6"><strong>03.6</strong> Worked Example — Spatial Sampling</a> </li>
+      <li class="part-chapter-item"><a href="#s-03-7"><strong>03.7</strong> What Is Spatial Frequency?</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-03-8"><strong>03.8</strong> The Sampling Problem</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-03-9"><strong>03.9</strong> Nyquist–Shannon Sampling Idea</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-03-10"><strong>03.10</strong> Worked Example — Nyquist Requirement</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-03-11"><strong>03.11</strong> Aliasing: What It Looks Like</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-03-12"><strong>03.12</strong> Why Cameras Can Produce Moiré</a> </li>
+      <li class="part-chapter-item"><a href="#s-03-13"><strong>03.13</strong> Anti-Aliasing</a> </li>
+      <li class="part-chapter-item"><a href="#s-03-14"><strong>03.14</strong> Sampling Is Not the Same as Resizing</a> </li>
+      <li class="part-chapter-item"><a href="#s-03-15"><strong>03.15</strong> Quantization: What Is It?</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-03-16"><strong>03.16</strong> Number of Quantization Levels</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-03-17"><strong>03.17</strong> Worked Example — Bit Depth</a> </li>
+      <li class="part-chapter-item"><a href="#s-03-18"><strong>03.18</strong> Quantization Error</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-03-19"><strong>03.19</strong> Quantization Noise Intuition</a> </li>
+      <li class="part-chapter-item"><a href="#s-03-20"><strong>03.20</strong> Quantization and Bit Depth</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-03-21"><strong>03.21</strong> Sampling vs Quantization — The Critical Difference</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-03-22"><strong>03.22</strong> A Full Digitisation Pipeline</a> </li>
+      <li class="part-chapter-item"><a href="#s-03-23"><strong>03.23</strong> Worked Matrix Example — Sampling</a> </li>
+      <li class="part-chapter-item"><a href="#s-03-24"><strong>03.24</strong> Worked Quantization Example</a> </li>
+      <li class="part-chapter-item"><a href="#s-03-25"><strong>03.25</strong> Bit Depth vs Number of Pixels</a> </li>
+      <li class="part-chapter-item"><a href="#s-03-26"><strong>03.26</strong> A Useful Four-Quadrant Mental Model</a> </li>
+      <li class="part-chapter-item"><a href="#s-03-27"><strong>03.27</strong> Common Quantization Artifact — Banding</a> </li>
+      <li class="part-chapter-item"><a href="#s-03-28"><strong>03.28</strong> Common Sampling Artifact — Stair-Stepping</a> </li>
+      <li class="part-chapter-item"><a href="#s-03-29"><strong>03.29</strong> Why Resampling and Interpolation Appear Later</a> </li>
+      <li class="part-chapter-item"><a href="#s-03-30"><strong>03.30</strong> Image Acquisition and Anti-Aliasing</a> </li>
+      <li class="part-chapter-item"><a href="#s-03-31"><strong>03.31</strong> Engineering Decision Example</a> </li>
+      <li class="part-chapter-item"><a href="#s-03-32"><strong>03.32</strong> Common Traps</a> </li>
+      <li class="part-chapter-item"><a href="#s-03-33"><strong>03.33</strong> Engineering Insight — Information Can Be Lost Twice</a> </li>
+      <li class="part-chapter-item"><a href="#s-03-34"><strong>03.34</strong> Cross-Book Bridges</a> </li>
+      <li class="part-chapter-item"><a href="#s-03-35"><strong>03.35</strong> Quick Recall</a> </li>
+      <li class="part-chapter-item"><a href="#s-03-36"><strong>03.36</strong> Chapter Checkpoint</a> </li>
+      <li class="part-chapter-item"><a href="#s-03-37"><strong>03.37</strong> Connection Forward</a> </li>
+      <li class="part-chapter-item"><a href="#s-03-38"><strong>03.38</strong> Mathematical Derivation: 2D Nyquist-Shannon Sampling Theorem</a> </li>
+      <li class="part-chapter-item"><a href="#s-03-39"><strong>03.39</strong> Worked Example — 10-Mark University Exam Blueprint: Sampling &amp; Storage</a> </li>
+      <li class="part-chapter-item"><a href="#s-03-40"><strong>03.40</strong> Worked Example — Lloyd-Max Optimal Non-Uniform Quantizer Formulation</a> </li>
+        </ul>
+      </div>
+
+      <div class="concept-hook" style="margin-bottom:var(--em-space-8);"><h1>Chapter 03 — Sampling and Quantization</h1>
+<blockquote>
+<p><strong>Chapter thesis</strong><br />
+A physical image is effectively continuous in space and signal values, but a digital computer needs a finite set of spatial samples and a finite set of numerical intensity values. <strong>Sampling discretizes where we measure; quantization discretizes what value we store.</strong></p>
+</blockquote>
+<p><strong>Part I — The Image</strong><br />
+<strong>Syllabus anchor:</strong> Unit I explicitly includes sampling and quantization. fileciteturn4file0L32-L35</p>
+<hr /></div>
+
+      <!-- All Numbered Sections -->
+      
+  <!-- SECTION 03.0: Why This Chapter Matters -->
+  <section id="s-03-0" class="section-block">
+    <div class="section-header">
+      <span class="section-num">03.0</span>
+      <h2>Why This Chapter Matters</h2>
+      <button class="bookmark-btn" data-id="s-03-0" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The previous chapters established:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>real scene
+→ image formation
+→ measurable image signal</code></pre>
+</div></p>
+<p>But the computer does not work with a perfectly continuous image.</p>
+<p>It needs something like:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>a finite grid
++
+finite numerical values</code></pre>
+</div></p>
+<p>That creates two fundamental operations:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>SAMPLING
+→ discretize spatial position
+
+QUANTIZATION
+→ discretize intensity/amplitude</code></pre>
+</div></p>
+<p>These two ideas explain why a digital image has a fixed width, height, number of pixels, and finite intensity precision.</p>
+<p>They also explain several practical problems:</p>
+<ul>
+<li>aliasing,</li>
+<li>loss of fine detail,</li>
+<li>staircase-like patterns,</li>
+<li>banding,</li>
+<li>quantization error,</li>
+<li>limited dynamic precision.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 03.1: Continuous vs Digital Representation -->
+  <section id="s-03-1" class="section-block">
+    <div class="section-header">
+      <span class="section-num">03.1</span>
+      <h2>Continuous vs Digital Representation</h2>
+      <button class="bookmark-btn" data-id="s-03-1" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A simplified continuous image can be written as:</p>
+<p>
+$$
+f(x,y)
+$$
+</p>
+<p>where $x$ and $y$ are continuous spatial coordinates.</p>
+<p>A digital image can be represented using discrete indices:</p>
+<p>
+$$
+f[m,n]
+$$
+</p>
+<p>The conceptual transition is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>continuous spatial coordinates
+          ↓
+        SAMPLING
+          ↓
+discrete spatial coordinates
+
+continuous intensity
+          ↓
+      QUANTIZATION
+          ↓
+finite intensity values</code></pre>
+</div></p>
+<p>These operations are related but not interchangeable.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 03.2: Sampling: What Is It? -->
+  <section id="s-03-2" class="section-block">
+    <div class="section-header">
+      <span class="section-num">03.2</span>
+      <h2>Sampling: What Is It?</h2>
+      <button class="bookmark-btn" data-id="s-03-2" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h2>CORE — Definition</h2>
+<p><strong>Sampling is the process of measuring a continuous image at discrete spatial locations.</strong></p>
+<p>Imagine a continuous image surface:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>────────────────────────────
+ continuous image content
+────────────────────────────</code></pre>
+</div></p>
+<p>Now place a grid over it:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>•   •   •   •   •
+•   •   •   •   •
+•   •   •   •   •
+•   •   •   •   •</code></pre>
+</div></p>
+<p>The dots indicate spatial sampling locations.</p>
+<p>After sampling, we no longer have an intensity value at every possible real-valued coordinate. We have values at selected coordinates.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 03.3: Sampling as a Coordinate Operation -->
+  <section id="s-03-3" class="section-block">
+    <div class="section-header">
+      <span class="section-num">03.3</span>
+      <h2>Sampling as a Coordinate Operation</h2>
+      <button class="bookmark-btn" data-id="s-03-3" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose the sampling spacing is:</p>
+<p>
+$$
+\Delta x,\quad \Delta y
+$$
+</p>
+<p>Then one possible discrete representation is:</p>
+<p>
+$$
+x=m\Delta x,\qquad y=n\Delta y
+$$
+</p>
+<p>and therefore:</p>
+<p>
+$$
+f[m,n]=f(m\Delta x,n\Delta y)
+$$
+</p>
+<p>where $m,n$ are integer indices.</p>
+<p>This is one of the most useful mathematical bridges in DIP.</p>
+<p>It says:</p>
+<blockquote>
+<p>the digital image samples the continuous image on a discrete spatial lattice.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 03.4: What Does “Higher Sampling” Actually Mean? -->
+  <section id="s-03-4" class="section-block">
+    <div class="section-header">
+      <span class="section-num">03.4</span>
+      <h2>What Does “Higher Sampling” Actually Mean?</h2>
+      <button class="bookmark-btn" data-id="s-03-4" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>If we reduce the spacing:</p>
+<p>
+$$
+\Delta x,\Delta y \downarrow
+$$
+</p>
+<p>then the sampling grid becomes denser.</p>
+<p>Equivalently:</p>
+<p>
+$$
+f_{s,x}=\frac{1}{\Delta x},
+\qquad
+f_{s,y}=\frac{1}{\Delta y}
+$$
+</p>
+<p>where the sampling frequencies describe how many samples are acquired per unit distance.</p>
+<p>So:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>larger spacing
+→ fewer samples
+→ lower spatial sampling density
+
+smaller spacing
+→ more samples
+→ higher spatial sampling density</code></pre>
+</div></p>
+<h3>Important distinction</h3>
+<p>More samples do not automatically guarantee more useful detail.</p>
+<p>The captured detail is also limited by:</p>
+<ul>
+<li>optics,</li>
+<li>sensor response,</li>
+<li>blur,</li>
+<li>scene content,</li>
+<li>noise,</li>
+<li>focus.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 03.5: Sampling and Image Resolution -->
+  <section id="s-03-5" class="section-block">
+    <div class="section-header">
+      <span class="section-num">03.5</span>
+      <h2>Sampling and Image Resolution</h2>
+      <button class="bookmark-btn" data-id="s-03-5" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>If an image contains:</p>
+<p>
+$$
+M\times N
+$$
+</p>
+<p>samples, then $M$ and $N$ describe its digital spatial dimensions.</p>
+<p>For example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>640 × 480</code></pre>
+</div></p>
+<p>means:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>640 samples along one image dimension
+480 samples along the other</code></pre>
+</div></p>
+<p>This describes the digital sampling grid.</p>
+<p>It does <strong>not</strong>, by itself, tell us every detail about the physical resolving power of the imaging system.</p>
+<p>That distinction becomes important when discussing resolution in Chapter 04.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 03.6: Worked Example — Spatial Sampling -->
+  <section id="s-03-6" class="section-block">
+    <div class="section-header">
+      <span class="section-num">03.6</span>
+      <h2>Worked Example — Spatial Sampling</h2>
+      <button class="bookmark-btn" data-id="s-03-6" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose a continuous image region is 10 mm wide.</p>
+<h3>Case A</h3>
+<p>We sample every:</p>
+<p>
+$$
+\Delta x=1\text{ mm}
+$$
+</p>
+<p>Then the sampling density is:</p>
+<p>
+$$
+f_s=\frac{1}{1}=1
+$$
+</p>
+<p>sample/mm.</p>
+<h3>Case B</h3>
+<p>We sample every:</p>
+<p>
+$$
+\Delta x=0.25\text{ mm}
+$$
+</p>
+<p>Then:</p>
+<p>
+$$
+f_s=\frac{1}{0.25}=4
+$$
+</p>
+<p>samples/mm.</p>
+<p>So the second grid samples the spatial signal four times more densely.</p>
+<h3>Interpretation</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>1 sample/mm
+→ coarse spatial representation
+
+4 samples/mm
+→ denser spatial representation</code></pre>
+</div></p>
+<p>This does not guarantee perfect recovery of every scene detail; that depends on the highest spatial frequencies present in the signal and the acquisition system.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 03.7: What Is Spatial Frequency? -->
+  <section id="s-03-7" class="section-block">
+    <div class="section-header">
+      <span class="section-num">03.7</span>
+      <h2>What Is Spatial Frequency?</h2>
+      <button class="bookmark-btn" data-id="s-03-7" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Before discussing aliasing, we need one idea.</p>
+<p><strong>Spatial frequency</strong> describes how rapidly image intensity changes as we move through space.</p>
+<h3>Low spatial frequency</h3>
+<p>Slow variation:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>dark → dark gray → gray → light gray</code></pre>
+</div></p>
+<h3>High spatial frequency</h3>
+<p>Rapid variation:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>dark → light → dark → light → dark</code></pre>
+</div></p>
+<p>A simple pattern illustrates this:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>LOW FREQUENCY
+
+██████████
+██████████
+░░░░░░░░░░
+░░░░░░░░░░
+
+
+HIGH FREQUENCY
+
+██░░██░░██
+░░██░░██░░
+██░░██░░██</code></pre>
+</div></p>
+<p>Fine texture and abrupt transitions generally contain stronger high-frequency content than broad smooth regions.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 03.8: The Sampling Problem -->
+  <section id="s-03-8" class="section-block">
+    <div class="section-header">
+      <span class="section-num">03.8</span>
+      <h2>The Sampling Problem</h2>
+      <button class="bookmark-btn" data-id="s-03-8" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose an image contains spatial detail that changes faster than the sampling grid can capture.</p>
+<p>Then:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>continuous detail
+        ↓
+insufficient sampling
+        ↓
+incorrect digital appearance</code></pre>
+</div></p>
+<p>This phenomenon is called:</p>
+<blockquote>
+<p><strong>aliasing</strong></p>
+</blockquote>
+<p>Aliasing means that different high-frequency patterns can produce the same or misleading sampled representation.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 03.9: Nyquist–Shannon Sampling Idea -->
+  <section id="s-03-9" class="section-block">
+    <div class="section-header">
+      <span class="section-num">03.9</span>
+      <h2>Nyquist–Shannon Sampling Idea</h2>
+      <button class="bookmark-btn" data-id="s-03-9" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h2>CORE / DEEP DIVE</h2>
+<p>For a band-limited signal with maximum frequency $f_{\max}$, ideal reconstruction requires the sampling frequency to satisfy:</p>
+<p>
+$$
+f_s>2f_{\max}
+$$
+</p>
+<p>The boundary:</p>
+<p>
+$$
+2f_{\max}
+$$
+</p>
+<p>is commonly called the Nyquist rate.</p>
+<p>This is a theoretical condition for a suitably band-limited signal and ideal sampling/reconstruction assumptions.</p>
+<p>It is not a guarantee that an arbitrary camera image will be perfectly reconstructed just because a specification says “twice the frequency.”</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 03.10: Worked Example — Nyquist Requirement -->
+  <section id="s-03-10" class="section-block">
+    <div class="section-header">
+      <span class="section-num">03.10</span>
+      <h2>Worked Example — Nyquist Requirement</h2>
+      <button class="bookmark-btn" data-id="s-03-10" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose the highest relevant spatial frequency is:</p>
+<p>
+$$
+f_{\max}=6\text{ cycles/mm}
+$$
+</p>
+<p>Then the theoretical Nyquist rate is:</p>
+<p>
+$$
+2f_{\max}
+=
+12\text{ samples/mm}
+$$
+</p>
+<p>Therefore an ideal sampling system would require:</p>
+<p>
+$$
+f_s>12\text{ samples/mm}
+$$
+</p>
+<p>under the stated assumptions.</p>
+<p>If:</p>
+<p>
+$$
+f_s=20\text{ samples/mm}
+$$
+</p>
+<p>then the sampling density is above the theoretical requirement.</p>
+<p>If:</p>
+<p>
+$$
+f_s=8\text{ samples/mm}
+$$
+</p>
+<p>then it is below the Nyquist rate and aliasing can occur.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 03.11: Aliasing: What It Looks Like -->
+  <section id="s-03-11" class="section-block">
+    <div class="section-header">
+      <span class="section-num">03.11</span>
+      <h2>Aliasing: What It Looks Like</h2>
+      <button class="bookmark-btn" data-id="s-03-11" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A classic conceptual example is a fine stripe pattern.</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>ORIGINAL HIGH-FREQUENCY PATTERN
+
+||||||||||||||||||||||||||||||
+
+        ↓ sample too coarsely
+
+DIGITAL OBSERVATION
+
+||  |   ||    |  ||    |</code></pre>
+</div></p>
+<p>The sampled image may appear to contain a different, slower pattern.</p>
+<p>This is why fine repetitive structures can produce:</p>
+<ul>
+<li>false patterns,</li>
+<li>apparent motion,</li>
+<li>moiré-like effects,</li>
+<li>incorrect orientations,</li>
+<li>misleading textures.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 03.12: Why Cameras Can Produce Moiré -->
+  <section id="s-03-12" class="section-block">
+    <div class="section-header">
+      <span class="section-num">03.12</span>
+      <h2>Why Cameras Can Produce Moiré</h2>
+      <button class="bookmark-btn" data-id="s-03-12" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <blockquote>
+<p><strong>EXTENSION</strong></p>
+</blockquote>
+<p>When a scene contains repetitive detail close to the sensor's sampling limit, such as:</p>
+<ul>
+<li>fine fabric,</li>
+<li>roof tiles,</li>
+<li>screen pixels,</li>
+<li>dense line patterns,</li>
+</ul>
+<p>the sampled image may contain interference-like false patterns.</p>
+<p>The cause is not necessarily a problem in the scene.</p>
+<p>It can result from the interaction between:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>scene spatial frequency
++
+optical response
++
+sensor sampling pattern</code></pre>
+</div></p>
+<p>This is a practical manifestation of aliasing.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 03.13: Anti-Aliasing -->
+  <section id="s-03-13" class="section-block">
+    <div class="section-header">
+      <span class="section-num">03.13</span>
+      <h2>Anti-Aliasing</h2>
+      <button class="bookmark-btn" data-id="s-03-13" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>If a high-frequency component cannot be represented safely by the target sampling rate, one strategy is to reduce that component <strong>before downsampling</strong>.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>high-resolution image
+        ↓
+low-pass / anti-alias filtering
+        ↓
+downsampling
+        ↓
+lower-resolution image</code></pre>
+</div></p>
+<p>This is an important engineering pattern.</p>
+<h3>Why filter first?</h3>
+<p>Because simply throwing samples away does not remove frequency components that can alias into the lower-frequency range.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 03.14: Sampling Is Not the Same as Resizing -->
+  <section id="s-03-14" class="section-block">
+    <div class="section-header">
+      <span class="section-num">03.14</span>
+      <h2>Sampling Is Not the Same as Resizing</h2>
+      <button class="bookmark-btn" data-id="s-03-14" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A software command that changes an image from:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>1000 × 1000</code></pre>
+</div></p>
+<p>to:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>250 × 250</code></pre>
+</div></p>
+<p>is not conceptually just:</p>
+<blockquote>
+<p>“Make it smaller.”</p>
+</blockquote>
+<p>It involves a resampling process.</p>
+<p>A responsible resampling pipeline may involve:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>original image
+→ anti-alias filtering
+→ choose new sample locations
+→ interpolation/resampling
+→ output image</code></pre>
+</div></p>
+<p>The exact pipeline depends on the operation and library.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 03.15: Quantization: What Is It? -->
+  <section id="s-03-15" class="section-block">
+    <div class="section-header">
+      <span class="section-num">03.15</span>
+      <h2>Quantization: What Is It?</h2>
+      <button class="bookmark-btn" data-id="s-03-15" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Sampling determines <strong>where</strong> we measure.</p>
+<p>Quantization determines <strong>which numerical level</strong> represents the measured value.</p>
+<h2>CORE — Definition</h2>
+<p><strong>Quantization maps a continuous-valued measurement to one value from a finite set of allowed intensity or amplitude levels.</strong></p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>continuous intensity
+
+0 ──────── 0.18 ───────── 0.37 ───────── 0.91 ─── 1
+                       ↓
+                  quantization
+                       ↓
+finite levels
+0   0.25   0.50   0.75   1.00</code></pre>
+</div></p>
+<p>The exact mapping depends on the quantizer design and convention.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 03.16: Number of Quantization Levels -->
+  <section id="s-03-16" class="section-block">
+    <div class="section-header">
+      <span class="section-num">03.16</span>
+      <h2>Number of Quantization Levels</h2>
+      <button class="bookmark-btn" data-id="s-03-16" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>If a sample is represented with $k$ bits, then the number of distinct binary codes is:</p>
+<p>
+$$
+L=2^k
+$$
+</p>
+<p>Examples:</p>
+<div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th style="text-align: right;">Bit depth</th>
+<th style="text-align: right;">Levels</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">1 bit</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr>
+<td style="text-align: right;">2 bits</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr>
+<td style="text-align: right;">3 bits</td>
+<td style="text-align: right;">8</td>
+</tr>
+<tr>
+<td style="text-align: right;">4 bits</td>
+<td style="text-align: right;">16</td>
+</tr>
+<tr>
+<td style="text-align: right;">8 bits</td>
+<td style="text-align: right;">256</td>
+</tr>
+<tr>
+<td style="text-align: right;">10 bits</td>
+<td style="text-align: right;">1024</td>
+</tr>
+<tr>
+<td style="text-align: right;">12 bits</td>
+<td style="text-align: right;">4096</td>
+</tr>
+<tr>
+<td style="text-align: right;">16 bits</td>
+<td style="text-align: right;">65536</td>
+</tr>
+</tbody>
+</table></div>
+<p>This is a representation-level statement.</p>
+<p>The physical sensor may have different effective characteristics, and a file may use different storage conventions.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 03.17: Worked Example — Bit Depth -->
+  <section id="s-03-17" class="section-block">
+    <div class="section-header">
+      <span class="section-num">03.17</span>
+      <h2>Worked Example — Bit Depth</h2>
+      <button class="bookmark-btn" data-id="s-03-17" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose a grayscale sample is stored with:</p>
+<p>
+$$
+k=3
+$$
+</p>
+<p>bits.</p>
+<p>Then:</p>
+<p>
+$$
+L=2^3=8
+$$
+</p>
+<p>possible coded levels are available.</p>
+<p>Conceptually, the image can distinguish eight discrete intensity codes rather than the 256 codes available in an 8-bit representation.</p>
+<p>This can produce visibly stronger quantization steps in smooth gradients.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 03.18: Quantization Error -->
+  <section id="s-03-18" class="section-block">
+    <div class="section-header">
+      <span class="section-num">03.18</span>
+      <h2>Quantization Error</h2>
+      <button class="bookmark-btn" data-id="s-03-18" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>If the original continuous-valued measurement is $r$ and the quantized value is $q(r)$, then the quantization error can be written:</p>
+<p>
+$$
+e_q=r-q(r)
+$$
+</p>
+<p>For a uniform quantizer using nearest-level rounding with step size $\Delta$, the maximum absolute error is commonly bounded by approximately:</p>
+<p>
+$$
+|e_q|\leq\frac{\Delta}{2}
+$$
+</p>
+<p>under the stated quantizer convention.</p>
+<div class="worked-example"><div class="worked-example-header"><span class="worked-example-title"><span>🧮</span> Worked example</span><span class="tag-badge tag-exam">NUMERICAL WORKTHROUGH</span></div>
+
+Suppose:
+
+
+$$
+\Delta=0.1
+$$
+
+
+and a measurement is rounded to the nearest available level.
+
+Then the maximum idealized absolute error is:
+
+
+$$
+\frac{0.1}{2}=0.05
+$$
+
+
+So:
+
+
+$$
+|e_q|\leq0.05
+$$
+
+
+again under the stated rounding model.
+
+</div>
+
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 03.19: Quantization Noise Intuition -->
+  <section id="s-03-19" class="section-block">
+    <div class="section-header">
+      <span class="section-num">03.19</span>
+      <h2>Quantization Noise Intuition</h2>
+      <button class="bookmark-btn" data-id="s-03-19" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Quantization error behaves like a small numerical perturbation of the original value.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>true signal
+     │
+     ├── exact value
+     │
+     ↓
+quantizer
+     │
+     ↓
+stored level
+     │
+     ↕
+ quantization error</code></pre>
+</div></p>
+<p>Under common assumptions for a uniform quantizer and sufficiently non-pathological input, quantization error can be modelled statistically.</p>
+<p>A frequently used approximation is:</p>
+<p>
+$$
+\sigma_q^2\approx\frac{\Delta^2}{12}
+$$
+</p>
+<p>where $\sigma_q^2$ is the quantization-noise variance.</p>
+<blockquote>
+<p><strong>DEEP DIVE:</strong> This is an approximate model, not a universal identity for every image or quantizer.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 03.20: Quantization and Bit Depth -->
+  <section id="s-03-20" class="section-block">
+    <div class="section-header">
+      <span class="section-num">03.20</span>
+      <h2>Quantization and Bit Depth</h2>
+      <button class="bookmark-btn" data-id="s-03-20" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Increasing bit depth generally reduces the spacing between representable intensity levels for a fixed input range.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>2-bit
+
+|    |    |    |
+
+        vs
+
+8-bit
+
+|||||||||||||||||||||||||||||||||||||||||||||</code></pre>
+</div></p>
+<p>The 8-bit representation provides many more possible values.</p>
+<p>However:</p>
+<blockquote>
+<p>higher bit depth does not automatically mean a better image if the acquisition system, noise, optics, display and task do not benefit from that additional precision.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 03.21: Sampling vs Quantization — The Critical Difference -->
+  <section id="s-03-21" class="section-block">
+    <div class="section-header">
+      <span class="section-num">03.21</span>
+      <h2>Sampling vs Quantization — The Critical Difference</h2>
+      <button class="bookmark-btn" data-id="s-03-21" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Property</th>
+<th>Sampling</th>
+<th>Quantization</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Discretizes</td>
+<td>spatial position</td>
+<td>intensity/amplitude</td>
+</tr>
+<tr>
+<td>Main question</td>
+<td>Where do we measure?</td>
+<td>Which numeric level do we store?</td>
+</tr>
+<tr>
+<td>Controls</td>
+<td>number/density of spatial samples</td>
+<td>number of intensity levels</td>
+</tr>
+<tr>
+<td>Too little</td>
+<td>spatial detail loss / aliasing</td>
+<td>intensity precision loss / banding</td>
+</tr>
+<tr>
+<td>Related term</td>
+<td>spatial resolution</td>
+<td>radiometric resolution / intensity precision</td>
+</tr>
+<tr>
+<td>Mathematical idea</td>
+<td>discrete coordinates</td>
+<td>finite output levels</td>
+</tr>
+</tbody>
+</table></div>
+<h3>Memory sentence</h3>
+<blockquote>
+<p><strong>Sampling discretizes space. Quantization discretizes value.</strong></p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 03.22: A Full Digitisation Pipeline -->
+  <section id="s-03-22" class="section-block">
+    <div class="section-header">
+      <span class="section-num">03.22</span>
+      <h2>A Full Digitisation Pipeline</h2>
+      <button class="bookmark-btn" data-id="s-03-22" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The concepts now fit together:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>CONTINUOUS IMAGE
+      │
+      ├────────────── spatial information
+      │
+      ▼
+   SAMPLING
+      │
+      ▼
+DISCRETE SPATIAL GRID
+      │
+      ├────────────── intensity information
+      │
+      ▼
+ QUANTIZATION
+      │
+      ▼
+FINITE NUMERICAL IMAGE</code></pre>
+</div></p>
+<p>The digital image is therefore discrete in <strong>both</strong> spatial coordinates and represented intensity values.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 03.23: Worked Matrix Example — Sampling -->
+  <section id="s-03-23" class="section-block">
+    <div class="section-header">
+      <span class="section-num">03.23</span>
+      <h2>Worked Matrix Example — Sampling</h2>
+      <button class="bookmark-btn" data-id="s-03-23" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Consider this toy grayscale matrix:</p>
+<p>
+$$
+I=
+\begin{bmatrix}
+10&20&30&40&50&60\\
+15&25&35&45&55&65\\
+20&30&40&50&60&70\\
+25&35&45&55&65&75\\
+30&40&50&60&70&80\\
+35&45&55&65&75&85
+\end{bmatrix}
+$$
+</p>
+<p>Suppose we keep every second row and every second column.</p>
+<p>Selecting rows:</p>
+<p>
+$$
+1,3,5
+$$
+</p>
+<p>and columns:</p>
+<p>
+$$
+1,3,5
+$$
+</p>
+<p>produces:</p>
+<p>
+$$
+I_s=
+\begin{bmatrix}
+10&30&50\\
+20&40&60\\
+30&50&70
+\end{bmatrix}
+$$
+</p>
+<h3>What happened?</h3>
+<p>The representation changed from:</p>
+<p>
+$$
+6\times6
+$$
+</p>
+<p>to:</p>
+<p>
+$$
+3\times3
+$$
+</p>
+<p>The spatial sample density has been reduced.</p>
+<h3>Important warning</h3>
+<p>This example performs simple decimation for illustration.</p>
+<p>A production-quality reduction should consider anti-alias filtering when the source contains frequencies that could alias at the new sampling rate.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 03.24: Worked Quantization Example -->
+  <section id="s-03-24" class="section-block">
+    <div class="section-header">
+      <span class="section-num">03.24</span>
+      <h2>Worked Quantization Example</h2>
+      <button class="bookmark-btn" data-id="s-03-24" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose normalized intensity values are:</p>
+<p>
+$$
+[0.10,\ 0.26,\ 0.51,\ 0.74,\ 0.95]
+$$
+</p>
+<p>and, for a simple illustrative quantizer, we use four equally spaced reconstruction values:</p>
+<p>
+$$
+\{0,\ 0.33,\ 0.67,\ 1\}
+$$
+</p>
+<p>Mapping to the nearest level gives approximately:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>0.10 → 0
+0.26 → 0.33
+0.51 → 0.67
+0.74 → 0.67
+0.95 → 1</code></pre>
+</div></p>
+<p>Therefore the quantized sequence becomes:</p>
+<p>
+$$
+[0,\ 0.33,\ 0.67,\ 0.67,\ 1]
+$$
+</p>
+<h3>Why did 0.51 become 0.67?</h3>
+<p>Because:</p>
+<p>
+$$
+|0.51-0.67|=0.16
+$$
+</p>
+<p>while:</p>
+<p>
+$$
+|0.51-0.33|=0.18
+$$
+</p>
+<p>so 0.67 is the closer reconstruction level under this particular convention.</p>
+<blockquote>
+<p><strong>Convention note:</strong> Real quantizers may use different level definitions and interval boundaries. The MiniBook will always specify the convention when a numerical result depends on it.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 03.25: Bit Depth vs Number of Pixels -->
+  <section id="s-03-25" class="section-block">
+    <div class="section-header">
+      <span class="section-num">03.25</span>
+      <h2>Bit Depth vs Number of Pixels</h2>
+      <button class="bookmark-btn" data-id="s-03-25" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>These are independent dimensions of representation.</p>
+<p>Consider:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Image A
+512 × 512
+8-bit grayscale</code></pre>
+</div></p>
+<p>and:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Image B
+512 × 512
+12-bit grayscale</code></pre>
+</div></p>
+<p>They contain the same number of spatial samples:</p>
+<p>
+$$
+512\times512
+$$
+</p>
+<p>but Image B can represent more intensity levels per sample.</p>
+<p>Conversely:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Image C
+1024 × 1024
+8-bit grayscale</code></pre>
+</div></p>
+<p>has four times as many spatial samples as the 512×512 image but the same 8-bit intensity-code count per sample.</p>
+<p>This gives us two independent ideas:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>SPATIAL DETAIL
+→ how densely space is sampled
+
+INTENSITY PRECISION
+→ how finely values are quantized</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 03.26: A Useful Four-Quadrant Mental Model -->
+  <section id="s-03-26" class="section-block">
+    <div class="section-header">
+      <span class="section-num">03.26</span>
+      <h2>A Useful Four-Quadrant Mental Model</h2>
+      <button class="bookmark-btn" data-id="s-03-26" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Think about two axes:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>                HIGH INTENSITY PRECISION
+                         ↑
+                         │
+        many levels      │     many levels
+        but coarse       │     + dense spatial
+        spatial sampling │     sampling
+                         │
+ LOW SPATIAL ────────────┼──────────── HIGH SPATIAL
+                         │
+        few levels       │     dense spatial
+        + coarse         │     but limited
+        spatial sampling │     intensity precision
+                         │
+                         ↓
+                LOW INTENSITY PRECISION</code></pre>
+</div></p>
+<p>The ideal setting depends on the application.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 03.27: Common Quantization Artifact — Banding -->
+  <section id="s-03-27" class="section-block">
+    <div class="section-header">
+      <span class="section-num">03.27</span>
+      <h2>Common Quantization Artifact — Banding</h2>
+      <button class="bookmark-btn" data-id="s-03-27" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose a smooth gradient should look like:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>black → dark gray → gray → light gray → white</code></pre>
+</div></p>
+<p>With very few quantization levels it may become:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>████
+░░░░
+▒▒▒▒
+▓▓▓▓</code></pre>
+</div></p>
+<p>with visible steps instead of a smooth transition.</p>
+<p>This is called <strong>banding</strong> or contouring-like quantization artifact in suitable contexts.</p>
+<p>It becomes more obvious when:</p>
+<ul>
+<li>the gradient is smooth,</li>
+<li>few intensity levels are available,</li>
+<li>processing amplifies the differences,</li>
+<li>display conditions make the steps visible.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 03.28: Common Sampling Artifact — Stair-Stepping -->
+  <section id="s-03-28" class="section-block">
+    <div class="section-header">
+      <span class="section-num">03.28</span>
+      <h2>Common Sampling Artifact — Stair-Stepping</h2>
+      <button class="bookmark-btn" data-id="s-03-28" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Edges that are smooth in continuous space can appear jagged in a low-resolution digital representation.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>ideal edge
+
+       /
+      /
+     /
+
+sampled representation
+
+       ██
+      █
+      ██
+    ██</code></pre>
+</div></p>
+<p>The visual artifact is related to finite spatial sampling and display/resampling.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 03.29: Why Resampling and Interpolation Appear Later -->
+  <section id="s-03-29" class="section-block">
+    <div class="section-header">
+      <span class="section-num">03.29</span>
+      <h2>Why Resampling and Interpolation Appear Later</h2>
+      <button class="bookmark-btn" data-id="s-03-29" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>When an image must be displayed or transformed at different dimensions, we need new pixel locations.</p>
+<p>For example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>100 × 100
+     ↓ scaling
+250 × 250</code></pre>
+</div></p>
+<p>The target grid may require values that were not directly present in the source grid.</p>
+<p>That motivates:</p>
+<ul>
+<li>nearest-neighbour interpolation,</li>
+<li>bilinear interpolation,</li>
+<li>other resampling methods.</li>
+</ul>
+<p>These are the focus of Chapter 11.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 03.30: Image Acquisition and Anti-Aliasing -->
+  <section id="s-03-30" class="section-block">
+    <div class="section-header">
+      <span class="section-num">03.30</span>
+      <h2>Image Acquisition and Anti-Aliasing</h2>
+      <button class="bookmark-btn" data-id="s-03-30" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The practical acquisition chain can therefore be viewed as:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>scene
+  ↓
+optics
+  ↓
+analog image signal
+  ↓
+anti-alias / optical response
+  ↓
+sampling
+  ↓
+quantization
+  ↓
+digital image</code></pre>
+</div></p>
+<p>The exact physical implementation depends on the imaging system.</p>
+<p>The important principle is that <strong>good digitisation manages information before it becomes irreversible digital representation error</strong>.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 03.31: Engineering Decision Example -->
+  <section id="s-03-31" class="section-block">
+    <div class="section-header">
+      <span class="section-num">03.31</span>
+      <h2>Engineering Decision Example</h2>
+      <button class="bookmark-btn" data-id="s-03-31" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose you need to reduce a 4000×3000 image to 1000×750.</p>
+<p>A weak approach is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>throw away 75% of rows/columns</code></pre>
+</div></p>
+<p>A more principled conceptual approach is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>high-resolution image
+→ suppress frequencies that cannot survive
+→ resample onto the lower-resolution grid
+→ inspect result</code></pre>
+</div></p>
+<p>This reduces the risk of aliasing.</p>
+<p>If the image contains high-frequency text or fine texture, the choice of resampling filter matters greatly.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 03.32: Common Traps -->
+  <section id="s-03-32" class="section-block">
+    <div class="section-header">
+      <span class="section-num">03.32</span>
+      <h2>Common Traps</h2>
+      <button class="bookmark-btn" data-id="s-03-32" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h2>Trap 1 — “Sampling and quantization are the same.”</h2>
+<p>False.</p>
+<p>Sampling is primarily about <strong>where</strong> values are measured.</p>
+<p>Quantization is primarily about <strong>which numerical levels</strong> represent those values.</p>
+<h2>Trap 2 — “More pixels means more intensity precision.”</h2>
+<p>False.</p>
+<p>Pixel count concerns spatial sampling. Bit depth concerns the number of representable levels per sample.</p>
+<h2>Trap 3 — “8-bit means 8 pixels.”</h2>
+<p>False.</p>
+<p>8-bit describes the number of bits used to encode a sample under the stated representation.</p>
+<h2>Trap 4 — “Nyquist means sample at exactly twice the highest frequency.”</h2>
+<p>Too simplistic.</p>
+<p>Ideal band-limited reconstruction requires a rate greater than the relevant highest frequency twice, under appropriate assumptions, and real imaging systems have additional limitations.</p>
+<h2>Trap 5 — “Downsampling is just deleting pixels.”</h2>
+<p>Incomplete.</p>
+<p>Good resampling often includes filtering and interpolation/weighted estimation.</p>
+<h2>Trap 6 — “Higher bit depth always guarantees better visual quality.”</h2>
+<p>False.</p>
+<p>The extra precision is useful only when the acquisition, processing, display and task can benefit from it.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 03.33: Engineering Insight — Information Can Be Lost Twice -->
+  <section id="s-03-33" class="section-block">
+    <div class="section-header">
+      <span class="section-num">03.33</span>
+      <h2>Engineering Insight — Information Can Be Lost Twice</h2>
+      <button class="bookmark-btn" data-id="s-03-33" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Digitisation can discard information in two fundamentally different ways:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>SAMPLING
+→ loses / aliases spatial information
+
+QUANTIZATION
+→ reduces intensity precision</code></pre>
+</div></p>
+<p>Later, additional operations may discard information again:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>blurring
+thresholding
+lossy compression
+downsampling
+clipping</code></pre>
+</div></p>
+<p>This is why the sequence of operations matters.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 03.34: Cross-Book Bridges -->
+  <section id="s-03-34" class="section-block">
+    <div class="section-header">
+      <span class="section-num">03.34</span>
+      <h2>Cross-Book Bridges</h2>
+      <button class="bookmark-btn" data-id="s-03-34" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <blockquote>
+<p><strong>MATH BRIDGE — M02 / M03 / M05</strong><br />
+Review discrete coordinates, summation and matrix representation.</p>
+<p><strong>LAB BRIDGE — LAB-U1-01 / LAB-U1-03</strong><br />
+Inspect image dimensions and compare resampled/quantized representations.</p>
+<p><strong>PRACTICE BRIDGE</strong><br />
+Identify whether a described problem is primarily spatial-sampling or intensity-quantization related.</p>
+<p><strong>EXAM BRIDGE</strong><br />
+Be ready to define sampling and quantization, derive $L=2^k$, explain aliasing, state the Nyquist condition, and compare sampling with quantization.</p>
+<p><strong>RESOURCE BRIDGE</strong><br />
+Classical DIP references provide deeper treatments of sampling, quantization and image digitisation.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 03.35: Quick Recall -->
+  <section id="s-03-35" class="section-block">
+    <div class="section-header">
+      <span class="section-num">03.35</span>
+      <h2>Quick Recall</h2>
+      <button class="bookmark-btn" data-id="s-03-35" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>SAMPLING
+→ where / how often
+
+QUANTIZATION
+→ which level / how precisely
+
+Sampling frequency
+\[
+f_s=\frac{1}{\Delta}
+\]
+
+Number of levels
+\[
+L=2^k
+\]
+
+Ideal band-limited sampling condition
+\[
+f_s&gt;2f_{\max}
+\]
+
+Approximate uniform-quantizer variance
+\[
+\sigma_q^2\approx\frac{\Delta^2}{12}
+\]</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 03.36: Chapter Checkpoint -->
+  <section id="s-03-36" class="section-block">
+    <div class="section-header">
+      <span class="section-num">03.36</span>
+      <h2>Chapter Checkpoint</h2>
+      <button class="bookmark-btn" data-id="s-03-36" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <ol>
+<li>What is sampling?</li>
+<li>What is quantization?</li>
+<li>Why are they conceptually different?</li>
+<li>What does a smaller sampling interval mean?</li>
+<li>What is spatial frequency?</li>
+<li>What is aliasing?</li>
+<li>State the Nyquist condition under ideal band-limited assumptions.</li>
+<li>Why is anti-alias filtering useful before downsampling?</li>
+<li>How many levels does a $k$-bit representation provide?</li>
+<li>What is quantization error?</li>
+<li>What happens when bit depth is reduced?</li>
+<li>How can a digital image lose information during digitisation?</li>
+</ol>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 03.37: Connection Forward -->
+  <section id="s-03-37" class="section-block">
+    <div class="section-header">
+      <span class="section-num">03.37</span>
+      <h2>Connection Forward</h2>
+      <button class="bookmark-btn" data-id="s-03-37" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Sampling and quantization tell us how the continuous image becomes discrete.</p>
+<p>We now know:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>how many spatial samples
++
+how many intensity levels</code></pre>
+</div></p>
+<p>But a digital image still needs a richer description:</p>
+<blockquote>
+<p>What exactly is a pixel?<br />
+How are rows and columns organized?<br />
+How are colour channels represented?<br />
+What do “resolution,” “bit depth,” “dynamic range,” and “datatype” actually mean?</p>
+</blockquote>
+<p>Those questions are the focus of Chapter 04.</p>
+    </div>
+  </section>
+
+  <!-- SECTION 03.38: Mathematical Derivation: 2D Nyquist-Shannon Sampling Theorem -->
+  <section id="s-03-38" class="section-block">
+    <div class="section-header">
+      <span class="section-num">03.38</span>
+      <h2>Mathematical Derivation: 2D Nyquist-Shannon Sampling Theorem</h2>
+      <button class="bookmark-btn" data-id="s-03-38" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>2D Impulse Train Representation</h3>
+<p>In two spatial dimensions, sampling an analog image $f(x,y)$ with periodic intervals $\Delta x$ and $\Delta y$ is mathematically modelled as multiplication by a 2D Dirac comb (sampling lattice):
+
+$$s(x,y) = \sum_{m=-\infty}^{\infty} \sum_{n=-\infty}^{\infty} \delta(x - m\Delta x, y - n\Delta y)$$
+
+The sampled image $f_s(x,y)$ is given by:
+
+$$f_s(x,y) = f(x,y) \cdot s(x,y) = \sum_{m=-\infty}^{\infty} \sum_{n=-\infty}^{\infty} f(m\Delta x, n\Delta y) \, \delta(x - m\Delta x, y - n\Delta y)$$
+
+Applying the 2D Continuous Fourier Transform, multiplication in the spatial domain becomes 2D convolution in the frequency domain:
+
+$$F_s(u,v) = rac{1}{\Delta x \Delta y} \sum_{m=-\infty}^{\infty} \sum_{n=-\infty}^{\infty} F\left(u - rac{m}{\Delta x}, v - rac{n}{\Delta y}ight)$$
+
+This fundamental equation proves that the spectrum of the sampled image consists of infinite periodic replicas of the original spectrum $F(u,v)$ centered at integer multiples of the spatial sampling frequencies $f_{s,x} = rac{1}{\Delta x}$ and $f_{s,y} = rac{1}{\Delta y}$.</p>
+<h3>The Non-Overlapping Aliasing Condition</h3>
+<p>To prevent spectral copies from overlapping (aliasing), the replicas must be separated by at least twice the maximum spatial bandwidth frequencies $u_{\max}$ and $v_{\max}$:
+
+$$f_{s,x} \ge 2 u_{\max} \qquad 	ext{and} \qquad f_{s,y} \ge 2 v_{\max}$$
+
+If sampling falls below this Nyquist rate, overlapping high-frequency tails wrap into the baseband, irreversibly corrupting low-frequency features with false Moiré fringe artifacts.</p>
+    </div>
+  </section>
+
+  <!-- SECTION 03.39: Worked Example — 10-Mark University Exam Blueprint: Sampling &amp; Storage -->
+  <section id="s-03-39" class="section-block">
+    <div class="section-header">
+      <span class="section-num">03.39</span>
+      <h2>Worked Example — 10-Mark University Exam Blueprint: Sampling &amp; Storage</h2>
+      <button class="bookmark-btn" data-id="s-03-39" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Problem Statement</h3>
+<p>A medical imaging department acquires digital chest radiographs of size $35 	ext{ cm} 	imes 43 	ext{ cm}$. The optical system resolves up to $5 	ext{ line pairs per millimetre (lp/mm)}$.
+1. Determine the minimum spatial sampling frequency $f_s$ required to prevent spatial aliasing.
+2. Calculate the minimum image dimensions $(M 	imes N)$ in pixels.
+3. If each pixel is quantized to 12 bits per pixel (4096 gray levels), compute the uncompressed file size in Megabytes (MB).
+4. Explain why 12-bit quantization is preferred over 8-bit quantization in medical radiography.</p>
+<h3>Step-by-Step Solution</h3>
+<div class="worked-example">
+  <div class="worked-example-header">
+    <span class="worked-example-title">Numerical Examination Trace</span>
+    <span class="tag-badge tag-exam">10-MARK UNIVERSITY MODEL ANSWER</span>
+  </div>
+  <p><strong>1. Minimum Spatial Sampling Frequency:</strong><br>
+  Given maximum spatial frequency $f_{\max} = 5 	ext{ lp/mm} = 5 	ext{ cycles/mm}$.<br>
+  By the Nyquist-Shannon Sampling Theorem:
+  
+$$f_s \ge 2 f_{\max} = 2 	imes 5 = 10 	ext{ samples/mm (pixels/mm)}$$
+
+  The maximum allowable sampling interval is $\Delta x = \Delta y = rac{1}{f_s} = 0.1 	ext{ mm} = 100 \ \mu	ext{m}$.</p>
+
+  <p><strong>2. Minimum Image Matrix Dimensions:</strong><br>
+  
+$$	ext{Width } M = 35 	ext{ cm} 	imes 10 	ext{ mm/cm} 	imes 10 	ext{ pixels/mm} = 3,500 	ext{ pixels}$$
+
+  
+$$	ext{Height } N = 43 	ext{ cm} 	imes 10 	ext{ mm/cm} 	imes 10 	ext{ pixels/mm} = 4,300 	ext{ pixels}$$
+
+  
+$$	ext{Total Pixels } = 3,500 	imes 4,300 = 15,050,000 	ext{ pixels} pprox 15.05 	ext{ Megapixels}$$
+</p>
+
+  <p><strong>3. Storage Footprint Calculation:</strong><br>
+  Total bits $b = M 	imes N 	imes k = 15,050,000 	imes 12 = 180,600,000 	ext{ bits}$.<br>
+  
+$$	ext{Total Bytes} = rac{180,600,000}{8} = 22,575,000 	ext{ bytes}$$
+
+  
+$$	ext{Size in Megabytes (MB)} = rac{22,575,000}{10^6} pprox 22.58 	ext{ MB}$$
+
+  
+$$	ext{Size in Mebibytes (MiB)} = rac{22,575,000}{1024 	imes 1024} pprox 21.53 	ext{ MiB}$$
+</p>
+
+  <p><strong>4. Medical Rationale for 12-bit Quantization:</strong><br>
+  Human tissue density variation in X-ray imaging (bone, soft tissue, fat, air cavities) exhibits a dynamic range exceeding 1000:1. An 8-bit representation ($L=256$) produces coarse quantization steps that cause <em>false contouring</em> across subtle lung nodules and microcalcifications. A 12-bit representation ($L=4096$) provides 16 times higher intensity resolution, enabling radiologists to perform contrast windowing without clipping diagnostic features.</p>
+</div>
+    </div>
+  </section>
+
+  <!-- SECTION 03.40: Worked Example — Lloyd-Max Optimal Non-Uniform Quantizer Formulation -->
+  <section id="s-03-40" class="section-block">
+    <div class="section-header">
+      <span class="section-num">03.40</span>
+      <h2>Worked Example — Lloyd-Max Optimal Non-Uniform Quantizer Formulation</h2>
+      <button class="bookmark-btn" data-id="s-03-40" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Problem Statement</h3>
+<p>In non-uniform quantization of natural image luminance distributions, uniform interval quantizers waste bits on rarely occurring high intensities while introducing severe quantization noise in dense mid-tone regions.
+1. State the <strong>Lloyd-Max Optimal Quantization Conditions</strong> minimizing Mean Squared Quantization Error $\mathcal{E} = \sum_{k=1}^L \int_{t_{k-1}}^{t_k} (r - q_k)^2 p(r) \, dr$.
+2. Derive the centroid update condition for output levels $q_k$.
+3. Derive the midpoint decision boundary condition for threshold boundaries $t_k$.
+4. Explain how false contouring is mitigated using spatial dithering (pseudorandom noise injection).</p>
+<h3>Step-by-Step Mathematical Derivation</h3>
+<div class="worked-example">
+  <div class="worked-example-header">
+    <span class="worked-example-title">Numerical Examination Trace</span>
+    <span class="tag-badge tag-exam">LLOYD-MAX MATHEMATICAL PROOF</span>
+  </div>
+  <p><strong>1. Minimizing Quantization Error:</strong><br>
+  Let $p(r)$ be the continuous probability density function of analog intensity $r \in [r_{\min}, r_{\max}]$. We partition the range into $L$ non-overlapping intervals $[t_{k-1}, t_k)$ with representation reconstruction levels $q_k$. The total mean squared quantization distortion is:
+  
+$$\mathcal{E}(t, q) = \sum_{k=1}^L \int_{t_{k-1}}^{t_k} (r - q_k)^2 p(r) \, dr$$
+</p>
+
+  <p><strong>2. Centroid Condition for Reconstruction Levels $q_k$:</strong><br>
+  Differentiating $\mathcal{E}$ with respect to $q_k$ and setting the derivative to zero:
+  
+$$rac{\partial \mathcal{E}}{\partial q_k} = -2 \int_{t_{k-1}}^{t_k} (r - q_k) p(r) \, dr = 0$$
+
+  
+$$\int_{t_{k-1}}^{t_k} r p(r) \, dr - q_k \int_{t_{k-1}}^{t_k} p(r) \, dr = 0 \implies \mathbf{q_k = rac{\int_{t_{k-1}}^{t_k} r p(r) \, dr}{\int_{t_{k-1}}^{t_k} p(r) \, dr}}$$
+
+  <strong>Pedagogical Insight:</strong> Each optimal reconstruction level $q_k$ is the <em>conditional expectation (centroid of probability mass)</em> of input $r$ over the interval $[t_{k-1}, t_k)$.</p>
+
+  <p><strong>3. Boundary Condition for Decision Thresholds $t_k$:</strong><br>
+  Using Leibniz's Rule for differentiating an integral with variable limits:
+  
+$$rac{\partial \mathcal{E}}{\partial t_k} = (t_k - q_k)^2 p(t_k) - (t_k - q_{k+1})^2 p(t_k) = 0$$
+
+  Assuming $p(t_k) 
+eq 0$:
+  
+$$(t_k - q_k)^2 = (t_k - q_{k+1})^2 \implies t_k - q_k = -(t_k - q_{k+1}) \implies \mathbf{t_k = rac{q_k + q_{k+1}}{2}}$$
+
+  <strong>Pedagogical Insight:</strong> Each optimal transition boundary $t_k$ is located precisely at the <em>arithmetic midpoint</em> between adjacent reconstruction levels $q_k$ and $q_{k+1}$.</p>
+
+  <p><strong>4. False Contouring Mitigation via Dithering:</strong><br>
+  When coarse quantization (e.g. 2 to 4 bits per pixel) is applied to smoothly varying gradients (like a clear sky), discrete step transitions appear as visible bands known as <em>false contours</em>. Spatial dithering injects zero-mean high-frequency pseudorandom noise before quantization ($r' = r + n$). While this slightly increases background noise variance, it breaks up coherent spatial banding into imperceptible high-frequency grain, exploiting the spatial low-pass filtering nature of the Human Visual System.</p>
+</div>
+    </div>
+  </section>
+
+      <!-- Chapter End Package -->
+      <section class="chapter-end-package">
+        <div class="chapter-nav-grid">
+          <a href="ch02-image-formation.html" class="chapter-nav-card">
+            <div class="chapter-nav-dir">← Previous</div>
+            <div class="chapter-nav-title">← Ch 2 — Formation & Acquisition</div>
+          </a>
+          <a href="ch04-image-representation.html" class="chapter-nav-card next">
+            <div class="chapter-nav-dir">Next →</div>
+            <div class="chapter-nav-title">Next: Ch 4 — Pixels, Matrices & Resolution →</div>
+          </a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- FLOATING TTS PANEL (SAFE MANUAL MODE ONLY) -->
+  <div id="tts-panel" style="position:fixed; bottom:20px; right:20px; background:var(--em-surface-1); border:1px solid var(--em-border); border-radius:var(--em-radius-md); padding:12px 16px; box-shadow:var(--sh-lg); z-index:var(--z-float); display:none; gap:10px; align-items:center;">
+    <button class="icon-btn" id="tts-play" title="Play / Pause" style="background:var(--em-accent); color:#fff; border-radius:50%; width:36px; height:36px;">▶</button>
+    <button class="icon-btn" id="tts-stop" title="Stop">⏹</button>
+    <div style="font-size:0.75rem; color:var(--em-text-muted);">
+      <span id="tts-status">Ready</span> · <span id="tts-rate-label">1.0x</span>
+    </div>
+  </div>
+
+  <script src="../assets/js/state.js"></script>
+  <script src="../assets/js/core.js"></script>
+  <script src="../assets/js/tts.js"></script>
+  <script src="../assets/js/glossary.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: document.documentElement.getAttribute('data-theme') === 'light' ? 'default' : 'dark'
+      });
+    });
+  </script>
+</body>
+</html>

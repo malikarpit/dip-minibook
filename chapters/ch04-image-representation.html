@@ -1,0 +1,2027 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Arpit">
+  <meta name="description" content="Chapter 04: Pixels, Matrices, Tensors &amp; Resolution — Digital Image Processing MiniBook. Pixel Coordinate Systems, 4/8/m-Connectivity, Topological Path Ambiguities, Distance Metrics (De, D4, D8), and Matrix Operations">
+  <title>C04: Pixels, Matrices, Tensors &amp; Resolution | DIP MiniBook 📷 Arpit</title>
+
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <link rel="stylesheet" href="../assets/css/chapters.css">
+  <link rel="stylesheet" href="../assets/css/animations.css">
+  <link rel="stylesheet" href="../assets/css/timer.css">
+
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body data-chapter-id="ch04-image-representation">
+  <div id="progress-bar"></div>
+
+  <!-- Header -->
+  <header id="main-header">
+    <div class="header-left">
+      <button id="sidebar-toggle" class="icon-btn" aria-label="Toggle navigation drawer" title="Toggle Sidebar (S)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <a href="../index.html" class="brand-logo">
+        <div class="brand-icon">DIP</div>
+        <div class="brand-text">
+          <span class="main">Digital Image Processing</span>
+          <span class="sub">DU DSE-3 Engineering MiniBook</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="header-chapter-title">C04: Pixels, Matrices, Tensors &amp; Resolution</div>
+
+    <div class="header-right">
+      <button id="reading-mode-btn" class="icon-btn" aria-label="Toggle reading focus mode" title="Focus Mode (F)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+          <line x1="8" y1="21" x2="16" y2="21"></line>
+          <line x1="12" y1="17" x2="12" y2="21"></line>
+        </svg>
+      </button>
+      <button id="tts-toggle" class="icon-btn" aria-label="Audio Reader" title="Audio Reader">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+        </svg>
+      </button>
+      <button id="theme-toggle" class="icon-btn" aria-label="Cycle theme" title="Theme (T)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="12" cy="12" r="4.5"></circle>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Sidebar Overlay -->
+  <div id="sidebar-overlay"></div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" aria-expanded="true">
+    <div class="sidebar-nav">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">General</div>
+        <a href="../index.html" class="sidebar-link">
+          <span class="link-icon">🏛️</span>
+          <span>Subject Portal</span>
+        </a>
+        <a href="../progress.html" class="sidebar-link">
+          <span class="link-icon">📊</span>
+          <span>Study Dashboard</span>
+        </a>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Current Chapter Sections</div>
+        <a href="#s-04-0" class="sidebar-link"><span class="link-icon">📌</span><span>04.0 Why This Chapter Exists</span> </a>
+      <a href="#s-04-1" class="sidebar-link"><span class="link-icon">📌</span><span>04.1 What Is a Pixel?</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-04-2" class="sidebar-link"><span class="link-icon">📌</span><span>04.2 Pixel Coordinates</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-04-3" class="sidebar-link"><span class="link-icon">📌</span><span>04.3 A Grayscale Image as a Matrix</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-04-4" class="sidebar-link"><span class="link-icon">📌</span><span>04.4 Reading a Matrix as an Image</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-04-5" class="sidebar-link"><span class="link-icon">📌</span><span>04.5 Neighbourhoods</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-04-6" class="sidebar-link"><span class="link-icon">📌</span><span>04.6 Image Dimensions</span> </a>
+      <a href="#s-04-7" class="sidebar-link"><span class="link-icon">📌</span><span>04.7 Grayscale Images</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-04-8" class="sidebar-link"><span class="link-icon">📌</span><span>04.8 RGB Images</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-04-9" class="sidebar-link"><span class="link-icon">📌</span><span>04.9 RGB as Three Matrices</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-04-10" class="sidebar-link"><span class="link-icon">📌</span><span>04.10 Worked Example — RGB Pixel</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-04-11" class="sidebar-link"><span class="link-icon">📌</span><span>04.11 Multispectral Images</span> </a>
+      <a href="#s-04-12" class="sidebar-link"><span class="link-icon">📌</span><span>04.12 Grayscale vs RGB vs Multispectral</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-04-13" class="sidebar-link"><span class="link-icon">📌</span><span>04.13 Bit Depth</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-04-14" class="sidebar-link"><span class="link-icon">📌</span><span>04.14 Worked Example — Total Raw Storage</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-04-15" class="sidebar-link"><span class="link-icon">📌</span><span>04.15 File Size vs Raw Image Size</span> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></a>
+      <a href="#s-04-16" class="sidebar-link"><span class="link-icon">📌</span><span>04.16 Datatype</span> </a>
+      <a href="#s-04-17" class="sidebar-link"><span class="link-icon">📌</span><span>04.17 Why Datatype Matters</span> </a>
+      <a href="#s-04-18" class="sidebar-link"><span class="link-icon">📌</span><span>04.18 Dynamic Range</span> </a>
+      <a href="#s-04-19" class="sidebar-link"><span class="link-icon">📌</span><span>04.19 Resolution — The Word That Causes Confusion</span> </a>
+      <a href="#s-04-20" class="sidebar-link"><span class="link-icon">📌</span><span>04.20 Image Dimensions vs Spatial Resolution</span> </a>
+      <a href="#s-04-21" class="sidebar-link"><span class="link-icon">📌</span><span>04.21 Worked Example — Two Images, Same Dimensions</span> </a>
+      <a href="#s-04-22" class="sidebar-link"><span class="link-icon">📌</span><span>04.22 Tensor Representation</span> </a>
+      <a href="#s-04-23" class="sidebar-link"><span class="link-icon">📌</span><span>04.23 Channel-First vs Channel-Last</span> </a>
+      <a href="#s-04-24" class="sidebar-link"><span class="link-icon">📌</span><span>04.24 Worked Example — Tensor Shape</span> </a>
+      <a href="#s-04-25" class="sidebar-link"><span class="link-icon">📌</span><span>04.25 Normalized Image Values</span> </a>
+      <a href="#s-04-26" class="sidebar-link"><span class="link-icon">📌</span><span>04.26 Image Coordinate System vs Display Coordinate System</span> </a>
+      <a href="#s-04-27" class="sidebar-link"><span class="link-icon">📌</span><span>04.27 Pixel Value Is Not Always “Brightness”</span> </a>
+      <a href="#s-04-28" class="sidebar-link"><span class="link-icon">📌</span><span>04.28 Resolution, Bit Depth and Channels — Separate Them</span> </a>
+      <a href="#s-04-29" class="sidebar-link"><span class="link-icon">📌</span><span>04.29 A Complete Image Description</span> </a>
+      <a href="#s-04-30" class="sidebar-link"><span class="link-icon">📌</span><span>04.30 Image Representation Pipeline</span> </a>
+      <a href="#s-04-31" class="sidebar-link"><span class="link-icon">📌</span><span>04.31 Example — One Scene, Many Representations</span> </a>
+      <a href="#s-04-32" class="sidebar-link"><span class="link-icon">📌</span><span>04.32 Why Representation Choice Matters</span> </a>
+      <a href="#s-04-33" class="sidebar-link"><span class="link-icon">📌</span><span>04.33 Common Traps</span> </a>
+      <a href="#s-04-34" class="sidebar-link"><span class="link-icon">📌</span><span>04.34 Engineering Decision Example — Choosing a Representation</span> </a>
+      <a href="#s-04-35" class="sidebar-link"><span class="link-icon">📌</span><span>04.35 Cross-Book Bridges</span> </a>
+      <a href="#s-04-36" class="sidebar-link"><span class="link-icon">📌</span><span>04.36 Quick Recall</span> </a>
+      <a href="#s-04-37" class="sidebar-link"><span class="link-icon">📌</span><span>04.37 Chapter Checkpoint</span> </a>
+      <a href="#s-04-38" class="sidebar-link"><span class="link-icon">📌</span><span>04.38 Calculation Check — Raw Storage Example</span> </a>
+      <a href="#s-04-39" class="sidebar-link"><span class="link-icon">📌</span><span>04.39 Connection Forward</span> </a>
+      <a href="#s-04-40" class="sidebar-link"><span class="link-icon">📌</span><span>04.40 Pixel Topologies &amp; Spatial Neighbourhoods</span> </a>
+      <a href="#s-04-41" class="sidebar-link"><span class="link-icon">📌</span><span>04.41 Mixed (m-) Connectivity and Resolving Path Ambiguities</span> </a>
+      </div>
+
+      
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-i">Part I — The Image</div>
+      <a href="ch01-big-picture.html" class="sidebar-link"><span class="link-icon">01</span><span>The Big Picture</span></a>
+      <a href="ch02-image-formation.html" class="sidebar-link"><span class="link-icon">02</span><span>Formation & Acquisition</span></a>
+      <a href="ch03-sampling-quantization.html" class="sidebar-link"><span class="link-icon">03</span><span>Sampling & Quantization</span></a>
+      <a href="ch04-image-representation.html" class="sidebar-link active"><span class="link-icon">04</span><span>Pixels, Matrices & Resolution</span></a>
+      <a href="ch05-colour-models-file-formats.html" class="sidebar-link"><span class="link-icon">05</span><span>Colour Models & Formats</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-ii">Part II — Improving the Image</div>
+      <a href="ch06-point-processing.html" class="sidebar-link"><span class="link-icon">06</span><span>Point Processing & Intensity</span></a>
+      <a href="ch07-histograms-equalization.html" class="sidebar-link"><span class="link-icon">07</span><span>Histograms & Equalization</span></a>
+      <a href="ch08-spatial-filtering.html" class="sidebar-link"><span class="link-icon">08</span><span>Spatial Filtering & Convolution</span></a>
+      <a href="ch09-smoothing-noise-reduction.html" class="sidebar-link"><span class="link-icon">09</span><span>Smoothing & Noise Reduction</span></a>
+      <a href="ch10-sharpening-edge-detection.html" class="sidebar-link"><span class="link-icon">10</span><span>Sharpening & Edge Detection</span></a>
+      <a href="ch11-geometric-transforms.html" class="sidebar-link"><span class="link-icon">11</span><span>Geometric Transforms</span></a>
+      <a href="ch12-fourier-transform.html" class="sidebar-link"><span class="link-icon">12</span><span>Fourier Transform & Frequency</span></a>
+      <a href="ch13-frequency-filtering.html" class="sidebar-link"><span class="link-icon">13</span><span>Frequency-Domain Filtering</span></a>
+      <a href="ch14-image-restoration.html" class="sidebar-link"><span class="link-icon">14</span><span>Restoration & Deblurring</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-iii">Part III — Understanding Content</div>
+      <a href="ch15-segmentation-fundamentals.html" class="sidebar-link"><span class="link-icon">15</span><span>Segmentation Fundamentals</span></a>
+      <a href="ch16-thresholding-otsu.html" class="sidebar-link"><span class="link-icon">16</span><span>Thresholding & Otsu Method</span></a>
+      <a href="ch17-region-segmentation.html" class="sidebar-link"><span class="link-icon">17</span><span>Region-Based Segmentation</span></a>
+      <a href="ch18-mathematical-morphology.html" class="sidebar-link"><span class="link-icon">18</span><span>Mathematical Morphology</span></a>
+      <a href="ch19-features-descriptors.html" class="sidebar-link"><span class="link-icon">19</span><span>Image Features & Descriptors</span></a>
+      <a href="ch20-sift-surf-orb-hog.html" class="sidebar-link"><span class="link-icon">20</span><span>SIFT, SURF, ORB & HOG</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-iv">Part IV — Compressing Images</div>
+      <a href="ch21-compression-entropy.html" class="sidebar-link"><span class="link-icon">21</span><span>Compression & Entropy</span></a>
+      <a href="ch22-lossless-coding.html" class="sidebar-link"><span class="link-icon">22</span><span>Lossless: RLE & Huffman</span></a>
+      <a href="ch23-lossy-dct-jpeg.html" class="sidebar-link"><span class="link-icon">23</span><span>Lossy: DCT & JPEG</span></a>
+      <a href="ch24-wavelets-jpeg2000.html" class="sidebar-link"><span class="link-icon">24</span><span>Wavelets & JPEG 2000</span></a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label part-label part-v">Part V — Intelligent Vision</div>
+      <a href="ch25-image-classification.html" class="sidebar-link"><span class="link-icon">25</span><span>Image Classification</span></a>
+      <a href="ch26-cnns-image-processing.html" class="sidebar-link"><span class="link-icon">26</span><span>CNNs for Image Processing</span></a>
+      <a href="ch27-modern-vision-architectures.html" class="sidebar-link"><span class="link-icon">27</span><span>Modern Vision Architectures</span></a>
+      <a href="ch28-object-detection-yolo.html" class="sidebar-link"><span class="link-icon">28</span><span>Object Detection: YOLO</span></a>
+      <a href="ch29-image-denoising-autoencoders.html" class="sidebar-link"><span class="link-icon">29</span><span>Image Denoising Autoencoders</span></a>
+      <a href="ch30-video-motion-analysis.html" class="sidebar-link"><span class="link-icon">30</span><span>Video & Motion Analysis</span></a>
+      <a href="ch31-dip-applications-engineering.html" class="sidebar-link"><span class="link-icon">31</span><span>DIP Applications & Ethics</span></a>
+    </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-brand-mark">
+        <div class="mark">DU</div>
+        <div>
+          <strong>DSE-3 MiniBook</strong>
+          <div>University of Delhi</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mandatory Shell Wrapper -->
+  <div id="main-content">
+    <main class="chapter-content">
+      <!-- Chapter Hero -->
+      <div class="chapter-hero">
+        <div class="hero-meta">
+          <span class="part-badge part-i">The Image</span>
+          <span class="chapter-number">CHAPTER 04</span>
+          <span class="reading-time">⏱️ ~50 min read</span>
+          <span class="tag-badge tag-core">Highest Yield (10-mark guarantee)</span>
+        </div>
+        <h1 class="chapter-title">Pixels, Matrices, Tensors &amp; Resolution</h1>
+        <p class="chapter-subtitle">
+          Pixel Coordinate Systems, 4/8/m-Connectivity, Topological Path Ambiguities, Distance Metrics (De, D4, D8), and Matrix Operations
+        </p>
+
+        <div class="syllabus-anchor">
+          <span class="syllabus-anchor-label">DU Syllabus</span>
+          <span><strong>Image Representation & Pixel Relationships:</strong> Neighbors of a pixel (N4, ND, N8), Adjacency, 4-connectivity, 8-connectivity, mixed m-connectivity, boundary tracing, Distance metrics (Euclidean, City-block D4, Chessboard D8), and Image arithmetic (addition, subtraction, multiplication).</span>
+        </div>
+      </div>
+
+      <!-- In-Page TOC -->
+      <div class="chapter-checklist-card" style="margin-bottom:var(--em-space-8);">
+        <div class="checklist-title">
+          <span>Table of Contents &amp; Visual Section Map</span>
+          <span class="tag-badge tag-math">42 Deep Sections</span>
+        </div>
+        <ul class="part-chapters-list">
+          <li class="part-chapter-item"><a href="#s-04-0"><strong>04.0</strong> Why This Chapter Exists</a> </li>
+      <li class="part-chapter-item"><a href="#s-04-1"><strong>04.1</strong> What Is a Pixel?</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-04-2"><strong>04.2</strong> Pixel Coordinates</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-04-3"><strong>04.3</strong> A Grayscale Image as a Matrix</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-04-4"><strong>04.4</strong> Reading a Matrix as an Image</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-04-5"><strong>04.5</strong> Neighbourhoods</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-04-6"><strong>04.6</strong> Image Dimensions</a> </li>
+      <li class="part-chapter-item"><a href="#s-04-7"><strong>04.7</strong> Grayscale Images</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-04-8"><strong>04.8</strong> RGB Images</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-04-9"><strong>04.9</strong> RGB as Three Matrices</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-04-10"><strong>04.10</strong> Worked Example — RGB Pixel</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-04-11"><strong>04.11</strong> Multispectral Images</a> </li>
+      <li class="part-chapter-item"><a href="#s-04-12"><strong>04.12</strong> Grayscale vs RGB vs Multispectral</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-04-13"><strong>04.13</strong> Bit Depth</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-04-14"><strong>04.14</strong> Worked Example — Total Raw Storage</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-04-15"><strong>04.15</strong> File Size vs Raw Image Size</a> <span class="tag-badge tag-core" style="font-size:0.65rem; padding:1px 5px;">Uni Core</span></li>
+      <li class="part-chapter-item"><a href="#s-04-16"><strong>04.16</strong> Datatype</a> </li>
+      <li class="part-chapter-item"><a href="#s-04-17"><strong>04.17</strong> Why Datatype Matters</a> </li>
+      <li class="part-chapter-item"><a href="#s-04-18"><strong>04.18</strong> Dynamic Range</a> </li>
+      <li class="part-chapter-item"><a href="#s-04-19"><strong>04.19</strong> Resolution — The Word That Causes Confusion</a> </li>
+      <li class="part-chapter-item"><a href="#s-04-20"><strong>04.20</strong> Image Dimensions vs Spatial Resolution</a> </li>
+      <li class="part-chapter-item"><a href="#s-04-21"><strong>04.21</strong> Worked Example — Two Images, Same Dimensions</a> </li>
+      <li class="part-chapter-item"><a href="#s-04-22"><strong>04.22</strong> Tensor Representation</a> </li>
+      <li class="part-chapter-item"><a href="#s-04-23"><strong>04.23</strong> Channel-First vs Channel-Last</a> </li>
+      <li class="part-chapter-item"><a href="#s-04-24"><strong>04.24</strong> Worked Example — Tensor Shape</a> </li>
+      <li class="part-chapter-item"><a href="#s-04-25"><strong>04.25</strong> Normalized Image Values</a> </li>
+      <li class="part-chapter-item"><a href="#s-04-26"><strong>04.26</strong> Image Coordinate System vs Display Coordinate System</a> </li>
+      <li class="part-chapter-item"><a href="#s-04-27"><strong>04.27</strong> Pixel Value Is Not Always “Brightness”</a> </li>
+      <li class="part-chapter-item"><a href="#s-04-28"><strong>04.28</strong> Resolution, Bit Depth and Channels — Separate Them</a> </li>
+      <li class="part-chapter-item"><a href="#s-04-29"><strong>04.29</strong> A Complete Image Description</a> </li>
+      <li class="part-chapter-item"><a href="#s-04-30"><strong>04.30</strong> Image Representation Pipeline</a> </li>
+      <li class="part-chapter-item"><a href="#s-04-31"><strong>04.31</strong> Example — One Scene, Many Representations</a> </li>
+      <li class="part-chapter-item"><a href="#s-04-32"><strong>04.32</strong> Why Representation Choice Matters</a> </li>
+      <li class="part-chapter-item"><a href="#s-04-33"><strong>04.33</strong> Common Traps</a> </li>
+      <li class="part-chapter-item"><a href="#s-04-34"><strong>04.34</strong> Engineering Decision Example — Choosing a Representation</a> </li>
+      <li class="part-chapter-item"><a href="#s-04-35"><strong>04.35</strong> Cross-Book Bridges</a> </li>
+      <li class="part-chapter-item"><a href="#s-04-36"><strong>04.36</strong> Quick Recall</a> </li>
+      <li class="part-chapter-item"><a href="#s-04-37"><strong>04.37</strong> Chapter Checkpoint</a> </li>
+      <li class="part-chapter-item"><a href="#s-04-38"><strong>04.38</strong> Calculation Check — Raw Storage Example</a> </li>
+      <li class="part-chapter-item"><a href="#s-04-39"><strong>04.39</strong> Connection Forward</a> </li>
+      <li class="part-chapter-item"><a href="#s-04-40"><strong>04.40</strong> Pixel Topologies &amp; Spatial Neighbourhoods</a> </li>
+      <li class="part-chapter-item"><a href="#s-04-41"><strong>04.41</strong> Mixed (m-) Connectivity and Resolving Path Ambiguities</a> </li>
+        </ul>
+      </div>
+
+      <div class="concept-hook" style="margin-bottom:var(--em-space-8);"><h1>Chapter 04 — Image Representation: Pixels, Matrices, Tensors and Resolution</h1>
+<blockquote>
+<p><strong>Chapter thesis</strong><br />
+A digital image is not defined only by width and height. Its meaning depends on spatial organization, channels, numerical representation, intensity range, bit depth, colour model, datatype and the way the image is stored.</p>
+</blockquote>
+<p><strong>Part I — The Image</strong><br />
+<strong>Syllabus anchor:</strong> Unit I includes grayscale, RGB and multispectral images, plus pixels, bit depth and resolution. fileciteturn4file0L32-L35</p>
+<hr /></div>
+
+      <!-- All Numbered Sections -->
+      
+  <!-- SECTION 04.0: Why This Chapter Exists -->
+  <section id="s-04-0" class="section-block">
+    <div class="section-header">
+      <span class="section-num">04.0</span>
+      <h2>Why This Chapter Exists</h2>
+      <button class="bookmark-btn" data-id="s-04-0" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>After sampling and quantization, we have a finite collection of numerical values.</p>
+<p>Now we need to organize those values.</p>
+<p>A real image-processing program needs to know:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>How many rows?
+How many columns?
+How many channels?
+What datatype?
+What intensity range?
+What colour representation?
+What does one value mean?</code></pre>
+</div></p>
+<p>A statement such as:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>512 × 512</code></pre>
+</div></p>
+<p>is useful, but incomplete.</p>
+<p>A more informative description is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>512 × 512
+grayscale
+uint8
+0–255</code></pre>
+</div></p>
+<p>For a colour image:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>1920 × 1080
+RGB
+uint8
+3 channels
+0–255 per stored channel sample</code></pre>
+</div></p>
+<p>This chapter builds the vocabulary required to interpret such descriptions correctly.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 04.1: What Is a Pixel? -->
+  <section id="s-04-1" class="section-block">
+    <div class="section-header">
+      <span class="section-num">04.1</span>
+      <h2>What Is a Pixel?</h2>
+      <button class="bookmark-btn" data-id="s-04-1" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h2>CORE — Working definition</h2>
+<p>A <strong>pixel</strong> is a discrete image sample/value associated with a particular spatial location in a digital image.</p>
+<p>For a grayscale image, one pixel commonly corresponds to one intensity value.</p>
+<p>For a colour or multispectral image, one spatial location may be associated with multiple channel values.</p>
+<p>Conceptually:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>            columns →
+        0    1    2    3
+
+row 0   p    p    p    p
+row 1   p    p    p    p
+row 2   p    p    p    p
+row 3   p    p    p    p
+  ↓
+ rows</code></pre>
+</div></p>
+<p>A pixel therefore carries two linked ideas:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>WHERE
++
+WHAT VALUE</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 04.2: Pixel Coordinates -->
+  <section id="s-04-2" class="section-block">
+    <div class="section-header">
+      <span class="section-num">04.2</span>
+      <h2>Pixel Coordinates</h2>
+      <button class="bookmark-btn" data-id="s-04-2" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Let a grayscale image be:</p>
+<p>
+$$
+I[m,n]
+$$
+</p>
+<p>where $m$ and $n$ are discrete spatial indices.</p>
+<p>The exact starting index depends on notation and software.</p>
+<p>A mathematical description may use:</p>
+<p>
+$$
+m,n\in\{0,\ldots,M-1\}
+$$
+</p>
+<p>while some software environments use one-based indexing.</p>
+<blockquote>
+<p><strong>WARNING:</strong> Do not mix mathematical zero-based indexing with a programming language's indexing convention without explicitly translating it.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 04.3: A Grayscale Image as a Matrix -->
+  <section id="s-04-3" class="section-block">
+    <div class="section-header">
+      <span class="section-num">04.3</span>
+      <h2>A Grayscale Image as a Matrix</h2>
+      <button class="bookmark-btn" data-id="s-04-3" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Consider:</p>
+<p>
+$$
+I=
+\begin{bmatrix}
+10&12&13&15\\
+11&18&21&16\\
+12&25&30&17\\
+10&15&20&14
+\end{bmatrix}
+$$
+</p>
+<p>This is a:</p>
+<p>
+$$
+4\times4
+$$
+</p>
+<p>grayscale image.</p>
+<p>It contains:</p>
+<p>
+$$
+4\times4=16
+$$
+</p>
+<p>spatial samples.</p>
+<p>Each number represents one grayscale sample under the stated intensity convention.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 04.4: Reading a Matrix as an Image -->
+  <section id="s-04-4" class="section-block">
+    <div class="section-header">
+      <span class="section-num">04.4</span>
+      <h2>Reading a Matrix as an Image</h2>
+      <button class="bookmark-btn" data-id="s-04-4" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose:</p>
+<p>
+$$
+I=
+\begin{bmatrix}
+10&10&10&10\\
+10&80&80&10\\
+10&80&120&10\\
+10&10&10&10
+\end{bmatrix}
+$$
+</p>
+<p>We can describe it conceptually as:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>dark background
++
+bright rectangular region
++
+very bright centre</code></pre>
+</div></p>
+<p>The matrix contains spatial relationships.</p>
+<p>For example, the value 120 matters not only because it is large, but because it appears next to values such as 80 and 10.</p>
+<p>This is why image processing can detect:</p>
+<ul>
+<li>edges,</li>
+<li>regions,</li>
+<li>texture,</li>
+<li>shapes.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 04.5: Neighbourhoods -->
+  <section id="s-04-5" class="section-block">
+    <div class="section-header">
+      <span class="section-num">04.5</span>
+      <h2>Neighbourhoods</h2>
+      <button class="bookmark-btn" data-id="s-04-5" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A pixel is often processed together with nearby pixels.</p>
+<p>For a 3×3 neighbourhood around a centre sample:</p>
+<p>
+$$
+\begin{bmatrix}
+a&b&c\\
+d&e&f\\
+g&h&i
+\end{bmatrix}
+$$
+</p>
+<p>the centre is:</p>
+<p>
+$$
+e
+$$
+</p>
+<p>and the surrounding values form its local neighbourhood.</p>
+<p>This becomes fundamental for:</p>
+<ul>
+<li>smoothing,</li>
+<li>sharpening,</li>
+<li>edge detection,</li>
+<li>convolution,</li>
+<li>morphology,</li>
+<li>texture analysis.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 04.6: Image Dimensions -->
+  <section id="s-04-6" class="section-block">
+    <div class="section-header">
+      <span class="section-num">04.6</span>
+      <h2>Image Dimensions</h2>
+      <button class="bookmark-btn" data-id="s-04-6" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>If an image has:</p>
+<p>
+$$
+M\text{ rows}\times N\text{ columns}
+$$
+</p>
+<p>then it contains:</p>
+<p>
+$$
+MN
+$$
+</p>
+<p>spatial positions for a single-channel representation.</p>
+<h3>Example</h3>
+<p>For:</p>
+<p>
+$$
+1920\times1080
+$$
+</p>
+<p>the number of spatial samples is:</p>
+<p>
+$$
+1920\times1080=2{,}073{,}600
+$$
+</p>
+<p>For RGB with three stored channels:</p>
+<p>
+$$
+2{,}073{,}600\times3
+=
+6{,}220{,}800
+$$
+</p>
+<p>channel samples.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 04.7: Grayscale Images -->
+  <section id="s-04-7" class="section-block">
+    <div class="section-header">
+      <span class="section-num">04.7</span>
+      <h2>Grayscale Images</h2>
+      <button class="bookmark-btn" data-id="s-04-7" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A grayscale image normally uses one channel representing intensity-related information.</p>
+<p>A common conceptual structure is:</p>
+<p>
+$$
+H\times W
+$$
+</p>
+<p>For example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>256 × 256 grayscale</code></pre>
+</div></p>
+<p>contains:</p>
+<p>
+$$
+256^2=65{,}536
+$$
+</p>
+<p>spatial samples.</p>
+<h3>Why one channel?</h3>
+<p>Because the representation has one scalar value per spatial location.</p>
+<p>This is often sufficient for operations based on intensity structure.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 04.8: RGB Images -->
+  <section id="s-04-8" class="section-block">
+    <div class="section-header">
+      <span class="section-num">04.8</span>
+      <h2>RGB Images</h2>
+      <button class="bookmark-btn" data-id="s-04-8" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>RGB represents colour using three components:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Red
+Green
+Blue</code></pre>
+</div></p>
+<p>Conceptually:</p>
+<p>
+$$
+I[m,n,c]
+$$
+</p>
+<p>with:</p>
+<p>
+$$
+c\in\{R,G,B\}
+$$
+</p>
+<p>The array shape may be represented as:</p>
+<p>
+$$
+H\times W\times3
+$$
+</p>
+<p>in one common convention.</p>
+<p>A pixel may therefore be written conceptually as:</p>
+<p>
+$$
+(R,G,B)
+$$
+</p>
+<p>For example:</p>
+<p>
+$$
+(255,0,0)
+$$
+</p>
+<p>represents a saturated red under the conventional 8-bit RGB interpretation.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 04.9: RGB as Three Matrices -->
+  <section id="s-04-9" class="section-block">
+    <div class="section-header">
+      <span class="section-num">04.9</span>
+      <h2>RGB as Three Matrices</h2>
+      <button class="bookmark-btn" data-id="s-04-9" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Instead of thinking only in terms of one 3-D array, we can visualize RGB as three 2-D planes:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>RGB IMAGE
+
+        ┌───────────────┐
+        │ R CHANNEL     │
+        │ H × W         │
+        └───────────────┘
+
+        ┌───────────────┐
+        │ G CHANNEL     │
+        │ H × W         │
+        └───────────────┘
+
+        ┌───────────────┐
+        │ B CHANNEL     │
+        │ H × W         │
+        └───────────────┘</code></pre>
+</div></p>
+<p>The final colour image is interpreted using all three channels together.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 04.10: Worked Example — RGB Pixel -->
+  <section id="s-04-10" class="section-block">
+    <div class="section-header">
+      <span class="section-num">04.10</span>
+      <h2>Worked Example — RGB Pixel</h2>
+      <button class="bookmark-btn" data-id="s-04-10" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose one pixel is:</p>
+<p>
+$$
+(R,G,B)=(30,140,220)
+$$
+</p>
+<p>Under an 8-bit RGB convention:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>R = 30
+G = 140
+B = 220</code></pre>
+</div></p>
+<p>The blue component is strongest.</p>
+<p>The displayed colour therefore appears bluish rather than neutral.</p>
+<h3>Important</h3>
+<p>The exact visual colour depends on the colour space, transfer characteristics, display and implementation context.</p>
+<p>A raw triplet should not be treated as a universal perceptual colour measurement independent of context.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 04.11: Multispectral Images -->
+  <section id="s-04-11" class="section-block">
+    <div class="section-header">
+      <span class="section-num">04.11</span>
+      <h2>Multispectral Images</h2>
+      <button class="bookmark-btn" data-id="s-04-11" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A multispectral image contains multiple image channels corresponding to selected spectral bands.</p>
+<p>Conceptually:</p>
+<p>
+$$
+H\times W\times C
+$$
+</p>
+<p>where $C$ is the number of bands/channels.</p>
+<p>For example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Band 1
+Band 2
+Band 3
+Band 4
+...
+Band C</code></pre>
+</div></p>
+<p>Each band may reveal different information about the scene.</p>
+<p>This is useful in areas such as:</p>
+<ul>
+<li>remote sensing,</li>
+<li>environmental monitoring,</li>
+<li>agriculture,</li>
+<li>scientific imaging.</li>
+</ul>
+<blockquote>
+<p><strong>Extension:</strong> More channels do not automatically mean “better colour.” Multispectral data may represent information outside ordinary visible RGB perception.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 04.12: Grayscale vs RGB vs Multispectral -->
+  <section id="s-04-12" class="section-block">
+    <div class="section-header">
+      <span class="section-num">04.12</span>
+      <h2>Grayscale vs RGB vs Multispectral</h2>
+      <button class="bookmark-btn" data-id="s-04-12" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Property</th>
+<th>Grayscale</th>
+<th>RGB</th>
+<th>Multispectral</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Typical channels</td>
+<td>1</td>
+<td>3</td>
+<td>&gt;3 in many systems</td>
+</tr>
+<tr>
+<td>Main content</td>
+<td>intensity</td>
+<td>colour components</td>
+<td>selected spectral bands</td>
+</tr>
+<tr>
+<td>Common shape</td>
+<td>$H\times W$</td>
+<td>$H\times W\times3$</td>
+<td>$H\times W\times C$</td>
+</tr>
+<tr>
+<td>Typical use</td>
+<td>structure/intensity processing</td>
+<td>ordinary colour imaging</td>
+<td>spectral analysis</td>
+</tr>
+<tr>
+<td>Example task</td>
+<td>edge detection</td>
+<td>colour segmentation</td>
+<td>land-cover analysis</td>
+</tr>
+</tbody>
+</table></div>
+<p>The table describes common representations, not mandatory definitions for every imaging system.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 04.13: Bit Depth -->
+  <section id="s-04-13" class="section-block">
+    <div class="section-header">
+      <span class="section-num">04.13</span>
+      <h2>Bit Depth</h2>
+      <button class="bookmark-btn" data-id="s-04-13" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Bit depth describes how many bits are used to encode a sample under a particular representation.</p>
+<p>If:</p>
+<p>
+$$
+k=\text{bits/sample}
+$$
+</p>
+<p>then:</p>
+<p>
+$$
+L=2^k
+$$
+</p>
+<p>possible binary codes exist.</p>
+<p>Examples:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>8-bit  → 256 codes
+10-bit → 1024 codes
+12-bit → 4096 codes
+16-bit → 65536 codes</code></pre>
+</div></p>
+<h3>Important distinction</h3>
+<p>Bit depth is not the same thing as:</p>
+<ul>
+<li>number of pixels,</li>
+<li>number of channels,</li>
+<li>file size,</li>
+<li>display resolution.</li>
+</ul>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 04.14: Worked Example — Total Raw Storage -->
+  <section id="s-04-14" class="section-block">
+    <div class="section-header">
+      <span class="section-num">04.14</span>
+      <h2>Worked Example — Total Raw Storage</h2>
+      <button class="bookmark-btn" data-id="s-04-14" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose an image is:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>1920 × 1080
+RGB
+8-bit per stored channel sample</code></pre>
+</div></p>
+<p>Then:</p>
+<p>
+$$
+1920\times1080\times3
+=
+6{,}220{,}800
+$$
+</p>
+<p>channel samples.</p>
+<p>Since 8 bits = 1 byte:</p>
+<p>
+$$
+6{,}220{,}800\text{ bytes}
+$$
+</p>
+<p>This is approximately:</p>
+<p>
+$$
+\frac{6{,}220{,}800}{1024^2}
+\approx5.93\text{ MiB}
+$$
+</p>
+<h3>Interpretation</h3>
+<p>This is an estimate for the raw channel array.</p>
+<p>It is <strong>not</strong> a guarantee that the corresponding JPEG/PNG/TIFF file will occupy 5.93 MiB.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 04.15: File Size vs Raw Image Size -->
+  <section id="s-04-15" class="section-block">
+    <div class="section-header">
+      <span class="section-num">04.15</span>
+      <h2>File Size vs Raw Image Size</h2>
+      <button class="bookmark-btn" data-id="s-04-15" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>This distinction is critical.</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>RAW IMAGE REPRESENTATION
+→ dimensions × channels × bytes/sample
+
+FILE ON DISK
+→ raw data
+  + metadata
+  + possible compression
+  + format-specific structures</code></pre>
+</div></p>
+<p>A JPEG may be much smaller than the raw RGB array because it uses lossy compression.</p>
+<p>A PNG can also be substantially smaller due to lossless compression and image redundancy.</p>
+<p>The actual file size depends on image content and format settings.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 04.16: Datatype -->
+  <section id="s-04-16" class="section-block">
+    <div class="section-header">
+      <span class="section-num">04.16</span>
+      <h2>Datatype</h2>
+      <button class="bookmark-btn" data-id="s-04-16" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>An image-processing program must also know the numeric datatype.</p>
+<p>Common examples include:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>uint8
+uint16
+float32
+float64</code></pre>
+</div></p>
+<p>These are not interchangeable.</p>
+<p>For example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>uint8
+→ often represents integer values such as 0–255
+
+float
+→ can represent fractional values</code></pre>
+</div></p>
+<p>But the actual valid range depends on how the application defines the representation.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 04.17: Why Datatype Matters -->
+  <section id="s-04-17" class="section-block">
+    <div class="section-header">
+      <span class="section-num">04.17</span>
+      <h2>Why Datatype Matters</h2>
+      <button class="bookmark-btn" data-id="s-04-17" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose an operation produces:</p>
+<p>
+$$
+280
+$$
+</p>
+<p>If the destination representation is an 8-bit unsigned integer with the conventional 0–255 range, 280 cannot be represented directly.</p>
+<p>A pipeline may therefore:</p>
+<ul>
+<li>clip,</li>
+<li>rescale,</li>
+<li>wrap,</li>
+<li>convert differently,</li>
+</ul>
+<p>depending on the implementation.</p>
+<blockquote>
+<p><strong>WARNING:</strong> Numerical behaviour after datatype conversion must never be assumed.</p>
+</blockquote>
+<p>This is one reason the Coding Companion requires explicit range/datatype declarations.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 04.18: Dynamic Range -->
+  <section id="s-04-18" class="section-block">
+    <div class="section-header">
+      <span class="section-num">04.18</span>
+      <h2>Dynamic Range</h2>
+      <button class="bookmark-btn" data-id="s-04-18" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Dynamic range describes the span between low and high representable or measurable signal levels, depending on context.</p>
+<p>For a simple 8-bit grayscale representation:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>low
+0
+↓
+127
+↓
+255
+high</code></pre>
+</div></p>
+<p>A wider dynamic range can allow more separation between weak and strong signals, but dynamic range and bit depth are not identical concepts.</p>
+<h3>Important distinction</h3>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Bit depth
+→ number of representable codes
+
+Dynamic range
+→ span of signal levels that can be represented/measured</code></pre>
+</div></p>
+<p>A system can have high bit depth without having arbitrarily large physical dynamic range.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 04.19: Resolution — The Word That Causes Confusion -->
+  <section id="s-04-19" class="section-block">
+    <div class="section-header">
+      <span class="section-num">04.19</span>
+      <h2>Resolution — The Word That Causes Confusion</h2>
+      <button class="bookmark-btn" data-id="s-04-19" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>The word <strong>resolution</strong> is used in multiple ways.</p>
+<p>For this MiniBook, avoid saying simply:</p>
+<blockquote>
+<p>“Resolution means number of pixels.”</p>
+</blockquote>
+<p>That is incomplete.</p>
+<p>Useful distinctions include:</p>
+<h3>Spatial resolution</h3>
+<p>How finely spatial detail is represented or, depending on context, the system's ability to distinguish nearby spatial structures.</p>
+<h3>Image dimensions</h3>
+<p>The number of stored pixels/samples:</p>
+<p>
+$$
+H\times W
+$$
+</p>
+<h3>Radiometric resolution</h3>
+<p>Ability to distinguish intensity/signal differences.</p>
+<h3>Temporal resolution</h3>
+<p>How frequently measurements are acquired over time, especially for video.</p>
+<p>The present course mainly needs spatial and intensity/bit-depth distinctions, while the broader terminology becomes useful later.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 04.20: Image Dimensions vs Spatial Resolution -->
+  <section id="s-04-20" class="section-block">
+    <div class="section-header">
+      <span class="section-num">04.20</span>
+      <h2>Image Dimensions vs Spatial Resolution</h2>
+      <button class="bookmark-btn" data-id="s-04-20" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Two images can both have:</p>
+<p>
+$$
+1920\times1080
+$$
+</p>
+<p>yet have different effective image quality because their acquisition systems may differ in:</p>
+<ul>
+<li>optical sharpness,</li>
+<li>sensor quality,</li>
+<li>focus,</li>
+<li>noise,</li>
+<li>sampling response,</li>
+<li>compression,</li>
+<li>processing.</li>
+</ul>
+<p>Therefore:</p>
+<blockquote>
+<p><strong>Stored pixel dimensions are not a complete description of spatial resolving power.</strong></p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 04.21: Worked Example — Two Images, Same Dimensions -->
+  <section id="s-04-21" class="section-block">
+    <div class="section-header">
+      <span class="section-num">04.21</span>
+      <h2>Worked Example — Two Images, Same Dimensions</h2>
+      <button class="bookmark-btn" data-id="s-04-21" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Consider:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Image A
+1920 × 1080
+good focus
+low blur
+
+Image B
+1920 × 1080
+strong defocus blur</code></pre>
+</div></p>
+<p>Both contain the same number of stored pixels.</p>
+<p>But Image B may show substantially less useful fine detail.</p>
+<p>This demonstrates:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>pixel count ≠ complete image quality</code></pre>
+</div></p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 04.22: Tensor Representation -->
+  <section id="s-04-22" class="section-block">
+    <div class="section-header">
+      <span class="section-num">04.22</span>
+      <h2>Tensor Representation</h2>
+      <button class="bookmark-btn" data-id="s-04-22" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <blockquote>
+<p><strong>DEEP DIVE / EXTENSION</strong></p>
+</blockquote>
+<p>In modern computer vision, an image is often represented as a tensor.</p>
+<p>Examples:</p>
+<h3>Grayscale</h3>
+<p>
+$$
+H\times W
+$$
+</p>
+<h3>RGB</h3>
+<p>
+$$
+H\times W\times3
+$$
+</p>
+<h3>Batch of RGB images</h3>
+<p>
+$$
+B\times H\times W\times3
+$$
+</p>
+<p>where:</p>
+<ul>
+<li>$B$ = batch size,</li>
+<li>$H$ = height,</li>
+<li>$W$ = width.</li>
+</ul>
+<p>Some frameworks use channel-first layout:</p>
+<p>
+$$
+B\times3\times H\times W
+$$
+</p>
+<p>The numerical information may be the same, but the memory/processing layout differs.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 04.23: Channel-First vs Channel-Last -->
+  <section id="s-04-23" class="section-block">
+    <div class="section-header">
+      <span class="section-num">04.23</span>
+      <h2>Channel-First vs Channel-Last</h2>
+      <button class="bookmark-btn" data-id="s-04-23" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>These are representation conventions.</p>
+<h3>Channel-last</h3>
+<p>
+$$
+H\times W\times C
+$$
+</p>
+<h3>Channel-first</h3>
+<p>
+$$
+C\times H\times W
+$$
+</p>
+<p>For a batch:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>channel-last:
+B × H × W × C
+
+channel-first:
+B × C × H × W</code></pre>
+</div></p>
+<h3>Engineering Insight</h3>
+<p>Shape errors are among the most common problems when moving images between libraries and machine-learning frameworks.</p>
+<p>Always inspect the shape rather than assuming it.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 04.24: Worked Example — Tensor Shape -->
+  <section id="s-04-24" class="section-block">
+    <div class="section-header">
+      <span class="section-num">04.24</span>
+      <h2>Worked Example — Tensor Shape</h2>
+      <button class="bookmark-btn" data-id="s-04-24" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose you have:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>32 RGB images
+224 × 224</code></pre>
+</div></p>
+<p>Then channel-last batch shape is:</p>
+<p>
+$$
+32\times224\times224\times3
+$$
+</p>
+<p>Number of stored channel samples:</p>
+<p>
+$$
+32\times224\times224\times3
+=
+4{,}816{,}128
+$$
+</p>
+<p>If values are float32, each takes 4 bytes in the usual representation, so raw array storage is approximately:</p>
+<p>
+$$
+4{,}816{,}128\times4
+=
+19{,}264{,}512\text{ bytes}
+$$
+</p>
+<p>before additional framework overhead.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 04.25: Normalized Image Values -->
+  <section id="s-04-25" class="section-block">
+    <div class="section-header">
+      <span class="section-num">04.25</span>
+      <h2>Normalized Image Values</h2>
+      <button class="bookmark-btn" data-id="s-04-25" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Image-processing and machine-learning pipelines may convert integer images into floating-point representations.</p>
+<p>For example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>uint8:
+0 → 255</code></pre>
+</div></p>
+<p>may be mapped to:</p>
+<p>
+$$
+[0,1]
+$$
+</p>
+<p>using:</p>
+<p>
+$$
+x_{\text{norm}}=\frac{x}{255}
+$$
+</p>
+<p>under this specific convention.</p>
+<p>Thus:</p>
+<p>
+$$
+128\rightarrow\frac{128}{255}\approx0.502
+$$
+</p>
+<div class="trap-box"><div class="trap-title"><span>⚠️</span> WARNING</div>
+
+Not every system uses $[0,1]$.
+
+Some pipelines use:
+
+
+$$
+[-1,1]
+$$
+
+
+or standardized values.
+
+Therefore normalization must always be declared.
+
+</div>
+
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 04.26: Image Coordinate System vs Display Coordinate System -->
+  <section id="s-04-26" class="section-block">
+    <div class="section-header">
+      <span class="section-num">04.26</span>
+      <h2>Image Coordinate System vs Display Coordinate System</h2>
+      <button class="bookmark-btn" data-id="s-04-26" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Mathematical diagrams, programming libraries and graphics systems do not always use identical conventions.</p>
+<p>You may encounter:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>row increases downward
+column increases to the right</code></pre>
+</div></p>
+<p>in array/image processing.</p>
+<p>But a conventional Cartesian plot often uses:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>x increases right
+y increases upward</code></pre>
+</div></p>
+<p>This can cause apparent vertical inversions when an image is plotted.</p>
+<blockquote>
+<p><strong>Engineering Insight:</strong> Always state the coordinate convention when a derivation or geometric transformation depends on it.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 04.27: Pixel Value Is Not Always “Brightness” -->
+  <section id="s-04-27" class="section-block">
+    <div class="section-header">
+      <span class="section-num">04.27</span>
+      <h2>Pixel Value Is Not Always “Brightness”</h2>
+      <button class="bookmark-btn" data-id="s-04-27" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A stored pixel value represents the quantity defined by its encoding.</p>
+<p>For example:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>RGB value
+→ colour-channel code
+
+thermal image value
+→ may represent calibrated temperature-related data
+
+multispectral band value
+→ may represent a sensor measurement in a spectral band</code></pre>
+</div></p>
+<p>Therefore the word <strong>intensity</strong> should be used carefully.</p>
+<p>For a grayscale image it is often a useful description.</p>
+<p>For scientific images, the stored values may have a more specific physical meaning.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 04.28: Resolution, Bit Depth and Channels — Separate Them -->
+  <section id="s-04-28" class="section-block">
+    <div class="section-header">
+      <span class="section-num">04.28</span>
+      <h2>Resolution, Bit Depth and Channels — Separate Them</h2>
+      <button class="bookmark-btn" data-id="s-04-28" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <div class="table-wrap"><table class="comparison-table">
+<thead>
+<tr>
+<th>Property</th>
+<th>Controls</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Width / height</td>
+<td>spatial sample count</td>
+</tr>
+<tr>
+<td>Channel count</td>
+<td>number of stored components/bands</td>
+</tr>
+<tr>
+<td>Bit depth</td>
+<td>number of codes per stored sample</td>
+</tr>
+<tr>
+<td>Datatype</td>
+<td>computational/storage representation</td>
+</tr>
+<tr>
+<td>Dynamic range</td>
+<td>signal span</td>
+</tr>
+<tr>
+<td>Colour model</td>
+<td>how colour information is parameterized</td>
+</tr>
+<tr>
+<td>Compression</td>
+<td>how storage redundancy is reduced</td>
+</tr>
+</tbody>
+</table></div>
+<p>These properties interact but are not interchangeable.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 04.29: A Complete Image Description -->
+  <section id="s-04-29" class="section-block">
+    <div class="section-header">
+      <span class="section-num">04.29</span>
+      <h2>A Complete Image Description</h2>
+      <button class="bookmark-btn" data-id="s-04-29" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Instead of saying:</p>
+<blockquote>
+<p>“This is a high-resolution image.”</p>
+</blockquote>
+<p>provide a structured description:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>Dimensions:
+1920 × 1080
+
+Channels:
+3
+
+Representation:
+RGB
+
+Datatype:
+uint8
+
+Per-channel code levels:
+256
+
+Raw channel samples:
+6,220,800
+
+Approximate raw storage:
+5.93 MiB
+
+File format:
+JPEG
+
+Compression:
+lossy</code></pre>
+</div></p>
+<p>This is much more useful for engineering work.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 04.30: Image Representation Pipeline -->
+  <section id="s-04-30" class="section-block">
+    <div class="section-header">
+      <span class="section-num">04.30</span>
+      <h2>Image Representation Pipeline</h2>
+      <button class="bookmark-btn" data-id="s-04-30" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>PHYSICAL MEASUREMENT
+        ↓
+SPATIAL SAMPLES
+        ↓
+NUMERIC VALUES
+        ↓
+CHANNEL ORGANIZATION
+        ↓
+COLOUR / SIGNAL REPRESENTATION
+        ↓
+DATATYPE + RANGE
+        ↓
+FILE FORMAT
+        ↓
+OPTIONAL COMPRESSION</code></pre>
+</div></p>
+<p>Each stage answers a different question.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 04.31: Example — One Scene, Many Representations -->
+  <section id="s-04-31" class="section-block">
+    <div class="section-header">
+      <span class="section-num">04.31</span>
+      <h2>Example — One Scene, Many Representations</h2>
+      <button class="bookmark-btn" data-id="s-04-31" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>A single photograph can exist as:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>RAW / SENSOR-RELATED DATA
+        ↓
+linear camera representation
+        ↓
+RGB image
+        ↓
+grayscale copy
+        ↓
+HSV representation
+        ↓
+normalized floating tensor
+        ↓
+JPEG file</code></pre>
+</div></p>
+<p>These are not necessarily different scenes.</p>
+<p>They are different representations of related image information.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 04.32: Why Representation Choice Matters -->
+  <section id="s-04-32" class="section-block">
+    <div class="section-header">
+      <span class="section-num">04.32</span>
+      <h2>Why Representation Choice Matters</h2>
+      <button class="bookmark-btn" data-id="s-04-32" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Suppose you want to isolate objects based on colour.</p>
+<h3>RGB</h3>
+<p>You can inspect three channels directly.</p>
+<h3>HSV</h3>
+<p>Hue and saturation may provide a more convenient representation for some colour-based segmentation tasks.</p>
+<p>Suppose you want edge detection.</p>
+<h3>Grayscale</h3>
+<p>A single intensity-related channel may simplify the computation.</p>
+<p>Suppose you want to feed an image into a CNN.</p>
+<h3>Tensor</h3>
+<p>A shape such as:</p>
+<p>
+$$
+B\times H\times W\times C
+$$
+</p>
+<p>may be required.</p>
+<p>The representation should therefore follow the task.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 04.33: Common Traps -->
+  <section id="s-04-33" class="section-block">
+    <div class="section-header">
+      <span class="section-num">04.33</span>
+      <h2>Common Traps</h2>
+      <button class="bookmark-btn" data-id="s-04-33" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h2>Trap 1 — “A pixel is always one number.”</h2>
+<p>False.</p>
+<p>That is common for grayscale images, but colour and multispectral images can associate multiple channel values with one spatial location.</p>
+<h2>Trap 2 — “RGB is one matrix.”</h2>
+<p>Simplification.</p>
+<p>It can be represented as one 3-D array or as three 2-D channel matrices, depending on the notation/layout.</p>
+<h2>Trap 3 — “Higher resolution means more bit depth.”</h2>
+<p>False.</p>
+<p>Spatial dimensions and intensity precision are distinct.</p>
+<h2>Trap 4 — “1920×1080 tells me everything about image quality.”</h2>
+<p>False.</p>
+<p>Optics, blur, noise, acquisition quality, compression and other factors matter.</p>
+<h2>Trap 5 — “8-bit RGB means the file is 24 bits.”</h2>
+<p>Not necessarily.</p>
+<p>An uncompressed 8-bit-per-channel RGB array contains 24 bits per pixel of raw channel data, but the final file may be compressed or stored in another format.</p>
+<h2>Trap 6 — “All software uses RGB H×W×3.”</h2>
+<p>False.</p>
+<p>Channel order, memory layout and batching conventions vary.</p>
+<h2>Trap 7 — “Pixel value always means physical brightness.”</h2>
+<p>False.</p>
+<p>Its meaning depends on the image modality and encoding.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 04.34: Engineering Decision Example — Choosing a Representation -->
+  <section id="s-04-34" class="section-block">
+    <div class="section-header">
+      <span class="section-num">04.34</span>
+      <h2>Engineering Decision Example — Choosing a Representation</h2>
+      <button class="bookmark-btn" data-id="s-04-34" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>Imagine a segmentation task for a brightly coloured object against a differently coloured background.</p>
+<p>Possible workflow:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>RGB image
+→ inspect channels
+→ transform to a suitable colour representation
+→ threshold/segment
+→ morphological cleanup</code></pre>
+</div></p>
+<p>The choice of colour space should be justified by the separation it provides for the specific image/task.</p>
+<p>There is no universal rule that one colour space is always best.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 04.35: Cross-Book Bridges -->
+  <section id="s-04-35" class="section-block">
+    <div class="section-header">
+      <span class="section-num">04.35</span>
+      <h2>Cross-Book Bridges</h2>
+      <button class="bookmark-btn" data-id="s-04-35" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <blockquote>
+<p><strong>MATH BRIDGE — M04–M08</strong><br />
+Vectors, matrices, tensor shapes and basic linear operations.</p>
+<p><strong>LAB BRIDGE — LAB-U1-01</strong><br />
+Load images and inspect shape, channel count, datatype and range.</p>
+<p><strong>CODE BRIDGE — CODE-00</strong><br />
+Pay special attention to RGB/BGR conventions, normalization and shape ordering.</p>
+<p><strong>PRACTICE BRIDGE</strong><br />
+Given an image description, calculate sample count, channel samples and raw storage.</p>
+<p><strong>EXAM BRIDGE</strong><br />
+Prepare definitions and comparisons for pixel, grayscale, RGB, multispectral image, bit depth, resolution, datatype and dynamic range.</p>
+</blockquote>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 04.36: Quick Recall -->
+  <section id="s-04-36" class="section-block">
+    <div class="section-header">
+      <span class="section-num">04.36</span>
+      <h2>Quick Recall</h2>
+      <button class="bookmark-btn" data-id="s-04-36" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>Grayscale</h3>
+<p>
+$$
+H\times W
+$$
+</p>
+<h3>RGB</h3>
+<p>
+$$
+H\times W\times3
+$$
+</p>
+<h3>Multispectral</h3>
+<p>
+$$
+H\times W\times C
+$$
+</p>
+<h3>Batch of RGB images — one common layout</h3>
+<p>
+$$
+B\times H\times W\times3
+$$
+</p>
+<h3>Levels from $k$ bits</h3>
+<p>
+$$
+L=2^k
+$$
+</p>
+<h3>Raw storage estimate</h3>
+<p>
+$$
+\text{bytes}
+=
+HWC\times
+\frac{\text{bits/sample}}{8}
+$$
+</p>
+<p>for a simple uncompressed channel array.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 04.37: Chapter Checkpoint -->
+  <section id="s-04-37" class="section-block">
+    <div class="section-header">
+      <span class="section-num">04.37</span>
+      <h2>Chapter Checkpoint</h2>
+      <button class="bookmark-btn" data-id="s-04-37" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <ol>
+<li>What is a pixel?</li>
+<li>How is a grayscale image represented mathematically?</li>
+<li>How can RGB be represented as three matrices?</li>
+<li>What is a multispectral image?</li>
+<li>How does bit depth relate to the number of levels?</li>
+<li>What is the difference between dimensions and resolution?</li>
+<li>What is the difference between bit depth and dynamic range?</li>
+<li>Why does datatype matter?</li>
+<li>What is the difference between channel-first and channel-last?</li>
+<li>Calculate the raw storage of a 1024×1024 RGB image with 8-bit channels.</li>
+<li>Why can two images with identical dimensions have different useful detail?</li>
+<li>Why must colour-space and normalization conventions be declared?</li>
+</ol>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 04.38: Calculation Check — Raw Storage Example -->
+  <section id="s-04-38" class="section-block">
+    <div class="section-header">
+      <span class="section-num">04.38</span>
+      <h2>Calculation Check — Raw Storage Example</h2>
+      <button class="bookmark-btn" data-id="s-04-38" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>For:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>1024 × 1024
+RGB
+8-bit/channel</code></pre>
+</div></p>
+<p>spatial samples:</p>
+<p>
+$$
+1024\times1024=1{,}048{,}576
+$$
+</p>
+<p>channel samples:</p>
+<p>
+$$
+1{,}048{,}576\times3=3{,}145{,}728
+$$
+</p>
+<p>bytes:</p>
+<p>
+$$
+3{,}145{,}728
+$$
+</p>
+<p>Approximate MiB:</p>
+<p>
+$$
+\frac{3{,}145{,}728}{1024^2}=3.00\text{ MiB}
+$$
+</p>
+<p>So a raw 8-bit RGB array of this size requires approximately:</p>
+<p>
+$$
+\boxed{3.00\text{ MiB}}
+$$
+</p>
+<p>excluding extra metadata or program overhead.</p>
+<hr />
+    </div>
+  </section>
+
+  <!-- SECTION 04.39: Connection Forward -->
+  <section id="s-04-39" class="section-block">
+    <div class="section-header">
+      <span class="section-num">04.39</span>
+      <h2>Connection Forward</h2>
+      <button class="bookmark-btn" data-id="s-04-39" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <p>We now know what an image <strong>is as data</strong>:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>pixels
++
+dimensions
++
+channels
++
+bit depth
++
+datatype
++
+range
++
+representation</code></pre>
+</div></p>
+<p>The next question is:</p>
+<blockquote>
+<p><strong>How do we represent and manipulate colour in a principled way, and how do image file formats preserve or compress that information?</strong></p>
+</blockquote>
+<p>That leads to Chapter 05:</p>
+<p><div class="code-block">
+  <div class="code-header">
+    <span>text</span>
+    <button class="code-copy-btn">📋 Copy</button>
+  </div>
+  <pre><code>RGB
+→ HSV
+→ CMY
+→ YUV
+→ BMP / PNG / JPEG / TIFF</code></pre>
+</div></p>
+    </div>
+  </section>
+
+  <!-- SECTION 04.40: Pixel Topologies &amp; Spatial Neighbourhoods -->
+  <section id="s-04-40" class="section-block">
+    <div class="section-header">
+      <span class="section-num">04.40</span>
+      <h2>Pixel Topologies &amp; Spatial Neighbourhoods</h2>
+      <button class="bookmark-btn" data-id="s-04-40" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>4-Neighbours, Diagonal Neighbours, and 8-Neighbours</h3>
+<p>Given a central pixel $p$ at integer matrix coordinates $(x,y)$:
+1. <strong>4-Neighbours $N_4(p)$:</strong> The four horizontally and vertically adjacent pixels:
+
+$$N_4(p) = \{(x+1, y), (x-1, y), (x, y+1), (x, y-1)\}$$
+
+2. <strong>Diagonal Neighbours $N_D(p)$:</strong> The four diagonal corner pixels:
+
+$$N_D(p) = \{(x+1, y+1), (x+1, y-1), (x-1, y+1), (x-1, y-1)\}$$
+
+3. <strong>8-Neighbours $N_8(p)$:</strong> The union of 4-neighbours and diagonal neighbours:
+
+$$N_8(p) = N_4(p) \cup N_D(p)$$
+</p>
+<div class="before-after-card">
+  <div class="before-after-header">
+    <span class="before-after-title">Visual Evidence: Pixel Neighbourhood Grids</span>
+    <span class="tag-badge tag-math">LAYER C EVIDENCE</span>
+  </div>
+  <div class="before-after-grid">
+    <div class="compare-pane">
+      <span class="compare-label">4-Neighbourhood $N_4(p)$</span>
+      <div class="compare-visual">
+        <div class="matrix-grid" style="grid-template-columns: repeat(3, 44px);">
+          <div class="matrix-cell">0</div><div class="matrix-cell neighbourhood">(x, y-1)</div><div class="matrix-cell">0</div>
+          <div class="matrix-cell neighbourhood">(x-1, y)</div><div class="matrix-cell centre">p(x,y)</div><div class="matrix-cell neighbourhood">(x+1, y)</div>
+          <div class="matrix-cell">0</div><div class="matrix-cell neighbourhood">(x, y+1)</div><div class="matrix-cell">0</div>
+        </div>
+      </div>
+    </div>
+    <div class="compare-pane">
+      <span class="compare-label">8-Neighbourhood $N_8(p)$</span>
+      <div class="compare-visual">
+        <div class="matrix-grid" style="grid-template-columns: repeat(3, 44px);">
+          <div class="matrix-cell neighbourhood">D</div><div class="matrix-cell neighbourhood">N4</div><div class="matrix-cell neighbourhood">D</div>
+          <div class="matrix-cell neighbourhood">N4</div><div class="matrix-cell centre">p(x,y)</div><div class="matrix-cell neighbourhood">N4</div>
+          <div class="matrix-cell neighbourhood">D</div><div class="matrix-cell neighbourhood">N4</div><div class="matrix-cell neighbourhood">D</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    </div>
+  </section>
+
+  <!-- SECTION 04.41: Mixed (m-) Connectivity and Resolving Path Ambiguities -->
+  <section id="s-04-41" class="section-block">
+    <div class="section-header">
+      <span class="section-num">04.41</span>
+      <h2>Mixed (m-) Connectivity and Resolving Path Ambiguities</h2>
+      <button class="bookmark-btn" data-id="s-04-41" title="Bookmark this section" aria-label="Bookmark section">📌</button>
+    </div>
+    <div class="section-body">
+      <h3>The 8-Connectivity Ambiguity</h3>
+<p>Two pixels $p$ and $q$ with values from an intensity set $V$ are 8-connected if $q \in N_8(p)$. However, 8-connectivity allows multiple ambiguous diagonal and orthogonal paths between adjacent pixels, causing boundary-tracing algorithms to fail.</p>
+<h3>Definition of m-Connectivity</h3>
+<p>Two pixels $p$ and $q$ with values from $V$ are <strong>$m$-connected (mixed connected)</strong> if:
+1. $q \in N_4(p)$, OR
+2. $q \in N_D(p)$ AND the intersection set $N_4(p) \cap N_4(q)$ contains <strong>no pixels whose values belong to $V$</strong>.</p>
+<div class="worked-example">
+  <div class="worked-example-header">
+    <span class="worked-example-title">Numerical Example: Resolving Path Ambiguity with m-Connectivity</span>
+    <span class="tag-badge tag-exam">UNIVERSITY HIGH-YIELD PROOF</span>
+  </div>
+  <p>Consider the binary matrix below with intensity set $V = \{1\}$:</p>
+  
+$$egin{bmatrix}
+  0 & 1 & 1 \
+  0 & 1 & 0 \
+  1 & 0 & 0
+  \end{bmatrix}$$
+
+  <p>Under 8-connectivity, there exist two competing paths between the top-right $1$ and center $1$: an orthogonal path via $(0,1)$ and a diagonal path. Under $m$-connectivity, the diagonal path between $(0,2)$ and $(1,1)$ is eliminated because their 4-neighbourhood intersection contains $(0,1)$, which is already in $V$. Thus, $m$-connectivity guarantees a <strong>unique single-pixel boundary path</strong>!</p>
+</div>
+    </div>
+  </section>
+
+      <!-- Chapter End Package -->
+      <section class="chapter-end-package">
+        <div class="chapter-nav-grid">
+          <a href="ch03-sampling-quantization.html" class="chapter-nav-card">
+            <div class="chapter-nav-dir">← Previous</div>
+            <div class="chapter-nav-title">← Ch 3 — Sampling & Quantization</div>
+          </a>
+          <a href="ch05-colour-models-file-formats.html" class="chapter-nav-card next">
+            <div class="chapter-nav-dir">Next →</div>
+            <div class="chapter-nav-title">Next: Ch 5 — Colour Models & Formats →</div>
+          </a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- FLOATING TTS PANEL (SAFE MANUAL MODE ONLY) -->
+  <div id="tts-panel" style="position:fixed; bottom:20px; right:20px; background:var(--em-surface-1); border:1px solid var(--em-border); border-radius:var(--em-radius-md); padding:12px 16px; box-shadow:var(--sh-lg); z-index:var(--z-float); display:none; gap:10px; align-items:center;">
+    <button class="icon-btn" id="tts-play" title="Play / Pause" style="background:var(--em-accent); color:#fff; border-radius:50%; width:36px; height:36px;">▶</button>
+    <button class="icon-btn" id="tts-stop" title="Stop">⏹</button>
+    <div style="font-size:0.75rem; color:var(--em-text-muted);">
+      <span id="tts-status">Ready</span> · <span id="tts-rate-label">1.0x</span>
+    </div>
+  </div>
+
+  <script src="../assets/js/state.js"></script>
+  <script src="../assets/js/core.js"></script>
+  <script src="../assets/js/tts.js"></script>
+  <script src="../assets/js/glossary.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: document.documentElement.getAttribute('data-theme') === 'light' ? 'default' : 'dark'
+      });
+    });
+  </script>
+</body>
+</html>
