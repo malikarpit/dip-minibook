@@ -87,6 +87,22 @@ The portal now features an interactive curriculum filter engine:
 
 ---
 
+## ⚡ Examination & Rapid Revision Suite
+
+1. **[Interactive 100-Question Unit Quiz](https://malikarpit.github.io/dip-minibook/exams/unit-quiz.html)** (`exams/unit-quiz.html`):
+   - **100 Multiple-Choice Questions** strictly mapped across Delhi University DSE-3 syllabus (25 questions each for Units I, II, III, and IV).
+   - **Quick Presets**: Unit I Blitz, Unit II Enhancement Sprint, Unit III Analysis Master, Unit IV Vision Capstone, and 50/100-Question Full University Mock Exams.
+   - **Dual Execution Modes**: **Study Mode** (instant explanation upon answer selection) vs. **Exam Mode** (timed with palette navigator and end-of-test diagnostic scorecard).
+   - **Diagnostic Scorecard**: Overall percentage, University grade (Distinction, First Class, etc.), unit-by-unit accuracy breakdown, and a one-click button to retry missed questions.
+
+2. **[Master Formula Sheet & Revision Deck](https://malikarpit.github.io/dip-minibook/exams/formula-sheet.html)** (`exams/formula-sheet.html`):
+   - **38 Core Mathematical Formulas & Proofs** across all 4 units (radiometric sensor irradiance, 2D Nyquist limit, Weber-Fechner law, histogram CDF equalization, 2D convolution, Gaussian/Laplacian/Sobel kernels, 2D-DFT, Butterworth/Wiener filters, Otsu variance, morphology set equations, Harris structure tensor, SIFT DoG, SURF integral images, Shannon entropy, JPEG 2D-DCT, CNN receptive fields, ResNet skip gradients, YOLO bounding box equations, Lucas-Kanade normal equations, and CT Hounsfield units).
+   - **Active Recall Flashcard Mode**: Flip and hide equations to test mental recall before written exams.
+   - **Unit Filters & Instant Keyword Search**: Filter cards by unit or search formulas by symbol, name, or variable.
+   - **Copy LaTeX Button**: Copy clean LaTeX code for any equation directly to clipboard.
+
+---
+
 ## 🛠️ Pedagogical & Interactive Features
 
 - **Unit & Topic Alignment Badges:** Every chapter header displays its corresponding University Unit and specific syllabus line item.

@@ -80,6 +80,27 @@ def update_chapter_file(ch_key, meta):
         '<div class="sidebar-section-label part-label part-v">Unit IV · Part V — Intelligent Vision</div>'
     )
 
+    # 4. Insert exam suite links into sidebar if not already present
+    if 'unit-quiz.html' not in content:
+        content = content.replace(
+            '''        <a href="../progress.html" class="sidebar-link">
+          <span class="link-icon">📊</span>
+          <span>Study Dashboard</span>
+        </a>''',
+            '''        <a href="../progress.html" class="sidebar-link">
+          <span class="link-icon">📊</span>
+          <span>Study Dashboard</span>
+        </a>
+        <a href="../exams/unit-quiz.html" class="sidebar-link">
+          <span class="link-icon">⚡</span>
+          <span>100 MCQ Unit Quiz</span>
+        </a>
+        <a href="../exams/formula-sheet.html" class="sidebar-link">
+          <span class="link-icon">📐</span>
+          <span>Formula &amp; Revision Deck</span>
+        </a>'''
+        )
+
     with open(file_path, 'w', encoding='utf-8') as f:
         f.write(content)
     print(f"Updated {meta['file']}")

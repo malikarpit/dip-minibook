@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Arpit">
+  <meta name="description" content="Master Formula Sheet & Rapid Memory Revision Deck — Digital Image Processing (DIP) MiniBook. Complete equations across all 4 Delhi University DSE-3 syllabus units with Active Recall Flashcard Mode.">
+  <title>Master Formula Sheet & Revision Deck | DIP MiniBook 📸 Arpit</title>
+
+  <link rel="manifest" href="../manifest.json">
+  <meta name="theme-color" content="#0284C7">
+
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <link rel="stylesheet" href="../assets/css/animations.css">
+  <link rel="stylesheet" href="../assets/css/timer.css">
+  <link rel="stylesheet" href="../assets/css/chapters.css">
+
+  <!-- MATHJAX 3 CONFIGURATION -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true
+      },
+      options: {
+        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <style>
+    .deck-container {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: var(--em-space-8) clamp(16px, 4vw, 32px) 120px;
+    }
+    .deck-header {
+      background: var(--em-surface-1);
+      border: 1px solid var(--em-border);
+      border-radius: var(--em-radius-lg);
+      padding: var(--em-space-6);
+      margin-bottom: var(--em-space-6);
+      box-shadow: var(--em-shadow-sm);
+    }
+    .deck-header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .deck-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--em-text);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .deck-subtitle {
+      font-size: 0.92rem;
+      color: var(--em-text-secondary);
+      margin-top: 4px;
+      max-width: 720px;
+      line-height: 1.5;
+    }
+    .deck-filter-bar {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: var(--em-space-5);
+      padding-top: var(--em-space-4);
+      border-top: 1px dashed var(--em-border);
+      align-items: center;
+      justify-content: space-between;
+    }
+    .filter-btn-group {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .filter-btn {
+      padding: 6px 14px;
+      border-radius: var(--em-radius-sm);
+      border: 1px solid var(--em-border);
+      background: var(--em-surface-2);
+      color: var(--em-text-secondary);
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all var(--em-motion-fast) var(--em-ease);
+    }
+    .filter-btn:hover {
+      border-color: var(--em-accent);
+      color: var(--em-text);
+    }
+    .filter-btn.active {
+      background: #0284C7;
+      color: #FFFFFF;
+      border-color: #0284C7;
+    }
+    .deck-search-wrap {
+      flex: 1;
+      max-width: 280px;
+      min-width: 200px;
+      position: relative;
+    }
+    .deck-search-input {
+      width: 100%;
+      padding: 7px 12px 7px 32px;
+      font-size: 0.85rem;
+      border-radius: var(--em-radius-sm);
+      border: 1px solid var(--em-border);
+      background: var(--em-surface-2);
+      color: var(--em-text);
+      outline: none;
+      font-family: inherit;
+    }
+    .deck-search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.85rem;
+      color: var(--em-text-muted);
+    }
+    .mode-toggle-group {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .view-toggle-btn {
+      padding: 6px 14px;
+      border-radius: var(--em-radius-sm);
+      border: 1px solid var(--em-border);
+      background: var(--em-surface-2);
+      color: var(--em-text);
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all var(--em-motion-fast) var(--em-ease);
+    }
+    .view-toggle-btn.active-mode {
+      background: #00BCD4;
+      color: #000;
+      border-color: #00BCD4;
+    }
+
+    /* FORMULA GRID */
+    .formula-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: var(--em-space-4);
+      margin-top: var(--em-space-5);
+    }
+    .formula-card {
+      background: var(--em-surface-1);
+      border: 1px solid var(--em-border);
+      border-radius: var(--em-radius-md);
+      padding: var(--em-space-5);
+      transition: all var(--em-motion-fast) var(--em-ease);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+    }
+    .formula-card:hover {
+      border-color: var(--em-accent);
+      transform: translateY(-2px);
+      box-shadow: var(--em-shadow-md);
+    }
+    .f-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--em-space-2);
+    }
+    .f-meta {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .f-unit-badge {
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      padding: 2px 7px;
+      border-radius: 9999px;
+      border: 1px solid var(--em-border);
+    }
+    .f-ch-badge {
+      font-size: 0.70rem;
+      color: var(--em-text-muted);
+      font-weight: 600;
+    }
+    .copy-latex-btn {
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      border: 1px solid var(--em-border);
+      background: var(--em-surface-2);
+      color: var(--em-text-muted);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .copy-latex-btn:hover {
+      color: var(--em-accent);
+      border-color: var(--em-accent);
+    }
+    .f-title {
+      font-size: 1.02rem;
+      font-weight: 700;
+      color: var(--em-text);
+      margin-bottom: var(--em-space-3);
+      line-height: 1.35;
+    }
+    .math-display-box {
+      background: var(--em-surface-2);
+      border: 1px solid var(--em-border);
+      border-radius: var(--em-radius-sm);
+      padding: var(--em-space-3) var(--em-space-4);
+      margin: var(--em-space-2) 0 var(--em-space-3) 0;
+      font-size: 1.05rem;
+      color: #38BDF8;
+      overflow-x: auto;
+      text-align: center;
+      min-height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .f-desc {
+      font-size: 0.85rem;
+      color: var(--em-text-secondary);
+      line-height: 1.5;
+      margin-bottom: var(--em-space-3);
+    }
+    .f-variables {
+      font-size: 0.78rem;
+      color: var(--em-text-muted);
+      border-top: 1px dashed var(--em-border);
+      padding-top: var(--em-space-2);
+      line-height: 1.45;
+    }
+
+    /* FLASHCARD MODE */
+    .flashcard-view .math-display-box,
+    .flashcard-view .f-desc,
+    .flashcard-view .f-variables,
+    .flashcard-view .copy-latex-btn {
+      display: none;
+    }
+    .flashcard-view .formula-card {
+      min-height: 170px;
+      cursor: pointer;
+      border: 2px dashed var(--em-border);
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      background: var(--em-surface-2);
+    }
+    .flashcard-view .formula-card::after {
+      content: '👆 Click to Reveal Formula & Derivation';
+      display: block;
+      margin-top: 12px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: var(--em-accent);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .flashcard-view .formula-card.revealed {
+      border: 2px solid var(--em-accent);
+      background: var(--em-surface-1);
+      justify-content: space-between;
+      align-items: stretch;
+      text-align: left;
+    }
+    .flashcard-view .formula-card.revealed::after {
+      display: none;
+    }
+    .flashcard-view .formula-card.revealed .math-display-box,
+    .flashcard-view .formula-card.revealed .f-desc,
+    .flashcard-view .formula-card.revealed .f-variables,
+    .flashcard-view .formula-card.revealed .copy-latex-btn {
+      display: block;
+      animation: fadeIn 0.2s ease;
+    }
+    .flashcard-view .formula-card.revealed .math-display-box {
+      display: flex;
+    }
+
+    /* Unit styling */
+    .u1-badge { background: rgba(2, 132, 199, 0.15); color: #38BDF8; border-color: rgba(2, 132, 199, 0.4); }
+    .u2-badge { background: rgba(13, 148, 136, 0.15); color: #2DD4BF; border-color: rgba(13, 148, 136, 0.4); }
+    .u3-badge { background: rgba(124, 58, 237, 0.15); color: #A78BFA; border-color: rgba(124, 58, 237, 0.4); }
+    .u4-badge { background: rgba(225, 29, 72, 0.15); color: #FB7185; border-color: rgba(225, 29, 72, 0.4); }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div id="progress-bar"></div>
+
+  <!-- HEADER -->
+  <header id="main-header">
+    <div class="header-left">
+      <button id="sidebar-toggle" class="icon-btn" title="Toggle Sidebar (S)" aria-label="Toggle Navigation">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <a href="../index.html" class="brand-logo">
+        <div class="brand-icon">📸</div>
+        <div class="brand-text">
+          <span class="main">DIP MiniBook</span>
+          <span class="sub">Formula &amp; Revision Deck</span>
+        </div>
+      </a>
+    </div>
+
+    <span class="header-chapter-title">Master Formula &amp; Revision Deck</span>
+
+    <div class="header-right">
+      <a href="unit-quiz.html" class="icon-btn" title="100 MCQ Quiz Suite" style="text-decoration:none; display:inline-flex; align-items:center; font-size:0.95rem;">⚡</a>
+      <button id="search-btn" class="icon-btn" title="Search (Ctrl+K)" aria-label="Search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+      <button id="reading-mode-btn" class="icon-btn" title="Reading Mode (F)" aria-label="Toggle Reading Mode">📖</button>
+      <button id="theme-toggle" class="icon-btn" title="Toggle Theme (T)" aria-label="Toggle Theme">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div id="sidebar-overlay"></div>
+
+  <!-- SIDEBAR NAVIGATION -->
+  <aside id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-brand">
+        <span class="sidebar-logo">📸</span>
+        <div>
+          <div class="sidebar-title">DIP MiniBook</div>
+          <div class="sidebar-subtitle">Formula Revision Deck</div>
+        </div>
+      </div>
+      <button id="sidebar-close" class="icon-btn" aria-label="Close Sidebar">✕</button>
+    </div>
+
+    <div class="sidebar-nav">
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">PORTAL NAVIGATION</div>
+        <a href="../index.html" class="sidebar-link"><span class="link-icon">🏠</span>Home Portal</a>
+        <a href="../progress.html" class="sidebar-link"><span class="link-icon">📊</span>Syllabus Progress Tracker</a>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">EXAMINATION SUITE</div>
+        <a href="unit-quiz.html" class="sidebar-link"><span class="link-icon">⚡</span>100 MCQ Unit Quiz</a>
+        <a href="formula-sheet.html" class="sidebar-link active"><span class="link-icon">📐</span>Formula &amp; Revision Deck</a>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">CORE CURRICULUM (4 UNITS)</div>
+        <a href="../chapters/ch01-big-picture.html" class="sidebar-link"><span class="link-icon">1️⃣</span>Unit I: Introduction</a>
+        <a href="../chapters/ch06-point-processing.html" class="sidebar-link"><span class="link-icon">2️⃣</span>Unit II: Enhancement &amp; Restoration</a>
+        <a href="../chapters/ch15-segmentation-fundamentals.html" class="sidebar-link"><span class="link-icon">3️⃣</span>Unit III: Analysis &amp; Compression</a>
+        <a href="../chapters/ch25-image-classification.html" class="sidebar-link"><span class="link-icon">4️⃣</span>Unit IV: Advanced Topics &amp; Vision</a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT CONTAINER -->
+  <main id="main-content">
+    <div class="deck-container">
+
+      <!-- MASTER HEADER -->
+      <section class="deck-header">
+        <div class="deck-header-top">
+          <div>
+            <div class="deck-title">
+              <span>📐 Master Formula Sheet &amp; Revision Deck</span>
+            </div>
+            <p class="deck-subtitle">
+              Every mathematical derivation, radiometric equation, frequency transform, and vision proof across all 4 Delhi University DSE-3 syllabus units. Switch to <strong>Active Recall Mode</strong> to test memory before examinations.
+            </p>
+          </div>
+
+          <div class="mode-toggle-group">
+            <button id="btn-mode-reference" class="view-toggle-btn active-mode" onclick="setDeckMode('reference')">
+              <span>📖 Reference Mode</span>
+            </button>
+            <button id="btn-mode-flashcard" class="view-toggle-btn" onclick="setDeckMode('flashcard')">
+              <span>🧠 Active Recall Mode</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="deck-filter-bar">
+          <div class="filter-btn-group">
+            <button class="filter-btn active" data-unit="all" onclick="filterUnit('all', this)">All Units (38)</button>
+            <button class="filter-btn" data-unit="Unit I" onclick="filterUnit('Unit I', this)">Unit I: Acquisition (7)</button>
+            <button class="filter-btn" data-unit="Unit II" onclick="filterUnit('Unit II', this)">Unit II: Enhancement (13)</button>
+            <button class="filter-btn" data-unit="Unit III" onclick="filterUnit('Unit III', this)">Unit III: Analysis &amp; JPEG (10)</button>
+            <button class="filter-btn" data-unit="Unit IV" onclick="filterUnit('Unit IV', this)">Unit IV: Vision &amp; Deep Learning (8)</button>
+          </div>
+
+          <div class="deck-search-wrap">
+            <span class="deck-search-icon">🔍</span>
+            <input type="text" id="deck-search" class="deck-search-input" placeholder="Filter equations, variables, proofs…" oninput="filterSearch(this.value)">
+          </div>
+        </div>
+      </section>
+
+      <!-- FORMULA CARDS GRID -->
+      <div id="formula-grid" class="formula-grid">
+
+        <!-- ================= UNIT I ================= -->
+        <div class="formula-card" data-unit="Unit I" data-keywords="sensor irradiance camera lens cos4 radiometric acquisition optics">
+          <div class="f-header">
+            <div class="f-meta">
+              <span class="f-unit-badge u1-badge">Unit I</span>
+              <span class="f-ch-badge">Ch 02</span>
+            </div>
+            <button class="copy-latex-btn" onclick="copyLatex(this, 'E = L \\cdot \\frac{\\pi}{4} \\left(\\frac{D}{f}\\right)^2 \\cos^4 \\alpha')">LaTeX</button>
+          </div>
+          <div class="f-title">Radiometric Lens Irradiance ($\cos^4 \alpha$ Law)</div>
+          <div class="math-display-box">
+            $$E = L \cdot \frac{\pi}{4} \left(\frac{D}{f}\right)^2 \cos^4 \alpha$$
+          </div>
+          <div class="f-desc">Quantifies the illuminance $E$ falling on the sensor plane as a function of scene radiance $L$, aperture diameter $D$, focal length $f$, and off-axis angle $\alpha$. Explains peripheral optical vignetting.</div>
+          <div class="f-variables"><strong>Variables:</strong> $E$: sensor irradiance ($\text{W/m}^2$), $L$: scene radiance ($\text{W}/(\text{sr}\cdot\text{m}^2)$), $D/f$: numerical aperture, $\alpha$: angle between incident ray and optical axis.</div>
+        </div>
+
+        <div class="formula-card" data-unit="Unit I" data-keywords="nyquist shannon sampling spatial frequency aliasing grid">
+          <div class="f-header">
+            <div class="f-meta">
+              <span class="f-unit-badge u1-badge">Unit I</span>
+              <span class="f-ch-badge">Ch 03</span>
+            </div>
+            <button class="copy-latex-btn" onclick="copyLatex(this, '\\Delta x \\le \\frac{1}{2 u_{\\max}}, \\quad \\Delta y \\le \\frac{1}{2 v_{\\max}}')">LaTeX</button>
+          </div>
+          <div class="f-title">2D Nyquist-Shannon Sampling Interval Limit</div>
+          <div class="math-display-box">
+            $$\Delta x \le \frac{1}{2 u_{\max}}, \quad \Delta y \le \frac{1}{2 v_{\max}}$$
+          </div>
+          <div class="f-desc">Sets the maximum allowable spatial sampling distance along rows and columns to prevent spatial aliasing and moiré fringe patterns for a bandlimited 2D image.</div>
+          <div class="f-variables"><strong>Variables:</strong> $\Delta x, \Delta y$: physical pixel pitch/spacing, $u_{\max}, v_{\max}$: maximum horizontal and vertical spatial frequencies ($\text{cycles/mm}$).</div>
+        </div>
+
+        <div class="formula-card" data-unit="Unit I" data-keywords="weber fechner contrast perception psychophysics eye brightness">
+          <div class="f-header">
+            <div class="f-meta">
+              <span class="f-unit-badge u1-badge">Unit I</span>
+              <span class="f-ch-badge">Ch 01</span>
+            </div>
+            <button class="copy-latex-btn" onclick="copyLatex(this, '\\frac{\\Delta I_c}{I} = K_{\\text{Weber}}')">LaTeX</button>
+          </div>
+          <div class="f-title">Weber-Fechner Visual Contrast Ratio</div>
+          <div class="math-display-box">
+            $$\frac{\Delta I_c}{I} = K_{\text{Weber}} \approx 0.01 \text{ to } 0.02$$
+          </div>
+          <div class="f-desc">Human visual perception obeys logarithmic contrast scaling: the just-noticeable intensity difference $\Delta I_c$ is proportional to baseline background intensity $I$. Explains why 8 bits (256 levels) suffice for smooth displays.</div>
+          <div class="f-variables"><strong>Variables:</strong> $\Delta I_c$: just noticeable difference (JND), $I$: background luminance, $K_{\text{Weber}}$: Weber fraction ($\sim 1\text{--}2\%$).</div>
+        </div>
+
+        <div class="formula-card" data-unit="Unit I" data-keywords="storage bit depth file size resolution matrix bytes">
+          <div class="f-header">
+            <div class="f-meta">
+              <span class="f-unit-badge u1-badge">Unit I</span>
+              <span class="f-ch-badge">Ch 04</span>
+            </div>
+            <button class="copy-latex-btn" onclick="copyLatex(this, 'b = M \\times N \\times k \\text{ bits} = \\frac{M \\times N \\times k}{8 \\times 1024} \\text{ KB}')">LaTeX</button>
+          </div>
+          <div class="f-title">Uncompressed Raster Image Storage Formula</div>
+          <div class="math-display-box">
+            $$b = M \times N \times k \text{ bits} = \frac{M \times N \times k}{8 \times 1024} \text{ KB}$$
+          </div>
+          <div class="f-desc">Calculates raw binary byte storage for an uncompressed 2D raster image array with $M$ rows, $N$ columns, and $k$ quantization bits per pixel.</div>
+          <div class="f-variables"><strong>Variables:</strong> $M, N$: spatial height and width, $k$: bit depth ($L = 2^k$ gray levels). For RGB true color, multiply by 3 channels.</div>
+        </div>
+
+        <div class="formula-card" data-unit="Unit I" data-keywords="rgb hsv color space hue angle conversion">
+          <div class="f-header">
+            <div class="f-meta">
+              <span class="f-unit-badge u1-badge">Unit I</span>
+              <span class="f-ch-badge">Ch 05</span>
+            </div>
+            <button class="copy-latex-btn" onclick="copyLatex(this, '\\theta = \\arccos \\left( \\frac{\\frac{1}{2}[(R-G) + (R-B)]}{\\sqrt{(R-G)^2 + (R-B)(G-B)}} \\right)')">LaTeX</button>
+          </div>
+          <div class="f-title">RGB to HSV Hue Angle Calculation ($\theta$)</div>
+          <div class="math-display-box">
+            $$\theta = \arccos \left( \frac{\frac{1}{2}[(R-G) + (R-B)]}{\sqrt{(R-G)^2 + (R-B)(G-B)}} \right)$$
+          </div>
+          <div class="f-desc">Converts normalized RGB color coordinates into the angular Hue coordinate on the cylindrical color wheel. If $B > G$, then $H = 360^\circ - \theta$; otherwise $H = \theta$.</div>
+          <div class="f-variables"><strong>Variables:</strong> $R, G, B \in [0, 1]$: normalized primary color components; $H \in [0^\circ, 360^\circ]$.</div>
+        </div>
+
+        <div class="formula-card" data-unit="Unit I" data-keywords="cmy rgb subtractive color printing complementary">
+          <div class="f-header">
+            <div class="f-meta">
+              <span class="f-unit-badge u1-badge">Unit I</span>
+              <span class="f-ch-badge">Ch 05</span>
+            </div>
+            <button class="copy-latex-btn" onclick="copyLatex(this, 'C = 1 - R, \\quad M = 1 - G, \\quad Y = 1 - B')">LaTeX</button>
+          </div>
+          <div class="f-title">Subtractive CMY Complementary Conversion</div>
+          <div class="math-display-box">
+            $$C = 1 - R, \quad M = 1 - G, \quad Y = 1 - B$$
+          </div>
+          <div class="f-desc">Subtractive printing primary colors absorb their complementary additive wavelengths: Cyan pigment absorbs Red, Magenta absorbs Green, Yellow absorbs Blue.</div>
+          <div class="f-variables"><strong>Variables:</strong> $C, M, Y$: Cyan, Magenta, Yellow ink fractions; $R, G, B$: normalized light reflection components.</div>
+        </div>
+
+        <div class="formula-card" data-unit="Unit I" data-keywords="cie chromaticity coordinates tristimulus xyz color gamut">
+          <div class="f-header">
+            <div class="f-meta">
+              <span class="f-unit-badge u1-badge">Unit I</span>
+              <span class="f-ch-badge">Ch 05</span>
+            </div>
+            <button class="copy-latex-btn" onclick="copyLatex(this, 'x = \\frac{X}{X+Y+Z}, \\quad y = \\frac{Y}{X+Y+Z}, \\quad z = \\frac{Z}{X+Y+Z}')">LaTeX</button>
+          </div>
+          <div class="f-title">CIE 1931 Tristimulus Chromaticity Coordinates</div>
+          <div class="math-display-box">
+            $$x = \frac{X}{X+Y+Z}, \quad y = \frac{Y}{X+Y+Z}, \quad z = 1 - x - y$$
+          </div>
+          <div class="f-desc">Normalizes CIE $XYZ$ spectral responses into 2D chromaticity space $(x, y)$, separating pure color tone and saturation from overall luminance $Y$.</div>
+          <div class="f-variables"><strong>Variables:</strong> $X, Y, Z$: tristimulus values; $x, y$: 2D chromaticity plane coordinates.</div>
+        </div>
+
+        <!-- ================= UNIT II ================= -->
+        <div class="formula-card" data-unit="Unit II" data-keywords="logarithmic transform dynamic range fourier spectrum point processing">
+          <div class="f-header">
+            <div class="f-meta">
+              <span class="f-unit-badge u2-badge">Unit II</span>
+              <span class="f-ch-badge">Ch 06</span>
+            </div>
+            <button class="copy-latex-btn" onclick="copyLatex(this, 's = c \\log(1 + r)')">LaTeX</button>
+          </div>
+          <div class="f-title">Logarithmic Dynamic Range Compression</div>
+          <div class="math-display-box">
+            $$s = c \log(1 + r), \quad c = \frac{L-1}{\log(1 + r_{\max})}$$
+          </div>
+          <div class="f-desc">Expands the low-intensity range while heavily compressing extreme high-intensity peaks. Essential for displaying Fourier magnitude spectra whose values span $10^5\text{--}10^6$.</div>
+          <div class="f-variables"><strong>Variables:</strong> $r$: input pixel intensity ($r \ge 0$), $s$: output mapped intensity, $c$: scaling constant, $L$: number of gray levels.</div>
+        </div>
+
+        <div class="formula-card" data-unit="Unit II" data-keywords="gamma power law contrast monitor calibration point processing">
+          <div class="f-header">
+            <div class="f-meta">
+              <span class="f-unit-badge u2-badge">Unit II</span>
+              <span class="f-ch-badge">Ch 06</span>
+            </div>
+            <button class="copy-latex-btn" onclick="copyLatex(this, 's = c \\cdot r^\\gamma')">LaTeX</button>
+          </div>
+          <div class="f-title">Power-Law (Gamma Correction) Transform</div>
+          <div class="math-display-box">
+            $$s = c \cdot r^\gamma$$
+          </div>
+          <div class="f-desc">Controls global tonal curve: $\gamma < 1$ bows upward, brightening dark shadow regions; $\gamma > 1$ bows downward, darkening highlights and increasing high-end contrast. Standard for display calibration ($s = r^{1/2.2}$).</div>
+          <div class="f-variables"><strong>Variables:</strong> $r, s \in [0, 1]$: normalized intensities; $\gamma$: exponent factor; $c$: constant (typically 1).</div>
+        </div>
+
+        <div class="formula-card" data-unit="Unit II" data-keywords="histogram equalization cdf probability pmf discrete enhancement">
+          <div class="f-header">
+            <div class="f-meta">
+              <span class="f-unit-badge u2-badge">Unit II</span>
+              <span class="f-ch-badge">Ch 07</span>
+            </div>
+            <button class="copy-latex-btn" onclick="copyLatex(this, 's_k = T(r_k) = (L-1) \\sum_{j=0}^k p_r(r_j) = \\frac{L-1}{MN} \\sum_{j=0}^k n_j')">LaTeX</button>
+          </div>
+          <div class="f-title">Discrete Histogram Equalization CDF Mapping</div>
+          <div class="math-display-box">
+            $$s_k = T(r_k) = (L-1) \sum_{j=0}^k p_r(r_j) = \frac{L-1}{MN} \sum_{j=0}^k n_j$$
+          </div>
+          <div class="f-desc">Maps discrete gray levels through the normalized Cumulative Distribution Function (CDF) scaled to maximum dynamic range $(L-1)$, spreading crowded pixel clusters uniformly.</div>
+          <div class="f-variables"><strong>Variables:</strong> $n_j$: count of pixels at level $r_j$, $MN$: total image pixels, $p_r(r_j)$: probability, $L$: intensity levels (256).</div>
+        </div>
+
+        <div class="formula-card" data-unit="Unit II" data-keywords="2d spatial convolution sliding window kernel filtering">
+          <div class="f-header">
+            <div class="f-meta">
+              <span class="f-unit-badge u2-badge">Unit II</span>
+              <span class="f-ch-badge">Ch 08</span>
+            </div>
+            <button class="copy-latex-btn" onclick="copyLatex(this, 'g(x,y) = \\sum_{s=-a}^a \\sum_{t=-b}^b w(s,t) f(x-s, y-t)')">LaTeX</button>
+          </div>
+          <div class="f-title">2D Discrete Spatial Convolution Equation</div>
+          <div class="math-display-box">
+            $$g(x,y) = \sum_{s=-a}^a \sum_{t=-b}^b w(s,t) f(x-s, y-t)$$
+          </div>
+          <div class="f-desc">Mathematical definition of linear spatial filtering: the kernel $w$ is flipped by $180^\circ$ (via index negation $-s, -t$) before calculating the inner product with local image patch $f$.</div>
+          <div class="f-variables"><strong>Variables:</strong> $f(x,y)$: input image, $w(s,t)$: filter kernel of dimensions $(2a+1) \times (2b+1)$, $g(x,y)$: filtered output.</div>
+        </div>
+
+        <div class="formula-card" data-unit="Unit II" data-keywords="gaussian kernel smoothing filter standard deviation blur">
+          <div class="f-header">
+            <div class="f-meta">
+              <span class="f-unit-badge u2-badge">Unit II</span>
+              <span class="f-ch-badge">Ch 09</span>
+            </div>
+            <button class="copy-latex-btn" onclick="copyLatex(this, 'G(x,y) = \\frac{1}{2\\pi \\sigma^2} \\exp\\left(-\\frac{x^2 + y^2}{2\\sigma^2}\\right)')">LaTeX</button>
+          </div>
+          <div class="f-title">2D Continuous Gaussian Smoothing Kernel</div>
+          <div class="math-display-box">
+            $$G(x,y) = \frac{1}{2\pi \sigma^2} \exp\left(-\frac{x^2 + y^2}{2\sigma^2}\right)$$
+          </div>
+          <div class="f-desc">Isotropic lowpass filter kernel that produces zero spatial ringing. Separable into 1D horizontal and vertical convolutions: $G(x,y) = G_1(x) \cdot G_1(y)$, reducing complexity from $O(K^2)$ to $O(2K)$.</div>
+          <div class="f-variables"><strong>Variables:</strong> $\sigma$: standard deviation (blur radius); discrete kernel width typically truncated at $6\sigma + 1$.</div>
+        </div>
+
+        <div class="formula-card" data-unit="Unit II" data-keywords="laplacian second derivative sharpening operator isotropic">
+          <div class="f-header">
+            <div class="f-meta">
+              <span class="f-unit-badge u2-badge">Unit II</span>
+              <span class="f-ch-badge">Ch 10</span>
+            </div>
+            <button class="copy-latex-btn" onclick="copyLatex(this, '\\nabla^2 f(x,y) = f(x+1,y) + f(x-1,y) + f(x,y+1) + f(x,y-1) - 4f(x,y)')">LaTeX</button>
+          </div>
+          <div class="f-title">2D Discrete Laplacian Sharpening Operator</div>
+          <div class="math-display-box">
+            $$\nabla^2 f = f(x+1,y) + f(x-1,y) + f(x,y+1) + f(x,y-1) - 4f(x,y)$$
+          </div>
+          <div class="f-desc">Second-order isotropic derivative measuring local curvature. Combined with the image to sharpen edges: $g(x,y) = f(x,y) - \nabla^2 f(x,y)$ (for negative center kernel).</div>
+          <div class="f-variables"><strong>Variables:</strong> $\nabla^2 = \frac{\partial^2}{\partial x^2} + \frac{\partial^2}{\partial y^2}$; standard 4-neighbor kernel $\begin{bmatrix} 0 & 1 & 0 \\ 1 & -4 & 1 \\ 0 & 1 & 0 \end{bmatrix}$.</div>
+        </div>
+
+        <div class="formula-card" data-unit="Unit II" data-keywords="sobel edge detection gradient magnitude orientation derivative">
+          <div class="f-header">
+            <div class="f-meta">
+              <span class="f-unit-badge u2-badge">Unit II</span>
+              <span class="f-ch-badge">Ch 10</span>
+            </div>
+            <button class="copy-latex-btn" onclick="copyLatex(this, '|\\nabla f| = \\sqrt{G_x^2 + G_y^2}, \\quad \\theta = \\arctan\\left(\\frac{G_y}{G_x}\\right)')">LaTeX</button>
+          </div>
+          <div class="f-title">Sobel Spatial Gradient Magnitude &amp; Direction</div>
+          <div class="math-display-box">
+            $$|\nabla f| = \sqrt{G_x^2 + G_y^2}, \quad \theta = \arctan\left(\frac{G_y}{G_x}\right)$$
+          </div>
+          <div class="f-desc">First-order spatial gradient vector pointing in direction of maximal rate of intensity increase. Edge boundaries run perpendicular to $\theta$ ($\alpha = \theta \pm 90^\circ$).</div>
+          <div class="f-variables"><strong>Variables:</strong> $G_x, G_y$: horizontal and vertical Sobel kernel responses; approximated by $|G_x| + |G_y|$ for fast computation.</div>
+        </div>
+
+        <div class="formula-card" data-unit="Unit II" data-keywords="dft fourier transform discrete frequency spectrum 2d">
+          <div class="f-header">
+            <div class="f-meta">
+              <span class="f-unit-badge u2-badge">Unit II</span>
+              <span class="f-ch-badge">Ch 11</span>
+            </div>
+            <button class="copy-latex-btn" onclick="copyLatex(this, 'F(u,v) = \\sum_{x=0}^{M-1} \\sum_{y=0}^{N-1} f(x,y) e^{-j 2\\pi \\left(\\frac{ux}{M} + \\frac{vy}{N}\\right)}')">LaTeX</button>
+          </div>
+          <div class="f-title">2D Discrete Fourier Transform (2D-DFT)</div>
+          <div class="math-display-box">
+            $$F(u,v) = \sum_{x=0}^{M-1} \sum_{y=0}^{N-1} f(x,y) e^{-j 2\pi \left(\frac{ux}{M} + \frac{vy}{N}\right)}$$
+          </div>
+          <div class="f-desc">Decomposes an $M \times N$ spatial image into orthogonal 2D sinusoidal basis waves. Computed via Fast Fourier Transform (FFT) in $O(MN \log(MN))$ time.</div>
+          <div class="f-variables"><strong>Variables:</strong> $u, v$: discrete frequency indices ($u \in [0, M-1], v \in [0, N-1]$), $j = \sqrt{-1}$, $e^{-j\theta} = \cos\theta - j\sin\theta$.</div>
+        </div>
+
+        <div class="formula-card" data-unit="Unit II" data-keywords="butterworth filter frequency lowpass order cutoff transfer">
+          <div class="f-header">
+            <div class="f-meta">
+              <span class="f-unit-badge u2-badge">Unit II</span>
+              <span class="f-ch-badge">Ch 12</span>
+            </div>
+            <button class="copy-latex-btn" onclick="copyLatex(this, 'H(u,v) = \\frac{1}{1 + \\left(\\frac{D(u,v)}{D_0}\\right)^{2n}}')">LaTeX</button>
+          </div>
+          <div class="f-title">2D Butterworth Lowpass Filter (BLPF) Transfer Function</div>
+          <div class="math-display-box">
+            $$H(u,v) = \frac{1}{1 + \left(\frac{D(u,v)}{D_0}\right)^{2n}}$$
+          </div>
+          <div class="f-desc">Smooth frequency transition between passband and stopband: at $D(u,v) = D_0$, gain is $H = 0.5$ (or $1/\sqrt{2}$ in amplitude). Order $n$ balances sharpness against spatial ringing.</div>
+          <div class="f-variables"><strong>Variables:</strong> $D(u,v) = \sqrt{(u-M/2)^2 + (v-N/2)^2}$: distance from frequency center; $D_0$: cutoff radius; $n$: filter order.</div>
+        </div>
+
+        <div class="formula-card" data-unit="Unit II" data-keywords="wiener filter mmse restoration deblurring noise degradation">
+          <div class="f-header">
+            <div class="f-meta">
+              <span class="f-unit-badge u2-badge">Unit II</span>
+              <span class="f-ch-badge">Ch 14</span>
+            </div>
+            <button class="copy-latex-btn" onclick="copyLatex(this, '\\hat{F}(u,v) = \\left[ \\frac{H^*(u,v)}{|H(u,v)|^2 + \\frac{S_\\eta(u,v)}{S_f(u,v)}} \\right] G(u,v)')">LaTeX</button>
+          </div>
+          <div class="f-title">Wiener Filter Frequency Formulation (MMSE)</div>
+          <div class="math-display-box">
+            $$\hat{F}(u,v) = \left[ \frac{H^*(u,v)}{|H(u,v)|^2 + \frac{S_\eta(u,v)}{S_f(u,v)}} \right] G(u,v)$$
+          </div>
+          <div class="f-desc">Optimal linear filter minimizing Mean Squared Error $E\{|f - \hat{f}|^2\}$. Incorporates the noise-to-signal power spectral ratio $S_\eta/S_f$ to prevent catastrophic division by near-zero frequencies.</div>
+          <div class="f-variables"><strong>Variables:</strong> $H(u,v)$: blur degradation function, $H^*$: complex conjugate, $S_\eta, S_f$: noise and signal power spectra (often approximated by constant $K$).</div>
+        </div>
+
+        <div class="formula-card" data-unit="Unit II" data-keywords="constrained least squares cls restoration laplacian smoothness">
+          <div class="f-header">
+            <div class="f-meta">
+              <span class="f-unit-badge u2-badge">Unit II</span>
+              <span class="f-ch-badge">Ch 14</span>
+            </div>
+            <button class="copy-latex-btn" onclick="copyLatex(this, '\\hat{F}(u,v) = \\left[ \\frac{H^*(u,v)}{|H(u,v)|^2 + \\gamma |P(u,v)|^2} \\right] G(u,v)')">LaTeX</button>
+          </div>
+          <div class="f-title">Constrained Least Squares (CLS) Restoration</div>
+          <div class="math-display-box">
+            $$\hat{F}(u,v) = \left[ \frac{H^*(u,v)}{|H(u,v)|^2 + \gamma |P(u,v)|^2} \right] G(u,v)$$
+          </div>
+          <div class="f-desc">Minimizes the second derivative (smoothness via Laplacian $P(u,v)$) subject to matching noise variance. Does not require prior knowledge of the image power spectrum.</div>
+          <div class="f-variables"><strong>Variables:</strong> $P(u,v)$: Fourier transform of 2D Laplacian operator, $\gamma$: Lagrange multiplier regularizer adjusted to match noise power.</div>
+        </div>
+
+        <!-- ================= UNIT III ================= -->
+        <div class="formula-card" data-unit="Unit III" data-keywords="otsu thresholding variance between class segmentation binarization">
+          <div class="f-header">
+            <div class="f-meta">
+              <span class="f-unit-badge u3-badge">Unit III</span>
+              <span class="f-ch-badge">Ch 16</span>
+            </div>
+            <button class="copy-latex-btn" onclick="copyLatex(this, '\\sigma_B^2(k) = \\frac{[\\mu_T \\omega(k) - \\mu(k)]^2}{\\omega(k)[1 - \\omega(k)]}')">LaTeX</button>
+          </div>
+          <div class="f-title">Otsu's Optimal Between-Class Variance $\sigma_B^2(k)$</div>
+          <div class="math-display-box">
+            $$\sigma_B^2(k) = \frac{[\mu_T \omega(k) - \mu(k)]^2}{\omega(k)[1 - \omega(k)]}$$
+          </div>
+          <div class="f-desc">Fast formulation for automatic global thresholding: optimal threshold $k^*$ is the gray level that maximizes between-class variance $\sigma_B^2(k)$, guaranteeing maximum statistical separation between foreground and background.</div>
+          <div class="f-variables"><strong>Variables:</strong> $\omega(k) = \sum_{i=0}^k p_i$: cumulative class probability, $\mu(k) = \sum_{i=0}^k i p_i$: cumulative mean, $\mu_T$: global image mean.</div>
+        </div>
+
+        <div class="formula-card" data-unit="Unit III" data-keywords="morphology erosion dilation structuring element binary set">
+          <div class="f-header">
+            <div class="f-meta">
+              <span class="f-unit-badge u3-badge">Unit III</span>
+              <span class="f-ch-badge">Ch 18</span>
+            </div>
+            <button class="copy-latex-btn" onclick="copyLatex(this, 'A \\ominus B = \\{z \\mid (B)_z \\subseteq A\\}, \\quad A \\oplus B = \\{z \\mid (\\hat{B})_z \\cap A \\ne \\emptyset\\}')">LaTeX</button>
+          </div>
+          <div class="f-title">Morphological Erosion ($\ominus$) and Dilation ($\oplus$)</div>
+          <div class="math-display-box">
+            $$A \ominus B = \{z \mid (B)_z \subseteq A\}, \quad A \oplus B = \{z \mid (\hat{B})_z \cap A \ne \emptyset\}$$
+          </div>
+          <div class="f-desc">Fundamental set-theoretic building blocks of mathematical morphology. Erosion shrinks foreground objects where structuring element $B$ fits completely; dilation expands objects where reflected $\hat{B}$ intersects $A$.</div>
+          <div class="f-variables"><strong>Variables:</strong> $A$: binary foreground set, $B$: structuring element, $(B)_z$: translation of $B$ by vector $z$, $\hat{B}$: reflection of $B$ about origin.</div>
+        </div>
+
+        <div class="formula-card" data-unit="Unit III" data-keywords="morphological opening closing smoothing holes bridges">
+          <div class="f-header">
+            <div class="f-meta">
+              <span class="f-unit-badge u3-badge">Unit III</span>
+              <span class="f-ch-badge">Ch 18</span>
+            </div>
+            <button class="copy-latex-btn" onclick="copyLatex(this, 'A \\circ B = (A \\ominus B) \\oplus B, \\quad A \\bullet B = (A \\oplus B) \\ominus B')">LaTeX</button>
+          </div>
+          <div class="f-title">Morphological Opening ($\circ$) &amp; Closing ($\bullet$)</div>
+          <div class="math-display-box">
+            $$A \circ B = (A \ominus B) \oplus B, \quad A \bullet B = (A \oplus B) \ominus B$$
+          </div>
+          <div class="f-desc">Opening ($A \circ B$) smooths outer contours, breaks thin isthmuses, and removes small specks. Closing ($A \bullet B$) joins narrow breaks, fills small dark holes, and smooths inner contours. Both operations are idempotent ($A \circ B \circ B = A \circ B$).</div>
+          <div class="f-variables"><strong>Variables:</strong> $A$: foreground image set; $B$: structuring element.</div>
+        </div>
+
+        <div class="formula-card" data-unit="Unit III" data-keywords="harris corner detector structure tensor autocorrelation matrix">
+          <div class="f-header">
+            <div class="f-meta">
+              <span class="f-unit-badge u3-badge">Unit III</span>
+              <span class="f-ch-badge">Ch 19</span>
+            </div>
+            <button class="copy-latex-btn" onclick="copyLatex(this, 'R = \\det(M) - k \\, (\\text{Tr}(M))^2 = \\lambda_1 \\lambda_2 - k(\\lambda_1 + \\lambda_2)^2')">LaTeX</button>
+          </div>
+          <div class="f-title">Harris Corner Response Function ($R$)</div>
+          <div class="math-display-box">
+            $$R = \det(M) - k \, (\text{Tr}(M))^2 = \lambda_1 \lambda_2 - k(\lambda_1 + \lambda_2)^2$$
+          </div>
+          <div class="f-desc">Detects 2D corners without explicitly computing eigenvalues of structure tensor $M = \begin{bmatrix} \sum I_x^2 & \sum I_x I_y \\ \sum I_x I_y & \sum I_y^2 \end{bmatrix}$. $R > 0$ defines a corner; $R < 0$ an edge; $|R| \approx 0$ a flat region.</div>
+          <div class="f-variables"><strong>Variables:</strong> $M$: local auto-correlation tensor, $k$: empirical sensitivity parameter ($k \in [0.04, 0.06]$), $\lambda_1, \lambda_2$: principal curvatures.</div>
+        </div>
+
+        <div class="formula-card" data-unit="Unit III" data-keywords="sift difference of gaussians dog scale space feature">
+          <div class="f-header">
+            <div class="f-meta">
+              <span class="f-unit-badge u3-badge">Unit III</span>
+              <span class="f-ch-badge">Ch 20</span>
+            </div>
+            <button class="copy-latex-btn" onclick="copyLatex(this, 'D(x,y,\\sigma) = [G(x,y,k\\sigma) - G(x,y,\\sigma)] * I(x,y) = L(x,y,k\\sigma) - L(x,y,\\sigma)')">LaTeX</button>
+          </div>
+          <div class="f-title">SIFT Difference of Gaussians (DoG) Scale Space</div>
+          <div class="math-display-box">
+            $$D(x,y,\sigma) = [G(x,y,k\sigma) - G(x,y,\sigma)] * I(x,y)$$
+          </div>
+          <div class="f-desc">Approximates the scale-normalized Laplacian of Gaussian $\sigma^2 \nabla^2 G$ via subtraction of adjacent Gaussian-smoothed octave images. Keypoints are extrema in a $3 \times 3 \times 3$ scale-space cube.</div>
+          <div class="f-variables"><strong>Variables:</strong> $I(x,y)$: image, $G$: Gaussian kernel, $\sigma$: scale coordinate, $k$: multiplicative scale step factor ($k = 2^{1/S}$).</div>
+        </div>
+
+        <div class="formula-card" data-unit="Unit III" data-keywords="surf integral image summed area table box filter o1">
+          <div class="f-header">
+            <div class="f-meta">
+              <span class="f-unit-badge u3-badge">Unit III</span>
+              <span class="f-ch-badge">Ch 20</span>
+            </div>
+            <button class="copy-latex-btn" onclick="copyLatex(this, 'I_\\Sigma(x,y) = \\sum_{x\' \\le x, \\, y\' \\le y} I(x\', y\')')">LaTeX</button>
+          </div>
+          <div class="f-title">SURF Integral Image (Summed-Area Table)</div>
+          <div class="math-display-box">
+            $$I_\Sigma(x,y) = \sum_{x' \le x, \, y' \le y} I(x', y')$$
+          </div>
+          <div class="f-desc">Allows evaluating arbitrary rectangular box-filter integrals in $O(1)$ constant time using only 4 corner lookups: $\sum_{\text{box}} = D - B - C + A$. Enables ultra-fast multiscale Hessian computation in SURF.</div>
+          <div class="f-variables"><strong>Variables:</strong> $I(x', y')$: pixel intensity, $I_\Sigma$: integral image matrix; $A, B, C, D$: values at top-left, top-right, bottom-left, bottom-right corners.</div>
+        </div>
+
+        <div class="formula-card" data-unit="Unit III" data-keywords="shannon entropy source coding lower bound information theory">
+          <div class="f-header">
+            <div class="f-meta">
+              <span class="f-unit-badge u3-badge">Unit III</span>
+              <span class="f-ch-badge">Ch 22</span>
+            </div>
+            <button class="copy-latex-btn" onclick="copyLatex(this, 'H(X) = -\\sum_{i=1}^n p_i \\log_2(p_i) \\text{ bits/symbol}')">LaTeX</button>
+          </div>
+          <div class="f-title">Claude Shannon's Information Entropy ($H$)</div>
+          <div class="math-display-box">
+            $$H(X) = -\sum_{i=1}^n p_i \log_2(p_i) \text{ bits/symbol}$$
+          </div>
+          <div class="f-desc">Defines the fundamental theoretical lower bound on average code length for lossless entropy coding. By Shannon's Noiseless Coding Theorem, no lossless code can achieve $L_{\text{avg}} < H(X)$.</div>
+          <div class="f-variables"><strong>Variables:</strong> $p_i$: probability of occurrence of intensity symbol $r_i$ ($\sum p_i = 1$). For an 8-bit image with equal probabilities, $H = \log_2(256) = 8\text{ bits}$.</div>
+        </div>
+
+        <div class="formula-card" data-unit="Unit III" data-keywords="jpeg 2d dct discrete cosine transform energy compaction block">
+          <div class="f-header">
+            <div class="f-meta">
+              <span class="f-unit-badge u3-badge">Unit III</span>
+              <span class="f-ch-badge">Ch 23</span>
+            </div>
+            <button class="copy-latex-btn" onclick="copyLatex(this, 'C(u,v) = \\alpha(u)\\alpha(v) \\sum_{x=0}^7 \\sum_{y=0}^7 f(x,y) \\cos\\left[\\frac{(2x+1)u\\pi}{16}\\right] \\cos\\left[\\frac{(2y+1)v\\pi}{16}\\right]')">LaTeX</button>
+          </div>
+          <div class="f-title">JPEG 2D Discrete Cosine Transform (2D-DCT-II)</div>
+          <div class="math-display-box">
+            $$C(u,v) = \alpha(u)\alpha(v) \sum_{x=0}^7 \sum_{y=0}^7 f(x,y) \cos\left[\frac{(2x+1)u\pi}{16}\right] \cos\left[\frac{(2y+1)v\pi}{16}\right]$$
+          </div>
+          <div class="f-desc">Transforms level-shifted $8 \times 8$ spatial blocks into frequency coefficients. Concentrates over 90% of visual energy into the top-left DC and low-frequency coefficients (energy compaction).</div>
+          <div class="f-variables"><strong>Variables:</strong> $\alpha(0) = \frac{1}{\sqrt{8}}$, $\alpha(u) = \sqrt{\frac{2}{8}}$ for $u > 0$; $f(x,y) \in [-128, 127]$: level-shifted block.</div>
+        </div>
+
+        <div class="formula-card" data-unit="Unit III" data-keywords="psnr mse peak signal to noise ratio compression fidelity quality">
+          <div class="f-header">
+            <div class="f-meta">
+              <span class="f-unit-badge u3-badge">Unit III</span>
+              <span class="f-ch-badge">Ch 21</span>
+            </div>
+            <button class="copy-latex-btn" onclick="copyLatex(this, '\\text{PSNR} = 10 \\log_{10}\\left(\\frac{255^2}{\\text{MSE}}\\right) = 20 \\log_{10}\\left(\\frac{255}{\\sqrt{\\text{MSE}}}\\right)')">LaTeX</button>
+          </div>
+          <div class="f-title">Peak Signal-to-Noise Ratio (PSNR) &amp; MSE</div>
+          <div class="math-display-box">
+            $$\text{PSNR} = 10 \log_{10}\left(\frac{255^2}{\text{MSE}}\right), \quad \text{MSE} = \frac{1}{MN}\sum (f - \hat{f})^2$$
+          </div>
+          <div class="f-desc">Standard objective logarithmic fidelity metric for lossy image compression. Values above 30 dB represent acceptable consumer quality; above 40 dB represent near-lossless reconstruction.</div>
+          <div class="f-variables"><strong>Variables:</strong> $\text{MSE}$: mean squared error between original $f$ and reconstructed $\hat{f}$; $255$: peak value for 8-bit images.</div>
+        </div>
+
+        <!-- ================= UNIT IV ================= -->
+        <div class="formula-card" data-unit="Unit IV" data-keywords="cnn feature map output spatial dimension padding stride convolution">
+          <div class="f-header">
+            <div class="f-meta">
+              <span class="f-unit-badge u4-badge">Unit IV</span>
+              <span class="f-ch-badge">Ch 26</span>
+            </div>
+            <button class="copy-latex-btn" onclick="copyLatex(this, 'O = \\left\\lfloor \\frac{W - K + 2P}{S} \\right\\rfloor + 1')">LaTeX</button>
+          </div>
+          <div class="f-title">CNN Output Feature Map Spatial Dimension</div>
+          <div class="math-display-box">
+            $$O = \left\lfloor \frac{W - K + 2P}{S} \right\rfloor + 1$$
+          </div>
+          <div class="f-desc">Computes the spatial output resolution (height or width) after 2D convolution or pooling with kernel size $K$, zero-padding $P$, and stride $S$.</div>
+          <div class="f-variables"><strong>Variables:</strong> $W$: input dimension, $K$: kernel width, $P$: padding on each side, $S$: stride step, $\lfloor \cdot \rfloor$: floor integer division.</div>
+        </div>
+
+        <div class="formula-card" data-unit="Unit IV" data-keywords="cnn parameters trainable weights biases channels conv2d">
+          <div class="f-header">
+            <div class="f-meta">
+              <span class="f-unit-badge u4-badge">Unit IV</span>
+              <span class="f-ch-badge">Ch 26</span>
+            </div>
+            <button class="copy-latex-btn" onclick="copyLatex(this, '\\text{Params} = K_h \\times K_w \\times C_{\\text{in}} \\times C_{\\text{out}} + C_{\\text{out}}')">LaTeX</button>
+          </div>
+          <div class="f-title">Total Trainable Parameters in 2D Conv Layer</div>
+          <div class="math-display-box">
+            $$\text{Params} = K_h \times K_w \times C_{\text{in}} \times C_{\text{out}} + C_{\text{out}}$$
+          </div>
+          <div class="f-desc">Calculates weight tensor volume plus one additive bias per output channel filter. Independent of input image spatial resolution ($H \times W$), demonstrating parameter sharing.</div>
+          <div class="f-variables"><strong>Variables:</strong> $K_h, K_w$: kernel spatial dimensions (e.g. $3 \times 3$), $C_{\text{in}}$: input channels, $C_{\text{out}}$: number of filters.</div>
+        </div>
+
+        <div class="formula-card" data-unit="Unit IV" data-keywords="resnet residual skip connection vanishing gradient identity highway">
+          <div class="f-header">
+            <div class="f-meta">
+              <span class="f-unit-badge u4-badge">Unit IV</span>
+              <span class="f-ch-badge">Ch 27</span>
+            </div>
+            <button class="copy-latex-btn" onclick="copyLatex(this, '\\mathcal{H}(x) = \\mathcal{F}(x) + x, \\quad \\frac{\\partial \\mathcal{E}}{\\partial x} = \\frac{\\partial \\mathcal{E}}{\\partial \\mathcal{H}} \\left( \\frac{\\partial \\mathcal{F}}{\\partial x} + 1 \\right)')">LaTeX</button>
+          </div>
+          <div class="f-title">ResNet Residual Shortcut &amp; Gradient Flow</div>
+          <div class="math-display-box">
+            $$\mathcal{H}(x) = \mathcal{F}(x) + x, \quad \frac{\partial \mathcal{E}}{\partial x} = \frac{\partial \mathcal{E}}{\partial \mathcal{H}} \left( \frac{\partial \mathcal{F}}{\partial x} + 1 \right)$$
+          </div>
+          <div class="f-desc">Identity skip connection enables training ultra-deep architectures (50–152 layers): the $+1$ term in backpropagation guarantees an uninterrupted gradient highway, preventing gradient vanishing.</div>
+          <div class="f-variables"><strong>Variables:</strong> $x$: input tensor, $\mathcal{F}(x)$: residual convolution mapping, $\mathcal{H}(x)$: output feature tensor, $\mathcal{E}$: loss function.</div>
+        </div>
+
+        <div class="formula-card" data-unit="Unit IV" data-keywords="yolo bounding box coordinates sigmoid anchor parameterization detection">
+          <div class="f-header">
+            <div class="f-meta">
+              <span class="f-unit-badge u4-badge">Unit IV</span>
+              <span class="f-ch-badge">Ch 28</span>
+            </div>
+            <button class="copy-latex-btn" onclick="copyLatex(this, 'b_x = \\sigma(t_x) + c_x, \\; b_y = \\sigma(t_y) + c_y, \\; b_w = p_w e^{t_w}, \\; b_h = p_h e^{t_h}')">LaTeX</button>
+          </div>
+          <div class="f-title">YOLO Bounding Box Anchor Coordinate Transformations</div>
+          <div class="math-display-box">
+            $$b_x = \sigma(t_x) + c_x, \quad b_y = \sigma(t_y) + c_y, \quad b_w = p_w e^{t_w}, \quad b_h = p_h e^{t_h}$$
+          </div>
+          <div class="f-desc">Regresses continuous bounding box spatial coordinates relative to grid cell offsets $(c_x, c_y)$ and prior anchor box dimensions $(p_w, p_h)$. Sigmoid $\sigma$ constrains center predictions within the cell.</div>
+          <div class="f-variables"><strong>Variables:</strong> $t_x, t_y, t_w, t_h$: network raw predictions; $c_x, c_y$: top-left grid cell indices; $p_w, p_h$: anchor box prior scales.</div>
+        </div>
+
+        <div class="formula-card" data-unit="Unit IV" data-keywords="iou intersection over union jaccard object detection evaluation">
+          <div class="f-header">
+            <div class="f-meta">
+              <span class="f-unit-badge u4-badge">Unit IV</span>
+              <span class="f-ch-badge">Ch 28</span>
+            </div>
+            <button class="copy-latex-btn" onclick="copyLatex(this, '\\text{IoU}(A, B) = \\frac{\\text{Area}(A \\cap B)}{\\text{Area}(A \\cup B)} = \\frac{\\text{Area}(A \\cap B)}{\\text{Area}(A) + \\text{Area}(B) - \\text{Area}(A \\cap B)}')">LaTeX</button>
+          </div>
+          <div class="f-title">Intersection over Union (IoU) Overlap Metric</div>
+          <div class="math-display-box">
+            $$\text{IoU}(A, B) = \frac{\text{Area}(A \cap B)}{\text{Area}(A \cup B)}$$
+          </div>
+          <div class="f-desc">Measures spatial overlap between predicted bounding box $A$ and ground-truth annotation $B$. Core evaluation criterion for mAP benchmarks and Non-Maximum Suppression (NMS).</div>
+          <div class="f-variables"><strong>Variables:</strong> $A, B$: bounding box rectangles; $\text{IoU} \ge 0.5$ (or $0.75$) flags a True Positive detection.</div>
+        </div>
+
+        <div class="formula-card" data-unit="Unit IV" data-keywords="optical flow brightness constancy constraint equation motion video">
+          <div class="f-header">
+            <div class="f-meta">
+              <span class="f-unit-badge u4-badge">Unit IV</span>
+              <span class="f-ch-badge">Ch 30</span>
+            </div>
+            <button class="copy-latex-btn" onclick="copyLatex(this, 'I_x u + I_y v + I_t = \\nabla I \\cdot \\vec{v} + I_t = 0')">LaTeX</button>
+          </div>
+          <div class="f-title">Optical Flow Brightness Constancy Equation</div>
+          <div class="math-display-box">
+            $$I_x u + I_y v + I_t = \nabla I \cdot \vec{v} + I_t = 0$$
+          </div>
+          <div class="f-desc">Derived from 1st-order Taylor expansion on $I(x+u, y+v, t+1) = I(x, y, t)$. Relates spatial intensity gradients $(I_x, I_y)$ and temporal frame derivative $I_t$ to motion velocity vector $\vec{v} = (u, v)$.</div>
+          <div class="f-variables"><strong>Variables:</strong> $I_x = \frac{\partial I}{\partial x}, I_y = \frac{\partial I}{\partial y}$: spatial gradients; $I_t = \frac{\partial I}{\partial t}$: temporal difference; $u, v$: velocity components.</div>
+        </div>
+
+        <div class="formula-card" data-unit="Unit IV" data-keywords="lucas kanade optical flow normal equation structure tensor overdetermined">
+          <div class="f-header">
+            <div class="f-meta">
+              <span class="f-unit-badge u4-badge">Unit IV</span>
+              <span class="f-ch-badge">Ch 30</span>
+            </div>
+            <button class="copy-latex-btn" onclick="copyLatex(this, '\\vec{v} = (A^T A)^{-1} A^T (-b), \\quad A^T A = \\begin{bmatrix} \\sum I_x^2 & \\sum I_x I_y \\\\ \\sum I_x I_y & \\sum I_y^2 \\end{bmatrix}')">LaTeX</button>
+          </div>
+          <div class="f-title">Lucas-Kanade Least-Squares Solution</div>
+          <div class="math-display-box">
+            $$\vec{v} = (A^T A)^{-1} A^T (-b), \quad A^T A = \begin{bmatrix} \sum I_x^2 & \sum I_x I_y \\ \sum I_x I_y & \sum I_y^2 \end{bmatrix}$$
+          </div>
+          <div class="f-desc">Solves the aperture problem over local spatial window $W$: the overdetermined system $A \vec{v} = -b$ is inverted using the Harris corner structure tensor $A^T A$, invertible precisely where features have 2D texture.</div>
+          <div class="f-variables"><strong>Variables:</strong> $\vec{v} = [u, v]^T$: 2D velocity vector; $A = [I_x, I_y]_{n \times 2}$; $b = [I_t]_{n \times 1}$.</div>
+        </div>
+
+        <div class="formula-card" data-unit="Unit IV" data-keywords="hounsfield unit ct medical radiodensity attenuation water air bone">
+          <div class="f-header">
+            <div class="f-meta">
+              <span class="f-unit-badge u4-badge">Unit IV</span>
+              <span class="f-ch-badge">Ch 31</span>
+            </div>
+            <button class="copy-latex-btn" onclick="copyLatex(this, '\\text{HU} = 1000 \\times \\frac{\\mu_{\\text{tissue}} - \\mu_{\\text{water}}}{\\mu_{\\text{water}} - \\mu_{\\text{air}}}')">LaTeX</button>
+          </div>
+          <div class="f-title">CT Hounsfield Unit (HU) Radiodensity Scale</div>
+          <div class="math-display-box">
+            $$\text{HU} = 1000 \times \frac{\mu_{\text{tissue}} - \mu_{\text{water}}}{\mu_{\text{water}} - \mu_{\text{air}}}$$
+          </div>
+          <div class="f-desc">Standardizes clinical X-ray attenuation coefficients $\mu$: calibrated such that distilled water $= 0\text{ HU}$, air $= -1000\text{ HU}$, soft tissue $= +20\text{ to }+70\text{ HU}$, and cortical bone $= +1000\text{ to }+3000\text{ HU}$.</div>
+          <div class="f-variables"><strong>Variables:</strong> $\mu$: linear X-ray attenuation coefficient ($\text{cm}^{-1}$); basis for CT clinical window-level contrast adjustments.</div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- SEARCH MODAL -->
+  <div id="search-modal">
+    <div class="search-box">
+      <div class="search-input-wrap"><span class="s-icon">🔍</span><input id="search-input" type="text" placeholder="Search chapters, concepts, formulas…" autocomplete="off"></div>
+      <div id="search-results"></div>
+      <div class="search-hint"><span><kbd>↵</kbd> to navigate</span><span><kbd>Esc</kbd> to close</span><span><kbd>Ctrl+K</kbd> to open</span></div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <!-- SCRIPT LOADING -->
+  <script src="../assets/js/state.js"></script>
+  <script src="../assets/js/core.js"></script>
+  <script src="../assets/js/modes.js"></script>
+  <script src="../assets/js/timer-settings.js"></script>
+  <script src="../assets/js/timer.js"></script>
+  <script src="../assets/js/timer-analytics.js"></script>
+  <script src="../assets/js/timer-notifications.js"></script>
+  <script src="../assets/js/timer-ui.js"></script>
+  <script src="../assets/js/notes.js"></script>
+  <script src="../assets/js/glossary.js"></script>
+
+  <script>
+    let currentFilterUnit = 'all';
+    let currentSearchTerm = '';
+    let currentMode = 'reference';
+
+    function setDeckMode(mode) {
+      currentMode = mode;
+      const grid = document.getElementById('formula-grid');
+      const refBtn = document.getElementById('btn-mode-reference');
+      const flashBtn = document.getElementById('btn-mode-flashcard');
+
+      if (mode === 'flashcard') {
+        grid.classList.add('flashcard-view');
+        flashBtn.classList.add('active-mode');
+        refBtn.classList.remove('active-mode');
+        // Attach click handlers to unreveal
+        document.querySelectorAll('.formula-card').forEach(card => {
+          card.onclick = () => card.classList.toggle('revealed');
+        });
+        if (window.ToastManager) {
+          ToastManager.show("Active Recall Mode Enabled: Tap any card to reveal formula!");
+        }
+      } else {
+        grid.classList.remove('flashcard-view');
+        refBtn.classList.add('active-mode');
+        flashBtn.classList.remove('active-mode');
+        document.querySelectorAll('.formula-card').forEach(card => {
+          card.onclick = null;
+          card.classList.remove('revealed');
+        });
+      }
+    }
+
+    function filterUnit(unit, btn) {
+      currentFilterUnit = unit;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      applyFilters();
+    }
+
+    function filterSearch(term) {
+      currentSearchTerm = term.toLowerCase().trim();
+      applyFilters();
+    }
+
+    function applyFilters() {
+      const cards = document.querySelectorAll('.formula-card');
+      cards.forEach(card => {
+        const cUnit = card.getAttribute('data-unit');
+        const cKeywords = (card.getAttribute('data-keywords') || '').toLowerCase();
+        const cTitle = card.querySelector('.f-title')?.textContent.toLowerCase() || '';
+        const cDesc = card.querySelector('.f-desc')?.textContent.toLowerCase() || '';
+
+        const matchesUnit = (currentFilterUnit === 'all') || (cUnit === currentFilterUnit);
+        const matchesSearch = !currentSearchTerm || 
+          cKeywords.includes(currentSearchTerm) || 
+          cTitle.includes(currentSearchTerm) || 
+          cDesc.includes(currentSearchTerm) || 
+          cUnit.toLowerCase().includes(currentSearchTerm);
+
+        if (matchesUnit && matchesSearch) {
+          card.style.display = 'flex';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    function copyLatex(btn, latexCode) {
+      navigator.clipboard.writeText(latexCode).then(() => {
+        const orig = btn.textContent;
+        btn.textContent = 'Copied!';
+        btn.style.borderColor = '#10B981';
+        btn.style.color = '#10B981';
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.borderColor = '';
+          btn.style.color = '';
+        }, 1500);
+      });
+    }
+  </script>
+</body>
+</html>

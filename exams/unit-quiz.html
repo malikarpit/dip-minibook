@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Arpit">
+  <meta name="description" content="Interactive Chapter & Unit Quiz Builder — Digital Image Processing (DIP) MiniBook. Practice 100 University examination questions with instant explanations and scorecards.">
+  <title>Interactive Unit Quizzes & Exam Practice | DIP MiniBook 📸 Arpit</title>
+
+  <link rel="manifest" href="../manifest.json">
+  <meta name="theme-color" content="#0284C7">
+
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <link rel="stylesheet" href="../assets/css/animations.css">
+  <link rel="stylesheet" href="../assets/css/timer.css">
+  <link rel="stylesheet" href="../assets/css/chapters.css">
+
+  <style>
+    .quiz-container {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: var(--em-space-8) clamp(16px, 4vw, 32px) 120px;
+    }
+    .setup-card {
+      background: var(--em-surface-1);
+      border: 1px solid var(--em-border);
+      border-radius: var(--em-radius-lg);
+      padding: var(--em-space-6);
+      margin-bottom: var(--em-space-6);
+      box-shadow: var(--em-shadow-sm);
+    }
+    .setup-header {
+      margin-bottom: var(--em-space-4);
+    }
+    .setup-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--em-text);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .setup-desc {
+      font-size: 0.92rem;
+      color: var(--em-text-secondary);
+      margin-top: 4px;
+    }
+    .preset-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: var(--em-space-3);
+      margin: var(--em-space-4) 0;
+    }
+    .preset-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 6px;
+      padding: var(--em-space-4);
+      border-radius: var(--em-radius-md);
+      border: 1px solid var(--em-border);
+      background: var(--em-surface-2);
+      color: var(--em-text);
+      cursor: pointer;
+      text-align: left;
+      transition: all var(--em-motion-fast) var(--em-ease);
+    }
+    .preset-btn:hover {
+      border-color: var(--em-accent);
+      background: var(--em-surface-3);
+      transform: translateY(-2px);
+      box-shadow: var(--em-shadow-sm);
+    }
+    .preset-top {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      align-items: center;
+    }
+    .preset-title {
+      font-weight: 700;
+      font-size: 0.96rem;
+      color: var(--em-text);
+    }
+    .preset-badge {
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 9999px;
+      background: var(--em-accent-soft);
+      color: var(--em-accent);
+      border: 1px solid var(--em-accent-border);
+    }
+    .preset-desc {
+      font-size: 0.80rem;
+      color: var(--em-text-secondary);
+      line-height: 1.4;
+    }
+    .builder-form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--em-space-4);
+      margin-top: var(--em-space-4);
+      padding-top: var(--em-space-4);
+      border-top: 1px dashed var(--em-border);
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .form-label {
+      font-size: 0.80rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--em-text-muted);
+    }
+    .form-select {
+      padding: 9px 12px;
+      border-radius: var(--em-radius-sm);
+      border: 1px solid var(--em-border);
+      background: var(--em-surface-2);
+      color: var(--em-text);
+      font-size: 0.90rem;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .launch-btn {
+      width: 100%;
+      margin-top: var(--em-space-5);
+      padding: 13px 24px;
+      font-size: 1rem;
+      font-weight: 800;
+      border-radius: var(--em-radius-md);
+      background: linear-gradient(135deg, #0284C7 0%, #00BCD4 100%);
+      color: #FFFFFF;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);
+      transition: all var(--em-motion-fast) var(--em-ease);
+    }
+    .launch-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(2, 132, 199, 0.45);
+    }
+
+    /* Active Quiz Player */
+    .player-card {
+      display: none;
+      background: var(--em-surface-1);
+      border: 1px solid var(--em-border);
+      border-radius: var(--em-radius-lg);
+      padding: var(--em-space-6);
+      box-shadow: var(--em-shadow-md);
+    }
+    .player-card.active {
+      display: block;
+      animation: fadeIn 0.25s ease;
+    }
+    .player-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--em-space-4);
+      padding-bottom: var(--em-space-3);
+      border-bottom: 1px solid var(--em-border);
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .player-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .player-stats {
+      display: flex;
+      gap: var(--em-space-4);
+      align-items: center;
+      font-family: var(--em-font-mono);
+      font-size: 0.88rem;
+      font-weight: 700;
+    }
+    .timer-display {
+      color: #38BDF8;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .score-display {
+      color: #10B981;
+    }
+    .streak-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      color: #F59E0B;
+    }
+    .quiz-progress-track {
+      height: 6px;
+      background: var(--em-surface-2);
+      border-radius: 9999px;
+      overflow: hidden;
+      margin-bottom: var(--em-space-5);
+    }
+    .quiz-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #0284C7, #00BCD4);
+      transition: width 0.3s ease;
+      width: 0%;
+    }
+    .question-topic-badge {
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: var(--em-text-muted);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .question-prompt {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--em-text);
+      line-height: 1.6;
+      margin-bottom: var(--em-space-5);
+    }
+    .quiz-options-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--em-space-3);
+      margin-bottom: var(--em-space-6);
+    }
+    .quiz-option-btn {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--em-space-3);
+      padding: var(--em-space-4);
+      border-radius: var(--em-radius-md);
+      border: 1px solid var(--em-border);
+      background: var(--em-surface-2);
+      color: var(--em-text);
+      font-size: 0.95rem;
+      line-height: 1.45;
+      cursor: pointer;
+      text-align: left;
+      transition: all var(--em-motion-fast) var(--em-ease);
+      user-select: none;
+    }
+    .quiz-option-btn:hover:not(.locked) {
+      border-color: var(--em-accent);
+      background: var(--em-surface-3);
+    }
+    .quiz-option-btn.selected {
+      border-color: #38BDF8;
+      background: rgba(56, 189, 248, 0.12);
+    }
+    .quiz-option-btn.correct {
+      border-color: #10B981 !important;
+      background: rgba(16, 185, 129, 0.18) !important;
+      color: #34D399 !important;
+    }
+    .quiz-option-btn.wrong {
+      border-color: #EF4444 !important;
+      background: rgba(239, 68, 68, 0.18) !important;
+      color: #F87171 !important;
+    }
+    .opt-letter {
+      font-weight: 800;
+      font-size: 0.90rem;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: var(--em-surface-1);
+      border: 1px solid var(--em-border);
+      flex-shrink: 0;
+    }
+    .quiz-explanation {
+      display: none;
+      padding: var(--em-space-4);
+      background: rgba(2, 132, 199, 0.08);
+      border-left: 3px solid #0284C7;
+      border-radius: var(--em-radius-sm);
+      margin-bottom: var(--em-space-5);
+      font-size: 0.90rem;
+      color: var(--em-text);
+      line-height: 1.55;
+    }
+    .quiz-explanation.show {
+      display: block;
+      animation: fadeIn 0.2s ease;
+    }
+    .explanation-title {
+      font-weight: 800;
+      color: #38BDF8;
+      margin-bottom: 4px;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .player-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--em-space-3);
+      flex-wrap: wrap;
+    }
+    .nav-btn {
+      padding: 9px 18px;
+      border-radius: var(--em-radius-md);
+      border: 1px solid var(--em-border);
+      background: var(--em-surface-2);
+      color: var(--em-text);
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all var(--em-motion-fast) var(--em-ease);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .nav-btn:hover {
+      border-color: var(--em-accent);
+      background: var(--em-surface-3);
+    }
+    .nav-btn.primary {
+      background: #0284C7;
+      color: #FFFFFF;
+      border-color: #0284C7;
+    }
+    .nav-btn.primary:hover {
+      background: #0369A1;
+    }
+    .nav-btn.flag-btn.flagged {
+      background: rgba(245, 158, 11, 0.15);
+      border-color: #F59E0B;
+      color: #F59E0B;
+    }
+
+    /* Question Navigator Palette */
+    .palette-toggle {
+      margin-top: var(--em-space-5);
+      padding-top: var(--em-space-4);
+      border-top: 1px dashed var(--em-border);
+    }
+    .palette-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .palette-item {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--em-radius-sm);
+      border: 1px solid var(--em-border);
+      background: var(--em-surface-2);
+      color: var(--em-text-muted);
+      font-size: 0.78rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .palette-item:hover {
+      border-color: var(--em-accent);
+      color: var(--em-text);
+    }
+    .palette-item.current {
+      border-color: #38BDF8;
+      box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.4);
+      color: #38BDF8;
+    }
+    .palette-item.answered {
+      background: rgba(16, 185, 129, 0.18);
+      border-color: #10B981;
+      color: #34D399;
+    }
+    .palette-item.wrong {
+      background: rgba(239, 68, 68, 0.18);
+      border-color: #EF4444;
+      color: #F87171;
+    }
+    .palette-item.flagged {
+      border-color: #F59E0B;
+      color: #F59E0B;
+    }
+
+    /* Summary Card */
+    .summary-card {
+      display: none;
+      background: var(--em-surface-1);
+      border: 1px solid var(--em-border);
+      border-radius: var(--em-radius-lg);
+      padding: var(--em-space-8) var(--em-space-6);
+      text-align: center;
+      box-shadow: var(--em-shadow-lg);
+    }
+    .summary-card.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+    .score-circle {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      margin: 0 auto var(--em-space-4);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border: 6px solid #0284C7;
+      background: var(--em-surface-2);
+    }
+    .score-val {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--em-text);
+    }
+    .score-pct {
+      font-size: 0.88rem;
+      color: var(--em-text-muted);
+      font-weight: 700;
+    }
+    .grade-badge {
+      display: inline-block;
+      padding: 4px 16px;
+      border-radius: 9999px;
+      font-weight: 800;
+      font-size: 0.92rem;
+      margin-bottom: var(--em-space-5);
+    }
+    .breakdown-table {
+      width: 100%;
+      max-width: 500px;
+      margin: var(--em-space-5) auto;
+      border-collapse: collapse;
+      text-align: left;
+    }
+    .breakdown-table th, .breakdown-table td {
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--em-border);
+      font-size: 0.88rem;
+    }
+    .breakdown-table th {
+      color: var(--em-text-muted);
+      font-weight: 700;
+    }
+    .summary-actions {
+      display: flex;
+      justify-content: center;
+      gap: var(--em-space-3);
+      flex-wrap: wrap;
+      margin-top: var(--em-space-6);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div id="progress-bar"></div>
+
+  <!-- HEADER -->
+  <header id="main-header">
+    <div class="header-left">
+      <button id="sidebar-toggle" class="icon-btn" title="Toggle Sidebar (S)" aria-label="Toggle Navigation">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <a href="../index.html" class="brand-logo">
+        <div class="brand-icon">📸</div>
+        <div class="brand-text">
+          <span class="main">DIP MiniBook</span>
+          <span class="sub">100 MCQ Exam Suite</span>
+        </div>
+      </a>
+    </div>
+
+    <span class="header-chapter-title">Interactive Unit Quizzes</span>
+
+    <div class="header-right">
+      <a href="formula-sheet.html" class="icon-btn" title="Formula &amp; Revision Deck" style="text-decoration:none; display:inline-flex; align-items:center; font-size:0.95rem;">📐</a>
+      <button id="search-btn" class="icon-btn" title="Search (Ctrl+K)" aria-label="Search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+      <button id="reading-mode-btn" class="icon-btn" title="Reading Mode (F)" aria-label="Toggle Reading Mode">📖</button>
+      <button id="theme-toggle" class="icon-btn" title="Toggle Theme (T)" aria-label="Toggle Theme">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div id="sidebar-overlay"></div>
+
+  <!-- SIDEBAR NAVIGATION -->
+  <aside id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-brand">
+        <span class="sidebar-logo">📸</span>
+        <div>
+          <div class="sidebar-title">DIP MiniBook</div>
+          <div class="sidebar-subtitle">University Exam Suite</div>
+        </div>
+      </div>
+      <button id="sidebar-close" class="icon-btn" aria-label="Close Sidebar">✕</button>
+    </div>
+
+    <div class="sidebar-nav">
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">PORTAL NAVIGATION</div>
+        <a href="../index.html" class="sidebar-link"><span class="link-icon">🏠</span>Home Portal</a>
+        <a href="../progress.html" class="sidebar-link"><span class="link-icon">📊</span>Syllabus Progress Tracker</a>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">EXAMINATION SUITE</div>
+        <a href="unit-quiz.html" class="sidebar-link active"><span class="link-icon">⚡</span>100 MCQ Unit Quiz</a>
+        <a href="formula-sheet.html" class="sidebar-link"><span class="link-icon">📐</span>Formula &amp; Revision Deck</a>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">CORE CURRICULUM (4 UNITS)</div>
+        <a href="../chapters/ch01-big-picture.html" class="sidebar-link"><span class="link-icon">1️⃣</span>Unit I: Introduction</a>
+        <a href="../chapters/ch06-point-processing.html" class="sidebar-link"><span class="link-icon">2️⃣</span>Unit II: Enhancement &amp; Restoration</a>
+        <a href="../chapters/ch15-segmentation-fundamentals.html" class="sidebar-link"><span class="link-icon">3️⃣</span>Unit III: Analysis &amp; Compression</a>
+        <a href="../chapters/ch25-image-classification.html" class="sidebar-link"><span class="link-icon">4️⃣</span>Unit IV: Advanced Topics &amp; Vision</a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT CONTAINER -->
+  <main id="main-content">
+    <div class="quiz-container">
+
+      <!-- STEP 1: QUIZ SETUP CARD -->
+      <section id="setup-card" class="setup-card">
+        <div class="setup-header">
+          <div class="setup-title">
+            <span>⚡ Interactive Examination &amp; Quiz Engine</span>
+          </div>
+          <p class="setup-desc">
+            Test your command across all 4 Delhi University DSE-3 syllabus units with 100 rigorous multiple-choice questions, detailed mathematical explanations, and full diagnostic scorecards.
+          </p>
+        </div>
+
+        <div style="font-size:0.82rem; font-weight:800; text-transform:uppercase; letter-spacing:0.05em; color:var(--em-accent); margin-bottom:8px;">
+          🚀 Quick-Launch Presets
+        </div>
+        <div class="preset-grid">
+          <button class="preset-btn" onclick="launchPreset('Unit I', 15, 'all', 'study')">
+            <div class="preset-top">
+              <span class="preset-title">Unit I Foundations Blitz</span>
+              <span class="preset-badge">15 Qs</span>
+            </div>
+            <span class="preset-desc">Image formation, human eye, 2D sampling, quantization, color models &amp; headers.</span>
+          </button>
+
+          <button class="preset-btn" onclick="launchPreset('Unit II', 20, 'all', 'study')">
+            <div class="preset-top">
+              <span class="preset-title">Unit II Enhancement Sprint</span>
+              <span class="preset-badge">20 Qs</span>
+            </div>
+            <span class="preset-desc">Histogram equalization, spatial convolution, Canny edges, 2D-DFT &amp; Wiener filters.</span>
+          </button>
+
+          <button class="preset-btn" onclick="launchPreset('Unit III', 25, 'all', 'study')">
+            <div class="preset-top">
+              <span class="preset-title">Unit III Analysis &amp; JPEG Master</span>
+              <span class="preset-badge">25 Qs</span>
+            </div>
+            <span class="preset-desc">Otsu thresholding, morphology, SIFT, HOG, entropy bounds &amp; JPEG DCT steps.</span>
+          </button>
+
+          <button class="preset-btn" onclick="launchPreset('Unit IV', 20, 'all', 'study')">
+            <div class="preset-top">
+              <span class="preset-title">Unit IV Vision &amp; Motion Capstone</span>
+              <span class="preset-badge">20 Qs</span>
+            </div>
+            <span class="preset-desc">CNNs, ResNet residual highways, YOLO detection, autoencoders &amp; optical flow.</span>
+          </button>
+
+          <button class="preset-btn" onclick="launchPreset('all', 50, 'all', 'exam')" style="border-color:#0284C7;">
+            <div class="preset-top">
+              <span class="preset-title" style="color:#38BDF8;">🎯 50-Question University Mock</span>
+              <span class="preset-badge" style="background:#0284C7; color:#fff;">Timed</span>
+            </div>
+            <span class="preset-desc">Comprehensive 45-minute timed exam simulator spanning the full syllabus.</span>
+          </button>
+
+          <button class="preset-btn" onclick="launchPreset('all', 100, 'all', 'exam')" style="border-color:#F59E0B;">
+            <div class="preset-top">
+              <span class="preset-title" style="color:#F59E0B;">🏆 100-Question Grand Capstone</span>
+              <span class="preset-badge" style="background:#F59E0B; color:#000;">Full 100</span>
+            </div>
+            <span class="preset-desc">The ultimate full-syllabus challenge: all 100 questions timed with full diagnostic breakdown.</span>
+          </button>
+        </div>
+
+        <div class="builder-form-grid">
+          <div class="form-group">
+            <label class="form-label" for="select-unit">Syllabus Unit</label>
+            <select id="select-unit" class="form-select">
+              <option value="all">All Units (I to IV)</option>
+              <option value="Unit I">Unit I: Introduction (25 Qs)</option>
+              <option value="Unit II">Unit II: Enhancement &amp; Restoration (25 Qs)</option>
+              <option value="Unit III">Unit III: Analysis &amp; Compression (25 Qs)</option>
+              <option value="Unit IV">Unit IV: Vision &amp; Advanced Topics (25 Qs)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="select-diff">Difficulty Level</label>
+            <select id="select-diff" class="form-select">
+              <option value="all">All Difficulties</option>
+              <option value="Easy">Easy (Foundations)</option>
+              <option value="Moderate">Moderate (Standard Uni)</option>
+              <option value="Hard">Hard (Deep Mathematical)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="select-count">Question Count</label>
+            <select id="select-count" class="form-select">
+              <option value="10">10 Questions (Quick Review)</option>
+              <option value="20" selected>20 Questions (Standard)</option>
+              <option value="35">35 Questions (Deep Drill)</option>
+              <option value="50">50 Questions (Half Mock)</option>
+              <option value="100">All 100 Questions (Grand Exam)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="select-mode">Execution Mode</label>
+            <select id="select-mode" class="form-select">
+              <option value="study" selected>📖 Study Mode (Instant Explanation)</option>
+              <option value="exam">⏱️ Exam Mode (Timed + End Scorecard)</option>
+            </select>
+          </div>
+        </div>
+
+        <button id="start-custom-btn" class="launch-btn" onclick="startCustomQuiz()">
+          <span>🚀 Launch Custom Quiz</span>
+        </button>
+      </section>
+
+      <!-- STEP 2: ACTIVE QUIZ PLAYER -->
+      <section id="player-card" class="player-card">
+        <div class="player-header">
+          <div class="player-meta">
+            <span id="q-counter" style="font-size:0.85rem; font-weight:800; color:var(--em-accent); text-transform:uppercase;">Question 1 of 20</span>
+            <span id="q-unit-tag" class="unit-badge unit-badge-u1">Unit I</span>
+            <span id="q-diff-tag" class="preset-badge">Moderate</span>
+          </div>
+
+          <div class="player-stats">
+            <div id="streak-display" class="streak-badge" title="Consecutive Correct Streak">🔥 <span id="streak-val">0</span></div>
+            <div id="score-display" class="score-display">Score: <span id="score-val">0</span></div>
+            <div id="timer-display" class="timer-display" style="display:none;">⏱️ <span id="timer-val">00:00</span></div>
+          </div>
+        </div>
+
+        <div class="quiz-progress-track">
+          <div id="quiz-progress-fill" class="quiz-progress-fill"></div>
+        </div>
+
+        <div id="q-topic" class="question-topic-badge">📌 Fundamentals of DIP</div>
+        <div id="q-prompt" class="question-prompt">Question text will load here...</div>
+
+        <div id="q-options" class="quiz-options-list">
+          <!-- Dynamic options A, B, C, D -->
+        </div>
+
+        <div id="q-explanation" class="quiz-explanation">
+          <div class="explanation-title">💡 Academic Explanation &amp; Syllabus Context:</div>
+          <div id="explanation-text">Detailed explanation text...</div>
+        </div>
+
+        <div class="player-actions">
+          <button id="prev-btn" class="nav-btn" onclick="prevQuestion()">
+            <span>← Previous</span>
+          </button>
+          
+          <button id="flag-btn" class="nav-btn flag-btn" onclick="toggleFlagCurrent()">
+            <span>🚩 Flag for Review</span>
+          </button>
+
+          <button id="next-btn" class="nav-btn primary" onclick="nextQuestion()">
+            <span>Next →</span>
+          </button>
+
+          <button id="submit-quiz-btn" class="nav-btn" style="background:#10B981; color:#fff; border-color:#10B981; display:none;" onclick="finishQuiz()">
+            <span>✅ Submit Exam</span>
+          </button>
+        </div>
+
+        <!-- PALETTE -->
+        <div class="palette-toggle">
+          <div style="font-size:0.75rem; font-weight:800; text-transform:uppercase; color:var(--em-text-muted);">
+            Question Jump Palette:
+          </div>
+          <div id="palette-grid" class="palette-grid"></div>
+        </div>
+      </section>
+
+      <!-- STEP 3: SCORECARD / SUMMARY CARD -->
+      <section id="summary-card" class="summary-card">
+        <div class="score-circle">
+          <div id="final-score-val" class="score-val">18/20</div>
+          <div id="final-score-pct" class="score-pct">90%</div>
+        </div>
+
+        <h2 id="final-status-text" style="font-size:1.6rem; font-weight:800; margin-bottom:6px;">Outstanding Performance!</h2>
+        <span id="final-grade-badge" class="grade-badge" style="background:rgba(16, 185, 129, 0.2); color:#10B981; border:1px solid #10B981;">
+          University Grade: Distinction (O)
+        </span>
+
+        <p id="final-time-text" style="color:var(--em-text-secondary); font-size:0.90rem;">
+          Completed in 14 minutes 32 seconds.
+        </p>
+
+        <!-- UNIT PERFORMANCE BREAKDOWN -->
+        <table class="breakdown-table">
+          <thead>
+            <tr>
+              <th>Syllabus Unit</th>
+              <th>Correct / Attempted</th>
+              <th>Accuracy</th>
+            </tr>
+          </thead>
+          <tbody id="unit-breakdown-body">
+            <!-- Dynamic rows -->
+          </tbody>
+        </table>
+
+        <div class="summary-actions">
+          <button class="nav-btn" onclick="resetToSetup()">
+            <span>🔄 Build Another Quiz</span>
+          </button>
+          <button id="retry-incorrect-btn" class="nav-btn" style="background:rgba(239, 68, 68, 0.15); border-color:#EF4444; color:#F87171;" onclick="retryIncorrect()">
+            <span>🔁 Retry Missed Questions (<span id="missed-count">0</span>)</span>
+          </button>
+          <a href="formula-sheet.html" class="nav-btn primary" style="text-decoration:none;">
+            <span>📐 Review Formulas &amp; Proofs</span>
+          </a>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- SEARCH MODAL -->
+  <div id="search-modal">
+    <div class="search-box">
+      <div class="search-input-wrap"><span class="s-icon">🔍</span><input id="search-input" type="text" placeholder="Search chapters, concepts, formulas…" autocomplete="off"></div>
+      <div id="search-results"></div>
+      <div class="search-hint"><span><kbd>↵</kbd> to navigate</span><span><kbd>Esc</kbd> to close</span><span><kbd>Ctrl+K</kbd> to open</span></div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <!-- SCRIPT LOADING -->
+  <script src="../assets/js/state.js"></script>
+  <script src="../assets/js/core.js"></script>
+  <script src="../assets/js/modes.js"></script>
+  <script src="../assets/js/timer-settings.js"></script>
+  <script src="../assets/js/timer.js"></script>
+  <script src="../assets/js/timer-analytics.js"></script>
+  <script src="../assets/js/timer-notifications.js"></script>
+  <script src="../assets/js/timer-ui.js"></script>
+  <script src="../assets/js/notes.js"></script>
+  <script src="../assets/js/glossary.js"></script>
+  <script src="../assets/js/quiz-data.js"></script>
+
+  <script>
+    // Quiz State Engine
+    let currentQuiz = {
+      questions: [],
+      currentIndex: 0,
+      userAnswers: {},     // qId -> selectedIndex
+      flagged: new Set(),  // Set of qIds
+      mode: 'study',       // 'study' or 'exam'
+      score: 0,
+      streak: 0,
+      startTime: null,
+      timerInterval: null,
+      elapsedSeconds: 0
+    };
+
+    function launchPreset(unit, count, diff, mode) {
+      document.getElementById('select-unit').value = unit;
+      document.getElementById('select-count').value = count.toString();
+      document.getElementById('select-diff').value = diff;
+      document.getElementById('select-mode').value = mode;
+      startCustomQuiz();
+    }
+
+    function startCustomQuiz() {
+      const unit = document.getElementById('select-unit').value;
+      const diff = document.getElementById('select-diff').value;
+      const countVal = document.getElementById('select-count').value;
+      const mode = document.getElementById('select-mode').value;
+
+      let pool = [...(window.DIP_QUIZ_DATA || [])];
+      if (unit !== 'all') {
+        pool = pool.filter(q => q.unit === unit);
+      }
+      if (diff !== 'all') {
+        pool = pool.filter(q => q.diff === diff);
+      }
+
+      // Shuffle
+      pool.sort(() => Math.random() - 0.5);
+
+      const targetCount = countVal === 'all' ? pool.length : parseInt(countVal, 10);
+      const selectedQuestions = pool.slice(0, targetCount);
+
+      if (selectedQuestions.length === 0) {
+        alert('No questions match the selected filters. Please adjust your criteria.');
+        return;
+      }
+
+      initQuizPlayer(selectedQuestions, mode);
+    }
+
+    function initQuizPlayer(questions, mode) {
+      currentQuiz = {
+        questions: questions,
+        currentIndex: 0,
+        userAnswers: {},
+        flagged: new Set(),
+        mode: mode,
+        score: 0,
+        streak: 0,
+        startTime: Date.now(),
+        timerInterval: null,
+        elapsedSeconds: 0
+      };
+
+      document.getElementById('setup-card').style.display = 'none';
+      document.getElementById('summary-card').classList.remove('active');
+      const playerCard = document.getElementById('player-card');
+      playerCard.classList.add('active');
+
+      if (mode === 'exam') {
+        document.getElementById('timer-display').style.display = 'flex';
+        currentQuiz.timerInterval = setInterval(() => {
+          currentQuiz.elapsedSeconds++;
+          const m = String(Math.floor(currentQuiz.elapsedSeconds / 60)).padStart(2, '0');
+          const s = String(currentQuiz.elapsedSeconds % 60).padStart(2, '0');
+          document.getElementById('timer-val').textContent = `${m}:${s}`;
+        }, 1000);
+      } else {
+        document.getElementById('timer-display').style.display = 'none';
+      }
+
+      buildPalette();
+      renderCurrentQuestion();
+    }
+
+    function buildPalette() {
+      const grid = document.getElementById('palette-grid');
+      grid.innerHTML = '';
+      currentQuiz.questions.forEach((q, idx) => {
+        const item = document.createElement('div');
+        item.className = 'palette-item';
+        item.id = `palette-item-${idx}`;
+        item.textContent = idx + 1;
+        item.onclick = () => jumpToQuestion(idx);
+        grid.appendChild(item);
+      });
+    }
+
+    function updatePalette() {
+      currentQuiz.questions.forEach((q, idx) => {
+        const item = document.getElementById(`palette-item-${idx}`);
+        if (!item) return;
+        item.className = 'palette-item';
+        if (idx === currentQuiz.currentIndex) item.classList.add('current');
+        if (currentQuiz.flagged.has(q.id)) item.classList.add('flagged');
+        if (currentQuiz.userAnswers[q.id] !== undefined) {
+          const chosen = currentQuiz.userAnswers[q.id];
+          if (currentQuiz.mode === 'study') {
+            if (chosen === q.ans) item.classList.add('answered');
+            else item.classList.add('wrong');
+          } else {
+            item.classList.add('answered');
+          }
+        }
+      });
+    }
+
+    function renderCurrentQuestion() {
+      const q = currentQuiz.questions[currentQuiz.currentIndex];
+      const total = currentQuiz.questions.length;
+
+      document.getElementById('q-counter').textContent = `Question ${currentQuiz.currentIndex + 1} of ${total}`;
+      
+      const unitBadge = document.getElementById('q-unit-tag');
+      unitBadge.textContent = q.unit;
+      unitBadge.className = 'unit-badge ' + (
+        q.unit === 'Unit I' ? 'unit-badge-u1' :
+        q.unit === 'Unit II' ? 'unit-badge-u2' :
+        q.unit === 'Unit III' ? 'unit-badge-u3' : 'unit-badge-u4'
+      );
+
+      document.getElementById('q-diff-tag').textContent = q.diff;
+      document.getElementById('q-topic').innerHTML = `📌 ${q.topic} (Ch ${q.chapter})`;
+      document.getElementById('q-prompt').textContent = q.q;
+
+      // Progress bar
+      const pct = ((currentQuiz.currentIndex + 1) / total) * 100;
+      document.getElementById('quiz-progress-fill').style.width = `${pct}%`;
+
+      // Streak & score
+      document.getElementById('streak-val').textContent = currentQuiz.streak;
+      document.getElementById('score-val').textContent = currentQuiz.score;
+
+      // Flag button
+      const flagBtn = document.getElementById('flag-btn');
+      if (currentQuiz.flagged.has(q.id)) {
+        flagBtn.classList.add('flagged');
+        flagBtn.innerHTML = '🚩 Flagged';
+      } else {
+        flagBtn.classList.remove('flagged');
+        flagBtn.innerHTML = '🚩 Flag for Review';
+      }
+
+      // Options
+      const optionsList = document.getElementById('q-options');
+      optionsList.innerHTML = '';
+      const letters = ['A', 'B', 'C', 'D'];
+      const alreadyAnswered = currentQuiz.userAnswers[q.id] !== undefined;
+
+      q.options.forEach((optText, optIdx) => {
+        const btn = document.createElement('div');
+        btn.className = 'quiz-option-btn';
+        if (alreadyAnswered) {
+          btn.classList.add('locked');
+          if (optIdx === currentQuiz.userAnswers[q.id]) {
+            btn.classList.add(optIdx === q.ans ? 'correct' : 'wrong');
+          } else if (optIdx === q.ans && currentQuiz.mode === 'study') {
+            btn.classList.add('correct');
+          }
+        } else {
+          btn.onclick = () => selectAnswer(optIdx);
+        }
+
+        btn.innerHTML = `
+          <span class="opt-letter">${letters[optIdx]}</span>
+          <span>${optText}</span>
+        `;
+        optionsList.appendChild(btn);
+      });
+
+      // Explanation
+      const expBox = document.getElementById('q-explanation');
+      if (alreadyAnswered && currentQuiz.mode === 'study') {
+        document.getElementById('explanation-text').innerHTML = q.exp;
+        expBox.classList.add('show');
+      } else {
+        expBox.classList.remove('show');
+      }
+
+      // Prev/Next & Submit buttons
+      document.getElementById('prev-btn').disabled = currentQuiz.currentIndex === 0;
+      const isLast = currentQuiz.currentIndex === total - 1;
+      document.getElementById('next-btn').style.display = isLast ? 'none' : 'inline-flex';
+      document.getElementById('submit-quiz-btn').style.display = isLast ? 'inline-flex' : 'none';
+
+      updatePalette();
+    }
+
+    function selectAnswer(chosenIdx) {
+      const q = currentQuiz.questions[currentQuiz.currentIndex];
+      if (currentQuiz.userAnswers[q.id] !== undefined) return; // already locked
+
+      currentQuiz.userAnswers[q.id] = chosenIdx;
+
+      if (chosenIdx === q.ans) {
+        currentQuiz.score++;
+        currentQuiz.streak++;
+      } else {
+        currentQuiz.streak = 0;
+      }
+
+      renderCurrentQuestion();
+    }
+
+    function nextQuestion() {
+      if (currentQuiz.currentIndex < currentQuiz.questions.length - 1) {
+        currentQuiz.currentIndex++;
+        renderCurrentQuestion();
+      }
+    }
+
+    function prevQuestion() {
+      if (currentQuiz.currentIndex > 0) {
+        currentQuiz.currentIndex--;
+        renderCurrentQuestion();
+      }
+    }
+
+    function jumpToQuestion(idx) {
+      if (idx >= 0 && idx < currentQuiz.questions.length) {
+        currentQuiz.currentIndex = idx;
+        renderCurrentQuestion();
+      }
+    }
+
+    function toggleFlagCurrent() {
+      const q = currentQuiz.questions[currentQuiz.currentIndex];
+      if (currentQuiz.flagged.has(q.id)) {
+        currentQuiz.flagged.delete(q.id);
+      } else {
+        currentQuiz.flagged.add(q.id);
+      }
+      renderCurrentQuestion();
+    }
+
+    function finishQuiz() {
+      if (currentQuiz.timerInterval) {
+        clearInterval(currentQuiz.timerInterval);
+      }
+
+      document.getElementById('player-card').classList.remove('active');
+      const sumCard = document.getElementById('summary-card');
+      sumCard.classList.add('active');
+
+      const total = currentQuiz.questions.length;
+      let correct = 0;
+      const unitStats = {
+        'Unit I': { total: 0, correct: 0 },
+        'Unit II': { total: 0, correct: 0 },
+        'Unit III': { total: 0, correct: 0 },
+        'Unit IV': { total: 0, correct: 0 }
+      };
+
+      currentQuiz.questions.forEach(q => {
+        const u = q.unit;
+        if (!unitStats[u]) unitStats[u] = { total: 0, correct: 0 };
+        unitStats[u].total++;
+
+        if (currentQuiz.userAnswers[q.id] === q.ans) {
+          correct++;
+          unitStats[u].correct++;
+        }
+      });
+
+      const pct = Math.round((correct / total) * 100);
+      document.getElementById('final-score-val').textContent = `${correct}/${total}`;
+      document.getElementById('final-score-pct').textContent = `${pct}%`;
+
+      const gradeBadge = document.getElementById('final-grade-badge');
+      const statusText = document.getElementById('final-status-text');
+
+      if (pct >= 85) {
+        statusText.textContent = "Outstanding Performance! 🌟";
+        gradeBadge.textContent = "University Grade: Distinction (O / A+)";
+        gradeBadge.style.color = "#10B981";
+      } else if (pct >= 70) {
+        statusText.textContent = "Commendable Knowledge! 👍";
+        gradeBadge.textContent = "University Grade: First Division (A)";
+        gradeBadge.style.color = "#38BDF8";
+      } else if (pct >= 50) {
+        statusText.textContent = "Satisfactory Progress 📚";
+        gradeBadge.textContent = "University Grade: Second Division (B)";
+        gradeBadge.style.color = "#F59E0B";
+      } else {
+        statusText.textContent = "Needs Thorough Revision ⚠️";
+        gradeBadge.textContent = "University Grade: Review Core Units";
+        gradeBadge.style.color = "#EF4444";
+      }
+
+      const m = Math.floor(currentQuiz.elapsedSeconds / 60);
+      const s = currentQuiz.elapsedSeconds % 60;
+      document.getElementById('final-time-text').textContent =
+        `Completed in ${m > 0 ? m + ' min ' : ''}${s} seconds · Mode: ${currentQuiz.mode === 'exam' ? 'Timed Exam' : 'Study Blitz'}`;
+
+      // Table breakdown
+      const tbody = document.getElementById('unit-breakdown-body');
+      tbody.innerHTML = '';
+      for (const [uName, stats] of Object.entries(unitStats)) {
+        if (stats.total === 0) continue;
+        const uPct = Math.round((stats.correct / stats.total) * 100);
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td><strong>${uName}</strong></td>
+          <td>${stats.correct} / ${stats.total}</td>
+          <td><span style="color:${uPct >= 75 ? '#10B981' : uPct >= 50 ? '#F59E0B' : '#EF4444'}; font-weight:800;">${uPct}%</span></td>
+        `;
+        tbody.appendChild(row);
+      }
+
+      // Missed count
+      const missed = total - correct;
+      document.getElementById('missed-count').textContent = missed;
+      document.getElementById('retry-incorrect-btn').style.display = missed > 0 ? 'inline-flex' : 'none';
+    }
+
+    function retryIncorrect() {
+      const missedQs = currentQuiz.questions.filter(q => currentQuiz.userAnswers[q.id] !== q.ans);
+      if (missedQs.length === 0) {
+        alert("You have zero incorrect questions! Excellent job!");
+        return;
+      }
+      initQuizPlayer(missedQs, 'study');
+    }
+
+    function resetToSetup() {
+      if (currentQuiz.timerInterval) clearInterval(currentQuiz.timerInterval);
+      document.getElementById('summary-card').classList.remove('active');
+      document.getElementById('player-card').classList.remove('active');
+      document.getElementById('setup-card').style.display = 'block';
+    }
+  </script>
+</body>
+</html>
