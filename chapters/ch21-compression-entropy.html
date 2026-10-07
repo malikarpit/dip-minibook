@@ -22,7 +22,7 @@
       svg: { fontCache: 'global' }
     };
   </script>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script id="MathJax-script" async src="../assets/js/mathjax/tex-mml-chtml.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';"></script>
 </head>
 <body data-chapter-id="ch21-compression-entropy">
   <div id="progress-bar"></div>
@@ -301,19 +301,11 @@
     </div>
     <div class="section-body">
       <p>A digital image is fundamentally a numerical dataset.</p>
-<p>A grayscale image with width $W$, height $H$, and $k$ bits per pixel requires, before any storage format or coding overhead,</p>
-<p>
-$$
-N_{\text{raw}} = W H k
-$$
-</p>
-<p>bits.</p>
+<p>A grayscale image with width $W$, height $H$, and $k$ bits per pixel requires, before any storage format or coding overhead, $N_{\text{raw}} = W H k$ bits.</p>
 <p>For a colour image with three 8-bit channels,</p>
-<p>
-$$
-N_{\text{raw}} = W H \times 3 \times 8.
-$$
-</p>
+<div class="math-display">
+  $$N_{\text{raw}} = W H \times 3 \times 8.$$
+</div>
 <p>That representation is simple, but often wasteful.</p>
 <p>Neighbouring pixels can be similar. Repeated values can occur frequently. Some visual information may be less important to human perception than other information. Compression asks a precise engineering question:</p>
 <blockquote>
@@ -370,11 +362,9 @@ $$
     </div>
     <div class="section-body">
       <p>Consider an image matrix:</p>
-<p>
-$$
-f(x,y).
-$$
-</p>
+<div class="math-display">
+  $$f(x,y).$$
+</div>
 <p>A file stores some representation of that image. The goal of compression is to construct a shorter representation without violating the task's quality requirements.</p>
 <p>A generic system is:</p>
 <p><div class="code-block">
@@ -513,11 +503,9 @@ rare symbol       → longer code</code></pre>
 <h2>5.2 Spatial Redundancy</h2>
 <p>Neighbouring image samples are often correlated.</p>
 <p>Example:</p>
-<p>
-$$
-100,\ 101,\ 100,\ 102,\ 103,\ 102,\ 104
-$$
-</p>
+<div class="math-display">
+  $$100,\ 101,\ 100,\ 102,\ 103,\ 102,\ 104$$
+</div>
 <p>Storing every value independently ignores the predictability between neighbours.</p>
 <p>A compressor can exploit this relationship through prediction, transforms, run-length coding, differential representation, or related techniques.</p>
 <h3>Key intuition</h3>
@@ -528,14 +516,12 @@ $$
 <h2>5.3 Interchannel / Spectral Redundancy</h2>
 <p>Colour images contain multiple channels.</p>
 <p>For RGB:</p>
-<p>
-$$
-I(x,y)=
+<div class="math-display">
+  $$I(x,y)=
 \begin{bmatrix}
 R(x,y) & G(x,y) & B(x,y)
-\end{bmatrix}.
-$$
-</p>
+\end{bmatrix}.$$
+</div>
 <p>The channels are not necessarily independent. Natural scenes often contain related information across channels.</p>
 <p>This means a colour image may contain redundant information if each channel is treated as completely unrelated.</p>
 <p>This is one reason colour transforms and chroma subsampling can help in practical codecs such as JPEG.</p>
@@ -577,18 +563,10 @@ $$
 <li>height = $H$</li>
 <li>bit depth = $k$</li>
 </ul>
-<p>the raw size is:</p>
-<p>
-$$
-N_{\text{bits}} = W H k
-$$
-</p>
-<p>and</p>
-<p>
-$$
-N_{\text{bytes}} = \frac{W H k}{8}.
-$$
-</p>
+<p>the raw size is $N_{\text{bits}} = W H k$, and</p>
+<div class="math-display">
+  $$N_{\text{bytes}} = \frac{W H k}{8}.$$
+</div>
 <div class="worked-example"><div class="worked-example-header"><span class="worked-example-title"><span>🧮</span> Worked Example 1</span><span class="tag-badge tag-exam">NUMERICAL WORKTHROUGH</span></div>
 
 A grayscale image is:
@@ -651,18 +629,10 @@ $$
       <button class="bookmark-btn" data-id="s-21-7" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>For three channels each using $k$ bits:</p>
-<p>
-$$
-N_{\text{bits}}=WH(3k).
-$$
-</p>
-<p>For a standard 8-bit-per-channel RGB image:</p>
-<p>
-$$
-N_{\text{bits}}=WH\times24.
-$$
-</p>
+      <p>For three channels each using $k$ bits: $N_{\text{bits}}=WH(3k).$ For a standard 8-bit-per-channel RGB image:</p>
+<div class="math-display">
+  $$N_{\text{bits}}=WH\times24.$$
+</div>
 <div class="worked-example"><div class="worked-example-header"><span class="worked-example-title"><span>🧮</span> Worked Example 2</span><span class="tag-badge tag-exam">NUMERICAL WORKTHROUGH</span></div>
 
 For a $1920\times1080$ RGB image with 8 bits per channel:
@@ -706,12 +676,10 @@ This is the raw pixel payload, not necessarily the exact size of a real BMP, PNG
     </div>
     <div class="section-body">
       <p>A common measure is the <strong>compression ratio</strong>:</p>
-<p>
-$$
-CR=
-\frac{\text{original size}}{\text{compressed size}}.
-$$
-</p>
+<div class="math-display">
+  $$CR=
+\frac{\text{original size}}{\text{compressed size}}.$$
+</div>
 <p>A larger $CR$ means stronger size reduction.</p>
 <h3>Example</h3>
 <p>Suppose:</p>
@@ -720,17 +688,13 @@ $$
 <li>compressed = 2 MB</li>
 </ul>
 <p>Then:</p>
-<p>
-$$
-CR=\frac{8}{2}=4.
-$$
-</p>
+<div class="math-display">
+  $$CR=\frac{8}{2}=4.$$
+</div>
 <p>So the compression ratio is:</p>
-<p>
-$$
-\boxed{4:1}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{4:1}$$
+</div>
 <p>The compressed representation uses one quarter of the original storage.</p>
 <hr />
     </div>
@@ -745,32 +709,26 @@ $$
     </div>
     <div class="section-body">
       <p>Another useful quantity is:</p>
-<p>
-$$
-\text{Reduction \%}
+<div class="math-display">
+  $$\text{Reduction \%}
 =
 \left(
 1-\frac{S_c}{S_o}
-\right)\times100
-$$
-</p>
+\right)\times100$$
+</div>
 <p>where:</p>
 <ul>
 <li>$S_o$ = original size</li>
 <li>$S_c$ = compressed size.</li>
 </ul>
 <p>For 8 MB → 2 MB:</p>
-<p>
-$$
-\left(1-\frac{2}{8}\right)100=75\%.
-$$
-</p>
+<div class="math-display">
+  $$\left(1-\frac{2}{8}\right)100=75\%.$$
+</div>
 <p>So the size is reduced by:</p>
-<p>
-$$
-\boxed{75\%}.
-$$
-</p>
+<div class="math-display">
+  $$\boxed{75\%}.$$
+</div>
 <p>Do not confuse this with the compression ratio.</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -794,38 +752,24 @@ Size reduction:    75%</code></pre>
     </div>
     <div class="section-body">
       <p>For an image containing $N$ pixels and a compressed payload containing $B$ bits:</p>
-<p>
-$$
-bpp=\frac{B}{N}.
-$$
-</p>
+<div class="math-display">
+  $$bpp=\frac{B}{N}.$$
+</div>
 <p>This measure is especially useful when comparing compression across images of different dimensions.</p>
 <h3>Example</h3>
-<p>A compressed grayscale image contains:</p>
-<p>
-$$
-300\,000
-$$
-</p>
-<p>bits and has:</p>
-<p>
-$$
-100\,000
-$$
-</p>
+<p>A compressed grayscale image contains: $300\,000$ bits and has:</p>
+<div class="math-display">
+  $$100\,000$$
+</div>
 <p>pixels.</p>
 <p>Then:</p>
-<p>
-$$
-bpp=\frac{300\,000}{100\,000}=3.
-$$
-</p>
+<div class="math-display">
+  $$bpp=\frac{300\,000}{100\,000}=3.$$
+</div>
 <p>The compressed representation uses:</p>
-<p>
-$$
-\boxed{3\text{ bits/pixel}}.
-$$
-</p>
+<div class="math-display">
+  $$\boxed{3\text{ bits/pixel}}.$$
+</div>
 <p>The original might have used 8 bits/pixel.</p>
 <hr />
     </div>
@@ -841,24 +785,14 @@ $$
     <div class="section-body">
       <p>These measures can be connected.</p>
 <p>For an 8-bit grayscale source:</p>
-<p>
-$$
-CR=\frac{8}{bpp}
-$$
-</p>
+<div class="math-display">
+  $$CR=\frac{8}{bpp}$$
+</div>
 <p>when comparing raw pixels to an idealized compressed payload without side information or format overhead.</p>
-<p>For example, if:</p>
-<p>
-$$
-bpp=2
-$$
-</p>
-<p>then:</p>
-<p>
-$$
-CR=\frac{8}{2}=4:1.
-$$
-</p>
+<p>For example, if $bpp=2$ then:</p>
+<div class="math-display">
+  $$CR=\frac{8}{2}=4:1.$$
+</div>
 <p>In real files, headers, metadata, tables, padding, and other overhead mean the measured ratio may differ from this idealized calculation.</p>
 <hr />
     </div>
@@ -874,11 +808,9 @@ $$
     <div class="section-body">
       <p>A compression method is <strong>lossless</strong> when decompression reproduces the exact original image data.</p>
 <p>Mathematically, if encoder $E$ and decoder $D$ are applied:</p>
-<p>
-$$
-D(E(I))=I.
-$$
-</p>
+<div class="math-display">
+  $$D(E(I))=I.$$
+</div>
 <p>No pixel value is changed.</p>
 <h3>Typical use cases</h3>
 <p>Lossless compression is particularly appropriate when exact values matter, such as:</p>
@@ -911,11 +843,9 @@ $$
     </div>
     <div class="section-body">
       <p>A lossy method permits information to be discarded or approximated.</p>
-<p>
-$$
-D(E(I))\approx I.
-$$
-</p>
+<div class="math-display">
+  $$D(E(I))\approx I.$$
+</div>
 <p>The reconstructed image is not necessarily identical to the original.</p>
 <p>The goal is controlled information loss in exchange for significantly lower size.</p>
 <h3>Typical use cases</h3>
@@ -1223,22 +1153,14 @@ Compressed bitstream</code></pre>
     </div>
     <div class="section-body">
       <p>Lossy compression can be viewed as minimizing distortion subject to a rate constraint:</p>
-<p>
-$$
-\min D
+<div class="math-display">
+  $$\min D
 \quad
 \text{subject to}
 \quad
-R\le R_{\max}
-$$
-</p>
-<p>or alternatively:</p>
-<p>
-$$
-\min (D+\lambda R)
-$$
-</p>
-<p>for a suitable trade-off parameter $\lambda$.</p>
+R\le R_{\max}$$
+</div>
+<p>or alternatively: $\min (D+\lambda R)$ for a suitable trade-off parameter $\lambda$.</p>
 <p>Here:</p>
 <ul>
 <li>$D$ = distortion;</li>
@@ -1264,33 +1186,27 @@ $$
       <p>Compression quality should not be judged only by file size.</p>
 <h2>Mean Squared Error</h2>
 <p>For original $I$ and reconstructed image $\hat I$:</p>
-<p>
-$$
-MSE=
+<div class="math-display">
+  $$MSE=
 \frac{1}{MN}
 \sum_{x=1}^{M}
 \sum_{y=1}^{N}
-\left[I(x,y)-\hat I(x,y)\right]^2.
-$$
-</p>
+\left[I(x,y)-\hat I(x,y)\right]^2.$$
+</div>
 <p>Lower MSE means smaller average squared error.</p>
 <h2>Peak Signal-to-Noise Ratio</h2>
 <p>For peak value $MAX_I$:</p>
-<p>
-$$
-PSNR=
+<div class="math-display">
+  $$PSNR=
 10\log_{10}
 \left(
 \frac{MAX_I^2}{MSE}
-\right).
-$$
-</p>
+\right).$$
+</div>
 <p>For an 8-bit image:</p>
-<p>
-$$
-MAX_I=255.
-$$
-</p>
+<div class="math-display">
+  $$MAX_I=255.$$
+</div>
 <p>Higher PSNR generally means lower MSE.</p>
 <h3>Important caveat</h3>
 <p>PSNR is not a perfect perceptual-quality metric. Two images with similar PSNR can look different to a human observer.</p>
@@ -1321,52 +1237,30 @@ task-specific requirements</code></pre>
       <button class="bookmark-btn" data-id="s-21-22" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>An original image occupies:</p>
-<p>
-$$
-12\text{ MB}
-$$
-</p>
-<p>and the compressed representation occupies:</p>
-<p>
-$$
-3\text{ MB}.
-$$
-</p>
+      <p>An original image occupies: $12\text{ MB}$, and the compressed representation occupies:</p>
+<div class="math-display">
+  $$3\text{ MB}.$$
+</div>
 <h3>Compression ratio</h3>
-<p>
-$$
-CR=\frac{12}{3}=4.
-$$
-</p>
+<div class="math-display">
+  $$CR=\frac{12}{3}=4.$$
+</div>
 <p>So:</p>
-<p>
-$$
-\boxed{4:1}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{4:1}$$
+</div>
 <h3>Percentage reduction</h3>
-<p>
-$$
-\text{Reduction}
+<div class="math-display">
+  $$\text{Reduction}
 =
 \left(1-\frac34\right)100
-=75\%.
-$$
-</p>
+=75\%.$$
+</div>
 <h3>Space saved</h3>
-<p>
-$$
-12-3=9\text{ MB}.
-$$
-</p>
-<p>So the method saves:</p>
-<p>
-$$
-\boxed{9\text{ MB}}
-$$
-</p>
-<p>for this file.</p>
+<div class="math-display">
+  $$12-3=9\text{ MB}.$$
+</div>
+<p>So the method saves: $\boxed{9\text{ MB}}$ for this file.</p>
 <hr />
     </div>
   </section>
@@ -1380,11 +1274,9 @@ $$
     </div>
     <div class="section-body">
       <p>Suppose two images are both:</p>
-<p>
-$$
-1920\times1080.
-$$
-</p>
+<div class="math-display">
+  $$1920\times1080.$$
+</div>
 <p>Their compressed sizes can differ greatly because of:</p>
 <ul>
 <li>image content;</li>
@@ -1398,11 +1290,9 @@ $$
 <li>entropy of the source.</li>
 </ul>
 <p>Therefore:</p>
-<p>
-$$
-\boxed{\text{same dimensions} \not\Rightarrow \text{same compressed size}}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{\text{same dimensions} \not\Rightarrow \text{same compressed size}}$$
+</div>
 <p>This is a common conceptual trap.</p>
 <hr />
     </div>
@@ -1421,12 +1311,10 @@ $$
 <p>A source with more predictable symbols can often be encoded using fewer average bits per symbol.</p>
 </blockquote>
 <p>For a discrete random variable $X$, entropy is:</p>
-<p>
-$$
-H(X)=
--\sum_i p_i\log_2 p_i.
-$$
-</p>
+<div class="math-display">
+  $$H(X)=
+-\sum_i p_i\log_2 p_i.$$
+</div>
 <p>Entropy represents a lower-bound notion of average information content under ideal coding assumptions.</p>
 <p>We develop this properly in C22.</p>
 <hr />
@@ -1442,26 +1330,16 @@ $$
     </div>
     <div class="section-body">
       <p>Suppose four symbols occur with equal probability:</p>
-<p>
-$$
-P(A)=P(B)=P(C)=P(D)=0.25.
-$$
-</p>
+<div class="math-display">
+  $$P(A)=P(B)=P(C)=P(D)=0.25.$$
+</div>
 <p>All four symbols are equally likely.</p>
-<p>A fixed-length binary representation needs:</p>
-<p>
-$$
-\log_2 4=2
-$$
-</p>
-<p>bits per symbol.</p>
+<p>A fixed-length binary representation needs: $\log_2 4=2$ bits per symbol.</p>
 <p>Now suppose:</p>
-<p>
-$$
-P(A)=0.875,\qquad
-P(B)=P(C)=P(D)=0.041667.
-$$
-</p>
+<div class="math-display">
+  $$P(A)=0.875,\qquad
+P(B)=P(C)=P(D)=0.041667.$$
+</div>
 <p>The source is much more predictable.</p>
 <p>A good variable-length code can give the common symbol a short representation and rarer symbols longer representations.</p>
 <p>The exact coding construction belongs to C22, but the compression principle is already visible:</p>
@@ -1826,11 +1704,9 @@ Compression in which decompression reproduces the exact original image data.</p>
 <p><strong>What is lossy compression?</strong><br />
 Compression that permits controlled information loss to obtain greater size reduction.</p>
 <p><strong>Define compression ratio.</strong></p>
-<p>
-$$
-CR=\frac{S_o}{S_c}.
-$$
-</p>
+<div class="math-display">
+  $$CR=\frac{S_o}{S_c}.$$
+</div>
 <hr />
 <h2>5-mark question</h2>
 <h3>Explain different forms of image redundancy.</h3>
@@ -2004,17 +1880,13 @@ $$
 </blockquote>
 <p>Images contain redundancy because their values are structured and statistically non-random. Compression exploits that structure through more efficient coding, representation changes, and—when allowed—controlled removal of information.</p>
 <p>The most important distinction is:</p>
-<p>
-$$
-\boxed{\text{Lossless: exact recovery}}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{\text{Lossless: exact recovery}}$$
+</div>
 <p>versus</p>
-<p>
-$$
-\boxed{\text{Lossy: approximate recovery}}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{\text{Lossy: approximate recovery}}$$
+</div>
 <p>Everything that follows in this part of the MiniBook builds on that distinction.</p>
 <hr />
 <p><strong>Next chapter:</strong> C22 — Entropy, Run-Length Encoding and Huffman Coding</p>

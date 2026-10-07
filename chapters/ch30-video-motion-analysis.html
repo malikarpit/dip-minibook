@@ -22,7 +22,7 @@
       svg: { fontCache: 'global' }
     };
   </script>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script id="MathJax-script" async src="../assets/js/mathjax/tex-mml-chtml.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';"></script>
 </head>
 <body data-chapter-id="ch30-video-motion-analysis">
   <div id="progress-bar"></div>
@@ -352,11 +352,9 @@
     <div class="section-body">
       <p>A single image gives a spatial snapshot.</p>
 <p>A video provides:</p>
-<p>
-$$
-\boxed{\text{space}+\text{time}}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{\text{space}+\text{time}}$$
+</div>
 <p>The university syllabus explicitly requires:</p>
 <ul>
 <li>Introduction to Video Processing;</li>
@@ -421,13 +419,7 @@ $$
       <button class="bookmark-btn" data-id="s-30-3" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>A video can be represented as:</p>
-<p>
-$$
-I(x,y,t)
-$$
-</p>
-<p>where:</p>
+      <p>A video can be represented as $I(x,y,t)$, where:</p>
 <ul>
 <li>$x$ = horizontal position;</li>
 <li>$y$ = vertical position;</li>
@@ -461,27 +453,21 @@ Frame N</code></pre>
     <div class="section-body">
       <h3>Spatial</h3>
 <p>Variation across:</p>
-<p>
-$$
-x,y.
-$$
-</p>
+<div class="math-display">
+  $$x,y.$$
+</div>
 <h3>Temporal</h3>
 <p>Variation across:</p>
-<p>
-$$
-t.
-$$
-</p>
+<div class="math-display">
+  $$t.$$
+</div>
 <p>A moving object changes its location over time.</p>
 <p>Therefore motion can be inferred from:</p>
-<p>
-$$
-I(x,y,t)
+<div class="math-display">
+  $$I(x,y,t)
 \quad\text{and}\quad
-I(x,y,t+\Delta t).
-$$
-</p>
+I(x,y,t+\Delta t).$$
+</div>
 <hr />
     </div>
   </section>
@@ -495,19 +481,11 @@ $$
     </div>
     <div class="section-body">
       <p>Frame rate is commonly measured in frames per second:</p>
-<p>
-$$
-FPS=
-\frac{\text{number of frames}}{\text{seconds}}.
-$$
-</p>
-<p>For example:</p>
-<p>
-$$
-30\text{ FPS}
-$$
-</p>
-<p>means approximately 30 frames are captured/displayed each second.</p>
+<div class="math-display">
+  $$FPS=
+\frac{\text{number of frames}}{\text{seconds}}.$$
+</div>
+<p>For example $30\text{ FPS}$ means approximately 30 frames are captured/displayed each second.</p>
 <p>Higher temporal sampling can capture faster changes more smoothly.</p>
 <p>But it can also increase:</p>
 <ul>
@@ -566,23 +544,17 @@ smaller frame-to-frame displacement</code></pre>
     </div>
     <div class="section-body">
       <p>A grayscale video can be represented conceptually as:</p>
-<p>
-$$
-T\times H\times W.
-$$
-</p>
+<div class="math-display">
+  $$T\times H\times W.$$
+</div>
 <p>An RGB video can be:</p>
-<p>
-$$
-T\times H\times W\times3.
-$$
-</p>
+<div class="math-display">
+  $$T\times H\times W\times3.$$
+</div>
 <p>For a batch of videos:</p>
-<p>
-$$
-B\times T\times H\times W\times C.
-$$
-</p>
+<div class="math-display">
+  $$B\times T\times H\times W\times C.$$
+</div>
 <p>The exact tensor ordering depends on the software framework.</p>
 <hr />
     </div>
@@ -632,26 +604,16 @@ output</code></pre>
     </div>
     <div class="section-body">
       <p>One of the simplest motion-detection methods is frame differencing.</p>
-<p>Given two grayscale frames:</p>
-<p>
-$$
-I_t(x,y)
-$$
-</p>
-<p>and:</p>
-<p>
-$$
-I_{t-1}(x,y),
-$$
-</p>
+<p>Given two grayscale frames: $I_t(x,y)$, and:</p>
+<div class="math-display">
+  $$I_{t-1}(x,y),$$
+</div>
 <p>calculate:</p>
-<p>
-$$
-D(x,y)
+<div class="math-display">
+  $$D(x,y)
 =
-|I_t(x,y)-I_{t-1}(x,y)|.
-$$
-</p>
+|I_t(x,y)-I_{t-1}(x,y)|.$$
+</div>
 <p>Large values indicate significant pixel change.</p>
 <hr />
     </div>
@@ -666,15 +628,13 @@ $$
     </div>
     <div class="section-body">
       <p>A binary motion mask can be:</p>
-<p>
-$$
-M(x,y)=
+<div class="math-display">
+  $$M(x,y)=
 \begin{cases}
 1,&D(x,y)>T\\
 0,&D(x,y)\le T
-\end{cases}
-$$
-</p>
+\end{cases}$$
+</div>
 <p>where $T$ is a threshold.</p>
 <p>This converts change into a binary motion region.</p>
 <p>The approach is simple but sensitive to:</p>
@@ -696,44 +656,16 @@ $$
       <button class="bookmark-btn" data-id="s-30-11" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose:</p>
-<p>
-$$
-I_{t-1}(x,y)=100
-$$
-</p>
-<p>and:</p>
-<p>
-$$
-I_t(x,y)=130.
-$$
-</p>
-<p>Then:</p>
-<p>
-$$
-D=|130-100|=30.
-$$
-</p>
-<p>If:</p>
-<p>
-$$
-T=20,
-$$
-</p>
-<p>then:</p>
-<p>
-$$
-D>T
-$$
-</p>
+      <p>Suppose $I_{t-1}(x,y)=100$ and $I_t(x,y)=130.$. Then:</p>
+<div class="math-display">
+  $$D=|130-100|=30.$$
+</div>
+<p>If $T=20,$, then:</p>
+<div class="math-display">
+  $$D>T$$
+</div>
 <p>and the pixel is marked as changed.</p>
-<p>If:</p>
-<p>
-$$
-T=40,
-$$
-</p>
-<p>it is not marked.</p>
+<p>If $T=40,$ it is not marked.</p>
 <p>Thus threshold selection controls sensitivity.</p>
 <hr />
     </div>
@@ -805,25 +737,17 @@ foreground mask</code></pre>
     </div>
     <div class="section-body">
       <p>A motion vector describes displacement:</p>
-<p>
-$$
-\mathbf{v}
+<div class="math-display">
+  $$\mathbf{v}
 =
-(u,v)
-$$
-</p>
+(u,v)$$
+</div>
 <p>where:</p>
 <ul>
 <li>$u$ = horizontal displacement;</li>
 <li>$v$ = vertical displacement.</li>
 </ul>
-<p>Example:</p>
-<p>
-$$
-\mathbf{v}=(4,-2)
-$$
-</p>
-<p>means approximately:</p>
+<p>Example: $\mathbf{v}=(4,-2)$ means approximately:</p>
 <p><div class="code-block">
   <div class="code-header">
     <span>text</span>
@@ -847,13 +771,11 @@ $$
     <div class="section-body">
       <p>Optical flow estimates apparent motion of image structures between frames.</p>
 <p>It is often represented as a vector field:</p>
-<p>
-$$
-\mathbf{v}(x,y)
+<div class="math-display">
+  $$\mathbf{v}(x,y)
 =
-(u(x,y),v(x,y)).
-$$
-</p>
+(u(x,y),v(x,y)).$$
+</div>
 <p>Conceptually:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -881,21 +803,13 @@ motion interpretation</code></pre>
     </div>
     <div class="section-body">
       <p>A classical starting assumption is that the brightness of a moving point remains approximately constant over a small time interval.</p>
-<p>Suppose:</p>
-<p>
-$$
-I(x,y,t)
-$$
-</p>
-<p>tracks a moving point.</p>
+<p>Suppose: $I(x,y,t)$ tracks a moving point.</p>
 <p>Then:</p>
-<p>
-$$
-I(x,y,t)
+<div class="math-display">
+  $$I(x,y,t)
 \approx
-I(x+dx,y+dy,t+dt).
-$$
-</p>
+I(x+dx,y+dy,t+dt).$$
+</div>
 <p>This assumption allows a motion relationship to be derived.</p>
 <hr />
     </div>
@@ -910,17 +824,14 @@ $$
     </div>
     <div class="section-body">
       <p>Start with:</p>
-<p>
-$$
-I(x,y,t)
+<div class="math-display">
+  $$I(x,y,t)
 =
-I(x+dx,y+dy,t+dt).
-$$
-</p>
+I(x+dx,y+dy,t+dt).$$
+</div>
 <p>Apply a first-order Taylor expansion:</p>
-<p>
-$$
-I(x+dx,y+dy,t+dt)
+<div class="math-display">
+  $$I(x+dx,y+dy,t+dt)
 \approx
 I
 +
@@ -928,30 +839,23 @@ I_xdx
 +
 I_ydy
 +
-I_tdt.
-$$
-</p>
+I_tdt.$$
+</div>
 <p>Therefore:</p>
-<p>
-$$
-I_xdx+I_ydy+I_tdt=0.
-$$
-</p>
+<div class="math-display">
+  $$I_xdx+I_ydy+I_tdt=0.$$
+</div>
 <p>Divide by $dt$:</p>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 I_xu+I_yv+I_t=0
-}
-$$
-</p>
+}$$
+</div>
 <p>where:</p>
-<p>
-$$
-u=\frac{dx}{dt},\qquad
-v=\frac{dy}{dt}.
-$$
-</p>
+<div class="math-display">
+  $$u=\frac{dx}{dt},\qquad
+v=\frac{dy}{dt}.$$
+</div>
 <p>This is the <strong>optical-flow constraint equation</strong>.</p>
 <hr />
     </div>
@@ -965,37 +869,23 @@ $$
       <button class="bookmark-btn" data-id="s-30-18" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>
-$$
-I_x
-$$
-</p>
+      <div class="math-display">
+  $$I_x$$
+</div>
 <p>= spatial intensity gradient in the x direction.</p>
-<p>
-$$
-I_y
-$$
-</p>
+<div class="math-display">
+  $$I_y$$
+</div>
 <p>= spatial intensity gradient in the y direction.</p>
-<p>
-$$
-I_t
-$$
-</p>
+<div class="math-display">
+  $$I_t$$
+</div>
 <p>= temporal intensity change.</p>
-<p>
-$$
-u,v
-$$
-</p>
+<div class="math-display">
+  $$u,v$$
+</div>
 <p>= optical-flow velocity components.</p>
-<p>So:</p>
-<p>
-$$
-I_xu+I_yv+I_t=0
-$$
-</p>
-<p>states that under the brightness-constancy approximation, the observed intensity change is related to image motion.</p>
+<p>So: $I_xu+I_yv+I_t=0$ states that under the brightness-constancy approximation, the observed intensity change is related to image motion.</p>
 <hr />
     </div>
   </section>
@@ -1009,11 +899,9 @@ $$
     </div>
     <div class="section-body">
       <p>Unknowns:</p>
-<p>
-$$
-u,v.
-$$
-</p>
+<div class="math-display">
+  $$u,v.$$
+</div>
 <p>One equation contains two unknowns.</p>
 <p>Therefore the equation alone cannot uniquely determine motion.</p>
 <p>This is the basis of the <strong>aperture problem</strong>.</p>
@@ -1106,26 +994,20 @@ $$
       <p>Lucas–Kanade is a classical sparse/dense-local optical-flow approach.</p>
 <p>The basic assumption is that nearby pixels have similar motion.</p>
 <p>A local window provides multiple equations:</p>
-<p>
-$$
-I_xu+I_yv=-I_t.
-$$
-</p>
+<div class="math-display">
+  $$I_xu+I_yv=-I_t.$$
+</div>
 <p>The equations can be organized as:</p>
-<p>
-$$
-A\mathbf{v}=\mathbf{b}
-$$
-</p>
+<div class="math-display">
+  $$A\mathbf{v}=\mathbf{b}$$
+</div>
 <p>where:</p>
-<p>
-$$
-\mathbf{v}=
+<div class="math-display">
+  $$\mathbf{v}=
 \begin{bmatrix}
 u\\v
-\end{bmatrix}.
-$$
-</p>
+\end{bmatrix}.$$
+</div>
 <p>A least-squares solution can estimate the motion.</p>
 <hr />
     </div>
@@ -1140,45 +1022,37 @@ $$
     </div>
     <div class="section-body">
       <p>For a local window with $n$ pixels:</p>
-<p>
-$$
-A=
+<div class="math-display">
+  $$A=
 \begin{bmatrix}
 I_{x1} & I_{y1}\\
 I_{x2} & I_{y2}\\
 \vdots & \vdots\\
 I_{xn} & I_{yn}
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>and:</p>
-<p>
-$$
-\mathbf{b}=
+<div class="math-display">
+  $$\mathbf{b}=
 \begin{bmatrix}
 -I_{t1}\\
 -I_{t2}\\
 \vdots\\
 -I_{tn}
-\end{bmatrix}.
-$$
-</p>
+\end{bmatrix}.$$
+</div>
 <p>Then:</p>
-<p>
-$$
-A\mathbf{v}=\mathbf{b}.
-$$
-</p>
+<div class="math-display">
+  $$A\mathbf{v}=\mathbf{b}.$$
+</div>
 <p>A least-squares estimate is:</p>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 \mathbf{v}
 =
 (A^TA)^{-1}A^T\mathbf{b}
-}
-$$
-</p>
+}$$
+</div>
 <p>when the inverse exists and the conditioning is suitable.</p>
 <hr />
     </div>
@@ -1193,19 +1067,11 @@ $$
     </div>
     <div class="section-body">
       <p>One pixel gives:</p>
-<p>
-$$
-I_xu+I_yv=-I_t.
-$$
-</p>
+<div class="math-display">
+  $$I_xu+I_yv=-I_t.$$
+</div>
 <p>Many nearby pixels give multiple equations.</p>
-<p>That can make:</p>
-<p>
-$$
-u,v
-$$
-</p>
-<p>estimable.</p>
+<p>That can make: $u,v$ estimable.</p>
 <p>The assumption is that the local region shares approximately the same motion.</p>
 <p>This is a powerful but imperfect assumption.</p>
 <hr />
@@ -1280,38 +1146,26 @@ arrows representing motion vectors</code></pre>
       <button class="bookmark-btn" data-id="s-30-27" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Given:</p>
-<p>
-$$
-\mathbf{v}=(u,v),
-$$
-</p>
-<p>the magnitude is:</p>
-<p>
-$$
-|\mathbf{v}|
+      <p>Given: $\mathbf{v}=(u,v),$ the magnitude is:</p>
+<div class="math-display">
+  $$|\mathbf{v}|
 =
-\sqrt{u^2+v^2}.
-$$
-</p>
+\sqrt{u^2+v^2}.$$
+</div>
 <p>Example:</p>
-<p>
-$$
-u=3,\quad v=4.
-$$
-</p>
+<div class="math-display">
+  $$u=3,\quad v=4.$$
+</div>
 <p>Then:</p>
-<p>
-$$
-|\mathbf{v}|
+<div class="math-display">
+  $$|\mathbf{v}|
 =
 \sqrt{3^2+4^2}
 =
 \sqrt{25}
 =
-\boxed5.
-$$
-</p>
+\boxed5.$$
+</div>
 <hr />
     </div>
   </section>
@@ -1325,24 +1179,14 @@ $$
     </div>
     <div class="section-body">
       <p>The direction angle can be represented as:</p>
-<p>
-$$
-\theta=
-\operatorname{atan2}(v,u).
-$$
-</p>
-<p>For:</p>
-<p>
-$$
-(u,v)=(1,1),
-$$
-</p>
-<p>the direction is approximately:</p>
-<p>
-$$
-45^\circ
-$$
-</p>
+<div class="math-display">
+  $$\theta=
+\operatorname{atan2}(v,u).$$
+</div>
+<p>For: $(u,v)=(1,1),$ the direction is approximately:</p>
+<div class="math-display">
+  $$45^\circ$$
+</div>
 <p>under the mathematical coordinate convention.</p>
 <p>Image-coordinate y direction may point downward, so visualization code must handle coordinate conventions carefully.</p>
 <hr />
@@ -1357,13 +1201,7 @@ $$
       <button class="bookmark-btn" data-id="s-30-29" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>An image-space vector such as:</p>
-<p>
-$$
-(5,0)
-$$
-</p>
-<p>means approximately 5 pixels of apparent horizontal displacement over the selected time interval.</p>
+      <p>An image-space vector such as: $(5,0)$ means approximately 5 pixels of apparent horizontal displacement over the selected time interval.</p>
 <p>It does not automatically mean:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -1431,13 +1269,7 @@ before light change → dark
 after light change  → bright</code></pre>
 </div></p>
 <p>Pixel intensities change even without object motion.</p>
-<p>Thus:</p>
-<p>
-$$
-I_t\neq0
-$$
-</p>
-<p>does not necessarily imply object motion.</p>
+<p>Thus: $I_t\neq0$ does not necessarily imply object motion.</p>
 <hr />
     </div>
   </section>
@@ -1551,19 +1383,11 @@ motion estimates</code></pre>
     </div>
     <div class="section-body">
       <p>Suppose selected feature points are:</p>
-<p>
-$$
-P_t=
-\{p_1,p_2,\ldots,p_n\}.
-$$
-</p>
-<p>Optical flow estimates:</p>
-<p>
-$$
-p_i(t+\Delta t)
-$$
-</p>
-<p>from their previous positions.</p>
+<div class="math-display">
+  $$P_t=
+\{p_1,p_2,\ldots,p_n\}.$$
+</div>
+<p>Optical flow estimates: $p_i(t+\Delta t)$ from their previous positions.</p>
 <p>Then trajectories can be constructed:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -1878,38 +1702,30 @@ Repeat for next frame</code></pre>
     </div>
     <div class="section-body">
       <p>Suppose a set of feature points inside an object produces vectors:</p>
-<p>
-$$
-(2,1),\quad
+<div class="math-display">
+  $$(2,1),\quad
 (3,2),\quad
 (1,2),\quad
-(2,1).
-$$
-</p>
+(2,1).$$
+</div>
 <p>Mean horizontal motion:</p>
-<p>
-$$
-\bar u=
+<div class="math-display">
+  $$\bar u=
 \frac{2+3+1+2}{4}
 =
-2.
-$$
-</p>
+2.$$
+</div>
 <p>Mean vertical motion:</p>
-<p>
-$$
-\bar v=
+<div class="math-display">
+  $$\bar v=
 \frac{1+2+2+1}{4}
 =
-1.5.
-$$
-</p>
+1.5.$$
+</div>
 <p>Thus average motion is approximately:</p>
-<p>
-$$
-\boxed{(2,\ 1.5)}.
-$$
-</p>
+<div class="math-display">
+  $$\boxed{(2,\ 1.5)}.$$
+</div>
 <p>This can be used as a simple object-motion estimate when the selected points belong to the same rigid moving region.</p>
 <hr />
     </div>
@@ -1993,11 +1809,9 @@ smoothed:
 </div></p>
 <p>Temporal filtering can improve stability but can also introduce lag.</p>
 <p>Thus:</p>
-<p>
-$$
-\boxed{\text{stability} \leftrightarrow \text{responsiveness}}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{\text{stability} \leftrightarrow \text{responsiveness}}$$
+</div>
 <p>is another engineering trade-off.</p>
 <hr />
     </div>
@@ -2042,18 +1856,10 @@ $$
     </div>
     <div class="section-body">
       <p>A real-time pipeline must process frames fast enough.</p>
-<p>If input rate is:</p>
-<p>
-$$
-30\text{ FPS}
-$$
-</p>
-<p>and the algorithm processes only:</p>
-<p>
-$$
-10\text{ FPS},
-$$
-</p>
+<p>If input rate is $30\text{ FPS}$, and the algorithm processes only:</p>
+<div class="math-display">
+  $$10\text{ FPS},$$
+</div>
 <p>frames accumulate or are dropped depending on system design.</p>
 <p>Therefore real-time design may require:</p>
 <ul>
@@ -2189,11 +1995,9 @@ C30 temporal analysis</code></pre>
 └── trajectory analysis</code></pre>
 </div></p>
 <p>Thus:</p>
-<p>
-$$
-\boxed{\text{optical flow} \subset \text{motion analysis}}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{\text{optical flow} \subset \text{motion analysis}}$$
+</div>
 <p>This distinction is useful in exams and system design.</p>
 <hr />
     </div>
@@ -2271,11 +2075,9 @@ Processing a temporal sequence of image frames to extract, enhance, interpret or
 <p><strong>Define optical flow.</strong><br />
 The estimated apparent motion of image structures represented as vectors across an image.</p>
 <p><strong>Write the optical-flow constraint equation.</strong></p>
-<p>
-$$
-\boxed{I_xu+I_yv+I_t=0}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{I_xu+I_yv+I_t=0}$$
+</div>
 <hr />
 <h1>54. 5-Mark Question</h1>
 <h3>Explain optical flow.</h3>
@@ -2325,25 +2127,19 @@ $$
     </div>
     <div class="section-body">
       <p>Given:</p>
-<p>
-$$
-I_x=2,\quad
+<div class="math-display">
+  $$I_x=2,\quad
 I_y=3,\quad
-I_t=-5.
-$$
-</p>
+I_t=-5.$$
+</div>
 <p>The optical-flow constraint is:</p>
-<p>
-$$
-2u+3v-5=0.
-$$
-</p>
+<div class="math-display">
+  $$2u+3v-5=0.$$
+</div>
 <p>Therefore:</p>
-<p>
-$$
-2u+3v=5.
-$$
-</p>
+<div class="math-display">
+  $$2u+3v=5.$$
+</div>
 <p>There are infinitely many $(u,v)$ pairs satisfying this equation.</p>
 <p>This demonstrates why another constraint is required to determine unique 2-D motion.</p>
 <hr />
@@ -2358,24 +2154,16 @@ $$
       <button class="bookmark-btn" data-id="s-30-55" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Given:</p>
-<p>
-$$
-(u,v)=(6,8),
-$$
-</p>
-<p>calculate:</p>
-<p>
-$$
-|\mathbf v|
+      <p>Given: $(u,v)=(6,8),$ calculate:</p>
+<div class="math-display">
+  $$|\mathbf v|
 =
 \sqrt{6^2+8^2}
 =
 \sqrt{100}
 =
-\boxed{10}.
-$$
-</p>
+\boxed{10}.$$
+</div>
 <hr />
     </div>
   </section>
@@ -2394,11 +2182,9 @@ $$
 <p>What is the difference between motion detection and tracking?</p>
 <h3>Q3</h3>
 <p>Derive:</p>
-<p>
-$$
-I_xu+I_yv+I_t=0.
-$$
-</p>
+<div class="math-display">
+  $$I_xu+I_yv+I_t=0.$$
+</div>
 <h3>Q4</h3>
 <p>Why does the optical-flow equation alone not uniquely determine $u$ and $v$?</p>
 <h3>Q5</h3>
@@ -2630,22 +2416,18 @@ trajectory</code></pre>
     </div>
     <div class="section-body">
       <p>Video adds a time axis:</p>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 I(x,y,t)
-}
-$$
-</p>
+}$$
+</div>
 <p>Motion analysis compares how image information changes across $t$.</p>
 <p>The foundational equation is:</p>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 I_xu+I_yv+I_t=0
-}
-$$
-</p>
+}$$
+</div>
 <p>but one equation cannot uniquely determine two motion components, leading to the aperture problem and the need for additional assumptions.</p>
 <p>The practical pipeline is:</p>
 <p><div class="code-block">
@@ -2661,20 +2443,16 @@ $$
 → trajectories / interpretation</code></pre>
 </div></p>
 <p>The major distinction to retain is:</p>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 \text{Detection finds objects}
-}
-$$
-</p>
-<p>
-$$
-\boxed{
+}$$
+</div>
+<div class="math-display">
+  $$\boxed{
 \text{Tracking links objects/points across time}
-}
-$$
-</p>
+}$$
+</div>
 <p>The university syllabus explicitly requires video processing and motion analysis, while Practical 10 specifically requires optical-flow motion tracking. fileciteturn4file0L48-L52 fileciteturn4file0L82-L86</p>
 <p>This completes the main technical content leading into the final applications chapter.</p>
 <hr />

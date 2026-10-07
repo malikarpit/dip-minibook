@@ -22,7 +22,7 @@
       svg: { fontCache: 'global' }
     };
   </script>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script id="MathJax-script" async src="../assets/js/mathjax/tex-mml-chtml.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';"></script>
 </head>
 <body data-chapter-id="ch29-image-denoising-autoencoders">
   <div id="progress-bar"></div>
@@ -407,39 +407,21 @@ decoder
   ↓
 reconstruction</code></pre>
 </div></p>
-<p>Let:</p>
-<p>
-$$
-x
-$$
-</p>
-<p>be the input.</p>
-<p>The encoder is:</p>
-<p>
-$$
-z=f_{\theta}(x)
-$$
-</p>
-<p>and the decoder is:</p>
-<p>
-$$
-\hat{x}=g_{\phi}(z).
-$$
-</p>
+<p>Let: $x$ be the input.</p>
+<p>The encoder is $z=f_{\theta}(x)$, and the decoder is:</p>
+<div class="math-display">
+  $$\hat{x}=g_{\phi}(z).$$
+</div>
 <p>Therefore:</p>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 \hat{x}=g_{\phi}(f_{\theta}(x))
-}
-$$
-</p>
+}$$
+</div>
 <p>The training objective is to make:</p>
-<p>
-$$
-\hat{x}\approx x.
-$$
-</p>
+<div class="math-display">
+  $$\hat{x}\approx x.$$
+</div>
 <hr />
     </div>
   </section>
@@ -466,11 +448,9 @@ $$
 </div></p>
 <p>The target is usually the same image used as input.</p>
 <p>The model learns:</p>
-<p>
-$$
-x\rightarrow\hat{x}.
-$$
-</p>
+<div class="math-display">
+  $$x\rightarrow\hat{x}.$$
+</div>
 <p>The reconstruction loss measures how closely the output matches the input.</p>
 <hr />
     </div>
@@ -511,21 +491,17 @@ $$
        clean target</code></pre>
 </div></p>
 <p>Formally:</p>
-<p>
-$$
-x_{\text{clean}}
+<div class="math-display">
+  $$x_{\text{clean}}
 \rightarrow
-\tilde{x}_{\text{noisy}}
-$$
-</p>
+\tilde{x}_{\text{noisy}}$$
+</div>
 <p>and the model learns:</p>
-<p>
-$$
-g_{\phi}(f_{\theta}(\tilde{x}))
+<div class="math-display">
+  $$g_{\phi}(f_{\theta}(\tilde{x}))
 \approx
-x.
-$$
-</p>
+x.$$
+</div>
 <p>The crucial distinction is:</p>
 <blockquote>
 <p><strong>The input is noisy; the target is clean.</strong></p>
@@ -636,11 +612,9 @@ cleaner reconstruction</code></pre>
     </div>
     <div class="section-body">
       <p>The encoder maps an image into a latent representation:</p>
-<p>
-$$
-z=f_{\theta}(x).
-$$
-</p>
+<div class="math-display">
+  $$z=f_{\theta}(x).$$
+</div>
 <p>It can use convolution, activation and downsampling operations:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -675,11 +649,9 @@ latent feature maps</code></pre>
     </div>
     <div class="section-body">
       <p>The decoder maps the latent representation back into image space:</p>
-<p>
-$$
-\hat{x}=g_{\phi}(z).
-$$
-</p>
+<div class="math-display">
+  $$\hat{x}=g_{\phi}(z).$$
+</div>
 <p>A convolutional decoder can use:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -709,13 +681,7 @@ reconstruction</code></pre>
       <button class="bookmark-btn" data-id="s-29-10" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>The latent variable:</p>
-<p>
-$$
-z
-$$
-</p>
-<p>is a learned intermediate representation.</p>
+      <p>The latent variable: $z$ is a learned intermediate representation.</p>
 <p>Conceptually:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -753,23 +719,19 @@ reconstructed image
     </div>
     <div class="section-body">
       <p>A common choice for image reconstruction is mean squared error:</p>
-<p>
-$$
-MSE=
+<div class="math-display">
+  $$MSE=
 \frac{1}{N}
 \sum_{i=1}^{N}
-(x_i-\hat{x}_i)^2.
-$$
-</p>
+(x_i-\hat{x}_i)^2.$$
+</div>
 <p>For an image:</p>
-<p>
-$$
-L=
+<div class="math-display">
+  $$L=
 \frac{1}{HWC}
 \sum_{h,w,c}
-(x_{h,w,c}-\hat{x}_{h,w,c})^2.
-$$
-</p>
+(x_{h,w,c}-\hat{x}_{h,w,c})^2.$$
+</div>
 <p>This gives the network a quantitative target.</p>
 <hr />
     </div>
@@ -784,42 +746,32 @@ $$
     </div>
     <div class="section-body">
       <p>Suppose a four-pixel clean target is:</p>
-<p>
-$$
-x=
-[10,20,30,40]
-$$
-</p>
+<div class="math-display">
+  $$x=
+[10,20,30,40]$$
+</div>
 <p>and reconstruction is:</p>
-<p>
-$$
-\hat{x}=
-[11,18,33,39].
-$$
-</p>
+<div class="math-display">
+  $$\hat{x}=
+[11,18,33,39].$$
+</div>
 <p>Errors:</p>
-<p>
-$$
-[-1,2,-3,1].
-$$
-</p>
+<div class="math-display">
+  $$[-1,2,-3,1].$$
+</div>
 <p>Squared errors:</p>
-<p>
-$$
-[1,4,9,1].
-$$
-</p>
+<div class="math-display">
+  $$[1,4,9,1].$$
+</div>
 <p>Therefore:</p>
-<p>
-$$
-MSE=
+<div class="math-display">
+  $$MSE=
 \frac{1+4+9+1}{4}
 =
 \frac{15}{4}
 =
-\boxed{3.75}.
-$$
-</p>
+\boxed{3.75}.$$
+</div>
 <p>Lower MSE means the reconstruction is numerically closer under this particular loss.</p>
 <hr />
     </div>
@@ -892,11 +844,9 @@ Output image</code></pre>
     </div>
     <div class="section-body">
       <p>Suppose the noisy input is:</p>
-<p>
-$$
-28\times28\times1.
-$$
-</p>
+<div class="math-display">
+  $$28\times28\times1.$$
+</div>
 <p>A simple encoder:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -914,13 +864,11 @@ $$
 7×7×64</code></pre>
 </div></p>
 <p>The latent representation has:</p>
-<p>
-$$
-7\times7\times64
+<div class="math-display">
+  $$7\times7\times64
 =
-3136
-$$
-</p>
+3136$$
+</div>
 <p>values.</p>
 <p>The decoder reverses the spatial reduction:</p>
 <p><div class="code-block">
@@ -953,15 +901,13 @@ $$
     <div class="section-body">
       <p>Downsampling reduces spatial resolution.</p>
 <p>For example:</p>
-<p>
-$$
-28\times28
+<div class="math-display">
+  $$28\times28
 \rightarrow
 14\times14
 \rightarrow
-7\times7.
-$$
-</p>
+7\times7.$$
+</div>
 <p>This encourages the representation to capture broader structures.</p>
 <p>But information can be lost through aggressive downsampling.</p>
 <p>The decoder therefore has to reconstruct fine detail from the latent representation.</p>
@@ -1045,18 +991,10 @@ training distribution</code></pre>
 → add known synthetic noise
 → train on noisy/clean pair</code></pre>
 </div></p>
-<p>For Gaussian noise:</p>
-<p>
-$$
-\tilde{x}=x+n
-$$
-</p>
-<p>where:</p>
-<p>
-$$
-n\sim\mathcal{N}(0,\sigma^2)
-$$
-</p>
+<p>For Gaussian noise $\tilde{x}=x+n$, where:</p>
+<div class="math-display">
+  $$n\sim\mathcal{N}(0,\sigma^2)$$
+</div>
 <p>in a simplified additive model.</p>
 <p>The noise level $\sigma$ controls corruption strength.</p>
 <hr />
@@ -1071,37 +1009,19 @@ $$
       <button class="bookmark-btn" data-id="s-29-20" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose:</p>
-<p>
-$$
-x=100
-$$
-</p>
-<p>and noise sample:</p>
-<p>
-$$
-n=8.
-$$
-</p>
+      <p>Suppose: $x=100$, and noise sample:</p>
+<div class="math-display">
+  $$n=8.$$
+</div>
 <p>Then:</p>
-<p>
-$$
-\tilde{x}=100+8=108.
-$$
-</p>
+<div class="math-display">
+  $$\tilde{x}=100+8=108.$$
+</div>
 <p>If a model receives:</p>
-<p>
-$$
-108
-$$
-</p>
-<p>but the target is:</p>
-<p>
-$$
-100,
-$$
-</p>
-<p>the learning process encourages the reconstruction toward the clean value.</p>
+<div class="math-display">
+  $$108$$
+</div>
+<p>but the target is $100,$ the learning process encourages the reconstruction toward the clean value.</p>
 <p>This simple scalar example illustrates the training idea.</p>
 <hr />
     </div>
@@ -1127,13 +1047,11 @@ $$
 detail ↓</code></pre>
 </div></p>
 <p>Therefore:</p>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 \text{cleaner image} \not\Rightarrow \text{more faithful image}
-}
-$$
-</p>
+}$$
+</div>
 <p>Denoising always involves a trade-off between suppression of corruption and preservation of real detail.</p>
 <hr />
     </div>
@@ -1456,28 +1374,14 @@ reconstructed vs clean</code></pre>
       <button class="bookmark-btn" data-id="s-29-29" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Let:</p>
-<p>
-$$
-MSE_{\text{noisy}}
-$$
-</p>
-<p>be the MSE between noisy and clean images.</p>
-<p>Let:</p>
-<p>
-$$
-MSE_{\text{recon}}
-$$
-</p>
-<p>be the MSE between reconstructed and clean images.</p>
+      <p>Let: $MSE_{\text{noisy}}$ be the MSE between noisy and clean images.</p>
+<p>Let: $MSE_{\text{recon}}$ be the MSE between reconstructed and clean images.</p>
 <p>A useful result is:</p>
-<p>
-$$
-MSE_{\text{recon}}
+<div class="math-display">
+  $$MSE_{\text{recon}}
 \lt 
-MSE_{\text{noisy}}.
-$$
-</p>
+MSE_{\text{noisy}}.$$
+</div>
 <p>That indicates numerical improvement under MSE.</p>
 <p>But also inspect:</p>
 <ul>
@@ -1500,15 +1404,13 @@ $$
     </div>
     <div class="section-body">
       <p>For 8-bit images:</p>
-<p>
-$$
-PSNR=
+<div class="math-display">
+  $$PSNR=
 10\log_{10}
 \left(
 \frac{255^2}{MSE}
-\right).
-$$
-</p>
+\right).$$
+</div>
 <p>If MSE decreases, PSNR increases.</p>
 <p>But PSNR remains only one evaluation dimension.</p>
 <hr />
@@ -1685,11 +1587,9 @@ A neural network trained to reconstruct an input through an encoder, latent repr
 <p><strong>What is a denoising autoencoder?</strong><br />
 An autoencoder trained using a corrupted input and a clean target.</p>
 <p><strong>What is the main loss in a basic image reconstruction example?</strong></p>
-<p>
-$$
-MSE.
-$$
-</p>
+<div class="math-display">
+  $$MSE.$$
+</div>
 <hr />
 <h1>38. 5-Mark Question</h1>
 <h3>Explain denoising using an autoencoder.</h3>
@@ -1740,45 +1640,29 @@ $$
       <button class="bookmark-btn" data-id="s-29-38" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Given:</p>
-<p>
-$$
-x=[50,100,150]
-$$
-</p>
-<p>and:</p>
-<p>
-$$
-\hat{x}=[55,98,147].
-$$
-</p>
+      <p>Given: $x=[50,100,150]$, and:</p>
+<div class="math-display">
+  $$\hat{x}=[55,98,147].$$
+</div>
 <p>Calculate:</p>
-<p>
-$$
-MSE.
-$$
-</p>
+<div class="math-display">
+  $$MSE.$$
+</div>
 <p>Errors:</p>
-<p>
-$$
-[-5,2,3].
-$$
-</p>
+<div class="math-display">
+  $$[-5,2,3].$$
+</div>
 <p>Squared:</p>
-<p>
-$$
-[25,4,9].
-$$
-</p>
+<div class="math-display">
+  $$[25,4,9].$$
+</div>
 <p>Thus:</p>
-<p>
-$$
-MSE=
+<div class="math-display">
+  $$MSE=
 \frac{25+4+9}{3}
 =
-\boxed{\frac{38}{3}\approx12.67}.
-$$
-</p>
+\boxed{\frac{38}{3}\approx12.67}.$$
+</div>
 <hr />
     </div>
   </section>
@@ -1913,9 +1797,8 @@ new noisy image → trained network → reconstruction</code></pre>
     </div>
     <div class="section-body">
       <p>The essential architecture is:</p>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 \text{noisy image}
 \rightarrow
 \text{encoder}
@@ -1925,27 +1808,22 @@ $$
 \text{decoder}
 \rightarrow
 \text{cleaner reconstruction}
-}
-$$
-</p>
+}$$
+</div>
 <p>Training uses:</p>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 \text{noisy input}
 \rightarrow
 \text{clean target}
-}
-$$
-</p>
+}$$
+</div>
 <p>The central engineering limitation is:</p>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 \text{learned denoising depends on its training distribution}
-}
-$$
-</p>
+}$$
+</div>
 <p>C29 therefore extends the classical denoising/restoration concepts from C09 and C14 into the deep-learning part of the course.</p>
 <p>The next chapter changes the input structure from one image to a sequence:</p>
 <p><div class="code-block">

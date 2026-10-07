@@ -22,7 +22,7 @@
       svg: { fontCache: 'global' }
     };
   </script>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script id="MathJax-script" async src="../assets/js/mathjax/tex-mml-chtml.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';"></script>
 </head>
 <body data-chapter-id="ch10-sharpening-edge-detection">
   <div id="progress-bar"></div>
@@ -481,11 +481,9 @@ SHARPENING
     </div>
     <div class="section-body">
       <p>For a 1-D signal $f(x)$:</p>
-<p>
-$$
-\frac{df}{dx}
-$$
-</p>
+<div class="math-display">
+  $$\frac{df}{dx}$$
+</div>
 <p>measures the rate of intensity change.</p>
 <p>Interpretation:</p>
 <p><div class="code-block">
@@ -513,11 +511,9 @@ strong transition
     </div>
     <div class="section-body">
       <p>The second derivative is:</p>
-<p>
-$$
-\frac{d^2f}{dx^2}
-$$
-</p>
+<div class="math-display">
+  $$\frac{d^2f}{dx^2}$$
+</div>
 <p>It is sensitive to changes in the first derivative.</p>
 <p>It is useful for:</p>
 <ul>
@@ -539,41 +535,31 @@ $$
     </div>
     <div class="section-body">
       <p>For a 2-D image:</p>
-<p>
-$$
-\nabla f=
+<div class="math-display">
+  $$\nabla f=
 \begin{bmatrix}
 \frac{\partial f}{\partial x}\\
 \frac{\partial f}{\partial y}
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>Define:</p>
-<p>
-$$
-G_x=\frac{\partial f}{\partial x}
-$$
-</p>
-<p>
-$$
-G_y=\frac{\partial f}{\partial y}
-$$
-</p>
+<div class="math-display">
+  $$G_x=\frac{\partial f}{\partial x}$$
+</div>
+<div class="math-display">
+  $$G_y=\frac{\partial f}{\partial y}$$
+</div>
 <p>Then:</p>
-<p>
-$$
-|\nabla f|
+<div class="math-display">
+  $$|\nabla f|
 =
-\sqrt{G_x^2+G_y^2}
-$$
-</p>
+\sqrt{G_x^2+G_y^2}$$
+</div>
 <p>and:</p>
-<p>
-$$
-\theta=
-\operatorname{atan2}(G_y,G_x)
-$$
-</p>
+<div class="math-display">
+  $$\theta=
+\operatorname{atan2}(G_y,G_x)$$
+</div>
 <p>These equations form the mathematical core of many edge detectors.</p>
 <hr />
     </div>
@@ -602,13 +588,7 @@ $$
 edge:
 ────────────</code></pre>
 </div></p>
-<p>The edge orientation and gradient direction are therefore related by approximately:</p>
-<p>
-$$
-90^\circ
-$$
-</p>
-<p>under the idealized model.</p>
+<p>The edge orientation and gradient direction are therefore related by approximately: $90^\circ$ under the idealized model.</p>
 <hr />
     </div>
   </section>
@@ -622,28 +602,22 @@ $$
     </div>
     <div class="section-body">
       <p>A basic horizontal derivative can be approximated by:</p>
-<p>
-$$
-G_x(i,j)=f(i,j+1)-f(i,j)
-$$
-</p>
+<div class="math-display">
+  $$G_x(i,j)=f(i,j+1)-f(i,j)$$
+</div>
 <p>Similarly:</p>
-<p>
-$$
-G_y(i,j)=f(i+1,j)-f(i,j)
-$$
-</p>
+<div class="math-display">
+  $$G_y(i,j)=f(i+1,j)-f(i,j)$$
+</div>
 <p>These are simple forward differences.</p>
 <p>Central differences use values on both sides:</p>
-<p>
-$$
-G_x(i,j)
+<div class="math-display">
+  $$G_x(i,j)
 \approx
 \frac{
 f(i,j+1)-f(i,j-1)
-}{2}
-$$
-</p>
+}{2}$$
+</div>
 <p>This can provide a more symmetric approximation.</p>
 <hr />
     </div>
@@ -659,24 +633,20 @@ $$
     <div class="section-body">
       <p>A simple 2×2 derivative-based operator uses diagonal differences.</p>
 <p>One common convention is:</p>
-<p>
-$$
-R_x=
+<div class="math-display">
+  $$R_x=
 \begin{bmatrix}
 1&0\\
 0&-1
-\end{bmatrix}
-$$
-</p>
-<p>
-$$
-R_y=
+\end{bmatrix}$$
+</div>
+<div class="math-display">
+  $$R_y=
 \begin{bmatrix}
 0&1\\
 -1&0
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>Sign conventions vary.</p>
 <p>Roberts is computationally simple but uses a very small neighbourhood and can be sensitive to noise.</p>
 <hr />
@@ -692,26 +662,22 @@ $$
     </div>
     <div class="section-body">
       <p>A common Prewitt pair is:</p>
-<p>
-$$
-P_x=
+<div class="math-display">
+  $$P_x=
 \begin{bmatrix}
 -1&0&1\\
 -1&0&1\\
 -1&0&1
-\end{bmatrix}
-$$
-</p>
-<p>
-$$
-P_y=
+\end{bmatrix}$$
+</div>
+<div class="math-display">
+  $$P_y=
 \begin{bmatrix}
 -1&-1&-1\\
 0&0&0\\
 1&1&1
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>These estimate directional gradients while providing some local averaging.</p>
 <hr />
     </div>
@@ -726,26 +692,22 @@ $$
     </div>
     <div class="section-body">
       <p>A common Sobel pair is:</p>
-<p>
-$$
-S_x=
+<div class="math-display">
+  $$S_x=
 \begin{bmatrix}
 -1&0&1\\
 -2&0&2\\
 -1&0&1
-\end{bmatrix}
-$$
-</p>
-<p>
-$$
-S_y=
+\end{bmatrix}$$
+</div>
+<div class="math-display">
+  $$S_y=
 \begin{bmatrix}
 -1&-2&-1\\
 0&0&0\\
 1&2&1
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>Compared with Prewitt, Sobel gives stronger weight to the central row/column.</p>
 <p>This provides additional smoothing while computing the directional derivative.</p>
 <hr />
@@ -761,60 +723,44 @@ $$
     </div>
     <div class="section-body">
       <p>Consider:</p>
-<p>
-$$
-I=
+<div class="math-display">
+  $$I=
 \begin{bmatrix}
 10&10&100\\
 10&10&100\\
 10&10&100
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>For the centre:</p>
 <h3>$S_x$</h3>
-<p>
-$$
-(-1)(10)+(0)(10)+(1)(100)
-$$
-</p>
-<p>
-$$
-+(-2)(10)+(0)(10)+(2)(100)
-$$
-</p>
-<p>
-$$
-+(-1)(10)+(0)(10)+(1)(100)
-$$
-</p>
-<p>
-$$
-=-10+100-20+200-10+100
-$$
-</p>
-<p>
-$$
-=360
-$$
-</p>
+<div class="math-display">
+  $$(-1)(10)+(0)(10)+(1)(100)$$
+</div>
+<div class="math-display">
+  $$+(-2)(10)+(0)(10)+(2)(100)$$
+</div>
+<div class="math-display">
+  $$+(-1)(10)+(0)(10)+(1)(100)$$
+</div>
+<div class="math-display">
+  $$=-10+100-20+200-10+100$$
+</div>
+<div class="math-display">
+  $$=360$$
+</div>
 <h3>$S_y$</h3>
 <p>Because the image is constant vertically:</p>
-<p>
-$$
-S_y=0
-$$
-</p>
+<div class="math-display">
+  $$S_y=0$$
+</div>
 <p>Therefore:</p>
-<p>
-$$
-|\nabla f|
+<div class="math-display">
+  $$|\nabla f|
 =
 \sqrt{360^2+0^2}
 =
-360
-$$
-</p>
+360$$
+</div>
 <p>There is a strong left-to-right transition.</p>
 <hr />
     </div>
@@ -830,21 +776,17 @@ $$
     <div class="section-body">
       <p>Derivative responses can exceed the image storage range.</p>
 <p>For the previous example:</p>
-<p>
-$$
-G=360
-$$
-</p>
+<div class="math-display">
+  $$G=360$$
+</div>
 <p>This cannot be directly represented by ordinary 8-bit intensity without scaling or clipping.</p>
 <p>A visualization pipeline might:</p>
-<p>
-$$
-G_{\text{norm}}
+<div class="math-display">
+  $$G_{\text{norm}}
 =
 255\frac{G-G_{\min}}
-{G_{\max}-G_{\min}}
-$$
-</p>
+{G_{\max}-G_{\min}}$$
+</div>
 <p>when appropriate.</p>
 <p>For true quantitative processing, preserve the original response in a suitable signed/floating representation rather than replacing it permanently with a display-scaled image.</p>
 <hr />
@@ -902,21 +844,17 @@ $$
     </div>
     <div class="section-body">
       <p>Let:</p>
-<p>
-$$
-G(x,y)=|\nabla f(x,y)|
-$$
-</p>
+<div class="math-display">
+  $$G(x,y)=|\nabla f(x,y)|$$
+</div>
 <p>Define:</p>
-<p>
-$$
-E(x,y)=
+<div class="math-display">
+  $$E(x,y)=
 \begin{cases}
 1,&G(x,y)\ge T\\
 0,&G(x,y)\lt T
-\end{cases}
-$$
-</p>
+\end{cases}$$
+</div>
 <p>This converts gradient evidence into a binary edge decision.</p>
 <p>The threshold $T$ determines sensitivity.</p>
 <hr />
@@ -1220,26 +1158,22 @@ discard</code></pre>
     </div>
     <div class="section-body">
       <p>The Laplacian is:</p>
-<p>
-$$
-\nabla^2f
+<div class="math-display">
+  $$\nabla^2f
 =
 \frac{\partial^2 f}{\partial x^2}
 +
-\frac{\partial^2 f}{\partial y^2}
-$$
-</p>
+\frac{\partial^2 f}{\partial y^2}$$
+</div>
 <p>A common discrete kernel is:</p>
-<p>
-$$
-H=
+<div class="math-display">
+  $$H=
 \begin{bmatrix}
 0&1&0\\
 1&-4&1\\
 0&1&0
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>A sign-reversed form is equally possible with a consistent interpretation.</p>
 <hr />
     </div>
@@ -1335,36 +1269,22 @@ add selected detail</code></pre>
     </div>
     <div class="section-body">
       <p>Let:</p>
-<p>
-$$
-f_{\text{blur}}=LP\{f\}
-$$
-</p>
+<div class="math-display">
+  $$f_{\text{blur}}=LP\{f\}$$
+</div>
 <p>Then:</p>
-<p>
-$$
-m=f-f_{\text{blur}}
-$$
-</p>
-<p>and:</p>
-<p>
-$$
-g=f+k\,m
-$$
-</p>
-<p>where:</p>
-<p>
-$$
-k>0
-$$
-</p>
+<div class="math-display">
+  $$m=f-f_{\text{blur}}$$
+</div>
+<p>and $g=f+k\,m$, where:</p>
+<div class="math-display">
+  $$k>0$$
+</div>
 <p>controls strength.</p>
 <p>Equivalent form:</p>
-<p>
-$$
-g=(1+k)f-kf_{\text{blur}}
-$$
-</p>
+<div class="math-display">
+  $$g=(1+k)f-kf_{\text{blur}}$$
+</div>
 <hr />
     </div>
   </section>
@@ -1377,41 +1297,17 @@ $$
       <button class="bookmark-btn" data-id="s-10-28" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose:</p>
-<p>
-$$
-f=150
-$$
-</p>
-<p>and:</p>
-<p>
-$$
-f_{\text{blur}}=120
-$$
-</p>
-<p>Then:</p>
-<p>
-$$
-m=150-120=30
-$$
-</p>
-<p>For:</p>
-<p>
-$$
-k=0.5
-$$
-</p>
-<p>we get:</p>
-<p>
-$$
-g=150+0.5(30)
-$$
-</p>
-<p>
-$$
-=165
-$$
-</p>
+      <p>Suppose $f=150$ and $f_{\text{blur}}=120$. Then:</p>
+<div class="math-display">
+  $$m=150-120=30$$
+</div>
+<p>For: $k=0.5$ we get:</p>
+<div class="math-display">
+  $$g=150+0.5(30)$$
+</div>
+<div class="math-display">
+  $$=165$$
+</div>
 <p>The detail difference has been partially added back.</p>
 <hr />
     </div>
@@ -1463,25 +1359,11 @@ clipping</code></pre>
       <button class="bookmark-btn" data-id="s-10-30" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>A high-boost form is:</p>
-<p>
-$$
-g=Af-f_{\text{blur}}
-$$
-</p>
-<p>where:</p>
-<p>
-$$
-A>1
-$$
-</p>
-<p>If:</p>
-<p>
-$$
-A=1+k
-$$
-</p>
-<p>it connects naturally to unsharp masking.</p>
+      <p>A high-boost form is $g=Af-f_{\text{blur}}$, where:</p>
+<div class="math-display">
+  $$A>1$$
+</div>
+<p>If $A=1+k$ it connects naturally to unsharp masking.</p>
 <p>High-boost enhancement can retain more of the original while still emphasizing high-frequency detail.</p>
 <hr />
     </div>
@@ -1495,18 +1377,10 @@ $$
       <button class="bookmark-btn" data-id="s-10-31" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Depending on sign convention:</p>
-<p>
-$$
-g=f-\nabla^2f
-$$
-</p>
-<p>or:</p>
-<p>
-$$
-g=f+\nabla^2f
-$$
-</p>
+      <p>Depending on sign convention: $g=f-\nabla^2f$, or:</p>
+<div class="math-display">
+  $$g=f+\nabla^2f$$
+</div>
 <p>can be used.</p>
 <p>The sign must match the selected Laplacian kernel.</p>
 <p>This produces a detail-enhancement operation based on second-order derivatives.</p>
@@ -1523,60 +1397,40 @@ $$
     </div>
     <div class="section-body">
       <p>Use:</p>
-<p>
-$$
-P=
+<div class="math-display">
+  $$P=
 \begin{bmatrix}
 100&100&100\\
 100&150&100\\
 100&100&100
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>with:</p>
-<p>
-$$
-H=
+<div class="math-display">
+  $$H=
 \begin{bmatrix}
 0&1&0\\
 1&-4&1\\
 0&1&0
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>Laplacian response at the centre:</p>
-<p>
-$$
-100+100-4(150)+100+100
-$$
-</p>
-<p>
-$$
-=400-600
-$$
-</p>
-<p>
-$$
-=-200
-$$
-</p>
-<p>If using:</p>
-<p>
-$$
-g=f-\nabla^2 f
-$$
-</p>
-<p>then:</p>
-<p>
-$$
-g=150-(-200)
-$$
-</p>
-<p>
-$$
-\boxed{350}
-$$
-</p>
+<div class="math-display">
+  $$100+100-4(150)+100+100$$
+</div>
+<div class="math-display">
+  $$=400-600$$
+</div>
+<div class="math-display">
+  $$=-200$$
+</div>
+<p>If using: $g=f-\nabla^2 f$ then:</p>
+<div class="math-display">
+  $$g=150-(-200)$$
+</div>
+<div class="math-display">
+  $$\boxed{350}$$
+</div>
 <p>This exceeds the 8-bit display range.</p>
 <p>So a real implementation must decide how to handle the result rather than blindly storing 350 in uint8.</p>
 <hr />
@@ -1792,18 +1646,10 @@ large Gaussian σ
     </div>
     <div class="section-body">
       <p>Gradient-based operators provide directional information.</p>
-<p>For:</p>
-<p>
-$$
-G_x,G_y
-$$
-</p>
-<p>orientation:</p>
-<p>
-$$
-\theta=\operatorname{atan2}(G_y,G_x)
-$$
-</p>
+<p>For: $G_x,G_y$, orientation:</p>
+<div class="math-display">
+  $$\theta=\operatorname{atan2}(G_y,G_x)$$
+</div>
 <p>This can support:</p>
 <ul>
 <li>contour analysis,</li>
@@ -1915,20 +1761,16 @@ false positives
 false negatives</code></pre>
 </div></p>
 <p>From these we can derive measures such as:</p>
-<p>
-$$
-\text{precision}
+<div class="math-display">
+  $$\text{precision}
 =
-\frac{TP}{TP+FP}
-$$
-</p>
-<p>
-$$
-\text{recall}
+\frac{TP}{TP+FP}$$
+</div>
+<div class="math-display">
+  $$\text{recall}
 =
-\frac{TP}{TP+FN}
-$$
-</p>
+\frac{TP}{TP+FN}$$
+</div>
 <p>The suitable evaluation protocol should account for localization tolerance and application context.</p>
 <hr />
     </div>
@@ -2044,77 +1886,61 @@ $$
     </div>
     <div class="section-body">
       <h3>Gradient</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 \nabla f=
 \begin{bmatrix}
 f_x\\
 f_y
 \end{bmatrix}
-}
-$$
-</p>
+}$$
+</div>
 <h3>Magnitude</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 |\nabla f|=
 \sqrt{f_x^2+f_y^2}
-}
-$$
-</p>
+}$$
+</div>
 <h3>Direction</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 \theta=\operatorname{atan2}(f_y,f_x)
-}
-$$
-</p>
+}$$
+</div>
 <h3>Laplacian</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 \nabla^2f=f_{xx}+f_{yy}
-}
-$$
-</p>
+}$$
+</div>
 <h3>Unsharp mask</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 m=f-f_{\text{blur}}
-}
-$$
-</p>
-<p>
-$$
-\boxed{
+}$$
+</div>
+<div class="math-display">
+  $$\boxed{
 g=f+km
-}
-$$
-</p>
+}$$
+</div>
 <h3>High-boost</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 g=Af-f_{\text{blur}},\quad A>1
-}
-$$
-</p>
+}$$
+</div>
 <h3>Binary gradient threshold</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 E=
 \begin{cases}
 1,&|\nabla f|\ge T\\
 0,&|\nabla f|\lt T
 \end{cases}
-}
-$$
-</p>
+}$$
+</div>
 <hr />
     </div>
   </section>
@@ -2128,51 +1954,37 @@ $$
     </div>
     <div class="section-body">
       <p>Given:</p>
-<p>
-$$
-G_x=12,\qquad G_y=5
-$$
-</p>
+<div class="math-display">
+  $$G_x=12,\qquad G_y=5$$
+</div>
 <p>Calculate gradient magnitude.</p>
-<p>
-$$
-G=
-\sqrt{12^2+5^2}
-$$
-</p>
-<p>
-$$
-=
-\sqrt{144+25}
-$$
-</p>
-<p>
-$$
-=
-\sqrt{169}
-$$
-</p>
-<p>
-$$
-\boxed{13}
-$$
-</p>
+<div class="math-display">
+  $$G=
+\sqrt{12^2+5^2}$$
+</div>
+<div class="math-display">
+  $$=
+\sqrt{144+25}$$
+</div>
+<div class="math-display">
+  $$=
+\sqrt{169}$$
+</div>
+<div class="math-display">
+  $$\boxed{13}$$
+</div>
 <p>Direction:</p>
-<p>
-$$
-\theta=
+<div class="math-display">
+  $$\theta=
 \operatorname{atan2}(5,12)
-\approx22.62^\circ
-$$
-</p>
+\approx22.62^\circ$$
+</div>
 <p>The local edge orientation is approximately:</p>
-<p>
-$$
-22.62^\circ+90^\circ
+<div class="math-display">
+  $$22.62^\circ+90^\circ
 =
-112.62^\circ
-$$
-</p>
+112.62^\circ$$
+</div>
 <p>under the ideal perpendicular relationship.</p>
 <hr />
     </div>
@@ -2186,41 +1998,21 @@ $$
       <button class="bookmark-btn" data-id="s-10-49" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>At a pixel:</p>
-<p>
-$$
-f=100
-$$
-</p>
-<p>and:</p>
-<p>
-$$
-f_{\text{blur}}=90
-$$
-</p>
-<p>For:</p>
-<p>
-$$
-k=2
-$$
-</p>
-<p>detail mask:</p>
-<p>
-$$
-m=100-90=10
-$$
-</p>
+      <p>At a pixel: $f=100$, and:</p>
+<div class="math-display">
+  $$f_{\text{blur}}=90$$
+</div>
+<p>For: $k=2$ detail mask:</p>
+<div class="math-display">
+  $$m=100-90=10$$
+</div>
 <p>output:</p>
-<p>
-$$
-g=100+2(10)
-$$
-</p>
-<p>
-$$
-\boxed{120}
-$$
-</p>
+<div class="math-display">
+  $$g=100+2(10)$$
+</div>
+<div class="math-display">
+  $$\boxed{120}$$
+</div>
 <p>Interpretation:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -2242,29 +2034,17 @@ $$
       <button class="bookmark-btn" data-id="s-10-50" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Given:</p>
-<p>
-$$
-f=120,\qquad \nabla^2 f=-30
-$$
-</p>
-<p>and sharpening rule:</p>
-<p>
-$$
-g=f-\nabla^2f
-$$
-</p>
+      <p>Given: $f=120,\qquad \nabla^2 f=-30$, and sharpening rule:</p>
+<div class="math-display">
+  $$g=f-\nabla^2f$$
+</div>
 <p>then:</p>
-<p>
-$$
-g=120-(-30)
-$$
-</p>
-<p>
-$$
-\boxed{150}
-$$
-</p>
+<div class="math-display">
+  $$g=120-(-30)$$
+</div>
+<div class="math-display">
+  $$\boxed{150}$$
+</div>
 <p>The sign convention must always match the chosen Laplacian definition.</p>
 <hr />
     </div>

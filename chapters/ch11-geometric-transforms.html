@@ -22,7 +22,7 @@
       svg: { fontCache: 'global' }
     };
   </script>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script id="MathJax-script" async src="../assets/js/mathjax/tex-mml-chtml.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';"></script>
 </head>
 <body data-chapter-id="ch11-geometric-transforms">
   <div id="progress-bar"></div>
@@ -408,27 +408,22 @@ TRANSFORMED IMAGE</code></pre>
     </div>
     <div class="section-body">
       <p>Let an input point be:</p>
-<p>
-$$
-\mathbf{p}
+<div class="math-display">
+  $$\mathbf{p}
 =
 \begin{bmatrix}
 x\\y
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>A geometric transformation produces:</p>
-<p>
-$$
-\mathbf{p}'
+<div class="math-display">
+  $$\mathbf{p}'
 =
-T(\mathbf{p})
-$$
-</p>
+T(\mathbf{p})$$
+</div>
 <p>or:</p>
-<p>
-$$
-\begin{bmatrix}
+<div class="math-display">
+  $$\begin{bmatrix}
 x'\\y'
 \end{bmatrix}
 =
@@ -437,9 +432,8 @@ T
 \begin{bmatrix}
 x\\y
 \end{bmatrix}
-\right)
-$$
-</p>
+\right)$$
+</div>
 <p>The transformation acts on coordinates.</p>
 <p>The image values then have to be sampled at the appropriate positions.</p>
 <hr />
@@ -455,25 +449,20 @@ $$
     </div>
     <div class="section-body">
       <p>A translation shifts an image without changing its shape.</p>
-<p>
-$$
-x'=x+t_x
-$$
-</p>
-<p>
-$$
-y'=y+t_y
-$$
-</p>
+<div class="math-display">
+  $$x'=x+t_x$$
+</div>
+<div class="math-display">
+  $$y'=y+t_y$$
+</div>
 <p>where:</p>
 <ul>
 <li>$t_x$ = horizontal shift,</li>
 <li>$t_y$ = vertical shift.</li>
 </ul>
 <p>Matrix form:</p>
-<p>
-$$
-\begin{bmatrix}
+<div class="math-display">
+  $$\begin{bmatrix}
 x'\\y'
 \end{bmatrix}
 =
@@ -483,9 +472,8 @@ x\\y
 +
 \begin{bmatrix}
 t_x\\t_y
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <hr />
     </div>
   </section>
@@ -498,35 +486,17 @@ $$
       <button class="bookmark-btn" data-id="s-11-4" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose:</p>
-<p>
-$$
-(x,y)=(40,25)
-$$
-</p>
-<p>and:</p>
-<p>
-$$
-t_x=10,\qquad t_y=-5
-$$
-</p>
-<p>Then:</p>
-<p>
-$$
-x'=40+10=50
-$$
-</p>
-<p>
-$$
-y'=25-5=20
-$$
-</p>
+      <p>Suppose $(x,y)=(40,25)$ and $t_x=10,\qquad t_y=-5$. Then:</p>
+<div class="math-display">
+  $$x'=40+10=50$$
+</div>
+<div class="math-display">
+  $$y'=25-5=20$$
+</div>
 <p>So:</p>
-<p>
-$$
-\boxed{(40,25)\rightarrow(50,20)}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{(40,25)\rightarrow(50,20)}$$
+</div>
 <p>The point moves right and upward under the stated coordinate convention.</p>
 <hr />
     </div>
@@ -580,20 +550,15 @@ TRANSLATED
     </div>
     <div class="section-body">
       <p>For a 2-D rotation about the origin:</p>
-<p>
-$$
-x'=x\cos\theta-y\sin\theta
-$$
-</p>
-<p>
-$$
-y'=x\sin\theta+y\cos\theta
-$$
-</p>
+<div class="math-display">
+  $$x'=x\cos\theta-y\sin\theta$$
+</div>
+<div class="math-display">
+  $$y'=x\sin\theta+y\cos\theta$$
+</div>
 <p>Matrix form:</p>
-<p>
-$$
-\begin{bmatrix}
+<div class="math-display">
+  $$\begin{bmatrix}
 x'\\y'
 \end{bmatrix}
 =
@@ -603,9 +568,8 @@ x'\\y'
 \end{bmatrix}
 \begin{bmatrix}
 x\\y
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>This is one of the most important transformation matrices in image geometry.</p>
 <hr />
     </div>
@@ -619,46 +583,28 @@ $$
       <button class="bookmark-btn" data-id="s-11-7" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Take:</p>
-<p>
-$$
-(x,y)=(1,0)
-$$
-</p>
-<p>and:</p>
-<p>
-$$
-\theta=90^\circ
-$$
-</p>
+      <p>Take $(x,y)=(1,0)$, and:</p>
+<div class="math-display">
+  $$\theta=90^\circ$$
+</div>
 <p>Since:</p>
-<p>
-$$
-\cos90^\circ=0
-$$
-</p>
-<p>
-$$
-\sin90^\circ=1
-$$
-</p>
+<div class="math-display">
+  $$\cos90^\circ=0$$
+</div>
+<div class="math-display">
+  $$\sin90^\circ=1$$
+</div>
 <p>we get:</p>
-<p>
-$$
-x'=1(0)-0(1)=0
-$$
-</p>
-<p>
-$$
-y'=1(1)+0(0)=1
-$$
-</p>
+<div class="math-display">
+  $$x'=1(0)-0(1)=0$$
+</div>
+<div class="math-display">
+  $$y'=1(1)+0(0)=1$$
+</div>
 <p>Therefore:</p>
-<p>
-$$
-\boxed{(1,0)\rightarrow(0,1)}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{(1,0)\rightarrow(0,1)}$$
+</div>
 <p>under the standard Cartesian rotation convention.</p>
 <hr />
     </div>
@@ -686,15 +632,13 @@ rotate
 translate back</code></pre>
 </div></p>
 <p>Mathematically:</p>
-<p>
-$$
-\mathbf{p}'=
+<div class="math-display">
+  $$\mathbf{p}'=
 T(\mathbf{c})
 R(\theta)
 T(-\mathbf{c})
-\mathbf{p}
-$$
-</p>
+\mathbf{p}$$
+</div>
 <p>where $T$ denotes translation and $R$ denotes rotation.</p>
 <p>The multiplication order is important.</p>
 <hr />
@@ -727,11 +671,9 @@ $$
 </div></p>
 <p>They generally produce different results.</p>
 <p>Geometric transformations are not generally commutative:</p>
-<p>
-$$
-AB\ne BA
-$$
-</p>
+<div class="math-display">
+  $$AB\ne BA$$
+</div>
 <p>This is an important engineering and exam concept.</p>
 <hr />
     </div>
@@ -746,35 +688,19 @@ $$
     </div>
     <div class="section-body">
       <p>Scaling changes spatial dimensions.</p>
-<p>
-$$
-x'=s_xx
-$$
-</p>
-<p>
-$$
-y'=s_yy
-$$
-</p>
+<div class="math-display">
+  $$x'=s_xx$$
+</div>
+<div class="math-display">
+  $$y'=s_yy$$
+</div>
 <p>where:</p>
 <ul>
 <li>$s_x$ = horizontal scale,</li>
 <li>$s_y$ = vertical scale.</li>
 </ul>
-<p>If:</p>
-<p>
-$$
-s_x=s_y
-$$
-</p>
-<p>the scaling is isotropic/uniform.</p>
-<p>If:</p>
-<p>
-$$
-s_x\ne s_y
-$$
-</p>
-<p>the image is stretched differently in the two directions.</p>
+<p>If $s_x=s_y$ the scaling is isotropic/uniform.</p>
+<p>If $s_x\ne s_y$ the image is stretched differently in the two directions.</p>
 <hr />
     </div>
   </section>
@@ -787,35 +713,17 @@ $$
       <button class="bookmark-btn" data-id="s-11-11" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose:</p>
-<p>
-$$
-(x,y)=(20,30)
-$$
-</p>
-<p>and:</p>
-<p>
-$$
-s_x=2,\qquad s_y=0.5
-$$
-</p>
-<p>Then:</p>
-<p>
-$$
-x'=2(20)=40
-$$
-</p>
-<p>
-$$
-y'=0.5(30)=15
-$$
-</p>
+      <p>Suppose $(x,y)=(20,30)$ and $s_x=2,\qquad s_y=0.5$. Then:</p>
+<div class="math-display">
+  $$x'=2(20)=40$$
+</div>
+<div class="math-display">
+  $$y'=0.5(30)=15$$
+</div>
 <p>Therefore:</p>
-<p>
-$$
-\boxed{(20,30)\rightarrow(40,15)}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{(20,30)\rightarrow(40,15)}$$
+</div>
 <p>The object is stretched horizontally and compressed vertically.</p>
 <hr />
     </div>
@@ -831,17 +739,13 @@ $$
     <div class="section-body">
       <p>Reflection reverses one coordinate.</p>
 <p>Horizontal-axis-style reflection:</p>
-<p>
-$$
-x'=x,\qquad y'=-y
-$$
-</p>
+<div class="math-display">
+  $$x'=x,\qquad y'=-y$$
+</div>
 <p>Vertical-axis-style reflection:</p>
-<p>
-$$
-x'=-x,\qquad y'=y
-$$
-</p>
+<div class="math-display">
+  $$x'=-x,\qquad y'=y$$
+</div>
 <p>The exact visual effect depends on the coordinate convention.</p>
 <p>Because image arrays frequently use downward-increasing row indices, direct matrix indexing and Cartesian diagrams must not be mixed carelessly.</p>
 <hr />
@@ -857,27 +761,19 @@ $$
     </div>
     <div class="section-body">
       <p>Horizontal shear:</p>
-<p>
-$$
-x'=x+sy
-$$
-</p>
-<p>
-$$
-y'=y
-$$
-</p>
+<div class="math-display">
+  $$x'=x+sy$$
+</div>
+<div class="math-display">
+  $$y'=y$$
+</div>
 <p>Vertical shear:</p>
-<p>
-$$
-x'=x
-$$
-</p>
-<p>
-$$
-y'=y+sx
-$$
-</p>
+<div class="math-display">
+  $$x'=x$$
+</div>
+<div class="math-display">
+  $$y'=y+sx$$
+</div>
 <p>Shearing changes angles and shape while preserving one axis direction in the basic transformation.</p>
 <hr />
     </div>
@@ -900,20 +796,15 @@ $$
 <li>shear.</li>
 </ul>
 <p>One common form:</p>
-<p>
-$$
-x'=a_{11}x+a_{12}y+t_x
-$$
-</p>
-<p>
-$$
-y'=a_{21}x+a_{22}y+t_y
-$$
-</p>
+<div class="math-display">
+  $$x'=a_{11}x+a_{12}y+t_x$$
+</div>
+<div class="math-display">
+  $$y'=a_{21}x+a_{22}y+t_y$$
+</div>
 <p>or in homogeneous coordinates:</p>
-<p>
-$$
-\begin{bmatrix}
+<div class="math-display">
+  $$\begin{bmatrix}
 x'\\
 y'\\
 1
@@ -928,9 +819,8 @@ a_{21}&a_{22}&t_y\\
 x\\
 y\\
 1
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <hr />
     </div>
   </section>
@@ -980,24 +870,10 @@ translation</code></pre>
       <button class="bookmark-btn" data-id="s-11-16" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose:</p>
-<p>
-$$
-\mathbf{p}_1=A\mathbf{p}
-$$
-</p>
-<p>and:</p>
-<p>
-$$
-\mathbf{p}_2=B\mathbf{p}_1
-$$
-</p>
-<p>Then:</p>
-<p>
-$$
-\mathbf{p}_2=BA\mathbf{p}
-$$
-</p>
+      <p>Suppose $\mathbf{p}_1=A\mathbf{p}$ and $\mathbf{p}_2=B\mathbf{p}_1$. Then:</p>
+<div class="math-display">
+  $$\mathbf{p}_2=BA\mathbf{p}$$
+</div>
 <p>Therefore:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -1024,30 +900,25 @@ combined matrix BA</code></pre>
     </div>
     <div class="section-body">
       <p>Suppose:</p>
-<p>
-$$
-A=
+<div class="math-display">
+  $$A=
 \begin{bmatrix}
 2&0\\
 0&2
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>is scaling by 2, and:</p>
-<p>
-$$
-B=
+<div class="math-display">
+  $$B=
 \begin{bmatrix}
 0&-1\\
 1&0
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>is a 90° rotation.</p>
 <p>Then:</p>
-<p>
-$$
-BA
+<div class="math-display">
+  $$BA
 =
 \begin{bmatrix}
 0&-1\\
@@ -1056,18 +927,15 @@ BA
 \begin{bmatrix}
 2&0\\
 0&2
-\end{bmatrix}
-$$
-</p>
-<p>
-$$
-=
+\end{bmatrix}$$
+</div>
+<div class="math-display">
+  $$=
 \begin{bmatrix}
 0&-2\\
 2&0
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>So the combined operation is:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -1106,18 +974,10 @@ $$
   <pre><code>destination → source</code></pre>
 </div></p>
 <p>The second approach is called <strong>inverse mapping</strong>.</p>
-<p>For each output coordinate:</p>
-<p>
-$$
-(x',y')
-$$
-</p>
-<p>find where it came from:</p>
-<p>
-$$
-(x,y)=T^{-1}(x',y')
-$$
-</p>
+<p>For each output coordinate: $(x',y')$ find where it came from:</p>
+<div class="math-display">
+  $$(x,y)=T^{-1}(x',y')$$
+</div>
 <p>Then sample the source image at $(x,y)$.</p>
 <hr />
     </div>
@@ -1199,11 +1059,9 @@ uneven coverage</code></pre>
     </div>
     <div class="section-body">
       <p>Suppose inverse mapping asks for:</p>
-<p>
-$$
-f(12.4, 7.8)
-$$
-</p>
+<div class="math-display">
+  $$f(12.4, 7.8)$$
+</div>
 <p>But the source image only contains samples at integer grid positions:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -1215,13 +1073,7 @@ $$
 (13,7)
 (13,8)</code></pre>
 </div></p>
-<p>There is no direct stored pixel at:</p>
-<p>
-$$
-(12.4,7.8)
-$$
-</p>
-<p>Therefore a resampling rule estimates the value.</p>
+<p>There is no direct stored pixel at: $(12.4,7.8)$ Therefore a resampling rule estimates the value.</p>
 <p>This is interpolation.</p>
 <hr />
     </div>
@@ -1236,24 +1088,14 @@ $$
     </div>
     <div class="section-body">
       <p>Nearest-neighbour selects the closest source sample.</p>
-<p>For:</p>
-<p>
-$$
-(x,y)=(12.4,7.8)
-$$
-</p>
-<p>the nearest integer location is approximately:</p>
-<p>
-$$
-(12,8)
-$$
-</p>
+<p>For: $(x,y)=(12.4,7.8)$ the nearest integer location is approximately:</p>
+<div class="math-display">
+  $$(12,8)$$
+</div>
 <p>So:</p>
-<p>
-$$
-f(12.4,7.8)\approx f(12,8)
-$$
-</p>
+<div class="math-display">
+  $$f(12.4,7.8)\approx f(12,8)$$
+</div>
 <h3>Strength</h3>
 <ul>
 <li>very simple,</li>
@@ -1291,20 +1133,15 @@ $$
 Q12 ───── Q22</code></pre>
 </div></p>
 <p>Let the local fractional coordinates be:</p>
-<p>
-$$
-\alpha=x-x_0
-$$
-</p>
-<p>
-$$
-\beta=y-y_0
-$$
-</p>
+<div class="math-display">
+  $$\alpha=x-x_0$$
+</div>
+<div class="math-display">
+  $$\beta=y-y_0$$
+</div>
 <p>Then:</p>
-<p>
-$$
-f(x,y)
+<div class="math-display">
+  $$f(x,y)
 =
 (1-\alpha)(1-\beta)Q_{11}
 +
@@ -1312,9 +1149,8 @@ f(x,y)
 +
 (1-\alpha)\beta Q_{12}
 +
-\alpha\beta Q_{22}
-$$
-</p>
+\alpha\beta Q_{22}$$
+</div>
 <p>This is a weighted average.</p>
 <hr />
     </div>
@@ -1329,43 +1165,33 @@ $$
     </div>
     <div class="section-body">
       <p>Suppose the four neighbouring values are:</p>
-<p>
-$$
-Q_{11}=10,\quad
+<div class="math-display">
+  $$Q_{11}=10,\quad
 Q_{21}=20,\quad
 Q_{12}=30,\quad
-Q_{22}=40
-$$
-</p>
+Q_{22}=40$$
+</div>
 <p>and:</p>
-<p>
-$$
-\alpha=0.25,\qquad\beta=0.5
-$$
-</p>
+<div class="math-display">
+  $$\alpha=0.25,\qquad\beta=0.5$$
+</div>
 <p>Then:</p>
-<p>
-$$
-f=
+<div class="math-display">
+  $$f=
 (0.75)(0.5)(10)
 +
 (0.25)(0.5)(20)
 +
 (0.75)(0.5)(30)
 +
-(0.25)(0.5)(40)
-$$
-</p>
-<p>
-$$
-=3.75+2.5+11.25+5
-$$
-</p>
-<p>
-$$
-\boxed{22.5}
-$$
-</p>
+(0.25)(0.5)(40)$$
+</div>
+<div class="math-display">
+  $$=3.75+2.5+11.25+5$$
+</div>
+<div class="math-display">
+  $$\boxed{22.5}$$
+</div>
 <p>Depending on the destination representation, this may remain floating-point or be rounded.</p>
 <hr />
     </div>
@@ -1674,9 +1500,8 @@ evaluate alignment</code></pre>
     <div class="section-body">
       <p>When a planar object is viewed from different viewpoints, an affine model may be insufficient.</p>
 <p>A projective/perspective transformation can be represented using a homography:</p>
-<p>
-$$
-\lambda
+<div class="math-display">
+  $$\lambda
 \begin{bmatrix}
 x'\\y'\\1
 \end{bmatrix}
@@ -1684,9 +1509,8 @@ x'\\y'\\1
 H
 \begin{bmatrix}
 x\\y\\1
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>where $H$ is a $3\times3$ matrix and $\lambda$ is a scale factor.</p>
 <p>This is useful for:</p>
 <ul>
@@ -1862,17 +1686,13 @@ y ↔ row</code></pre>
     <div class="section-body">
       <p>Consider a 2× image enlargement.</p>
 <p>A simplistic coordinate map may use:</p>
-<p>
-$$
-x'=2x
-$$
-</p>
+<div class="math-display">
+  $$x'=2x$$
+</div>
 <p>Another system may map pixel centres using an offset such as:</p>
-<p>
-$$
-x'=2(x+0.5)-0.5
-$$
-</p>
+<div class="math-display">
+  $$x'=2(x+0.5)-0.5$$
+</div>
 <p>The resulting sampling locations differ.</p>
 <blockquote>
 <p><strong>Engineering rule:</strong> When reproducing results across libraries, document the coordinate convention and interpolation geometry, not just the scale factor.</p>
@@ -1946,13 +1766,7 @@ crop</code></pre>
   <pre><code>class 1
 class 2</code></pre>
 </div></p>
-<p>Bilinear interpolation might produce:</p>
-<p>
-$$
-1.5
-$$
-</p>
-<p>which is not a valid class label.</p>
+<p>Bilinear interpolation might produce: $1.5$, which is not a valid class label.</p>
 <p>This is a critical practical distinction.</p>
 <hr />
     </div>
@@ -2066,11 +1880,9 @@ evaluate geometry + image quality</code></pre>
     </div>
     <div class="section-body">
       <p>Suppose a grayscale image must be rotated by:</p>
-<p>
-$$
-30^\circ
-$$
-</p>
+<div class="math-display">
+  $$30^\circ$$
+</div>
 <p>A conceptual implementation is:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -2169,40 +1981,31 @@ $$
     </div>
     <div class="section-body">
       <h3>Translation</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 x'=x+t_x,\quad y'=y+t_y
-}
-$$
-</p>
+}$$
+</div>
 <h3>Scaling</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 x'=s_xx,\quad y'=s_yy
-}
-$$
-</p>
+}$$
+</div>
 <h3>Rotation</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 x'=x\cos\theta-y\sin\theta
-}
-$$
-</p>
-<p>
-$$
-\boxed{
+}$$
+</div>
+<div class="math-display">
+  $$\boxed{
 y'=x\sin\theta+y\cos\theta
-}
-$$
-</p>
+}$$
+</div>
 <h3>Affine transformation</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 \begin{bmatrix}
 x'\\y'\\1
 \end{bmatrix}
@@ -2215,13 +2018,11 @@ a_{21}&a_{22}&t_y\\
 \begin{bmatrix}
 x\\y\\1
 \end{bmatrix}
-}
-$$
-</p>
+}$$
+</div>
 <h3>Bilinear interpolation</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 f(x,y)
 =
 (1-\alpha)(1-\beta)Q_{11}
@@ -2231,17 +2032,14 @@ f(x,y)
 (1-\alpha)\beta Q_{12}
 +
 \alpha\beta Q_{22}
-}
-$$
-</p>
+}$$
+</div>
 <h3>Homography</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 \lambda\mathbf p'=H\mathbf p
-}
-$$
-</p>
+}$$
+</div>
 <hr />
     </div>
   </section>
@@ -2254,35 +2052,21 @@ $$
       <button class="bookmark-btn" data-id="s-11-49" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>A pixel at:</p>
-<p>
-$$
-(25,40)
-$$
-</p>
-<p>is translated by:</p>
-<p>
-$$
-(10,-15)
-$$
-</p>
+      <p>A pixel at: $(25,40)$ is translated by:</p>
+<div class="math-display">
+  $$(10,-15)$$
+</div>
 <p>Find its new position.</p>
-<p>
-$$
-x'=25+10=35
-$$
-</p>
-<p>
-$$
-y'=40-15=25
-$$
-</p>
+<div class="math-display">
+  $$x'=25+10=35$$
+</div>
+<div class="math-display">
+  $$y'=40-15=25$$
+</div>
 <p>Therefore:</p>
-<p>
-$$
-\boxed{(35,25)}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{(35,25)}$$
+</div>
 <hr />
     </div>
   </section>
@@ -2295,36 +2079,18 @@ $$
       <button class="bookmark-btn" data-id="s-11-50" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Rotate:</p>
-<p>
-$$
-(2,1)
-$$
-</p>
-<p>by:</p>
-<p>
-$$
-90^\circ
-$$
-</p>
+      <p>Rotate: $(2,1)$ by:</p>
+<div class="math-display">
+  $$90^\circ$$
+</div>
 <p>Then:</p>
-<p>
-$$
-x'=2(0)-1(1)=-1
-$$
-</p>
-<p>
-$$
-y'=2(1)+1(0)=2
-$$
-</p>
-<p>Therefore:</p>
-<p>
-$$
-\boxed{(-1,2)}
-$$
-</p>
-<p>under the standard Cartesian convention.</p>
+<div class="math-display">
+  $$x'=2(0)-1(1)=-1$$
+</div>
+<div class="math-display">
+  $$y'=2(1)+1(0)=2$$
+</div>
+<p>Therefore: $\boxed{(-1,2)}$ under the standard Cartesian convention.</p>
 <hr />
     </div>
   </section>
@@ -2338,35 +2104,25 @@ $$
     </div>
     <div class="section-body">
       <p>Given:</p>
-<p>
-$$
-Q_{11}=10,\quad Q_{21}=30,\quad Q_{12}=20,\quad Q_{22}=40
-$$
-</p>
+<div class="math-display">
+  $$Q_{11}=10,\quad Q_{21}=30,\quad Q_{12}=20,\quad Q_{22}=40$$
+</div>
 <p>and:</p>
-<p>
-$$
-\alpha=\beta=0.5
-$$
-</p>
+<div class="math-display">
+  $$\alpha=\beta=0.5$$
+</div>
 <p>then:</p>
-<p>
-$$
-f=
-0.25(10)+0.25(30)+0.25(20)+0.25(40)
-$$
-</p>
-<p>
-$$
-=
-\frac{10+30+20+40}{4}
-$$
-</p>
-<p>
-$$
-\boxed{25}
-$$
-</p>
+<div class="math-display">
+  $$f=
+0.25(10)+0.25(30)+0.25(20)+0.25(40)$$
+</div>
+<div class="math-display">
+  $$=
+\frac{10+30+20+40}{4}$$
+</div>
+<div class="math-display">
+  $$\boxed{25}$$
+</div>
 <p>At the exact centre of the four samples, bilinear interpolation becomes their arithmetic mean.</p>
 <hr />
     </div>

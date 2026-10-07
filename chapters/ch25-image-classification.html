@@ -22,7 +22,7 @@
       svg: { fontCache: 'global' }
     };
   </script>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script id="MathJax-script" async src="../assets/js/mathjax/tex-mml-chtml.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';"></script>
 </head>
 <body data-chapter-id="ch25-image-classification">
   <div id="progress-bar"></div>
@@ -404,30 +404,18 @@ medical image → &quot;class A&quot;</code></pre>
     </div>
     <div class="section-body">
       <p>Let an input image be:</p>
-<p>
-$$
-X.
-$$
-</p>
+<div class="math-display">
+  $$X.$$
+</div>
 <p>A classifier implements a function:</p>
-<p>
-$$
-f(X)\rightarrow y
-$$
-</p>
-<p>where:</p>
-<p>
-$$
-y\in\{1,2,\ldots,K\}
-$$
-</p>
-<p>is one of $K$ possible classes.</p>
+<div class="math-display">
+  $$f(X)\rightarrow y$$
+</div>
+<p>where: $y\in\{1,2,\ldots,K\}$ is one of $K$ possible classes.</p>
 <p>For example:</p>
-<p>
-$$
-f(X_{\text{digit}})\rightarrow 7.
-$$
-</p>
+<div class="math-display">
+  $$f(X_{\text{digit}})\rightarrow 7.$$
+</div>
 <p>The model does not literally “understand” the semantic concept in the human sense. It learns a mapping from image representations to target labels using examples.</p>
 <hr />
     </div>
@@ -698,18 +686,14 @@ classification using those features</code></pre>
     </div>
     <div class="section-body">
       <p>Suppose an image is represented by measurements:</p>
-<p>
-$$
-x_1,x_2,\ldots,x_n.
-$$
-</p>
+<div class="math-display">
+  $$x_1,x_2,\ldots,x_n.$$
+</div>
 <p>Then:</p>
-<p>
-$$
-\mathbf{x}=
-[x_1,x_2,\ldots,x_n]^T
-$$
-</p>
+<div class="math-display">
+  $$\mathbf{x}=
+[x_1,x_2,\ldots,x_n]^T$$
+</div>
 <p>is a feature vector.</p>
 <p>For example:</p>
 <p><div class="code-block">
@@ -767,13 +751,7 @@ classifier</code></pre>
       <button class="bookmark-btn" data-id="s-25-11" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>A supervised classification dataset contains examples of:</p>
-<p>
-$$
-(X,y)
-$$
-</p>
-<p>where:</p>
+      <p>A supervised classification dataset contains examples of $(X,y)$, where:</p>
 <ul>
 <li>$X$ = input image;</li>
 <li>$y$ = target label.</li>
@@ -894,35 +872,25 @@ $$
     </div>
     <div class="section-body">
       <p>Suppose pixel values are stored in:</p>
-<p>
-$$
-0\le x\le255.
-$$
-</p>
+<div class="math-display">
+  $$0\le x\le255.$$
+</div>
 <p>A simple normalization is:</p>
-<p>
-$$
-x'=\frac{x}{255}.
-$$
-</p>
+<div class="math-display">
+  $$x'=\frac{x}{255}.$$
+</div>
 <p>Then:</p>
-<p>
-$$
-0\le x'\le1.
-$$
-</p>
+<div class="math-display">
+  $$0\le x'\le1.$$
+</div>
 <p>Example:</p>
-<p>
-$$
-x=128
-$$
-</p>
+<div class="math-display">
+  $$x=128$$
+</div>
 <p>becomes:</p>
-<p>
-$$
-x'=\frac{128}{255}\approx0.502.
-$$
-</p>
+<div class="math-display">
+  $$x'=\frac{128}{255}\approx0.502.$$
+</div>
 <p>Normalization does not change the semantic image content. It changes the numerical scale used by the model.</p>
 <hr />
     </div>
@@ -950,12 +918,10 @@ class 9 → score</code></pre>
 </div></p>
 <p>The predicted class is commonly chosen as the class with the highest output score.</p>
 <p>For probability-style outputs:</p>
-<p>
-$$
-\hat y=
-\arg\max_k p(y=k\mid X).
-$$
-</p>
+<div class="math-display">
+  $$\hat y=
+\arg\max_k p(y=k\mid X).$$
+</div>
 <p>For example:</p>
 <div class="table-wrap"><table class="comparison-table">
 <thead>
@@ -1007,13 +973,7 @@ $$
 </tr>
 </tbody>
 </table></div>
-<p>Prediction:</p>
-<p>
-$$
-\boxed{7}
-$$
-</p>
-<p>because it has the largest probability.</p>
+<p>Prediction: $\boxed{7}$ because it has the largest probability.</p>
 <hr />
     </div>
   </section>
@@ -1026,13 +986,7 @@ $$
       <button class="bookmark-btn" data-id="s-25-17" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>A numerical output such as:</p>
-<p>
-$$
-0.79
-$$
-</p>
-<p>should not automatically be interpreted as:</p>
+      <p>A numerical output such as: $0.79$ should not automatically be interpreted as:</p>
 <blockquote>
 <p>“The model is 79% certain in a perfectly calibrated sense.”</p>
 </blockquote>
@@ -1111,23 +1065,19 @@ actual class → matrix</code></pre>
     </div>
     <div class="section-body">
       <p>Accuracy is:</p>
-<p>
-$$
-\text{Accuracy}
+<div class="math-display">
+  $$\text{Accuracy}
 =
 \frac{TP+TN}
-{TP+TN+FP+FN}.
-$$
-</p>
+{TP+TN+FP+FN}.$$
+</div>
 <p>For a multiclass confusion matrix:</p>
-<p>
-$$
-\text{Accuracy}
+<div class="math-display">
+  $$\text{Accuracy}
 =
 \frac{\sum_i C_{ii}}
-{\sum_{i,j} C_{ij}}.
-$$
-</p>
+{\sum_{i,j} C_{ij}}.$$
+</div>
 <p>The diagonal contains correct classifications.</p>
 <hr />
     </div>
@@ -1142,27 +1092,21 @@ $$
     </div>
     <div class="section-body">
       <p>For a binary class:</p>
-<p>
-$$
-\text{Precision}
+<div class="math-display">
+  $$\text{Precision}
 =
-\frac{TP}{TP+FP}
-$$
-</p>
-<p>
-$$
-\text{Recall}
+\frac{TP}{TP+FP}$$
+</div>
+<div class="math-display">
+  $$\text{Recall}
 =
-\frac{TP}{TP+FN}.
-$$
-</p>
+\frac{TP}{TP+FN}.$$
+</div>
 <p>F1 score is:</p>
-<p>
-$$
-F1=
-\frac{2PR}{P+R}.
-$$
-</p>
+<div class="math-display">
+  $$F1=
+\frac{2PR}{P+R}.$$
+</div>
 <p>These are useful when the cost of false positives and false negatives differs.</p>
 <p>They are supporting evaluation concepts rather than separate syllabus headings.</p>
 <hr />
@@ -1178,53 +1122,39 @@ $$
     </div>
     <div class="section-body">
       <p>Suppose:</p>
-<p>
-$$
-TP=90,\quad TN=850,\quad FP=30,\quad FN=30.
-$$
-</p>
+<div class="math-display">
+  $$TP=90,\quad TN=850,\quad FP=30,\quad FN=30.$$
+</div>
 <p>Total:</p>
-<p>
-$$
-90+850+30+30=1000.
-$$
-</p>
+<div class="math-display">
+  $$90+850+30+30=1000.$$
+</div>
 <p>Accuracy:</p>
-<p>
-$$
-\frac{90+850}{1000}
+<div class="math-display">
+  $$\frac{90+850}{1000}
 =
-0.94
-$$
-</p>
+0.94$$
+</div>
 <p>or:</p>
-<p>
-$$
-\boxed{94\%}.
-$$
-</p>
+<div class="math-display">
+  $$\boxed{94\%}.$$
+</div>
 <p>Precision:</p>
-<p>
-$$
-\frac{90}{90+30}
+<div class="math-display">
+  $$\frac{90}{90+30}
 =
-0.75.
-$$
-</p>
+0.75.$$
+</div>
 <p>Recall:</p>
-<p>
-$$
-\frac{90}{90+30}
+<div class="math-display">
+  $$\frac{90}{90+30}
 =
-0.75.
-$$
-</p>
+0.75.$$
+</div>
 <p>Therefore:</p>
-<p>
-$$
-F1=0.75.
-$$
-</p>
+<div class="math-display">
+  $$F1=0.75.$$
+</div>
 <hr />
     </div>
   </section>
@@ -1246,13 +1176,7 @@ $$
   <pre><code>990 images → class A
 10 images  → class B</code></pre>
 </div></p>
-<p>A classifier that always predicts A gets:</p>
-<p>
-$$
-99\%
-$$
-</p>
-<p>accuracy.</p>
+<p>A classifier that always predicts A gets: $99\%$ accuracy.</p>
 <p>Yet it completely fails to identify B.</p>
 <p>Therefore:</p>
 <p><div class="code-block">
@@ -1279,25 +1203,11 @@ complete evaluation</code></pre>
     <div class="section-body">
       <p>A classifier learns model parameters from training data.</p>
 <p>In a neural classification system, training often minimizes a loss such as cross-entropy.</p>
-<p>For one example with target class $y$:</p>
-<p>
-$$
-L=-\log p_y
-$$
-</p>
-<p>where $p_y$ is the predicted probability assigned to the correct class.</p>
-<p>If the correct class receives high probability:</p>
-<p>
-$$
-p_y\rightarrow1
-$$
-</p>
-<p>then:</p>
-<p>
-$$
-L\rightarrow0.
-$$
-</p>
+<p>For one example with target class $y$ $L=-\log p_y$, where $p_y$ is the predicted probability assigned to the correct class.</p>
+<p>If the correct class receives high probability: $p_y\rightarrow1$ then:</p>
+<div class="math-display">
+  $$L\rightarrow0.$$
+</div>
 <p>If it receives a very small probability, the loss becomes large.</p>
 <p>The detailed neural optimization process is developed in C26.</p>
 <hr />
@@ -1534,23 +1444,17 @@ predicted digit</code></pre>
     </div>
     <div class="section-body">
       <p>The labels are:</p>
-<p>
-$$
-\{0,1,2,\ldots,9\}.
-$$
-</p>
+<div class="math-display">
+  $$\{0,1,2,\ldots,9\}.$$
+</div>
 <p>So:</p>
-<p>
-$$
-K=10.
-$$
-</p>
+<div class="math-display">
+  $$K=10.$$
+</div>
 <p>The model solves:</p>
-<p>
-$$
-f(X)\rightarrow\{0,\ldots,9\}.
-$$
-</p>
+<div class="math-display">
+  $$f(X)\rightarrow\{0,\ldots,9\}.$$
+</div>
 <p>The input is visual, but the output is categorical.</p>
 <hr />
     </div>
@@ -1767,31 +1671,15 @@ limited compute</code></pre>
       <button class="bookmark-btn" data-id="s-25-37" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>A grayscale image can be represented as:</p>
-<p>
-$$
-H\times W
-$$
-</p>
-<p>or, in a deep-learning framework:</p>
-<p>
-$$
-H\times W\times C
-$$
-</p>
+      <p>A grayscale image can be represented as: $H\times W$, or, in a deep-learning framework:</p>
+<div class="math-display">
+  $$H\times W\times C$$
+</div>
 <p>for channels-last representation.</p>
-<p>A batch adds another dimension:</p>
-<p>
-$$
-B\times H\times W\times C.
-$$
-</p>
-<p>For channels-first systems, the arrangement may be:</p>
-<p>
-$$
-B\times C\times H\times W.
-$$
-</p>
+<p>A batch adds another dimension: $B\times H\times W\times C.$ For channels-first systems, the arrangement may be:</p>
+<div class="math-display">
+  $$B\times C\times H\times W.$$
+</div>
 <p>This convention difference matters greatly in implementation.</p>
 <hr />
     </div>
@@ -1805,31 +1693,15 @@ $$
       <button class="bookmark-btn" data-id="s-25-38" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose one grayscale image is:</p>
-<p>
-$$
-28\times28.
-$$
-</p>
-<p>With one channel:</p>
-<p>
-$$
-28\times28\times1.
-$$
-</p>
-<p>A batch of 64 images:</p>
-<p>
-$$
-64\times28\times28\times1
-$$
-</p>
-<p>in channels-last notation.</p>
+      <p>Suppose one grayscale image is $28\times28.$ With one channel:</p>
+<div class="math-display">
+  $$28\times28\times1.$$
+</div>
+<p>A batch of 64 images: $64\times28\times28\times1$ in channels-last notation.</p>
 <p>In a channels-first framework:</p>
-<p>
-$$
-64\times1\times28\times28.
-$$
-</p>
+<div class="math-display">
+  $$64\times1\times28\times28.$$
+</div>
 <p>Both represent the same logical information, but the memory/tensor dimension order differs.</p>
 <hr />
     </div>
@@ -1908,28 +1780,18 @@ model.summary()</code></pre>
       <button class="bookmark-btn" data-id="s-25-41" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>MNIST has ten digit classes:</p>
-<p>
-$$
-0,\ldots,9.
-$$
-</p>
-<p>Therefore a multiclass classifier commonly produces ten class scores.</p>
+      <p>MNIST has ten digit classes: $0,\ldots,9.$ Therefore a multiclass classifier commonly produces ten class scores.</p>
 <p>With softmax:</p>
-<p>
-$$
-p_i=
+<div class="math-display">
+  $$p_i=
 \frac{e^{z_i}}
-{\sum_{j=1}^{10}e^{z_j}}
-$$
-</p>
+{\sum_{j=1}^{10}e^{z_j}}$$
+</div>
 <p>where $z_i$ is the score/logit for class $i$.</p>
 <p>The probabilities satisfy:</p>
-<p>
-$$
-\sum_i p_i=1.
-$$
-</p>
+<div class="math-display">
+  $$\sum_i p_i=1.$$
+</div>
 <hr />
     </div>
   </section>
@@ -1943,36 +1805,22 @@ $$
     </div>
     <div class="section-body">
       <p>Suppose a three-class model produces logits:</p>
-<p>
-$$
-[2,1,0].
-$$
-</p>
+<div class="math-display">
+  $$[2,1,0].$$
+</div>
 <p>Then:</p>
-<p>
-$$
-e^2\approx7.389,\quad e^1\approx2.718,\quad e^0=1.
-$$
-</p>
+<div class="math-display">
+  $$e^2\approx7.389,\quad e^1\approx2.718,\quad e^0=1.$$
+</div>
 <p>Sum:</p>
-<p>
-$$
-7.389+2.718+1=11.107.
-$$
-</p>
+<div class="math-display">
+  $$7.389+2.718+1=11.107.$$
+</div>
 <p>Probabilities are approximately:</p>
-<p>
-$$
-[0.665,\ 0.245,\ 0.090].
-$$
-</p>
-<p>Prediction:</p>
-<p>
-$$
-\boxed{\text{class 0}}
-$$
-</p>
-<p>because it has the highest probability.</p>
+<div class="math-display">
+  $$[0.665,\ 0.245,\ 0.090].$$
+</div>
+<p>Prediction: $\boxed{\text{class 0}}$ because it has the highest probability.</p>
 <p>The same principle applies to ten MNIST classes.</p>
 <hr />
     </div>
@@ -2078,11 +1926,9 @@ segmentation    → pixel-level regions/classes</code></pre>
 <p>Why can accuracy be misleading on highly imbalanced data?</p>
 <h3>Q3</h3>
 <p>For:</p>
-<p>
-$$
-TP=80,\ TN=900,\ FP=10,\ FN=10,
-$$
-</p>
+<div class="math-display">
+  $$TP=80,\ TN=900,\ FP=10,\ FN=10,$$
+</div>
 <p>calculate accuracy.</p>
 <h3>Q4</h3>
 <p>Why must preprocessing be kept consistent between training and inference?</p>
@@ -2209,9 +2055,8 @@ $$
     </div>
     <div class="section-body">
       <p>The central mental model is:</p>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 \text{image}
 \rightarrow
 \text{representation}
@@ -2219,9 +2064,8 @@ $$
 \text{decision}
 \rightarrow
 \text{class}
-}
-$$
-</p>
+}$$
+</div>
 <p>Classical systems often make the features explicitly.</p>
 <p>Deep-learning systems can learn representations directly from images.</p>
 <p>The university practical makes this transition concrete through:</p>

@@ -22,7 +22,7 @@
       svg: { fontCache: 'global' }
     };
   </script>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script id="MathJax-script" async src="../assets/js/mathjax/tex-mml-chtml.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';"></script>
 </head>
 <body data-chapter-id="ch17-region-segmentation">
   <div id="progress-bar"></div>
@@ -415,13 +415,7 @@ REGION</code></pre>
     </div>
     <div class="section-body">
       <p>A region $R$ is a connected set of image pixels that satisfies a chosen homogeneity or membership criterion.</p>
-<p>A useful conceptual definition is:</p>
-<p>
-$$
-P(R)=\text{true}
-$$
-</p>
-<p>where $P$ is the predicate that determines whether $R$ is sufficiently homogeneous.</p>
+<p>A useful conceptual definition is $P(R)=\text{true}$, where $P$ is the predicate that determines whether $R$ is sufficiently homogeneous.</p>
 <p>A region should typically be:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -479,29 +473,21 @@ meaningful for the task</code></pre>
     <div class="section-body">
       <p>A region can be considered homogeneous using:</p>
 <h3>Intensity difference</h3>
-<p>
-$$
-|f(x,y)-\mu_R|\lt \tau
-$$
-</p>
+<div class="math-display">
+  $$|f(x,y)-\mu_R|\lt \tau$$
+</div>
 <h3>Range</h3>
-<p>
-$$
-\max(R)-\min(R)\lt \tau
-$$
-</p>
+<div class="math-display">
+  $$\max(R)-\min(R)\lt \tau$$
+</div>
 <h3>Variance</h3>
-<p>
-$$
-\sigma_R^2\lt \tau
-$$
-</p>
+<div class="math-display">
+  $$\sigma_R^2\lt \tau$$
+</div>
 <h3>Colour distance</h3>
-<p>
-$$
-\|\mathbf c-\boldsymbol\mu_R\|\lt \tau
-$$
-</p>
+<div class="math-display">
+  $$\|\mathbf c-\boldsymbol\mu_R\|\lt \tau$$
+</div>
 <h3>Texture similarity</h3>
 <p>A task-specific texture descriptor can be used.</p>
 <p>The criterion should match the problem.</p>
@@ -590,13 +576,7 @@ return R</code></pre>
       <button class="bookmark-btn" data-id="s-17-7" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>A simple rule is:</p>
-<p>
-$$
-|f(p)-\mu_R|\lt \tau
-$$
-</p>
-<p>where:</p>
+      <p>A simple rule is $|f(p)-\mu_R|\lt \tau$, where:</p>
 <ul>
 <li>$f(p)$ = candidate pixel value,</li>
 <li>$\mu_R$ = current region mean,</li>
@@ -616,36 +596,24 @@ $$
     </div>
     <div class="section-body">
       <p>Consider:</p>
-<p>
-$$
-I=
+<div class="math-display">
+  $$I=
 \begin{bmatrix}
 10&11&12&90\\
 10&12&13&92\\
 11&13&14&91\\
 80&82&84&90
-\end{bmatrix}
-$$
-</p>
-<p>Seed:</p>
-<p>
-$$
-S=(1,1)
-$$
-</p>
-<p>assuming one-based matrix coordinates for this example.</p>
+\end{bmatrix}$$
+</div>
+<p>Seed: $S=(1,1)$ assuming one-based matrix coordinates for this example.</p>
 <p>Initial region:</p>
-<p>
-$$
-R=\{10\}
-$$
-</p>
+<div class="math-display">
+  $$R=\{10\}$$
+</div>
 <p>Take:</p>
-<p>
-$$
-\tau=5
-$$
-</p>
+<div class="math-display">
+  $$\tau=5$$
+</div>
 <p>Early neighbours:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -684,51 +652,25 @@ $$
     </div>
     <div class="section-body">
       <p>Suppose the region contains:</p>
-<p>
-$$
-10,11,12,13
-$$
-</p>
+<div class="math-display">
+  $$10,11,12,13$$
+</div>
 <p>Then:</p>
-<p>
-$$
-\mu_R=
+<div class="math-display">
+  $$\mu_R=
 \frac{10+11+12+13}{4}
 =
-11.5
-$$
-</p>
-<p>For candidate:</p>
-<p>
-$$
-15
-$$
-</p>
-<p>the difference is:</p>
-<p>
-$$
-|15-11.5|=3.5
-$$
-</p>
-<p>If:</p>
-<p>
-$$
-\tau=5
-$$
-</p>
-<p>it passes.</p>
-<p>For:</p>
-<p>
-$$
-20
-$$
-</p>
-<p>we have:</p>
-<p>
-$$
-|20-11.5|=8.5
-$$
-</p>
+11.5$$
+</div>
+<p>For candidate: $15$ the difference is:</p>
+<div class="math-display">
+  $$|15-11.5|=3.5$$
+</div>
+<p>If $\tau=5$ it passes.</p>
+<p>For: $20$ we have:</p>
+<div class="math-display">
+  $$|20-11.5|=8.5$$
+</div>
 <p>so it fails.</p>
 <p>The membership boundary therefore moves with the region statistics.</p>
 <hr />
@@ -898,11 +840,9 @@ W P E
   S</code></pre>
 </div></p>
 <p>Neighbours are:</p>
-<p>
-$$
-N,S,E,W
-$$
-</p>
+<div class="math-display">
+  $$N,S,E,W$$
+</div>
 <p>This avoids diagonal-only connections.</p>
 <hr />
     </div>
@@ -1094,18 +1034,10 @@ large τ
       <button class="bookmark-btn" data-id="s-17-20" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>A stronger rule can use:</p>
-<p>
-$$
-|f(p)-\mu_R|\lt \tau
-$$
-</p>
-<p>and:</p>
-<p>
-$$
-|\nabla f(p)|\lt \gamma
-$$
-</p>
+      <p>A stronger rule can use: $|f(p)-\mu_R|\lt \tau$, and:</p>
+<div class="math-display">
+  $$|\nabla f(p)|\lt \gamma$$
+</div>
 <p>for growth across relatively smooth areas.</p>
 <p>This says:</p>
 <p><div class="code-block">
@@ -1175,15 +1107,13 @@ boundary crossing is not too strong</code></pre>
     </div>
     <div class="section-body">
       <p>Suppose:</p>
-<p>
-$$
-P(R)=
+<div class="math-display">
+  $$P(R)=
 \begin{cases}
 \text{true},&\sigma_R^2\lt \tau\\
 \text{false},&\sigma_R^2\ge\tau
-\end{cases}
-$$
-</p>
+\end{cases}$$
+</div>
 <p>Then:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -1327,11 +1257,9 @@ smaller subdivisions where needed</code></pre>
     <div class="section-body">
       <p>Two regions $R_1,R_2$ can be merged if their combined statistics satisfy a homogeneity predicate.</p>
 <p>For example:</p>
-<p>
-$$
-|\mu_{R_1}-\mu_{R_2}|\lt \tau
-$$
-</p>
+<div class="math-display">
+  $$|\mu_{R_1}-\mu_{R_2}|\lt \tau$$
+</div>
 <p>This checks mean similarity.</p>
 <p>A more robust criterion can consider:</p>
 <ul>
@@ -1354,41 +1282,25 @@ $$
     </div>
     <div class="section-body">
       <p>Suppose:</p>
-<p>
-$$
-\mu_{R_1}=100
-$$
-</p>
-<p>
-$$
-\mu_{R_2}=103
-$$
-</p>
+<div class="math-display">
+  $$\mu_{R_1}=100$$
+</div>
+<div class="math-display">
+  $$\mu_{R_2}=103$$
+</div>
 <p>and:</p>
-<p>
-$$
-\tau=5
-$$
-</p>
+<div class="math-display">
+  $$\tau=5$$
+</div>
 <p>Then:</p>
-<p>
-$$
-|100-103|=3\lt 5
-$$
-</p>
+<div class="math-display">
+  $$|100-103|=3\lt 5$$
+</div>
 <p>so the mean-similarity criterion allows a merge.</p>
-<p>If:</p>
-<p>
-$$
-\mu_{R_2}=110
-$$
-</p>
-<p>then:</p>
-<p>
-$$
-|100-110|=10
-$$
-</p>
+<p>If $\mu_{R_2}=110$, then:</p>
+<div class="math-display">
+  $$|100-110|=10$$
+</div>
 <p>and the regions remain separate under this criterion.</p>
 <hr />
     </div>
@@ -1585,28 +1497,22 @@ texture</code></pre>
     <div class="section-body">
       <p>For region $R$:</p>
 <h3>Area</h3>
-<p>
-$$
-A_R=|R|
-$$
-</p>
+<div class="math-display">
+  $$A_R=|R|$$
+</div>
 <h3>Mean</h3>
-<p>
-$$
-\mu_R=
+<div class="math-display">
+  $$\mu_R=
 \frac1{|R|}
-\sum_{p\in R}f(p)
-$$
-</p>
+\sum_{p\in R}f(p)$$
+</div>
 <h3>Variance</h3>
-<p>
-$$
-\sigma_R^2=
+<div class="math-display">
+  $$\sigma_R^2=
 \frac1{|R|}
 \sum_{p\in R}
-[f(p)-\mu_R]^2
-$$
-</p>
+[f(p)-\mu_R]^2$$
+</div>
 <p>These statistics can drive segmentation decisions.</p>
 <hr />
     </div>
@@ -1621,49 +1527,37 @@ $$
     </div>
     <div class="section-body">
       <p>Suppose region values are:</p>
-<p>
-$$
-[10,12,11,13]
-$$
-</p>
+<div class="math-display">
+  $$[10,12,11,13]$$
+</div>
 <p>Mean:</p>
-<p>
-$$
-\mu_R=
+<div class="math-display">
+  $$\mu_R=
 \frac{46}{4}
 =
-11.5
-$$
-</p>
+11.5$$
+</div>
 <p>Variance:</p>
-<p>
-$$
-\sigma_R^2=
+<div class="math-display">
+  $$\sigma_R^2=
 \frac{
 (10-11.5)^2+
 (12-11.5)^2+
 (11-11.5)^2+
 (13-11.5)^2
-}{4}
-$$
-</p>
-<p>
-$$
-=
-\frac{2.25+0.25+0.25+2.25}{4}
-$$
-</p>
-<p>
-$$
-=
-\frac5{4}
-$$
-</p>
-<p>
-$$
-\boxed{1.25}
-$$
-</p>
+}{4}$$
+</div>
+<div class="math-display">
+  $$=
+\frac{2.25+0.25+0.25+2.25}{4}$$
+</div>
+<div class="math-display">
+  $$=
+\frac5{4}$$
+</div>
+<div class="math-display">
+  $$\boxed{1.25}$$
+</div>
 <p>The region is relatively homogeneous under this simple intensity criterion.</p>
 <hr />
     </div>
@@ -1678,18 +1572,14 @@ $$
     </div>
     <div class="section-body">
       <p>For RGB:</p>
-<p>
-$$
-\mathbf c(p)=
-[R(p),G(p),B(p)]^T
-$$
-</p>
+<div class="math-display">
+  $$\mathbf c(p)=
+[R(p),G(p),B(p)]^T$$
+</div>
 <p>A simple criterion is:</p>
-<p>
-$$
-\|\mathbf c(p)-\boldsymbol\mu_R\|_2\lt \tau
-$$
-</p>
+<div class="math-display">
+  $$\|\mathbf c(p)-\boldsymbol\mu_R\|_2\lt \tau$$
+</div>
 <p>where $\boldsymbol\mu_R$ is the region's mean colour vector.</p>
 <p>This incorporates multiple channels.</p>
 <hr />
@@ -1742,11 +1632,9 @@ texture descriptor</code></pre>
 </div></p>
 <p>Then the membership condition can operate on that feature vector.</p>
 <p>Conceptually:</p>
-<p>
-$$
-\|\mathbf z(p)-\boldsymbol\mu_R\|\lt \tau
-$$
-</p>
+<div class="math-display">
+  $$\|\mathbf z(p)-\boldsymbol\mu_R\|\lt \tau$$
+</div>
 <p>where $\mathbf z$ is a chosen feature vector.</p>
 <p>This is a bridge toward feature-based segmentation.</p>
 <hr />
@@ -1893,13 +1781,7 @@ gaps</code></pre>
       <button class="bookmark-btn" data-id="s-17-41" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>A region-growing algorithm can approach:</p>
-<p>
-$$
-O(MN)
-$$
-</p>
-<p>for simple single-pass visitation, although practical cost depends on:</p>
+      <p>A region-growing algorithm can approach: $O(MN)$ for simple single-pass visitation, although practical cost depends on:</p>
 <ul>
 <li>neighbourhood size,</li>
 <li>data structures,</li>
@@ -2148,19 +2030,15 @@ same mean intensity</code></pre>
     </div>
     <div class="section-body">
       <p>Once regions are produced, evaluate:</p>
-<p>
-$$
-IoU=
-\frac{|A\cap B|}{|A\cup B|}
-$$
-</p>
-<p>
-$$
-Dice=
+<div class="math-display">
+  $$IoU=
+\frac{|A\cap B|}{|A\cup B|}$$
+</div>
+<div class="math-display">
+  $$Dice=
 \frac{2|A\cap B|}
-{|A|+|B|}
-$$
-</p>
+{|A|+|B|}$$
+</div>
 <p>and if appropriate:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -2187,41 +2065,29 @@ area error</code></pre>
     </div>
     <div class="section-body">
       <p>Prediction area:</p>
-<p>
-$$
-|A|=120
-$$
-</p>
+<div class="math-display">
+  $$|A|=120$$
+</div>
 <p>Ground truth:</p>
-<p>
-$$
-|B|=100
-$$
-</p>
+<div class="math-display">
+  $$|B|=100$$
+</div>
 <p>Intersection:</p>
-<p>
-$$
-|A\cap B|=80
-$$
-</p>
+<div class="math-display">
+  $$|A\cap B|=80$$
+</div>
 <p>Union:</p>
-<p>
-$$
-120+100-80=140
-$$
-</p>
+<div class="math-display">
+  $$120+100-80=140$$
+</div>
 <p>Therefore:</p>
-<p>
-$$
-IoU=
-\frac{80}{140}
-$$
-</p>
-<p>
-$$
-\boxed{\approx0.5714}
-$$
-</p>
+<div class="math-display">
+  $$IoU=
+\frac{80}{140}$$
+</div>
+<div class="math-display">
+  $$\boxed{\approx0.5714}$$
+</div>
 <p>A reasonable overlap exists, but substantial segmentation error remains.</p>
 <hr />
     </div>
@@ -2342,62 +2208,50 @@ evaluation metric</code></pre>
     </div>
     <div class="section-body">
       <h3>Region mean</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 \mu_R=
 \frac1{|R|}
 \sum_{p\in R}f(p)
-}
-$$
-</p>
+}$$
+</div>
 <h3>Region variance</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 \sigma_R^2=
 \frac1{|R|}
 \sum_{p\in R}
 [f(p)-\mu_R]^2
-}
-$$
-</p>
+}$$
+</div>
 <h3>Example homogeneity predicate</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 |f(p)-\mu_R|\lt \tau
-}
-$$
-</p>
+}$$
+</div>
 <h3>Colour-vector predicate</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 \|\mathbf c(p)-\boldsymbol\mu_R\|_2\lt \tau
-}
-$$
-</p>
+}$$
+</div>
 <h3>IoU</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 IoU=
 \frac{|A\cap B|}
 {|A\cup B|}
-}
-$$
-</p>
+}$$
+</div>
 <h3>Dice</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 Dice=
 \frac{2|A\cap B|}
 {|A|+|B|}
-}
-$$
-</p>
+}$$
+</div>
 <hr />
     </div>
   </section>
@@ -2411,48 +2265,26 @@ $$
     </div>
     <div class="section-body">
       <p>Region values:</p>
-<p>
-$$
-[20,22,24,26]
-$$
-</p>
+<div class="math-display">
+  $$[20,22,24,26]$$
+</div>
 <p>Mean:</p>
-<p>
-$$
-\mu_R=
-\frac{20+22+24+26}{4}
-$$
-</p>
-<p>
-$$
-=
-\frac{92}{4}
-$$
-</p>
-<p>
-$$
-\boxed{23}
-$$
-</p>
-<p>For candidate:</p>
-<p>
-$$
-p=27
-$$
-</p>
-<p>and:</p>
-<p>
-$$
-\tau=5
-$$
-</p>
-<p>difference:</p>
-<p>
-$$
-|27-23|=4\lt 5
-$$
-</p>
-<p>so it is accepted under the stated criterion.</p>
+<div class="math-display">
+  $$\mu_R=
+\frac{20+22+24+26}{4}$$
+</div>
+<div class="math-display">
+  $$=
+\frac{92}{4}$$
+</div>
+<div class="math-display">
+  $$\boxed{23}$$
+</div>
+<p>For candidate: $p=27$, and:</p>
+<div class="math-display">
+  $$\tau=5$$
+</div>
+<p>difference: $|27-23|=4\lt 5$ so it is accepted under the stated criterion.</p>
 <hr />
     </div>
   </section>
@@ -2466,39 +2298,29 @@ $$
     </div>
     <div class="section-body">
       <p>Values:</p>
-<p>
-$$
-[10,12,14]
-$$
-</p>
+<div class="math-display">
+  $$[10,12,14]$$
+</div>
 <p>Mean:</p>
-<p>
-$$
-\mu=12
-$$
-</p>
+<div class="math-display">
+  $$\mu=12$$
+</div>
 <p>Variance:</p>
-<p>
-$$
-\sigma^2=
+<div class="math-display">
+  $$\sigma^2=
 \frac{
 (10-12)^2+
 (12-12)^2+
 (14-12)^2
-}{3}
-$$
-</p>
-<p>
-$$
-=
-\frac{4+0+4}{3}
-$$
-</p>
-<p>
-$$
-\boxed{\frac83\approx2.667}
-$$
-</p>
+}{3}$$
+</div>
+<div class="math-display">
+  $$=
+\frac{4+0+4}{3}$$
+</div>
+<div class="math-display">
+  $$\boxed{\frac83\approx2.667}$$
+</div>
 <hr />
     </div>
   </section>
@@ -2512,23 +2334,13 @@ $$
     </div>
     <div class="section-body">
       <p>Two neighbouring regions have:</p>
-<p>
-$$
-\mu_1=70,\qquad\mu_2=73
-$$
-</p>
-<p>If:</p>
-<p>
-$$
-\tau=5
-$$
-</p>
-<p>then:</p>
-<p>
-$$
-|\mu_1-\mu_2|=3\lt 5
-$$
-</p>
+<div class="math-display">
+  $$\mu_1=70,\qquad\mu_2=73$$
+</div>
+<p>If $\tau=5$, then:</p>
+<div class="math-display">
+  $$|\mu_1-\mu_2|=3\lt 5$$
+</div>
 <p>so they can merge under the simple mean-similarity predicate.</p>
 <hr />
     </div>

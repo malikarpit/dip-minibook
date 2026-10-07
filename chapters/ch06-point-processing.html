@@ -22,7 +22,7 @@
       svg: { fontCache: 'global' }
     };
   </script>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script id="MathJax-script" async src="../assets/js/mathjax/tex-mml-chtml.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';"></script>
 </head>
 <body data-chapter-id="ch06-point-processing">
   <div id="progress-bar"></div>
@@ -326,23 +326,15 @@ The simplest image-enhancement operation changes each pixel according to a trans
     </div>
     <div class="section-body">
       <p>Before filtering neighbourhoods, Fourier transforms or segmentation, we should master the simplest possible image transformation.</p>
-<p>For every pixel:</p>
-<p>
-$$
-r\rightarrow s
-$$
-</p>
-<p>where:</p>
+<p>For every pixel $r\rightarrow s$, where:</p>
 <ul>
 <li>$r$ = input intensity,</li>
 <li>$s$ = output intensity.</li>
 </ul>
 <p>More formally:</p>
-<p>
-$$
-s=T(r)
-$$
-</p>
+<div class="math-display">
+  $$s=T(r)$$
+</div>
 <p>The output of one pixel depends only on its own input value.</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -382,11 +374,9 @@ depends on
 input at (x,y)</code></pre>
 </div></p>
 <p>Mathematically:</p>
-<p>
-$$
-g(x,y)=T(f(x,y))
-$$
-</p>
+<div class="math-display">
+  $$g(x,y)=T(f(x,y))$$
+</div>
 <h3>Neighbourhood processing</h3>
 <p><div class="code-block">
   <div class="code-header">
@@ -398,13 +388,11 @@ depends on
 a local set of neighbouring pixels</code></pre>
 </div></p>
 <p>For example:</p>
-<p>
-$$
-g(x,y)=
+<div class="math-display">
+  $$g(x,y)=
 \sum_{s,t}
-w(s,t)f(x-s,y-t)
-$$
-</p>
+w(s,t)f(x-s,y-t)$$
+</div>
 <p>The second category leads to convolution and spatial filtering in Chapter 08.</p>
 <hr />
     </div>
@@ -418,13 +406,7 @@ $$
       <button class="bookmark-btn" data-id="s-06-3" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>The function:</p>
-<p>
-$$
-s=T(r)
-$$
-</p>
-<p>maps input intensity values to output intensity values.</p>
+      <p>The function: $s=T(r)$ maps input intensity values to output intensity values.</p>
 <p>An intensity-transform curve is therefore a compact way of describing an image operation.</p>
 <p>Conceptually:</p>
 <p><div class="code-block">
@@ -488,11 +470,9 @@ $$
     </div>
     <div class="section-body">
       <p>The simplest transformation is:</p>
-<p>
-$$
-s=r
-$$
-</p>
+<div class="math-display">
+  $$s=r$$
+</div>
 <p>Every input intensity stays unchanged.</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -519,30 +499,14 @@ same image</code></pre>
       <button class="bookmark-btn" data-id="s-06-6" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>For an image with:</p>
-<p>
-$$
-L
-$$
-</p>
-<p>possible intensity levels, the standard image-negative transformation is:</p>
-<p>
-$$
-s=(L-1)-r
-$$
-</p>
-<p>For an 8-bit image:</p>
-<p>
-$$
-L=256
-$$
-</p>
-<p>so:</p>
-<p>
-$$
-s=255-r
-$$
-</p>
+      <p>For an image with $L$ possible intensity levels, the standard image-negative transformation is:</p>
+<div class="math-display">
+  $$s = (L - 1) - r$$
+</div>
+<p>For an 8-bit image (where $L = 256$):</p>
+<div class="math-display">
+  $$s = 255 - r$$
+</div>
 <hr />
     </div>
   </section>
@@ -555,23 +519,13 @@ $$
       <button class="bookmark-btn" data-id="s-06-7" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose:</p>
-<p>
-$$
-r=80
-$$
-</p>
-<p>Then:</p>
-<p>
-$$
-s=255-80
-$$
-</p>
-<p>
-$$
-\boxed{s=175}
-$$
-</p>
+      <p>Suppose $r=80$, then:</p>
+<div class="math-display">
+  $$s=255-80$$
+</div>
+<div class="math-display">
+  $$\boxed{s=175}$$
+</div>
 <p>For several pixels:</p>
 <div class="table-wrap"><table class="comparison-table">
 <thead>
@@ -642,13 +596,7 @@ $$
       <button class="bookmark-btn" data-id="s-06-9" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>A common form is:</p>
-<p>
-$$
-s=c\log(1+r)
-$$
-</p>
-<p>where $c$ controls scaling.</p>
+      <p>A common form is $s=c\log(1+r)$, where $c$ controls scaling.</p>
 <p>The log function expands lower input values relative to higher values.</p>
 <p>Conceptually:</p>
 <p><div class="code-block">
@@ -675,25 +623,11 @@ large r
       <button class="bookmark-btn" data-id="s-06-10" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>If:</p>
-<p>
-$$
-r=0
-$$
-</p>
-<p>then:</p>
-<p>
-$$
-\log(1+r)=\log(1)=0
-$$
-</p>
-<p>This avoids the mathematical problem of attempting:</p>
-<p>
-$$
-\log(0)
-$$
-</p>
-<p>at the zero-intensity point.</p>
+      <p>If $r=0$, then:</p>
+<div class="math-display">
+  $$\log(1+r)=\log(1)=0$$
+</div>
+<p>This avoids the mathematical problem of attempting: $\log(0)$ at the zero-intensity point.</p>
 <hr />
     </div>
   </section>
@@ -706,30 +640,14 @@ $$
       <button class="bookmark-btn" data-id="s-06-11" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose:</p>
-<p>
-$$
-r=9
-$$
-</p>
-<p>and:</p>
-<p>
-$$
-c=1
-$$
-</p>
-<p>Then:</p>
-<p>
-$$
-s=\log(1+9)=\log(10)
-$$
-</p>
+      <p>Suppose $r=9$ and $c=1$. Then:</p>
+<div class="math-display">
+  $$s=\log(1+9)=\log(10)$$
+</div>
 <p>Using natural logarithm:</p>
-<p>
-$$
-s\approx2.303
-$$
-</p>
+<div class="math-display">
+  $$s\approx2.303$$
+</div>
 <p>The numerical value is not yet in an 8-bit display range.</p>
 <p>Therefore a practical pipeline often requires normalization/scaling before storing or displaying the result.</p>
 <blockquote>
@@ -784,13 +702,7 @@ inverse/exponential-type transform
       <button class="bookmark-btn" data-id="s-06-13" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>A widely used family is:</p>
-<p>
-$$
-s=cr^\gamma
-$$
-</p>
-<p>where:</p>
+      <p>A widely used family is $s=cr^\gamma$, where:</p>
 <ul>
 <li>$c$ = scaling constant,</li>
 <li>$\gamma$ = exponent.</li>
@@ -808,13 +720,7 @@ $$
       <button class="bookmark-btn" data-id="s-06-14" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>For normalized:</p>
-<p>
-$$
-r\in[0,1]
-$$
-</p>
-<p>and $c=1$:</p>
+      <p>For normalized: $r\in[0,1]$, and $c=1$:</p>
 <h3>If $0\lt \gamma\lt 1$</h3>
 <p>The curve lies above the identity line:</p>
 <p><div class="code-block">
@@ -859,29 +765,17 @@ $$
       <button class="bookmark-btn" data-id="s-06-15" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Let:</p>
-<p>
-$$
-r=0.25
-$$
-</p>
-<p>and:</p>
-<p>
-$$
-\gamma=0.5
-$$
-</p>
+      <p>Let: $r=0.25$, and:</p>
+<div class="math-display">
+  $$\gamma=0.5$$
+</div>
 <p>Then:</p>
-<p>
-$$
-s=(0.25)^{0.5}
-$$
-</p>
-<p>
-$$
-s=0.5
-$$
-</p>
+<div class="math-display">
+  $$s=(0.25)^{0.5}$$
+</div>
+<div class="math-display">
+  $$s=0.5$$
+</div>
 <p>So a normalized input of 0.25 becomes 0.5.</p>
 <p>That is an example of low-range expansion.</p>
 <hr />
@@ -896,30 +790,18 @@ $$
       <button class="bookmark-btn" data-id="s-06-16" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose:</p>
-<p>
-$$
-s=0.5
-$$
-</p>
-<p>and we want an 8-bit display value:</p>
-<p>
-$$
-s_{8}=255s
-$$
-</p>
+      <p>Suppose: $s=0.5$, and we want an 8-bit display value:</p>
+<div class="math-display">
+  $$s_{8}=255s$$
+</div>
 <p>Then:</p>
-<p>
-$$
-s_8=127.5
-$$
-</p>
+<div class="math-display">
+  $$s_8=127.5$$
+</div>
 <p>Depending on the conversion convention, this may be rounded to:</p>
-<p>
-$$
-128
-$$
-</p>
+<div class="math-display">
+  $$128$$
+</div>
 <p>This illustrates why numerical pipelines must specify:</p>
 <ul>
 <li>normalization range,</li>
@@ -939,35 +821,23 @@ $$
       <button class="bookmark-btn" data-id="s-06-17" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose the useful input range is:</p>
-<p>
-$$
-[r_{\min},r_{\max}]
-$$
-</p>
-<p>and we want to map it to:</p>
-<p>
-$$
-[s_{\min},s_{\max}]
-$$
-</p>
+      <p>Suppose the useful input range is $[r_{\min},r_{\max}]$, and we want to map it to:</p>
+<div class="math-display">
+  $$[s_{\min},s_{\max}]$$
+</div>
 <p>A linear contrast-stretching transformation is:</p>
-<p>
-$$
-s
+<div class="math-display">
+  $$s
 =
 s_{\min}
 +
 \frac{(r-r_{\min})(s_{\max}-s_{\min})}
-{r_{\max}-r_{\min}}
-$$
-</p>
+{r_{\max}-r_{\min}}$$
+</div>
 <p>for:</p>
-<p>
-$$
-r_{\max}\ne r_{\min}
-$$
-</p>
+<div class="math-display">
+  $$r_{\max}\ne r_{\min}$$
+</div>
 <p>This expands a narrow intensity range into a wider output range.</p>
 <hr />
     </div>
@@ -981,55 +851,35 @@ $$
       <button class="bookmark-btn" data-id="s-06-18" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose an image effectively uses only:</p>
-<p>
-$$
-r_{\min}=50
-$$
-</p>
-<p>to:</p>
-<p>
-$$
-r_{\max}=180
-$$
-</p>
+      <p>Suppose an image effectively uses only: $r_{\min}=50$ to:</p>
+<div class="math-display">
+  $$r_{\max}=180$$
+</div>
 <p>and we want:</p>
-<p>
-$$
-s_{\min}=0,\qquad s_{\max}=255
-$$
-</p>
+<div class="math-display">
+  $$s_{\min}=0,\qquad s_{\max}=255$$
+</div>
 <p>For:</p>
-<p>
-$$
-r=100
-$$
-</p>
+<div class="math-display">
+  $$r=100$$
+</div>
 <p>we get:</p>
-<p>
-$$
-s=
+<div class="math-display">
+  $$s=
 \frac{(100-50)(255)}
-{180-50}
-$$
-</p>
-<p>
-$$
-=
-\frac{50\times255}{130}
-$$
-</p>
-<p>
-$$
-\approx98.08
-$$
-</p>
+{180-50}$$
+</div>
+<div class="math-display">
+  $$=
+\frac{50\times255}{130}$$
+</div>
+<div class="math-display">
+  $$\approx98.08$$
+</div>
 <p>After integer conversion, this is approximately:</p>
-<p>
-$$
-\boxed{98}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{98}$$
+</div>
 <p>The same input value becomes more separated from the dark end of the output range than in the original narrow range.</p>
 <hr />
     </div>
@@ -1117,11 +967,9 @@ $$
     </div>
     <div class="section-body">
       <p>Suppose the useful feature occurs in:</p>
-<p>
-$$
-[100,150]
-$$
-</p>
+<div class="math-display">
+  $$[100,150]$$
+</div>
 <p>A piecewise mapping could:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -1162,15 +1010,13 @@ $$
     </div>
     <div class="section-body">
       <p>A binary threshold can be written:</p>
-<p>
-$$
-s=
+<div class="math-display">
+  $$s=
 \begin{cases}
 0,&r\lt T\\
 255,&r\ge T
-\end{cases}
-$$
-</p>
+\end{cases}$$
+</div>
 <p>for a conventional binary 8-bit output.</p>
 <p>This is technically a point transformation because the output depends only on the individual pixel value.</p>
 <p>However, in this MiniBook it is treated fully in the segmentation section because the <strong>goal and interpretation</strong> are different.</p>
@@ -1200,43 +1046,23 @@ C16
     <div class="section-body">
       <p>Suppose transformed values fall outside the valid output range.</p>
 <p>For an 8-bit unsigned image:</p>
-<p>
-$$
-0\le s\le255
-$$
-</p>
+<div class="math-display">
+  $$0\le s\le255$$
+</div>
 <p>A simple clipping operation is:</p>
-<p>
-$$
-s_{\text{clip}}=
-\min(255,\max(0,s))
-$$
-</p>
+<div class="math-display">
+  $$s_{\text{clip}}=
+\min(255,\max(0,s))$$
+</div>
 <h3>Example</h3>
-<p>If:</p>
-<p>
-$$
-s=-10
-$$
-</p>
-<p>then:</p>
-<p>
-$$
-s_{\text{clip}}=0
-$$
-</p>
-<p>If:</p>
-<p>
-$$
-s=280
-$$
-</p>
-<p>then:</p>
-<p>
-$$
-s_{\text{clip}}=255
-$$
-</p>
+<p>If $s=-10$, then:</p>
+<div class="math-display">
+  $$s_{\text{clip}}=0$$
+</div>
+<p>If $s=280$, then:</p>
+<div class="math-display">
+  $$s_{\text{clip}}=255$$
+</div>
 <hr />
     </div>
   </section>
@@ -1299,11 +1125,9 @@ LUT:
 T(0) ... T(255)</code></pre>
 </div></p>
 <p>Then every pixel is replaced using:</p>
-<p>
-$$
-s=T(r)
-$$
-</p>
+<div class="math-display">
+  $$s=T(r)$$
+</div>
 <p>This is computationally efficient.</p>
 <p>Conceptually:</p>
 <p><div class="code-block">
@@ -1331,33 +1155,27 @@ transformed value</code></pre>
     </div>
     <div class="section-body">
       <p>Consider:</p>
-<p>
-$$
-I=
+<div class="math-display">
+  $$I=
 \begin{bmatrix}
 10&20&30\\
 40&50&60\\
 70&80&90
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>Apply:</p>
-<p>
-$$
-s=100-r
-$$
-</p>
+<div class="math-display">
+  $$s=100-r$$
+</div>
 <p>Then:</p>
-<p>
-$$
-O=
+<div class="math-display">
+  $$O=
 \begin{bmatrix}
 90&80&70\\
 60&50&40\\
 30&20&10
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>Notice:</p>
 <blockquote>
 <p>each output pixel was computed independently.</p>
@@ -1375,33 +1193,23 @@ $$
       <button class="bookmark-btn" data-id="s-06-27" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>For:</p>
-<p>
-$$
-T=50
-$$
-</p>
-<p>using:</p>
-<p>
-$$
-s=
+      <p>For: $T=50$ using:</p>
+<div class="math-display">
+  $$s=
 \begin{cases}
 0,&r\lt 50\\
 255,&r\ge50
-\end{cases}
-$$
-</p>
+\end{cases}$$
+</div>
 <p>the same matrix becomes:</p>
-<p>
-$$
-O=
+<div class="math-display">
+  $$O=
 \begin{bmatrix}
 0&0&0\\
 0&255&255\\
 255&255&255
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>The spatial pattern remains, but the intensity representation has been drastically simplified.</p>
 <hr />
     </div>
@@ -1500,30 +1308,18 @@ threshold
     </div>
     <div class="section-body">
       <p>Suppose two pixels have:</p>
-<p>
-$$
-r_1=50,\qquad r_2=100
-$$
-</p>
+<div class="math-display">
+  $$r_1=50,\qquad r_2=100$$
+</div>
 <p>Under a negative transformation:</p>
-<p>
-$$
-s_1=255-50=205
-$$
-</p>
-<p>
-$$
-s_2=255-100=155
-$$
-</p>
+<div class="math-display">
+  $$s_1=255-50=205$$
+</div>
+<div class="math-display">
+  $$s_2=255-100=155$$
+</div>
 <p>Under contrast stretching, their outputs depend on the image's global $r_{\min},r_{\max}$.</p>
-<p>Under a gamma transformation, their outputs depend on:</p>
-<p>
-$$
-c,\gamma
-$$
-</p>
-<p>Therefore an enhancement cannot be selected from the pixel value alone.</p>
+<p>Under a gamma transformation, their outputs depend on: $c,\gamma$ Therefore an enhancement cannot be selected from the pixel value alone.</p>
 <p>The function and its parameters define the behaviour.</p>
 <hr />
     </div>
@@ -1539,13 +1335,11 @@ $$
     <div class="section-body">
       <p>A point transformation can be applied:</p>
 <h3>Per channel</h3>
-<p>
-$$
-R'=T(R),\quad
+<div class="math-display">
+  $$R'=T(R),\quad
 G'=T(G),\quad
-B'=T(B)
-$$
-</p>
+B'=T(B)$$
+</div>
 <p>But this can alter colour relationships.</p>
 <p>For example, applying a strong nonlinear function independently to each RGB channel can change saturation and hue.</p>
 <h3>On a luminance/luma-like component</h3>
@@ -1567,34 +1361,24 @@ $$
     </div>
     <div class="section-body">
       <p>Suppose:</p>
-<p>
-$$
-(R,G,B)=(100,100,200)
-$$
-</p>
+<div class="math-display">
+  $$(R,G,B)=(100,100,200)$$
+</div>
 <p>The blue component is stronger than red and green.</p>
 <p>Now imagine applying different channel transforms:</p>
-<p>
-$$
-R'=0.8R
-$$
-</p>
-<p>
-$$
-G'=1.2G
-$$
-</p>
-<p>
-$$
-B'=0.9B
-$$
-</p>
+<div class="math-display">
+  $$R'=0.8R$$
+</div>
+<div class="math-display">
+  $$G'=1.2G$$
+</div>
+<div class="math-display">
+  $$B'=0.9B$$
+</div>
 <p>Then:</p>
-<p>
-$$
-(R',G',B')=(80,120,180)
-$$
-</p>
+<div class="math-display">
+  $$(R',G',B')=(80,120,180)$$
+</div>
 <p>The relative channel balance changed.</p>
 <p>Therefore the perceived colour can change even though the operation was intended as “brightness enhancement.”</p>
 <p>This is one reason colour processing often requires deliberate colour-space selection.</p>
@@ -1647,18 +1431,10 @@ $$
     </div>
     <div class="section-body">
       <p>Point transformations also modify noise.</p>
-<p>Suppose:</p>
-<p>
-$$
-g=f+\eta
-$$
-</p>
-<p>and we apply:</p>
-<p>
-$$
-s=T(g)
-$$
-</p>
+<p>Suppose: $g=f+\eta$, and we apply:</p>
+<div class="math-display">
+  $$s=T(g)$$
+</div>
 <p>For nonlinear $T$, the noise is generally transformed nonlinearly as well.</p>
 <p>Therefore:</p>
 <p><div class="code-block">
@@ -1798,13 +1574,7 @@ for each pixel r:
       <button class="bookmark-btn" data-id="s-06-38" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose an image has values concentrated around:</p>
-<p>
-$$
-20\le r\le90
-$$
-</p>
-<p>Possible first choices:</p>
+      <p>Suppose an image has values concentrated around: $20\le r\le90$ Possible first choices:</p>
 <p><div class="code-block">
   <div class="code-header">
     <span>text</span>
@@ -1911,49 +1681,37 @@ check noise and clipping</code></pre>
     </div>
     <div class="section-body">
       <h3>General point transformation</h3>
-<p>
-$$
-\boxed{s=T(r)}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{s=T(r)}$$
+</div>
 <h3>Negative</h3>
-<p>
-$$
-\boxed{s=(L-1)-r}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{s=(L-1)-r}$$
+</div>
 <h3>Log</h3>
-<p>
-$$
-\boxed{s=c\log(1+r)}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{s=c\log(1+r)}$$
+</div>
 <h3>Power-law</h3>
-<p>
-$$
-\boxed{s=cr^\gamma}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{s=cr^\gamma}$$
+</div>
 <h3>Linear contrast stretch</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 s=
 s_{\min}
 +
 \frac{(r-r_{\min})(s_{\max}-s_{\min})}
 {r_{\max}-r_{\min}}
-}
-$$
-</p>
+}$$
+</div>
 <h3>8-bit clipping</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 s_{\text{clip}}=\min(255,\max(0,s))
-}
-$$
-</p>
+}$$
+</div>
 <hr />
     </div>
   </section>
@@ -1969,57 +1727,39 @@ $$
       <h3>Problem</h3>
 <p>An 8-bit grayscale image has useful intensity values between 40 and 160. Map this range linearly to 0–255. Find the output for input intensity 100.</p>
 <h3>Given</h3>
-<p>
-$$
-r_{\min}=40
-$$
-</p>
-<p>
-$$
-r_{\max}=160
-$$
-</p>
-<p>
-$$
-s_{\min}=0
-$$
-</p>
-<p>
-$$
-s_{\max}=255
-$$
-</p>
-<p>
-$$
-r=100
-$$
-</p>
+<div class="math-display">
+  $$r_{\min}=40$$
+</div>
+<div class="math-display">
+  $$r_{\max}=160$$
+</div>
+<div class="math-display">
+  $$s_{\min}=0$$
+</div>
+<div class="math-display">
+  $$s_{\max}=255$$
+</div>
+<div class="math-display">
+  $$r=100$$
+</div>
 <h3>Formula</h3>
-<p>
-$$
-s=
+<div class="math-display">
+  $$s=
 0+
 \frac{(100-40)(255)}
-{160-40}
-$$
-</p>
-<p>
-$$
-=
-\frac{60\times255}{120}
-$$
-</p>
-<p>
-$$
-=127.5
-$$
-</p>
+{160-40}$$
+</div>
+<div class="math-display">
+  $$=
+\frac{60\times255}{120}$$
+</div>
+<div class="math-display">
+  $$=127.5$$
+</div>
 <p>After a specified integer conversion, approximately:</p>
-<p>
-$$
-\boxed{128}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{128}$$
+</div>
 <h3>Interpretation</h3>
 <p>The midpoint of the original useful range maps to the midpoint of the target range.</p>
 <hr />

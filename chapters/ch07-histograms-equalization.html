@@ -22,7 +22,7 @@
       svg: { fontCache: 'global' }
     };
   </script>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script id="MathJax-script" async src="../assets/js/mathjax/tex-mml-chtml.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';"></script>
 </head>
 <body data-chapter-id="ch07-histograms-equalization">
   <div id="progress-bar"></div>
@@ -371,29 +371,19 @@ RECHECK HISTOGRAM + VISUAL/TASK RESULT</code></pre>
       <button class="bookmark-btn" data-id="s-07-2" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>For a discrete grayscale image with $L$ possible intensity levels:</p>
-<p>
-$$
-r_0,r_1,\ldots,r_{L-1}
-$$
-</p>
-<p>the histogram is:</p>
-<p>
-$$
-h(r_k)=n_k
-$$
-</p>
+      <p>For a discrete grayscale image with $L$ possible intensity levels $r_0,r_1,\ldots,r_{L-1}$ the histogram is:</p>
+<div class="math-display">
+  $$h(r_k)=n_k$$
+</div>
 <p>where:</p>
 <ul>
 <li>$r_k$ = the $k$-th intensity level,</li>
 <li>$n_k$ = number of pixels having intensity $r_k$.</li>
 </ul>
 <p>The total number of pixels is:</p>
-<p>
-$$
-MN=\sum_{k=0}^{L-1}n_k
-$$
-</p>
+<div class="math-display">
+  $$MN=\sum_{k=0}^{L-1}n_k$$
+</div>
 <p>for an $M\times N$ image.</p>
 <hr />
     </div>
@@ -408,31 +398,19 @@ $$
     </div>
     <div class="section-body">
       <p>A normalized histogram estimates the relative frequency:</p>
-<p>
-$$
-p(r_k)=\frac{n_k}{MN}
-$$
-</p>
+<div class="math-display">
+  $$p(r_k)=\frac{n_k}{MN}$$
+</div>
 <p>Therefore:</p>
-<p>
-$$
-\sum_{k=0}^{L-1}p(r_k)=1
-$$
-</p>
+<div class="math-display">
+  $$\sum_{k=0}^{L-1}p(r_k)=1$$
+</div>
 <p>This turns counts into proportions.</p>
 <h3>Example</h3>
-<p>If an image has:</p>
-<p>
-$$
-MN=1000
-$$
-</p>
-<p>and 120 pixels have intensity 80, then:</p>
-<p>
-$$
-p(80)=\frac{120}{1000}=0.12
-$$
-</p>
+<p>If an image has $MN=1000$, and 120 pixels have intensity 80, then:</p>
+<div class="math-display">
+  $$p(80)=\frac{120}{1000}=0.12$$
+</div>
 <p>So 12% of the pixels have that intensity.</p>
 <hr />
     </div>
@@ -484,24 +462,16 @@ Image B
     </div>
     <div class="section-body">
       <p>Consider the image:</p>
-<p>
-$$
-I=
+<div class="math-display">
+  $$I=
 \begin{bmatrix}
 0&1&1&2\\
 2&2&3&3\\
 3&3&3&2\\
 1&1&2&0
-\end{bmatrix}
-$$
-</p>
-<p>There are:</p>
-<p>
-$$
-4\times4=16
-$$
-</p>
-<p>pixels.</p>
+\end{bmatrix}$$
+</div>
+<p>There are: $4\times4=16$ pixels.</p>
 <p>Count each level:</p>
 <div class="table-wrap"><table class="comparison-table">
 <thead>
@@ -530,11 +500,9 @@ $$
 </tbody>
 </table></div>
 <p>Check:</p>
-<p>
-$$
-2+4+5+5=16
-$$
-</p>
+<div class="math-display">
+  $$2+4+5+5=16$$
+</div>
 <p>The normalized histogram is:</p>
 <div class="table-wrap"><table class="comparison-table">
 <thead>
@@ -568,11 +536,9 @@ $$
 </tbody>
 </table></div>
 <p>And:</p>
-<p>
-$$
-0.125+0.25+0.3125+0.3125=1
-$$
-</p>
+<div class="math-display">
+  $$0.125+0.25+0.3125+0.3125=1$$
+</div>
 <hr />
     </div>
   </section>
@@ -709,13 +675,7 @@ $$
     </div>
     <div class="section-body">
       <p>A useful practical interpretation of contrast is the degree to which intensity differences are expressed in the image.</p>
-<p>A low-contrast image may have values concentrated in a narrow region:</p>
-<p>
-$$
-r_{\min}\ll r_{\max}
-$$
-</p>
-<p>relative to the available range.</p>
+<p>A low-contrast image may have values concentrated in a narrow region: $r_{\min}\ll r_{\max}$ relative to the available range.</p>
 <p>Contrast enhancement aims to make useful differences more distinguishable.</p>
 <p>This connects directly to C06:</p>
 <p><div class="code-block">
@@ -744,13 +704,11 @@ histogram / distribution-guided enhancement</code></pre>
       <p>These are related but not identical.</p>
 <h3>Contrast stretching</h3>
 <p>Usually uses a deliberately selected mapping such as:</p>
-<p>
-$$
-[r_{\min},r_{\max}]
+<div class="math-display">
+  $$[r_{\min},r_{\max}]
 \rightarrow
-[s_{\min},s_{\max}]
-$$
-</p>
+[s_{\min},s_{\max}]$$
+</div>
 <p>It is often approximately linear or piecewise linear.</p>
 <h3>Histogram equalization</h3>
 <p>Uses the cumulative distribution of intensities to construct a nonlinear mapping.</p>
@@ -779,19 +737,15 @@ equalization
     </div>
     <div class="section-body">
       <p>The normalized histogram probabilities are:</p>
-<p>
-$$
-p(r_k)
-$$
-</p>
+<div class="math-display">
+  $$p(r_k)$$
+</div>
 <p>The cumulative distribution is:</p>
-<p>
-$$
-C(r_k)
+<div class="math-display">
+  $$C(r_k)
 =
-\sum_{j=0}^{k}p(r_j)
-$$
-</p>
+\sum_{j=0}^{k}p(r_j)$$
+</div>
 <p>This gives the fraction of pixels with intensity less than or equal to $r_k$.</p>
 <p>The CDF is the mathematical engine behind classical histogram equalization.</p>
 <hr />
@@ -807,22 +761,14 @@ $$
     </div>
     <div class="section-body">
       <p>For an $L$-level grayscale image, a common discrete mapping is:</p>
-<p>
-$$
-s_k
+<div class="math-display">
+  $$s_k
 =
 (L-1)
 \sum_{j=0}^{k}
-p(r_j)
-$$
-</p>
-<p>or equivalently:</p>
-<p>
-$$
-s_k=(L-1)C(r_k)
-$$
-</p>
-<p>followed by the required integer conversion.</p>
+p(r_j)$$
+</div>
+<p>or equivalently: $s_k=(L-1)C(r_k)$ followed by the required integer conversion.</p>
 <p>The exact rounding/flooring convention can vary between textbook presentations and implementations. This MiniBook states the convention whenever a numerical example depends on it.</p>
 <hr />
     </div>
@@ -838,13 +784,7 @@ $$
     <div class="section-body">
       <p>Suppose many pixels occupy a small input range.</p>
 <p>The CDF rises rapidly over that region.</p>
-<p>Mapping the CDF to:</p>
-<p>
-$$
-0\ldots L-1
-$$
-</p>
-<p>therefore expands frequently occupied intensity regions.</p>
+<p>Mapping the CDF to: $0\ldots L-1$ therefore expands frequently occupied intensity regions.</p>
 <p>Conversely, intensity ranges containing few or no pixels receive less output range.</p>
 <p>Conceptually:</p>
 <p><div class="code-block">
@@ -875,17 +815,15 @@ output intensity</code></pre>
     </div>
     <div class="section-body">
       <p>Use the earlier 4×4 image:</p>
-<p>
-$$
-I=
+<div class="math-display">
+  $$I=
 \begin{bmatrix}
 0&1&1&2\\
 2&2&3&3\\
 3&3&3&2\\
 1&1&2&0
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>The counts were:</p>
 <div class="table-wrap"><table class="comparison-table">
 <thead>
@@ -914,107 +852,65 @@ $$
 </tbody>
 </table></div>
 <p>Total:</p>
-<p>
-$$
-MN=16
-$$
-</p>
+<div class="math-display">
+  $$MN=16$$
+</div>
 <p>So:</p>
-<p>
-$$
-p(r_0)=0.125
-$$
-</p>
-<p>
-$$
-p(r_1)=0.25
-$$
-</p>
-<p>
-$$
-p(r_2)=0.3125
-$$
-</p>
-<p>
-$$
-p(r_3)=0.3125
-$$
-</p>
+<div class="math-display">
+  $$p(r_0)=0.125$$
+</div>
+<div class="math-display">
+  $$p(r_1)=0.25$$
+</div>
+<div class="math-display">
+  $$p(r_2)=0.3125$$
+</div>
+<div class="math-display">
+  $$p(r_3)=0.3125$$
+</div>
 <h3>CDF</h3>
-<p>
-$$
-C(0)=0.125
-$$
-</p>
-<p>
-$$
-C(1)=0.125+0.25=0.375
-$$
-</p>
-<p>
-$$
-C(2)=0.6875
-$$
-</p>
-<p>
-$$
-C(3)=1.0
-$$
-</p>
-<p>Since:</p>
-<p>
-$$
-L=4
-$$
-</p>
-<p>we have:</p>
-<p>
-$$
-L-1=3
-$$
-</p>
+<div class="math-display">
+  $$C(0)=0.125$$
+</div>
+<div class="math-display">
+  $$C(1)=0.125+0.25=0.375$$
+</div>
+<div class="math-display">
+  $$C(2)=0.6875$$
+</div>
+<div class="math-display">
+  $$C(3)=1.0$$
+</div>
+<p>Since: $L=4$ we have:</p>
+<div class="math-display">
+  $$L-1=3$$
+</div>
 <p>Therefore:</p>
-<p>
-$$
-s_0=3(0.125)=0.375
-$$
-</p>
-<p>
-$$
-s_1=3(0.375)=1.125
-$$
-</p>
-<p>
-$$
-s_2=3(0.6875)=2.0625
-$$
-</p>
-<p>
-$$
-s_3=3(1)=3
-$$
-</p>
+<div class="math-display">
+  $$s_0=3(0.125)=0.375$$
+</div>
+<div class="math-display">
+  $$s_1=3(0.375)=1.125$$
+</div>
+<div class="math-display">
+  $$s_2=3(0.6875)=2.0625$$
+</div>
+<div class="math-display">
+  $$s_3=3(1)=3$$
+</div>
 <p>If we use nearest-integer rounding:</p>
-<p>
-$$
-0.375\rightarrow0
-$$
-</p>
-<p>
-$$
-1.125\rightarrow1
-$$
-</p>
-<p>
-$$
-2.0625\rightarrow2
-$$
-</p>
-<p>
-$$
-3\rightarrow3
-$$
-</p>
+<div class="math-display">
+  $$0.375\rightarrow0$$
+</div>
+<div class="math-display">
+  $$1.125\rightarrow1$$
+</div>
+<div class="math-display">
+  $$2.0625\rightarrow2$$
+</div>
+<div class="math-display">
+  $$3\rightarrow3$$
+</div>
 <p>In this toy example, the mapping happens to preserve the same four codes.</p>
 <p>This is an excellent reminder:</p>
 <blockquote>
@@ -1061,36 +957,22 @@ $$
 </tbody>
 </table></div>
 <p>Total:</p>
-<p>
-$$
-16
-$$
-</p>
+<div class="math-display">
+  $$16$$
+</div>
 <p>Probabilities:</p>
-<p>
-$$
-0.5,\ 0.25,\ 0.125,\ 0.125
-$$
-</p>
+<div class="math-display">
+  $$0.5,\ 0.25,\ 0.125,\ 0.125$$
+</div>
 <p>CDF:</p>
-<p>
-$$
-0.5,\ 0.75,\ 0.875,\ 1
-$$
-</p>
+<div class="math-display">
+  $$0.5,\ 0.75,\ 0.875,\ 1$$
+</div>
 <p>Mapping with $L-1=3$:</p>
-<p>
-$$
-1.5,\ 2.25,\ 2.625,\ 3
-$$
-</p>
-<p>Nearest-integer mapping gives approximately:</p>
-<p>
-$$
-2,\ 2,\ 3,\ 3
-$$
-</p>
-<p>So the original lower levels become more compressed into a different output arrangement.</p>
+<div class="math-display">
+  $$1.5,\ 2.25,\ 2.625,\ 3$$
+</div>
+<p>Nearest-integer mapping gives approximately: $2,\ 2,\ 3,\ 3$ So the original lower levels become more compressed into a different output arrangement.</p>
 <p>Again:</p>
 <blockquote>
 <p>“Equalization” does not mean “every histogram becomes perfectly flat.”</p>
@@ -1319,19 +1201,15 @@ target distribution</code></pre>
     <div class="section-body">
       <p>A histogram can support simple numerical descriptors.</p>
 <h3>Mean intensity</h3>
-<p>
-$$
-\mu=\sum_{k=0}^{L-1}r_kp(r_k)
-$$
-</p>
+<div class="math-display">
+  $$\mu=\sum_{k=0}^{L-1}r_kp(r_k)$$
+</div>
 <h3>Variance</h3>
-<p>
-$$
-\sigma^2=
+<div class="math-display">
+  $$\sigma^2=
 \sum_{k=0}^{L-1}
-(r_k-\mu)^2p(r_k)
-$$
-</p>
+(r_k-\mu)^2p(r_k)$$
+</div>
 <p>These provide information about:</p>
 <ul>
 <li>average brightness,</li>
@@ -1374,22 +1252,16 @@ $$
 </tbody>
 </table></div>
 <p>Then:</p>
-<p>
-$$
-\mu=
-0(0.25)+1(0.50)+2(0.25)
-$$
-</p>
-<p>
-$$
-=0+0.5+0.5
-$$
-</p>
-<p>
-$$
-\boxed{\mu=1}
-$$
-</p>
+<div class="math-display">
+  $$\mu=
+0(0.25)+1(0.50)+2(0.25)$$
+</div>
+<div class="math-display">
+  $$=0+0.5+0.5$$
+</div>
+<div class="math-display">
+  $$\boxed{\mu=1}$$
+</div>
 <p>So the mean intensity is 1.</p>
 <hr />
     </div>
@@ -1403,40 +1275,26 @@ $$
       <button class="bookmark-btn" data-id="s-07-24" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Using:</p>
-<p>
-$$
-\mu=1
-$$
-</p>
-<p>we calculate:</p>
-<p>
-$$
-\sigma^2
+      <p>Using: $\mu=1$ we calculate:</p>
+<div class="math-display">
+  $$\sigma^2
 =
 (0-1)^2(0.25)
 +
 (1-1)^2(0.5)
 +
-(2-1)^2(0.25)
-$$
-</p>
-<p>
-$$
-=1(0.25)+0+1(0.25)
-$$
-</p>
-<p>
-$$
-\boxed{\sigma^2=0.5}
-$$
-</p>
+(2-1)^2(0.25)$$
+</div>
+<div class="math-display">
+  $$=1(0.25)+0+1(0.25)$$
+</div>
+<div class="math-display">
+  $$\boxed{\sigma^2=0.5}$$
+</div>
 <p>Standard deviation:</p>
-<p>
-$$
-\sigma=\sqrt{0.5}\approx0.707
-$$
-</p>
+<div class="math-display">
+  $$\sigma=\sqrt{0.5}\approx0.707$$
+</div>
 <hr />
     </div>
   </section>
@@ -1795,56 +1653,42 @@ threshold/segment</code></pre>
     </div>
     <div class="section-body">
       <h3>Histogram</h3>
-<p>
-$$
-\boxed{h(r_k)=n_k}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{h(r_k)=n_k}$$
+</div>
 <h3>Normalized histogram</h3>
-<p>
-$$
-\boxed{p(r_k)=\frac{n_k}{MN}}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{p(r_k)=\frac{n_k}{MN}}$$
+</div>
 <h3>Probability sum</h3>
-<p>
-$$
-\boxed{\sum_{k=0}^{L-1}p(r_k)=1}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{\sum_{k=0}^{L-1}p(r_k)=1}$$
+</div>
 <h3>CDF</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 C(r_k)=\sum_{j=0}^{k}p(r_j)
-}
-$$
-</p>
+}$$
+</div>
 <h3>Histogram equalization</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 s_k=(L-1)C(r_k)
-}
-$$
-</p>
+}$$
+</div>
 <p>under the stated classical discrete convention.</p>
 <h3>Mean</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 \mu=\sum_k r_kp(r_k)
-}
-$$
-</p>
+}$$
+</div>
 <h3>Variance</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 \sigma^2=\sum_k(r_k-\mu)^2p(r_k)
-}
-$$
-</p>
+}$$
+</div>
 <hr />
     </div>
   </section>
@@ -1886,36 +1730,26 @@ $$
 </tbody>
 </table></div>
 <p>Find the normalized histogram and the equalization mapping under:</p>
-<p>
-$$
-s_k=3C(r_k)
-$$
-</p>
+<div class="math-display">
+  $$s_k=3C(r_k)$$
+</div>
 <h3>Solution</h3>
 <p>Each probability is:</p>
-<p>
-$$
-\frac{64}{256}=0.25
-$$
-</p>
+<div class="math-display">
+  $$\frac{64}{256}=0.25$$
+</div>
 <p>So:</p>
-<p>
-$$
-p=[0.25,0.25,0.25,0.25]
-$$
-</p>
+<div class="math-display">
+  $$p=[0.25,0.25,0.25,0.25]$$
+</div>
 <p>CDF:</p>
-<p>
-$$
-C=[0.25,0.50,0.75,1]
-$$
-</p>
+<div class="math-display">
+  $$C=[0.25,0.50,0.75,1]$$
+</div>
 <p>Therefore:</p>
-<p>
-$$
-s=[0.75,1.5,2.25,3]
-$$
-</p>
+<div class="math-display">
+  $$s=[0.75,1.5,2.25,3]$$
+</div>
 <p>After the specified integer mapping convention, the output levels must be converted appropriately.</p>
 <h3>Interpretation</h3>
 <p>The input is already uniformly distributed, so histogram equalization does not have a strong reason to redistribute it dramatically.</p>

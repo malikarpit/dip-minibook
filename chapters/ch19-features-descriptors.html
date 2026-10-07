@@ -22,7 +22,7 @@
       svg: { fontCache: 'global' }
     };
   </script>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script id="MathJax-script" async src="../assets/js/mathjax/tex-mml-chtml.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';"></script>
 </head>
 <body data-chapter-id="ch19-features-descriptors">
   <div id="progress-bar"></div>
@@ -776,35 +776,23 @@ descriptor for each
       <button class="bookmark-btn" data-id="s-19-8" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Given descriptors:</p>
-<p>
-$$
-\mathbf d_i^A
-$$
-</p>
-<p>from image A and:</p>
-<p>
-$$
-\mathbf d_j^B
-$$
-</p>
+      <p>Given descriptors: $\mathbf d_i^A$ from image A and:</p>
+<div class="math-display">
+  $$\mathbf d_j^B$$
+</div>
 <p>from image B, compute a distance:</p>
-<p>
-$$
-d(\mathbf d_i^A,\mathbf d_j^B)
-$$
-</p>
+<div class="math-display">
+  $$d(\mathbf d_i^A,\mathbf d_j^B)$$
+</div>
 <p>and seek compatible pairs.</p>
 <p>For normalized Euclidean descriptors:</p>
-<p>
-$$
-d_E(\mathbf a,\mathbf b)
+<div class="math-display">
+  $$d_E(\mathbf a,\mathbf b)
 =
 \sqrt{
 \sum_k(a_k-b_k)^2
-}
-$$
-</p>
+}$$
+</div>
 <p>For binary descriptors, Hamming distance is usually more appropriate.</p>
 <hr />
     </div>
@@ -819,38 +807,28 @@ $$
     </div>
     <div class="section-body">
       <p>Suppose:</p>
-<p>
-$$
-\mathbf a=(1,2,3)
-$$
-</p>
-<p>
-$$
-\mathbf b=(2,2,5)
-$$
-</p>
+<div class="math-display">
+  $$\mathbf a=(1,2,3)$$
+</div>
+<div class="math-display">
+  $$\mathbf b=(2,2,5)$$
+</div>
 <p>Then:</p>
-<p>
-$$
-d_E=
+<div class="math-display">
+  $$d_E=
 \sqrt{
 (1-2)^2+
 (2-2)^2+
 (3-5)^2
-}
-$$
-</p>
-<p>
-$$
-=
-\sqrt{1+0+4}
-$$
-</p>
-<p>
-$$
-\boxed{\sqrt5\approx2.236}
-$$
-</p>
+}$$
+</div>
+<div class="math-display">
+  $$=
+\sqrt{1+0+4}$$
+</div>
+<div class="math-display">
+  $$\boxed{\sqrt5\approx2.236}$$
+</div>
 <p>A smaller distance generally indicates greater similarity under this descriptor metric, assuming the descriptor is designed for Euclidean comparison.</p>
 <hr />
     </div>
@@ -896,16 +874,12 @@ ORB
     </div>
     <div class="section-body">
       <p>For binary vectors:</p>
-<p>
-$$
-\mathbf a=101100
-$$
-</p>
-<p>
-$$
-\mathbf b=100110
-$$
-</p>
+<div class="math-display">
+  $$\mathbf a=101100$$
+</div>
+<div class="math-display">
+  $$\mathbf b=100110$$
+</div>
 <p>Compare bit by bit:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -921,11 +895,9 @@ $$
 </div></p>
 <p>There are two differing positions.</p>
 <p>Thus:</p>
-<p>
-$$
-\boxed{d_H=2}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{d_H=2}$$
+</div>
 <p>Hamming distance is the number of differing bits.</p>
 <hr />
     </div>
@@ -1055,29 +1027,21 @@ EQUIVARIANT
     <div class="section-body">
       <p>The Harris detector examines local intensity change under small shifts.</p>
 <p>A common formulation uses the structure tensor / second-moment matrix:</p>
-<p>
-$$
-M=
+<div class="math-display">
+  $$M=
 \sum_{(x,y)\in W}
 w(x,y)
 \begin{bmatrix}
 I_x^2 & I_xI_y\\
 I_xI_y & I_y^2
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>where:</p>
 <ul>
 <li>$I_x,I_y$ are image gradients,</li>
 <li>$w$ weights the local neighbourhood.</li>
 </ul>
-<p>The eigenvalues:</p>
-<p>
-$$
-\lambda_1,\lambda_2
-$$
-</p>
-<p>describe intensity variation in two principal directions.</p>
+<p>The eigenvalues: $\lambda_1,\lambda_2$ describe intensity variation in two principal directions.</p>
 <hr />
     </div>
   </section>
@@ -1091,25 +1055,19 @@ $$
     </div>
     <div class="section-body">
       <h3>Flat region</h3>
-<p>
-$$
-\lambda_1\approx0,\quad\lambda_2\approx0
-$$
-</p>
+<div class="math-display">
+  $$\lambda_1\approx0,\quad\lambda_2\approx0$$
+</div>
 <h3>Edge</h3>
 <p>One large, one small:</p>
-<p>
-$$
-\lambda_1\gg\lambda_2
-$$
-</p>
+<div class="math-display">
+  $$\lambda_1\gg\lambda_2$$
+</div>
 <h3>Corner</h3>
 <p>Both large:</p>
-<p>
-$$
-\lambda_1\approx\lambda_2\gg0
-$$
-</p>
+<div class="math-display">
+  $$\lambda_1\approx\lambda_2\gg0$$
+</div>
 <p>This is a beautiful example of how linear algebra becomes geometric image understanding.</p>
 <hr />
     </div>
@@ -1124,24 +1082,14 @@ $$
     </div>
     <div class="section-body">
       <p>A common Harris response is:</p>
-<p>
-$$
-R=
-\det(M)-k[\operatorname{trace}(M)]^2
-$$
-</p>
-<p>where:</p>
-<p>
-$$
-\det(M)=\lambda_1\lambda_2
-$$
-</p>
-<p>and:</p>
-<p>
-$$
-\operatorname{trace}(M)=\lambda_1+\lambda_2
-$$
-</p>
+<div class="math-display">
+  $$R=
+\det(M)-k[\operatorname{trace}(M)]^2$$
+</div>
+<p>where: $\det(M)=\lambda_1\lambda_2$, and:</p>
+<div class="math-display">
+  $$\operatorname{trace}(M)=\lambda_1+\lambda_2$$
+</div>
 <p>The parameter $k$ controls the response behaviour.</p>
 <hr />
     </div>
@@ -1155,55 +1103,29 @@ $$
       <button class="bookmark-btn" data-id="s-19-18" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose:</p>
-<p>
-$$
-\lambda_1=100
-$$
-</p>
-<p>and:</p>
-<p>
-$$
-\lambda_2=80
-$$
-</p>
-<p>Then:</p>
-<p>
-$$
-\det(M)=8000
-$$
-</p>
-<p>
-$$
-\operatorname{trace}(M)=180
-$$
-</p>
+      <p>Suppose $\lambda_1=100$ and $\lambda_2=80$. Then:</p>
+<div class="math-display">
+  $$\det(M)=8000$$
+</div>
+<div class="math-display">
+  $$\operatorname{trace}(M)=180$$
+</div>
 <p>For:</p>
-<p>
-$$
-k=0.04
-$$
-</p>
-<p>
-$$
-R=8000-0.04(180)^2
-$$
-</p>
-<p>
-$$
-=8000-0.04(32400)
-$$
-</p>
-<p>
-$$
-=8000-1296
-$$
-</p>
-<p>
-$$
-\boxed{6704}
-$$
-</p>
+<div class="math-display">
+  $$k=0.04$$
+</div>
+<div class="math-display">
+  $$R=8000-0.04(180)^2$$
+</div>
+<div class="math-display">
+  $$=8000-0.04(32400)$$
+</div>
+<div class="math-display">
+  $$=8000-1296$$
+</div>
+<div class="math-display">
+  $$\boxed{6704}$$
+</div>
 <p>A strong positive response is consistent with corner-like structure under the Harris formulation.</p>
 <hr />
     </div>
@@ -1287,21 +1209,13 @@ large scale
 <p><strong>EXTENSION</strong></p>
 </blockquote>
 <p>A Gaussian scale space can be written:</p>
-<p>
-$$
-L(x,y,\sigma)
+<div class="math-display">
+  $$L(x,y,\sigma)
 =
-G(x,y,\sigma)*I(x,y)
-$$
-</p>
+G(x,y,\sigma)*I(x,y)$$
+</div>
 <p>where $\sigma$ controls scale.</p>
-<p>As:</p>
-<p>
-$$
-\sigma\uparrow
-$$
-</p>
-<p>fine structures are increasingly smoothed.</p>
+<p>As: $\sigma\uparrow$ fine structures are increasingly smoothed.</p>
 <p>Features can then be detected across multiple scales.</p>
 <p>This concept is central to SIFT.</p>
 <hr />
@@ -1317,13 +1231,11 @@ $$
     </div>
     <div class="section-body">
       <p>SIFT uses a Difference-of-Gaussians (DoG) scale-space approximation.</p>
-<p>
-$$
-D(x,y,\sigma)
+<div class="math-display">
+  $$D(x,y,\sigma)
 =
-L(x,y,k\sigma)-L(x,y,\sigma)
-$$
-</p>
+L(x,y,k\sigma)-L(x,y,\sigma)$$
+</div>
 <p>This approximates a scaled Laplacian-of-Gaussian response under appropriate conditions.</p>
 <p>It is efficient for detecting scale-space extrema.</p>
 <hr />
@@ -1447,21 +1359,17 @@ descriptor vector</code></pre>
     </div>
     <div class="section-body">
       <p>A Gaussian pyramid uses multiple scales:</p>
-<p>
-$$
-L(x,y,\sigma)
+<div class="math-display">
+  $$L(x,y,\sigma)
 =
-G(x,y,\sigma)*I(x,y)
-$$
-</p>
+G(x,y,\sigma)*I(x,y)$$
+</div>
 <p>SIFT examines differences between nearby scales:</p>
-<p>
-$$
-D(x,y,\sigma)
+<div class="math-display">
+  $$D(x,y,\sigma)
 =
-L(x,y,k\sigma)-L(x,y,\sigma)
-$$
-</p>
+L(x,y,k\sigma)-L(x,y,\sigma)$$
+</div>
 <p>This helps identify structures that persist around particular scales.</p>
 <hr />
     </div>
@@ -1537,29 +1445,25 @@ edge-like instability</code></pre>
     <div class="section-body">
       <p>Around the keypoint, gradient magnitude and orientation are computed.</p>
 <p>A common gradient representation is:</p>
-<p>
-$$
-m(x,y)
+<div class="math-display">
+  $$m(x,y)
 =
 \sqrt{
 [L(x+1,y)-L(x-1,y)]^2
 +
 [L(x,y+1)-L(x,y-1)]^2
-}
-$$
-</p>
+}$$
+</div>
 <p>and:</p>
-<p>
-$$
-\theta(x,y)
+<div class="math-display">
+  $$\theta(x,y)
 =
 \operatorname{atan2}
 (
 L(x,y+1)-L(x,y-1),
 L(x+1,y)-L(x-1,y)
-)
-$$
-</p>
+)$$
+</div>
 <p>The dominant local orientation is used to normalize the descriptor orientation.</p>
 <hr />
     </div>
@@ -1623,13 +1527,11 @@ $$
 8 orientation bins</code></pre>
 </div></p>
 <p>giving:</p>
-<p>
-$$
-4\times4\times8
+<div class="math-display">
+  $$4\times4\times8
 =
-\boxed{128}
-$$
-</p>
+\boxed{128}$$
+</div>
 <p>descriptor dimensions.</p>
 <p>The descriptor is a floating-point vector.</p>
 <hr />
@@ -1675,29 +1577,19 @@ histograms
     </div>
     <div class="section-body">
       <p>A common pipeline includes vector normalization.</p>
-<p>Let:</p>
-<p>
-$$
-\mathbf d
-$$
-</p>
-<p>be the descriptor.</p>
+<p>Let: $\mathbf d$ be the descriptor.</p>
 <p>A basic L2 normalization is:</p>
-<p>
-$$
-\mathbf d'=
+<div class="math-display">
+  $$\mathbf d'=
 \frac{\mathbf d}
-{\|\mathbf d\|_2}
-$$
-</p>
+{\|\mathbf d\|_2}$$
+</div>
 <p>where:</p>
-<p>
-$$
-\|\mathbf d\|_2
+<div class="math-display">
+  $$\|\mathbf d\|_2
 =
-\sqrt{\sum_i d_i^2}
-$$
-</p>
+\sqrt{\sum_i d_i^2}$$
+</div>
 <p>Further clipping/renormalization is used in the classic SIFT construction.</p>
 <hr />
     </div>
@@ -1712,35 +1604,27 @@ $$
     </div>
     <div class="section-body">
       <p>Suppose:</p>
-<p>
-$$
-\mathbf d=(3,4)
-$$
-</p>
+<div class="math-display">
+  $$\mathbf d=(3,4)$$
+</div>
 <p>Then:</p>
-<p>
-$$
-\|\mathbf d\|_2
+<div class="math-display">
+  $$\|\mathbf d\|_2
 =
 \sqrt{3^2+4^2}
 =
-5
-$$
-</p>
+5$$
+</div>
 <p>Normalized:</p>
-<p>
-$$
-\mathbf d'
+<div class="math-display">
+  $$\mathbf d'
 =
-(0.6,0.8)
-$$
-</p>
+(0.6,0.8)$$
+</div>
 <p>and:</p>
-<p>
-$$
-\|\mathbf d'\|_2=1
-$$
-</p>
+<div class="math-display">
+  $$\|\mathbf d'\|_2=1$$
+</div>
 <hr />
     </div>
   </section>
@@ -1753,19 +1637,11 @@ $$
       <button class="bookmark-btn" data-id="s-19-35" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Given two descriptors:</p>
-<p>
-$$
-d_A,\ d_B
-$$
-</p>
-<p>a common similarity measure is Euclidean distance:</p>
-<p>
-$$
-d=
-\|d_A-d_B\|_2
-$$
-</p>
+      <p>Given two descriptors: $d_A,\ d_B$ a common similarity measure is Euclidean distance:</p>
+<div class="math-display">
+  $$d=
+\|d_A-d_B\|_2$$
+</div>
 <p>Nearest-neighbour matching selects the closest descriptor candidate.</p>
 <p>But nearest distance alone can produce ambiguous matches.</p>
 <hr />
@@ -1791,22 +1667,16 @@ vs
 second-nearest distance</code></pre>
 </div></p>
 <p>Let:</p>
-<p>
-$$
-d_1=\text{best match distance}
-$$
-</p>
-<p>
-$$
-d_2=\text{second-best distance}
-$$
-</p>
+<div class="math-display">
+  $$d_1=\text{best match distance}$$
+</div>
+<div class="math-display">
+  $$d_2=\text{second-best distance}$$
+</div>
 <p>Accept when:</p>
-<p>
-$$
-\frac{d_1}{d_2}\lt r
-$$
-</p>
+<div class="math-display">
+  $$\frac{d_1}{d_2}\lt r$$
+</div>
 <p>for a selected ratio $r$.</p>
 <p>A lower ratio indicates that the best match is substantially better than the next candidate.</p>
 <hr />
@@ -1822,38 +1692,24 @@ $$
     </div>
     <div class="section-body">
       <p>Suppose:</p>
-<p>
-$$
-d_1=0.30
-$$
-</p>
-<p>
-$$
-d_2=0.90
-$$
-</p>
+<div class="math-display">
+  $$d_1=0.30$$
+</div>
+<div class="math-display">
+  $$d_2=0.90$$
+</div>
 <p>Then:</p>
-<p>
-$$
-\frac{d_1}{d_2}
+<div class="math-display">
+  $$\frac{d_1}{d_2}
 =
 \frac{0.30}{0.90}
 =
-0.333
-$$
-</p>
-<p>If:</p>
-<p>
-$$
-r=0.75
-$$
-</p>
-<p>then:</p>
-<p>
-$$
-0.333\lt 0.75
-$$
-</p>
+0.333$$
+</div>
+<p>If $r=0.75$, then:</p>
+<div class="math-display">
+  $$0.333\lt 0.75$$
+</div>
 <p>so the match passes the ratio criterion.</p>
 <hr />
     </div>
@@ -1924,23 +1780,19 @@ Hessian-based responses</code></pre>
     </div>
     <div class="section-body">
       <p>A Hessian matrix for an image can be written:</p>
-<p>
-$$
-H(x,y)=
+<div class="math-display">
+  $$H(x,y)=
 \begin{bmatrix}
 I_{xx}&I_{xy}\\
 I_{xy}&I_{yy}
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>Its determinant:</p>
-<p>
-$$
-\det(H)
+<div class="math-display">
+  $$\det(H)
 =
-I_{xx}I_{yy}-I_{xy}^2
-$$
-</p>
+I_{xx}I_{yy}-I_{xy}^2$$
+</div>
 <p>can identify blob-like structures.</p>
 <p>SURF approximates second-order derivatives using box filters.</p>
 <hr />
@@ -1957,15 +1809,13 @@ $$
     <div class="section-body">
       <p>An integral image allows fast rectangular-sum computation.</p>
 <p>For image $I$:</p>
-<p>
-$$
-S(x,y)
+<div class="math-display">
+  $$S(x,y)
 =
 \sum_{i\le x}
 \sum_{j\le y}
-I(i,j)
-$$
-</p>
+I(i,j)$$
+</div>
 <p>A rectangle sum can then be obtained using a small number of array accesses.</p>
 <p>Conceptually:</p>
 <p><div class="code-block">
@@ -2148,28 +1998,18 @@ rotated BRIEF binary descriptor</code></pre>
     </div>
     <div class="section-body">
       <p>BRIEF uses intensity comparisons between selected point pairs.</p>
-<p>For two sampled intensities:</p>
-<p>
-$$
-I(p)
-$$
-</p>
-<p>and:</p>
-<p>
-$$
-I(q)
-$$
-</p>
+<p>For two sampled intensities: $I(p)$, and:</p>
+<div class="math-display">
+  $$I(q)$$
+</div>
 <p>define:</p>
-<p>
-$$
-\tau(p,q)=
+<div class="math-display">
+  $$\tau(p,q)=
 \begin{cases}
 1,&I(p)\lt I(q)\\
 0,&I(p)\ge I(q)
-\end{cases}
-$$
-</p>
+\end{cases}$$
+</div>
 <p>Many such binary tests are concatenated:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -2217,17 +2057,13 @@ Hamming distance</code></pre>
     </div>
     <div class="section-body">
       <p>Descriptor A:</p>
-<p>
-$$
-10101100
-$$
-</p>
+<div class="math-display">
+  $$10101100$$
+</div>
 <p>Descriptor B:</p>
-<p>
-$$
-10011110
-$$
-</p>
+<div class="math-display">
+  $$10011110$$
+</div>
 <p>Compare:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -2248,11 +2084,9 @@ $$
 7</code></pre>
 </div></p>
 <p>Therefore:</p>
-<p>
-$$
-\boxed{d_H=3}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{d_H=3}$$
+</div>
 <hr />
     </div>
   </section>
@@ -2361,27 +2195,17 @@ feature vector</code></pre>
     </div>
     <div class="section-body">
       <p>A cell contains a small image region.</p>
-<p>For each pixel:</p>
-<p>
-$$
-G_x,\quad G_y
-$$
-</p>
-<p>are computed.</p>
+<p>For each pixel: $G_x,\quad G_y$ are computed.</p>
 <p>Magnitude:</p>
-<p>
-$$
-m=
-\sqrt{G_x^2+G_y^2}
-$$
-</p>
+<div class="math-display">
+  $$m=
+\sqrt{G_x^2+G_y^2}$$
+</div>
 <p>Orientation:</p>
-<p>
-$$
-\theta=
-\operatorname{atan2}(G_y,G_x)
-$$
-</p>
+<div class="math-display">
+  $$\theta=
+\operatorname{atan2}(G_y,G_x)$$
+</div>
 <p>Then votes are accumulated into orientation bins.</p>
 <hr />
     </div>
@@ -2459,13 +2283,11 @@ weighted magnitude</code></pre>
       <p>Local histograms are grouped into blocks and normalized to reduce sensitivity to illumination/contrast changes.</p>
 <p>For descriptor vector $v$:</p>
 <h3>L2 normalization</h3>
-<p>
-$$
-v'=
+<div class="math-display">
+  $$v'=
 \frac{v}
-{\sqrt{\|v\|_2^2+\epsilon^2}}
-$$
-</p>
+{\sqrt{\|v\|_2^2+\epsilon^2}}$$
+</div>
 <p>where $\epsilon$ avoids division by zero.</p>
 <p>Other normalization variants exist.</p>
 <hr />
@@ -2480,30 +2302,18 @@ $$
       <button class="bookmark-btn" data-id="s-19-56" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose:</p>
-<p>
-$$
-v=(3,4)
-$$
-</p>
-<p>Then:</p>
-<p>
-$$
-\|v\|_2=5
-$$
-</p>
+      <p>Suppose $v=(3,4)$, then:</p>
+<div class="math-display">
+  $$\|v\|_2=5$$
+</div>
 <p>with small $\epsilon$ ignored for illustration:</p>
-<p>
-$$
-v'=(0.6,0.8)
-$$
-</p>
+<div class="math-display">
+  $$v'=(0.6,0.8)$$
+</div>
 <p>Again:</p>
-<p>
-$$
-\|v'\|_2=1
-$$
-</p>
+<div class="math-display">
+  $$\|v'\|_2=1$$
+</div>
 <hr />
     </div>
   </section>
@@ -2752,11 +2562,9 @@ inliers</code></pre>
 <p><strong>EXTENSION</strong></p>
 </blockquote>
 <p>Suppose feature matches suggest a transformation:</p>
-<p>
-$$
-\mathbf p'_i\approx H\mathbf p_i
-$$
-</p>
+<div class="math-display">
+  $$\mathbf p'_i\approx H\mathbf p_i$$
+</div>
 <p>Some matches may be wrong.</p>
 <p>RANSAC repeatedly:</p>
 <p><div class="code-block">
@@ -2798,26 +2606,12 @@ $$
       <button class="bookmark-btn" data-id="s-19-63" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Given an estimated transformation $T$, a correspondence:</p>
-<p>
-$$
-p_i\rightarrow p_i'
-$$
-</p>
-<p>has reprojection error:</p>
-<p>
-$$
-e_i=
-\|p_i'-T(p_i)\|
-$$
-</p>
-<p>Small:</p>
-<p>
-$$
-e_i
-$$
-</p>
-<p>suggests consistency with the model.</p>
+      <p>Given an estimated transformation $T$, a correspondence: $p_i\rightarrow p_i'$ has reprojection error:</p>
+<div class="math-display">
+  $$e_i=
+\|p_i'-T(p_i)\|$$
+</div>
+<p>Small: $e_i$ suggests consistency with the model.</p>
 <p>This is a useful bridge between feature matching and geometric registration.</p>
 <hr />
     </div>
@@ -2831,36 +2625,22 @@ $$
       <button class="bookmark-btn" data-id="s-19-64" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose predicted point:</p>
-<p>
-$$
-\hat p=(102,49)
-$$
-</p>
-<p>and measured point:</p>
-<p>
-$$
-p'=(100,50)
-$$
-</p>
+      <p>Suppose predicted point: $\hat p=(102,49)$, and measured point:</p>
+<div class="math-display">
+  $$p'=(100,50)$$
+</div>
 <p>Then:</p>
-<p>
-$$
-e=
-\sqrt{(100-102)^2+(50-49)^2}
-$$
-</p>
-<p>
-$$
-=
-\sqrt{4+1}
-$$
-</p>
-<p>
-$$
-\boxed{\sqrt5\approx2.236}
-$$
-</p>
+<div class="math-display">
+  $$e=
+\sqrt{(100-102)^2+(50-49)^2}$$
+</div>
+<div class="math-display">
+  $$=
+\sqrt{4+1}$$
+</div>
+<div class="math-display">
+  $$\boxed{\sqrt5\approx2.236}$$
+</div>
 <hr />
     </div>
   </section>
@@ -3005,21 +2785,15 @@ extract features</code></pre>
     </div>
     <div class="section-body">
       <p>A segmented region can provide classical features:</p>
-<p>
-$$
-A=\text{area}
-$$
-</p>
-<p>
-$$
-P=\text{perimeter}
-$$
-</p>
-<p>
-$$
-AR=\frac{\text{width}}{\text{height}}
-$$
-</p>
+<div class="math-display">
+  $$A=\text{area}$$
+</div>
+<div class="math-display">
+  $$P=\text{perimeter}$$
+</div>
+<div class="math-display">
+  $$AR=\frac{\text{width}}{\text{height}}$$
+</div>
 <p>and moments.</p>
 <p>These are simpler than SIFT/ORB but highly useful when object geometry is known.</p>
 <hr />
@@ -3035,32 +2809,20 @@ $$
     </div>
     <div class="section-body">
       <p>For a binary region, raw moments can be:</p>
-<p>
-$$
-m_{pq}
+<div class="math-display">
+  $$m_{pq}
 =
 \sum_x\sum_y
-x^py^qI(x,y)
-$$
-</p>
-<p>The zeroth moment:</p>
-<p>
-$$
-m_{00}
-$$
-</p>
-<p>corresponds to area for a binary region.</p>
+x^py^qI(x,y)$$
+</div>
+<p>The zeroth moment: $m_{00}$ corresponds to area for a binary region.</p>
 <p>Centroid:</p>
-<p>
-$$
-\bar x=\frac{m_{10}}{m_{00}}
-$$
-</p>
-<p>
-$$
-\bar y=\frac{m_{01}}{m_{00}}
-$$
-</p>
+<div class="math-display">
+  $$\bar x=\frac{m_{10}}{m_{00}}$$
+</div>
+<div class="math-display">
+  $$\bar y=\frac{m_{01}}{m_{00}}$$
+</div>
 <p>These connect segmentation directly to feature extraction.</p>
 <hr />
     </div>
@@ -3075,38 +2837,26 @@ $$
     </div>
     <div class="section-body">
       <p>Suppose foreground pixels are:</p>
-<p>
-$$
-(1,1),(2,1),(1,2),(2,2)
-$$
-</p>
+<div class="math-display">
+  $$(1,1),(2,1),(1,2),(2,2)$$
+</div>
 <p>Then:</p>
-<p>
-$$
-m_{00}=4
-$$
-</p>
-<p>
-$$
-m_{10}=1+2+1+2=6
-$$
-</p>
-<p>
-$$
-m_{01}=1+1+2+2=6
-$$
-</p>
+<div class="math-display">
+  $$m_{00}=4$$
+</div>
+<div class="math-display">
+  $$m_{10}=1+2+1+2=6$$
+</div>
+<div class="math-display">
+  $$m_{01}=1+1+2+2=6$$
+</div>
 <p>So:</p>
-<p>
-$$
-\bar x=\frac64=1.5
-$$
-</p>
-<p>
-$$
-\bar y=\frac64=1.5
-$$
-</p>
+<div class="math-display">
+  $$\bar x=\frac64=1.5$$
+</div>
+<div class="math-display">
+  $$\bar y=\frac64=1.5$$
+</div>
 <p>This matches the centroid derived in C15.</p>
 <hr />
     </div>
@@ -3192,20 +2942,16 @@ colour mean
 </div></p>
 <p>A machine-learning model may be dominated by large-scale features unless normalization is applied.</p>
 <p>Possible transformations include:</p>
-<p>
-$$
-z=
-\frac{x-\mu}{\sigma}
-$$
-</p>
+<div class="math-display">
+  $$z=
+\frac{x-\mu}{\sigma}$$
+</div>
 <p>or min-max scaling:</p>
-<p>
-$$
-x'=
+<div class="math-display">
+  $$x'=
 \frac{x-x_{\min}}
-{x_{\max}-x_{\min}}
-$$
-</p>
+{x_{\max}-x_{\min}}$$
+</div>
 <p>depending on the downstream model.</p>
 <hr />
     </div>
@@ -3253,11 +2999,9 @@ overfitting risk</code></pre>
 </blockquote>
 <p>Techniques such as PCA can reduce feature dimensionality.</p>
 <p>Given feature vectors collected into matrix:</p>
-<p>
-$$
-X
-$$
-</p>
+<div class="math-display">
+  $$X$$
+</div>
 <p>PCA finds directions of large variance.</p>
 <p>Conceptually:</p>
 <p><div class="code-block">
@@ -3434,25 +3178,19 @@ noise</code></pre>
 30 incorrect</code></pre>
 </div></p>
 <p>Then:</p>
-<p>
-$$
-Precision=
-\frac{70}{100}=0.70
-$$
-</p>
+<div class="math-display">
+  $$Precision=
+\frac{70}{100}=0.70$$
+</div>
 <p>If 80 correct correspondences actually exist in the images:</p>
-<p>
-$$
-Recall=
-\frac{70}{80}=0.875
-$$
-</p>
+<div class="math-display">
+  $$Recall=
+\frac{70}{80}=0.875$$
+</div>
 <p>So:</p>
-<p>
-$$
-\boxed{Precision=70\%,\ Recall=87.5\%}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{Precision=70\%,\ Recall=87.5\%}$$
+</div>
 <hr />
     </div>
   </section>
@@ -3631,28 +3369,23 @@ orientation bins</code></pre>
     </div>
     <div class="section-body">
       <h3>Euclidean descriptor distance</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 d_E(\mathbf a,\mathbf b)
 =
 \sqrt{\sum_i(a_i-b_i)^2}
-}
-$$
-</p>
+}$$
+</div>
 <h3>Hamming distance</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 d_H=
 \text{number of differing bits}
-}
-$$
-</p>
+}$$
+</div>
 <h3>Harris matrix</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 M=
 \sum_W
 w
@@ -3660,71 +3393,56 @@ w
 I_x^2&I_xI_y\\
 I_xI_y&I_y^2
 \end{bmatrix}
-}
-$$
-</p>
+}$$
+</div>
 <h3>Harris response</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 R=\det(M)-k[\operatorname{trace}(M)]^2
-}
-$$
-</p>
+}$$
+</div>
 <h3>Scale-space Gaussian</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 L(x,y,\sigma)=G(x,y,\sigma)*I(x,y)
-}
-$$
-</p>
+}$$
+</div>
 <h3>Difference of Gaussians</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 D(x,y,\sigma)
 =
 L(x,y,k\sigma)-L(x,y,\sigma)
-}
-$$
-</p>
+}$$
+</div>
 <h3>Descriptor normalization</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 \mathbf d'=
 \frac{\mathbf d}
 {\|\mathbf d\|_2}
-}
-$$
-</p>
+}$$
+</div>
 <h3>Ratio test</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 \frac{d_1}{d_2}\lt r
-}
-$$
-</p>
+}$$
+</div>
 <h3>Reprojection error</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 e_i=\|p_i'-T(p_i)\|
-}
-$$
-</p>
+}$$
+</div>
 <h3>Region moments</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 m_{pq}
 =
 \sum_x\sum_yx^py^qI(x,y)
-}
-$$
-</p>
+}$$
+</div>
 <hr />
     </div>
   </section>
@@ -3738,38 +3456,28 @@ $$
     </div>
     <div class="section-body">
       <p>Given:</p>
-<p>
-$$
-a=(2,4,6)
-$$
-</p>
-<p>
-$$
-b=(1,4,3)
-$$
-</p>
+<div class="math-display">
+  $$a=(2,4,6)$$
+</div>
+<div class="math-display">
+  $$b=(1,4,3)$$
+</div>
 <p>Calculate Euclidean distance.</p>
-<p>
-$$
-d=
+<div class="math-display">
+  $$d=
 \sqrt{
 (2-1)^2+
 (4-4)^2+
 (6-3)^2
-}
-$$
-</p>
-<p>
-$$
-=
-\sqrt{1+0+9}
-$$
-</p>
-<p>
-$$
-\boxed{\sqrt{10}\approx3.162}
-$$
-</p>
+}$$
+</div>
+<div class="math-display">
+  $$=
+\sqrt{1+0+9}$$
+</div>
+<div class="math-display">
+  $$\boxed{\sqrt{10}\approx3.162}$$
+</div>
 <hr />
     </div>
   </section>
@@ -3783,11 +3491,9 @@ $$
     </div>
     <div class="section-body">
       <p>Suppose a point has:</p>
-<p>
-$$
-\lambda_1=0,\quad\lambda_2=0
-$$
-</p>
+<div class="math-display">
+  $$\lambda_1=0,\quad\lambda_2=0$$
+</div>
 <p>Interpret it.</p>
 <p>Answer:</p>
 <p><div class="code-block">
@@ -3800,11 +3506,9 @@ $$
 → weak corner response</code></pre>
 </div></p>
 <p>Suppose:</p>
-<p>
-$$
-\lambda_1\gg0,\quad\lambda_2\approx0
-$$
-</p>
+<div class="math-display">
+  $$\lambda_1\gg0,\quad\lambda_2\approx0$$
+</div>
 <p>Then:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -3845,16 +3549,12 @@ $$
 8 orientation bins per cell</code></pre>
 </div></p>
 <p>Dimension:</p>
-<p>
-$$
-4\times4\times8
-$$
-</p>
-<p>
-$$
-\boxed{128}
-$$
-</p>
+<div class="math-display">
+  $$4\times4\times8$$
+</div>
+<div class="math-display">
+  $$\boxed{128}$$
+</div>
 <hr />
     </div>
   </section>
@@ -3868,16 +3568,12 @@ $$
     </div>
     <div class="section-body">
       <p>Two 8-bit descriptors:</p>
-<p>
-$$
-A=10110100
-$$
-</p>
-<p>
-$$
-B=11100110
-$$
-</p>
+<div class="math-display">
+  $$A=10110100$$
+</div>
+<div class="math-display">
+  $$B=11100110$$
+</div>
 <p>Differences:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -3889,11 +3585,9 @@ position 5
 position 7</code></pre>
 </div></p>
 <p>Therefore:</p>
-<p>
-$$
-\boxed{d_H=3}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{d_H=3}$$
+</div>
 <hr />
     </div>
   </section>
@@ -3907,35 +3601,21 @@ $$
     </div>
     <div class="section-body">
       <p>Given:</p>
-<p>
-$$
-d_1=20
-$$
-</p>
-<p>
-$$
-d_2=50
-$$
-</p>
+<div class="math-display">
+  $$d_1=20$$
+</div>
+<div class="math-display">
+  $$d_2=50$$
+</div>
 <p>and:</p>
-<p>
-$$
-r=0.5
-$$
-</p>
+<div class="math-display">
+  $$r=0.5$$
+</div>
 <p>Then:</p>
-<p>
-$$
-\frac{20}{50}=0.4
-$$
-</p>
-<p>Since:</p>
-<p>
-$$
-0.4\lt 0.5
-$$
-</p>
-<p>the match passes the ratio test.</p>
+<div class="math-display">
+  $$\frac{20}{50}=0.4$$
+</div>
+<p>Since: $0.4\lt 0.5$ the match passes the ratio test.</p>
 <hr />
     </div>
   </section>

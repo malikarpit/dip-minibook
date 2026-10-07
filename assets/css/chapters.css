@@ -432,3 +432,23 @@
   font-style: italic;
 }
 
+/* Mathematics Display Enhancements */
+.math-display {
+  margin: var(--em-space-4) 0;
+  padding: 12px 18px;
+  background: var(--em-surface-2);
+  border: 1px solid var(--em-border);
+  border-radius: var(--em-radius-md);
+  overflow-x: auto;
+  overflow-y: hidden;
+  text-align: center;
+  transition: border-color var(--em-motion-fast) var(--em-ease);
+}
+.math-display:hover {
+  border-color: var(--em-accent-border);
+}
+.math-display mjx-container {
+  margin: 0 !important;
+  outline: none;
+}
+

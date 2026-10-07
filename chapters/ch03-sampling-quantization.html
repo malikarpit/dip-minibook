@@ -22,7 +22,7 @@
       svg: { fontCache: 'global' }
     };
   </script>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script id="MathJax-script" async src="../assets/js/mathjax/tex-mml-chtml.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';"></script>
 </head>
 <body data-chapter-id="ch03-sampling-quantization">
   <div id="progress-bar"></div>
@@ -364,19 +364,11 @@ QUANTIZATION
       <button class="bookmark-btn" data-id="s-03-1" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>A simplified continuous image can be written as:</p>
-<p>
-$$
-f(x,y)
-$$
-</p>
-<p>where $x$ and $y$ are continuous spatial coordinates.</p>
+      <p>A simplified continuous image can be written as $f(x,y)$, where $x$ and $y$ are continuous spatial coordinates.</p>
 <p>A digital image can be represented using discrete indices:</p>
-<p>
-$$
-f[m,n]
-$$
-</p>
+<div class="math-display">
+  $$f[m,n]$$
+</div>
 <p>The conceptual transition is:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -445,24 +437,14 @@ finite intensity values</code></pre>
       <button class="bookmark-btn" data-id="s-03-3" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose the sampling spacing is:</p>
-<p>
-$$
-\Delta x,\quad \Delta y
-$$
-</p>
-<p>Then one possible discrete representation is:</p>
-<p>
-$$
-x=m\Delta x,\qquad y=n\Delta y
-$$
-</p>
+      <p>Suppose the sampling spacing is $\Delta x,\quad \Delta y$ Then one possible discrete representation is:</p>
+<div class="math-display">
+  $$x=m\Delta x,\qquad y=n\Delta y$$
+</div>
 <p>and therefore:</p>
-<p>
-$$
-f[m,n]=f(m\Delta x,n\Delta y)
-$$
-</p>
+<div class="math-display">
+  $$f[m,n]=f(m\Delta x,n\Delta y)$$
+</div>
 <p>where $m,n$ are integer indices.</p>
 <p>This is one of the most useful mathematical bridges in DIP.</p>
 <p>It says:</p>
@@ -481,21 +463,13 @@ $$
       <button class="bookmark-btn" data-id="s-03-4" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>If we reduce the spacing:</p>
-<p>
-$$
-\Delta x,\Delta y \downarrow
-$$
-</p>
-<p>then the sampling grid becomes denser.</p>
+      <p>If we reduce the spacing: $\Delta x,\Delta y \downarrow$ then the sampling grid becomes denser.</p>
 <p>Equivalently:</p>
-<p>
-$$
-f_{s,x}=\frac{1}{\Delta x},
+<div class="math-display">
+  $$f_{s,x}=\frac{1}{\Delta x},
 \qquad
-f_{s,y}=\frac{1}{\Delta y}
-$$
-</p>
+f_{s,y}=\frac{1}{\Delta y}$$
+</div>
 <p>where the sampling frequencies describe how many samples are acquired per unit distance.</p>
 <p>So:</p>
 <p><div class="code-block">
@@ -534,13 +508,7 @@ smaller spacing
       <button class="bookmark-btn" data-id="s-03-5" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>If an image contains:</p>
-<p>
-$$
-M\times N
-$$
-</p>
-<p>samples, then $M$ and $N$ describe its digital spatial dimensions.</p>
+      <p>If an image contains: $M\times N$ samples, then $M$ and $N$ describe its digital spatial dimensions.</p>
 <p>For example:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -575,32 +543,20 @@ $$
     <div class="section-body">
       <p>Suppose a continuous image region is 10 mm wide.</p>
 <h3>Case A</h3>
-<p>We sample every:</p>
-<p>
-$$
-\Delta x=1\text{ mm}
-$$
-</p>
-<p>Then the sampling density is:</p>
-<p>
-$$
-f_s=\frac{1}{1}=1
-$$
-</p>
+<p>We sample every: $\Delta x=1\text{ mm}$ Then the sampling density is:</p>
+<div class="math-display">
+  $$f_s=\frac{1}{1}=1$$
+</div>
 <p>sample/mm.</p>
 <h3>Case B</h3>
 <p>We sample every:</p>
-<p>
-$$
-\Delta x=0.25\text{ mm}
-$$
-</p>
+<div class="math-display">
+  $$\Delta x=0.25\text{ mm}$$
+</div>
 <p>Then:</p>
-<p>
-$$
-f_s=\frac{1}{0.25}=4
-$$
-</p>
+<div class="math-display">
+  $$f_s=\frac{1}{0.25}=4$$
+</div>
 <p>samples/mm.</p>
 <p>So the second grid samples the spatial signal four times more densely.</p>
 <h3>Interpretation</h3>
@@ -713,17 +669,13 @@ incorrect digital appearance</code></pre>
     <div class="section-body">
       <h2>CORE / DEEP DIVE</h2>
 <p>For a band-limited signal with maximum frequency $f_{\max}$, ideal reconstruction requires the sampling frequency to satisfy:</p>
-<p>
-$$
-f_s>2f_{\max}
-$$
-</p>
+<div class="math-display">
+  $$f_s>2f_{\max}$$
+</div>
 <p>The boundary:</p>
-<p>
-$$
-2f_{\max}
-$$
-</p>
+<div class="math-display">
+  $$2f_{\max}$$
+</div>
 <p>is commonly called the Nyquist rate.</p>
 <p>This is a theoretical condition for a suitably band-limited signal and ideal sampling/reconstruction assumptions.</p>
 <p>It is not a guarantee that an arbitrary camera image will be perfectly reconstructed just because a specification says “twice the frequency.”</p>
@@ -739,41 +691,15 @@ $$
       <button class="bookmark-btn" data-id="s-03-10" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose the highest relevant spatial frequency is:</p>
-<p>
-$$
-f_{\max}=6\text{ cycles/mm}
-$$
-</p>
-<p>Then the theoretical Nyquist rate is:</p>
-<p>
-$$
-2f_{\max}
+      <p>Suppose the highest relevant spatial frequency is $f_{\max}=6\text{ cycles/mm}$ Then the theoretical Nyquist rate is:</p>
+<div class="math-display">
+  $$2f_{\max}
 =
-12\text{ samples/mm}
-$$
-</p>
-<p>Therefore an ideal sampling system would require:</p>
-<p>
-$$
-f_s>12\text{ samples/mm}
-$$
-</p>
-<p>under the stated assumptions.</p>
-<p>If:</p>
-<p>
-$$
-f_s=20\text{ samples/mm}
-$$
-</p>
-<p>then the sampling density is above the theoretical requirement.</p>
-<p>If:</p>
-<p>
-$$
-f_s=8\text{ samples/mm}
-$$
-</p>
-<p>then it is below the Nyquist rate and aliasing can occur.</p>
+12\text{ samples/mm}$$
+</div>
+<p>Therefore an ideal sampling system would require: $f_s>12\text{ samples/mm}$ under the stated assumptions.</p>
+<p>If $f_s=20\text{ samples/mm}$ then the sampling density is above the theoretical requirement.</p>
+<p>If $f_s=8\text{ samples/mm}$ then it is below the Nyquist rate and aliasing can occur.</p>
 <hr />
     </div>
   </section>
@@ -969,11 +895,9 @@ finite levels
     </div>
     <div class="section-body">
       <p>If a sample is represented with $k$ bits, then the number of distinct binary codes is:</p>
-<p>
-$$
-L=2^k
-$$
-</p>
+<div class="math-display">
+  $$L=2^k$$
+</div>
 <p>Examples:</p>
 <div class="table-wrap"><table class="comparison-table">
 <thead>
@@ -1031,20 +955,8 @@ $$
       <button class="bookmark-btn" data-id="s-03-17" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose a grayscale sample is stored with:</p>
-<p>
-$$
-k=3
-$$
-</p>
-<p>bits.</p>
-<p>Then:</p>
-<p>
-$$
-L=2^3=8
-$$
-</p>
-<p>possible coded levels are available.</p>
+      <p>Suppose a grayscale sample is stored with $k=3$ bits.</p>
+<p>Then: $L=2^3=8$ possible coded levels are available.</p>
 <p>Conceptually, the image can distinguish eight discrete intensity codes rather than the 256 codes available in an 8-bit representation.</p>
 <p>This can produce visibly stronger quantization steps in smooth gradients.</p>
 <hr />
@@ -1059,18 +971,10 @@ $$
       <button class="bookmark-btn" data-id="s-03-18" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>If the original continuous-valued measurement is $r$ and the quantized value is $q(r)$, then the quantization error can be written:</p>
-<p>
-$$
-e_q=r-q(r)
-$$
-</p>
-<p>For a uniform quantizer using nearest-level rounding with step size $\Delta$, the maximum absolute error is commonly bounded by approximately:</p>
-<p>
-$$
-|e_q|\leq\frac{\Delta}{2}
-$$
-</p>
+      <p>If the original continuous-valued measurement is $r$ and the quantized value is $q(r)$, then the quantization error can be written: $e_q=r-q(r)$ For a uniform quantizer using nearest-level rounding with step size $\Delta$, the maximum absolute error is commonly bounded by approximately:</p>
+<div class="math-display">
+  $$|e_q|\leq\frac{\Delta}{2}$$
+</div>
 <p>under the stated quantizer convention.</p>
 <div class="worked-example"><div class="worked-example-header"><span class="worked-example-title"><span>🧮</span> Worked example</span><span class="tag-badge tag-exam">NUMERICAL WORKTHROUGH</span></div>
 
@@ -1138,11 +1042,9 @@ stored level
 </div></p>
 <p>Under common assumptions for a uniform quantizer and sufficiently non-pathological input, quantization error can be modelled statistically.</p>
 <p>A frequently used approximation is:</p>
-<p>
-$$
-\sigma_q^2\approx\frac{\Delta^2}{12}
-$$
-</p>
+<div class="math-display">
+  $$\sigma_q^2\approx\frac{\Delta^2}{12}$$
+</div>
 <p>where $\sigma_q^2$ is the quantization-noise variance.</p>
 <blockquote>
 <p><strong>DEEP DIVE:</strong> This is an approximate model, not a universal identity for every image or quantizer.</p>
@@ -1288,9 +1190,8 @@ FINITE NUMERICAL IMAGE</code></pre>
     </div>
     <div class="section-body">
       <p>Consider this toy grayscale matrix:</p>
-<p>
-$$
-I=
+<div class="math-display">
+  $$I=
 \begin{bmatrix}
 10&20&30&40&50&60\\
 15&25&35&45&55&65\\
@@ -1298,46 +1199,27 @@ I=
 25&35&45&55&65&75\\
 30&40&50&60&70&80\\
 35&45&55&65&75&85
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>Suppose we keep every second row and every second column.</p>
-<p>Selecting rows:</p>
-<p>
-$$
-1,3,5
-$$
-</p>
-<p>and columns:</p>
-<p>
-$$
-1,3,5
-$$
-</p>
+<p>Selecting rows: $1,3,5$, and columns:</p>
+<div class="math-display">
+  $$1,3,5$$
+</div>
 <p>produces:</p>
-<p>
-$$
-I_s=
+<div class="math-display">
+  $$I_s=
 \begin{bmatrix}
 10&30&50\\
 20&40&60\\
 30&50&70
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <h3>What happened?</h3>
-<p>The representation changed from:</p>
-<p>
-$$
-6\times6
-$$
-</p>
-<p>to:</p>
-<p>
-$$
-3\times3
-$$
-</p>
+<p>The representation changed from: $6\times6$ to:</p>
+<div class="math-display">
+  $$3\times3$$
+</div>
 <p>The spatial sample density has been reduced.</p>
 <h3>Important warning</h3>
 <p>This example performs simple decimation for illustration.</p>
@@ -1355,17 +1237,13 @@ $$
     </div>
     <div class="section-body">
       <p>Suppose normalized intensity values are:</p>
-<p>
-$$
-[0.10,\ 0.26,\ 0.51,\ 0.74,\ 0.95]
-$$
-</p>
+<div class="math-display">
+  $$[0.10,\ 0.26,\ 0.51,\ 0.74,\ 0.95]$$
+</div>
 <p>and, for a simple illustrative quantizer, we use four equally spaced reconstruction values:</p>
-<p>
-$$
-\{0,\ 0.33,\ 0.67,\ 1\}
-$$
-</p>
+<div class="math-display">
+  $$\{0,\ 0.33,\ 0.67,\ 1\}$$
+</div>
 <p>Mapping to the nearest level gives approximately:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -1379,24 +1257,14 @@ $$
 0.95 → 1</code></pre>
 </div></p>
 <p>Therefore the quantized sequence becomes:</p>
-<p>
-$$
-[0,\ 0.33,\ 0.67,\ 0.67,\ 1]
-$$
-</p>
+<div class="math-display">
+  $$[0,\ 0.33,\ 0.67,\ 0.67,\ 1]$$
+</div>
 <h3>Why did 0.51 become 0.67?</h3>
-<p>Because:</p>
-<p>
-$$
-|0.51-0.67|=0.16
-$$
-</p>
-<p>while:</p>
-<p>
-$$
-|0.51-0.33|=0.18
-$$
-</p>
+<p>Because: $|0.51-0.67|=0.16$ while:</p>
+<div class="math-display">
+  $$|0.51-0.33|=0.18$$
+</div>
 <p>so 0.67 is the closer reconstruction level under this particular convention.</p>
 <blockquote>
 <p><strong>Convention note:</strong> Real quantizers may use different level definitions and interval boundaries. The MiniBook will always specify the convention when a numerical result depends on it.</p>
@@ -1434,13 +1302,7 @@ $$
 512 × 512
 12-bit grayscale</code></pre>
 </div></p>
-<p>They contain the same number of spatial samples:</p>
-<p>
-$$
-512\times512
-$$
-</p>
-<p>but Image B can represent more intensity levels per sample.</p>
+<p>They contain the same number of spatial samples: $512\times512$ but Image B can represent more intensity levels per sample.</p>
 <p>Conversely:</p>
 <p><div class="code-block">
   <div class="code-header">

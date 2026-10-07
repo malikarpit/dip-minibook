@@ -22,7 +22,7 @@
       svg: { fontCache: 'global' }
     };
   </script>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script id="MathJax-script" async src="../assets/js/mathjax/tex-mml-chtml.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';"></script>
 </head>
 <body data-chapter-id="ch02-image-formation">
   <div id="progress-bar"></div>
@@ -414,13 +414,7 @@ Digital image</code></pre>
       <button class="bookmark-btn" data-id="s-02-2" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>A useful idealised model separates illumination and reflectance:</p>
-<p>
-$$
-f(x,y)=i(x,y)r(x,y)
-$$
-</p>
-<p>where:</p>
+      <p>A useful idealised model separates illumination and reflectance $f(x,y)=i(x,y)r(x,y)$, where:</p>
 <ul>
 <li>$i(x,y)$ represents illumination over the scene;</li>
 <li>$r(x,y)$ represents the scene's reflectance or local response;</li>
@@ -462,13 +456,11 @@ illumination × scene response</code></pre>
     <div class="section-body">
       <p>The physical world is three-dimensional, but most ordinary camera images are two-dimensional projections.</p>
 <p>A simplified pinhole-camera relationship is:</p>
-<p>
-$$
-x=f\frac{X}{Z},
+<div class="math-display">
+  $$x=f\frac{X}{Z},
 \qquad
-y=f\frac{Y}{Z}
-$$
-</p>
+y=f\frac{Y}{Z}$$
+</div>
 <p>where:</p>
 <ul>
 <li>$(X,Y,Z)$ is a 3-D point in the camera coordinate system;</li>
@@ -585,11 +577,9 @@ text              ≈ dark, but not equally dark everywhere</code></pre>
 <h3>Why this matters</h3>
 <p>Blur reduces high-frequency spatial detail.</p>
 <p>Later, when we study restoration, a degradation model can describe the observed image as approximately:</p>
-<p>
-$$
-g(x,y)=h(x,y)*f(x,y)+\eta(x,y)
-$$
-</p>
+<div class="math-display">
+  $$g(x,y)=h(x,y)*f(x,y)+\eta(x,y)$$
+</div>
 <p>where:</p>
 <ul>
 <li>$f(x,y)$ = ideal/original image;</li>
@@ -639,61 +629,27 @@ larger recorded intensity</code></pre>
     </div>
     <div class="section-body">
       <p>Suppose a simplified sensor pipeline produces an internal response that is later mapped into an 8-bit range.</p>
-<p>For illustration, imagine the output is clipped to:</p>
-<p>
-$$
-0\le g\le255
-$$
-</p>
-<p>and a simplified gain stage produces:</p>
-<p>
-$$
-g'=200s
-$$
-</p>
+<p>For illustration, imagine the output is clipped to: $0\le g\le255$, and a simplified gain stage produces:</p>
+<div class="math-display">
+  $$g'=200s$$
+</div>
 <p>where $s$ is a normalised scene-response quantity.</p>
-<p>For:</p>
-<p>
-$$
-s=0.2
-$$
-</p>
-<p>we obtain:</p>
-<p>
-$$
-g'=200(0.2)=40
-$$
-</p>
-<p>For:</p>
-<p>
-$$
-s=0.8
-$$
-</p>
-<p>we obtain:</p>
-<p>
-$$
-g'=200(0.8)=160
-$$
-</p>
-<p>For:</p>
-<p>
-$$
-s=1.5
-$$
-</p>
-<p>we obtain:</p>
-<p>
-$$
-g'=200(1.5)=300
-$$
-</p>
+<p>For: $s=0.2$ we obtain:</p>
+<div class="math-display">
+  $$g'=200(0.2)=40$$
+</div>
+<p>For: $s=0.8$ we obtain:</p>
+<div class="math-display">
+  $$g'=200(0.8)=160$$
+</div>
+<p>For: $s=1.5$ we obtain:</p>
+<div class="math-display">
+  $$g'=200(1.5)=300$$
+</div>
 <p>but the 8-bit output cannot represent 300, so clipping yields:</p>
-<p>
-$$
-g=255
-$$
-</p>
+<div class="math-display">
+  $$g=255$$
+</div>
 <h3>Table</h3>
 <div class="table-wrap"><table class="comparison-table">
 <thead>
@@ -734,11 +690,9 @@ $$
 <h3>Why clipping matters</h3>
 <p>Once a value is clipped to the maximum, different scene values can collapse to the same stored value.</p>
 <p>For example:</p>
-<p>
-$$
-260,\;280,\;300\rightarrow255
-$$
-</p>
+<div class="math-display">
+  $$260,\;280,\;300\rightarrow255$$
+</div>
 <p>Information about the differences among those values is lost at that stage.</p>
 <p>The same idea applies at the dark end if a pipeline clips values to zero.</p>
 <blockquote>
@@ -786,23 +740,15 @@ $$
     </div>
     <div class="section-body">
       <p>No real measurement system is perfectly clean.</p>
-<p>A simple conceptual model is:</p>
-<p>
-$$
-g(x,y)=s(x,y)+n(x,y)
-$$
-</p>
-<p>where:</p>
+<p>A simple conceptual model is $g(x,y)=s(x,y)+n(x,y)$, where:</p>
 <ul>
 <li>$s(x,y)$ is the desired signal;</li>
 <li>$n(x,y)$ is unwanted variation introduced by the system or environment.</li>
 </ul>
 <p>A more realistic restoration model may include blur as well:</p>
-<p>
-$$
-g(x,y)=h(x,y)*f(x,y)+\eta(x,y)
-$$
-</p>
+<div class="math-display">
+  $$g(x,y)=h(x,y)*f(x,y)+\eta(x,y)$$
+</div>
 <h3>What can create noise or unwanted variation?</h3>
 <p>Depending on the system, possible sources include:</p>
 <ul>
@@ -947,11 +893,9 @@ stored pixel value</code></pre>
 <p>A real detector element has finite extent.</p>
 <p>Conceptually, a detector measures some integrated or averaged response over its sensitive area rather than an infinitely small geometric point.</p>
 <p>A simplified model is:</p>
-<p>
-$$
-p_{mn}\propto \iint_{A_{mn}} f(x,y)\,dx\,dy
-$$
-</p>
+<div class="math-display">
+  $$p_{mn}\propto \iint_{A_{mn}} f(x,y)\,dx\,dy$$
+</div>
 <p>where $A_{mn}$ is the sensor area associated with sample $(m,n)$.</p>
 <p>The exact proportionality and normalisation depend on the sensor model.</p>
 <h3>Why this matters</h3>
@@ -1130,36 +1074,27 @@ RGB image</code></pre>
     <div class="section-body">
       <p>A useful layered representation is:</p>
 <h3>Stage 1 — Continuous scene signal</h3>
-<p>
-$$
-s(x,y)
-$$
-</p>
+<div class="math-display">
+  $$s(x,y)$$
+</div>
 <h3>Stage 2 — Optical/sensor response</h3>
-<p>
-$$
-a(x,y)=h(x,y)*s(x,y)+\eta(x,y)
-$$
-</p>
+<div class="math-display">
+  $$a(x,y)=h(x,y)*s(x,y)+\eta(x,y)$$
+</div>
 <p>where $h$ models spatial system response and $\eta$ models additive disturbance in this simplified model.</p>
 <h3>Stage 3 — Sampling</h3>
-<p>
-$$
-a(x,y)\rightarrow a[m,n]
-$$
-</p>
+<div class="math-display">
+  $$a(x,y)\rightarrow a[m,n]$$
+</div>
 <p>Only discrete spatial locations are retained.</p>
 <h3>Stage 4 — Quantization</h3>
-<p>
-$$
-a[m,n]\rightarrow I[m,n]
-$$
-</p>
+<div class="math-display">
+  $$a[m,n]\rightarrow I[m,n]$$
+</div>
 <p>Continuous-valued measurements are mapped to allowed digital code levels.</p>
 <h3>Combined conceptual chain</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 s(x,y)
 \xrightarrow{\text{imaging}}
 a(x,y)
@@ -1167,9 +1102,8 @@ a(x,y)
 a[m,n]
 \xrightarrow{\text{quantization}}
 I[m,n]
-}
-$$
-</p>
+}$$
+</div>
 <p>This compact chain should stay in your mental model throughout Part I.</p>
 <hr />
     </div>
@@ -1184,35 +1118,25 @@ $$
     </div>
     <div class="section-body">
       <p>Suppose a simplified sensor chain produces a normalised signal value:</p>
-<p>
-$$
-s=0.62
-$$
-</p>
+<div class="math-display">
+  $$s=0.62$$
+</div>
 <p>Assume a gain stage maps this to a nominal 0–255 scale:</p>
-<p>
-$$
-v=255s
-$$
-</p>
+<div class="math-display">
+  $$v=255s$$
+</div>
 <p>Then:</p>
-<p>
-$$
-v=255(0.62)=158.1
-$$
-</p>
+<div class="math-display">
+  $$v=255(0.62)=158.1$$
+</div>
 <p>If the system rounds to the nearest integer:</p>
-<p>
-$$
-I=158
-$$
-</p>
+<div class="math-display">
+  $$I=158$$
+</div>
 <p>So the final stored pixel value is:</p>
-<p>
-$$
-\boxed{158}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{158}$$
+</div>
 <h3>What happened?</h3>
 <p>It is tempting to say “the scene had intensity 158,” but that is not what the calculation means.</p>
 <p>The actual statement is:</p>
@@ -1232,32 +1156,16 @@ $$
       <button class="bookmark-btn" data-id="s-02-18" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose a normalised signal lies in the interval:</p>
-<p>
-$$
-0\le s\lt 1
-$$
-</p>
-<p>and an ideal 3-bit quantizer is used.</p>
+      <p>Suppose a normalised signal lies in the interval: $0\le s\lt 1$, and an ideal 3-bit quantizer is used.</p>
 <p>The number of levels is:</p>
-<p>
-$$
-L=2^3=8
-$$
-</p>
+<div class="math-display">
+  $$L=2^3=8$$
+</div>
 <p>The approximate step width is:</p>
-<p>
-$$
-\Delta=\frac{1}{8}=0.125
-$$
-</p>
-<p>A signal of:</p>
-<p>
-$$
-s=0.62
-$$
-</p>
-<p>falls into one of these quantization intervals depending on the chosen quantizer convention.</p>
+<div class="math-display">
+  $$\Delta=\frac{1}{8}=0.125$$
+</div>
+<p>A signal of: $s=0.62$ falls into one of these quantization intervals depending on the chosen quantizer convention.</p>
 <p>The key lesson is not the particular rounding rule but the fact that <strong>many possible continuous values are represented by a finite set of digital codes</strong>.</p>
 <p>Chapter 03 will build this precisely with sampling and quantization mathematics.</p>
 <hr />
@@ -1339,11 +1247,9 @@ FINAL DIGITAL IMAGE</code></pre>
 <p>Estimate the original or intended image using an explicit or assumed degradation model.</p>
 </blockquote>
 <p>The model might be:</p>
-<p>
-$$
-g=h*f+\eta
-$$
-</p>
+<div class="math-display">
+  $$g=h*f+\eta$$
+</div>
 <p>This distinction is important because it explains why restoration is more model-driven than generic visual enhancement.</p>
 <hr />
     </div>
@@ -1547,23 +1453,17 @@ The same digital values can have different meanings depending on modality, calib
 <li>Explain the image degradation model.</li>
 </ol>
 <h3>High-yield formulas</h3>
-<p>
-$$
-f(x,y)=i(x,y)r(x,y)
-$$
-</p>
+<div class="math-display">
+  $$f(x,y)=i(x,y)r(x,y)$$
+</div>
 <p>Simple illumination–reflectance model.</p>
-<p>
-$$
-x=f\frac{X}{Z},\qquad y=f\frac{Y}{Z}
-$$
-</p>
+<div class="math-display">
+  $$x=f\frac{X}{Z},\qquad y=f\frac{Y}{Z}$$
+</div>
 <p>Simple pinhole projection model — extension material.</p>
-<p>
-$$
-g(x,y)=h(x,y)*f(x,y)+\eta(x,y)
-$$
-</p>
+<div class="math-display">
+  $$g(x,y)=h(x,y)*f(x,y)+\eta(x,y)$$
+</div>
 <p>Basic degradation model.</p>
 <h3>Typical conceptual question</h3>
 <blockquote>
@@ -1600,17 +1500,13 @@ $$
 <p>List at least three reasons why this can happen.</p>
 <h3>Numerical</h3>
 <p>A simplified acquisition model maps a normalised sensor response $s$ to an 8-bit value using:</p>
-<p>
-$$
-I=\operatorname{round}(255s)
-$$
-</p>
+<div class="math-display">
+  $$I=\operatorname{round}(255s)$$
+</div>
 <p>Calculate the output for:</p>
-<p>
-$$
-s\in\{0.10,0.50,0.90\}
-$$
-</p>
+<div class="math-display">
+  $$s\in\{0.10,0.50,0.90\}$$
+</div>
 <h3>System reasoning</h3>
 <p>An image contains a large bright region with many pixels at exactly 255.</p>
 <p>What does this suggest about the acquisition process, and what information may be lost?</p>
@@ -1658,29 +1554,25 @@ origin     → how was the image acquired?</code></pre>
     <div class="section-body">
       <p>We now know that a real imaging system produces a continuous or analogue signal and that the computer eventually needs a finite digital representation.</p>
 <p>The bridge between those two worlds is:</p>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 \text{continuous spatial signal}
 \rightarrow
 \text{sampling}
 \rightarrow
 \text{discrete coordinates}
-}
-$$
-</p>
+}$$
+</div>
 <p>and:</p>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 \text{continuous intensity}
 \rightarrow
 \text{quantization}
 \rightarrow
 \text{finite digital levels}
-}
-$$
-</p>
+}$$
+</div>
 <p>The next chapter develops both ideas rigorously, including aliasing, sampling density, bit depth, quantization error, and worked numerical examples.</p>
 <hr />
 <h2>Chapter summary</h2>
@@ -1717,18 +1609,10 @@ $$
       <button class="bookmark-btn" data-id="s-02-29" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose the original 1-D signal is:</p>
-<p>
-$$
-f=[0,0,100,0,0]
-$$
-</p>
-<p>and a simple averaging blur is approximated by:</p>
-<p>
-$$
-h=\frac{1}{3}[1,1,1]
-$$
-</p>
+      <p>Suppose the original 1-D signal is $f=[0,0,100,0,0]$, and a simple averaging blur is approximated by:</p>
+<div class="math-display">
+  $$h=\frac{1}{3}[1,1,1]$$
+</div>
 <p>The central peak becomes distributed into neighbouring positions.</p>
 <p>Conceptually:</p>
 <p><div class="code-block">
@@ -2203,23 +2087,17 @@ QUANTIZATION
 DIGITAL IMAGE</code></pre>
 </div></p>
 <p>A useful reflective-scene model:</p>
-<p>
-$$
-f(x,y)=i(x,y)r(x,y)
-$$
-</p>
+<div class="math-display">
+  $$f(x,y)=i(x,y)r(x,y)$$
+</div>
 <p>A simple additive-noise model:</p>
-<p>
-$$
-g(x,y)=f(x,y)+\eta(x,y)
-$$
-</p>
+<div class="math-display">
+  $$g(x,y)=f(x,y)+\eta(x,y)$$
+</div>
 <p>A simple degradation model:</p>
-<p>
-$$
-g(x,y)=h(x,y)*f(x,y)+\eta(x,y)
-$$
-</p>
+<div class="math-display">
+  $$g(x,y)=h(x,y)*f(x,y)+\eta(x,y)$$
+</div>
 <hr />
     </div>
   </section>

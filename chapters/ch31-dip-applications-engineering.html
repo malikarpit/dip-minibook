@@ -22,7 +22,7 @@
       svg: { fontCache: 'global' }
     };
   </script>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script id="MathJax-script" async src="../assets/js/mathjax/tex-mml-chtml.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';"></script>
 </head>
 <body data-chapter-id="ch31-dip-applications-engineering">
   <div id="progress-bar"></div>
@@ -737,11 +737,9 @@ region measurement</code></pre>
 </div></p>
 <p>The output may not be a class label.</p>
 <p>It may be a binary or multiclass mask:</p>
-<p>
-$$
-M(x,y)\in\{0,1,\ldots,K\}.
-$$
-</p>
+<div class="math-display">
+  $$M(x,y)\in\{0,1,\ldots,K\}.$$
+</div>
 <p>This connects:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -1293,17 +1291,15 @@ latency
 network availability</code></pre>
 </div></p>
 <p>The design objective becomes:</p>
-<p>
-$$
-\text{accuracy}
+<div class="math-display">
+  $$\text{accuracy}
 +
 \text{latency}
 +
 \text{memory}
 +
-\text{energy}
-$$
-</p>
+\text{energy}$$
+</div>
 <p>rather than accuracy alone.</p>
 <p>A smaller model may be more appropriate even if a larger model scores slightly better on a benchmark.</p>
 <hr />
@@ -1626,19 +1622,11 @@ automatic irreversible decision</code></pre>
       <button class="bookmark-btn" data-id="s-31-35" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>A score such as:</p>
-<p>
-$$
-0.97
-$$
-</p>
-<p>can indicate a strong model output.</p>
+      <p>A score such as: $0.97$ can indicate a strong model output.</p>
 <p>It does not prove:</p>
-<p>
-$$
-97\%\text{ probability of truth}
-$$
-</p>
+<div class="math-display">
+  $$97\%\text{ probability of truth}$$
+</div>
 <p>unless the system is appropriately calibrated and the interpretation is justified.</p>
 <p>For engineering communication:</p>
 <blockquote>
@@ -2369,13 +2357,11 @@ video → detect → track → event analysis → alert</code></pre>
     <div class="section-body">
       <p>The deepest lesson of the course is not a particular filter, transform, descriptor, CNN or detector.</p>
 <p>It is:</p>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 \text{Choose and connect image-processing operations according to the task, data, constraints, and consequences of error.}
-}
-$$
-</p>
+}$$
+</div>
 <p>The full journey is:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -2426,11 +2412,9 @@ C21–C24  ✅
 PART V   — From DIP to Intelligent Vision
 C25–C31  ✅</code></pre>
 </div></p>
-<p>
-$$
-\boxed{\text{31 / 31 Main Chapters Complete}}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{\text{31 / 31 Main Chapters Complete}}$$
+</div>
 <p>The Main Book is now complete at the syllabus-theory level. The remaining MiniBook work belongs primarily to the companion layers: mathematics, laboratory, reusable code, examination, deliberate practice, resources, visual assets, and master integration/QA.</p>
     </div>
   </section>

@@ -22,7 +22,7 @@
       svg: { fontCache: 'global' }
     };
   </script>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script id="MathJax-script" async src="../assets/js/mathjax/tex-mml-chtml.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';"></script>
 </head>
 <body data-chapter-id="ch26-cnns-image-processing">
   <div id="progress-bar"></div>
@@ -468,30 +468,20 @@ Class scores / probabilities</code></pre>
       <button class="bookmark-btn" data-id="s-26-4" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose an image has:</p>
-<p>
-$$
-224\times224\times3
-$$
-</p>
-<p>values.</p>
+      <p>Suppose an image has $224\times224\times3$ values.</p>
 <p>Flattening gives:</p>
-<p>
-$$
-224\times224\times3
+<div class="math-display">
+  $$224\times224\times3
 =
-150{,}528
-$$
-</p>
+150{,}528$$
+</div>
 <p>input values.</p>
 <p>A dense layer with 1000 neurons would require approximately:</p>
-<p>
-$$
-150{,}528\times1000
+<div class="math-display">
+  $$150{,}528\times1000
 =
-150{,}528{,}000
-$$
-</p>
+150{,}528{,}000$$
+</div>
 <p>weights, before biases.</p>
 <p>A CNN instead uses <strong>local connectivity</strong> and <strong>parameter sharing</strong>.</p>
 <p>The same learned filter can scan across many image locations.</p>
@@ -569,14 +559,12 @@ filter at position 3
       <p>In mathematical signal processing, convolution traditionally includes kernel reversal.</p>
 <p>Many deep-learning libraries implement what is mathematically closer to <strong>cross-correlation</strong> while calling the operation convolution.</p>
 <p>For example, a framework computes:</p>
-<p>
-$$
-y(i,j)
+<div class="math-display">
+  $$y(i,j)
 =
 \sum_{m,n}
-x(i+m,j+n)w(m,n)
-$$
-</p>
+x(i+m,j+n)w(m,n)$$
+</div>
 <p>without explicitly flipping $w$.</p>
 <p>This distinction usually does not prevent CNN learning because the filters are learned.</p>
 <p>For this chapter:</p>
@@ -597,49 +585,37 @@ $$
     </div>
     <div class="section-body">
       <p>Consider a grayscale image region:</p>
-<p>
-$$
-X=
+<div class="math-display">
+  $$X=
 \begin{bmatrix}
 1&2&0\\
 0&1&3\\
 2&0&1
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>and kernel:</p>
-<p>
-$$
-K=
+<div class="math-display">
+  $$K=
 \begin{bmatrix}
 1&0&-1\\
 1&0&-1\\
 1&0&-1
-\end{bmatrix}.
-$$
-</p>
+\end{bmatrix}.$$
+</div>
 <p>The local response is:</p>
-<p>
-$$
-1(1)+2(0)+0(-1)
-$$
-</p>
-<p>
-$$
-+0(1)+1(0)+3(-1)
-$$
-</p>
-<p>
-$$
-+2(1)+0(0)+1(-1).
-$$
-</p>
+<div class="math-display">
+  $$1(1)+2(0)+0(-1)$$
+</div>
+<div class="math-display">
+  $$+0(1)+1(0)+3(-1)$$
+</div>
+<div class="math-display">
+  $$+2(1)+0(0)+1(-1).$$
+</div>
 <p>Therefore:</p>
-<p>
-$$
-1-3+2-1=-1.
-$$
-</p>
+<div class="math-display">
+  $$1-3+2-1=-1.$$
+</div>
 <p>The output value measures the response of this local pattern to the filter.</p>
 <hr />
     </div>
@@ -681,27 +657,9 @@ feature map</code></pre>
       <button class="bookmark-btn" data-id="s-26-10" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose a convolution layer has:</p>
-<p>
-$$
-C_{\text{out}}=32
-$$
-</p>
-<p>filters.</p>
-<p>For a single-channel image:</p>
-<p>
-$$
-3\times3
-$$
-</p>
-<p>kernels produce 32 feature maps.</p>
-<p>The layer output therefore has:</p>
-<p>
-$$
-H'\times W'\times32
-$$
-</p>
-<p>for channels-last representation.</p>
+      <p>Suppose a convolution layer has $C_{\text{out}}=32$ filters.</p>
+<p>For a single-channel image: $3\times3$ kernels produce 32 feature maps.</p>
+<p>The layer output therefore has $H'\times W'\times32$ for channels-last representation.</p>
 <p>Each channel corresponds to one learned pattern detector.</p>
 <hr />
     </div>
@@ -715,34 +673,18 @@ $$
       <button class="bookmark-btn" data-id="s-26-11" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>For an RGB input:</p>
-<p>
-$$
-H\times W\times3,
-$$
-</p>
-<p>a 3×3 convolution with 32 output channels has weights shaped approximately as:</p>
-<p>
-$$
-3\times3\times3\times32
-$$
-</p>
+      <p>For an RGB input: $H\times W\times3,$ a 3×3 convolution with 32 output channels has weights shaped approximately as:</p>
+<div class="math-display">
+  $$3\times3\times3\times32$$
+</div>
 <p>for channels-last conceptual notation.</p>
 <p>The number of kernel weights is:</p>
-<p>
-$$
-3\times3\times3\times32
+<div class="math-display">
+  $$3\times3\times3\times32
 =
-864.
-$$
-</p>
-<p>With one bias per output channel:</p>
-<p>
-$$
-864+32=896
-$$
-</p>
-<p>trainable parameters.</p>
+864.$$
+</div>
+<p>With one bias per output channel: $864+32=896$ trainable parameters.</p>
 <p>This illustrates parameter sharing and structured connectivity.</p>
 <hr />
     </div>
@@ -757,12 +699,10 @@ $$
     </div>
     <div class="section-body">
       <p>For a 2-D convolution layer:</p>
-<p>
-$$
-P=
-K_hK_wC_{\text{in}}C_{\text{out}}+C_{\text{out}}
-$$
-</p>
+<div class="math-display">
+  $$P=
+K_hK_wC_{\text{in}}C_{\text{out}}+C_{\text{out}}$$
+</div>
 <p>where:</p>
 <ul>
 <li>$K_h$ = kernel height;</li>
@@ -813,20 +753,8 @@ $$
     </div>
     <div class="section-body">
       <p><strong>Stride</strong> determines how far the filter moves at each step.</p>
-<p>For stride:</p>
-<p>
-$$
-S=1
-$$
-</p>
-<p>the filter moves one pixel at a time.</p>
-<p>For:</p>
-<p>
-$$
-S=2
-$$
-</p>
-<p>it skips every second position.</p>
+<p>For stride: $S=1$ the filter moves one pixel at a time.</p>
+<p>For: $S=2$ it skips every second position.</p>
 <p>Larger stride generally reduces spatial output dimensions.</p>
 <hr />
     </div>
@@ -869,16 +797,14 @@ $$
     </div>
     <div class="section-body">
       <p>For one spatial dimension:</p>
-<p>
-$$
-H_{\text{out}}
+<div class="math-display">
+  $$H_{\text{out}}
 =
 \left\lfloor
 \frac{H+2P-D(K-1)-1}{S}
 +1
-\right\rfloor
-$$
-</p>
+\right\rfloor$$
+</div>
 <p>where:</p>
 <ul>
 <li>$H$ = input size;</li>
@@ -887,23 +813,15 @@ $$
 <li>$S$ = stride;</li>
 <li>$D$ = dilation.</li>
 </ul>
-<p>For the common case:</p>
-<p>
-$$
-D=1,
-$$
-</p>
-<p>this becomes:</p>
-<p>
-$$
-H_{\text{out}}
+<p>For the common case: $D=1,$ this becomes:</p>
+<div class="math-display">
+  $$H_{\text{out}}
 =
 \left\lfloor
 \frac{H+2P-K}{S}
 +1
-\right\rfloor.
-$$
-</p>
+\right\rfloor.$$
+</div>
 <p>Width uses the analogous equation.</p>
 <hr />
     </div>
@@ -918,52 +836,34 @@ $$
     </div>
     <div class="section-body">
       <p>Input:</p>
-<p>
-$$
-28\times28
-$$
-</p>
+<div class="math-display">
+  $$28\times28$$
+</div>
 <p>Kernel:</p>
-<p>
-$$
-3\times3
-$$
-</p>
+<div class="math-display">
+  $$3\times3$$
+</div>
 <p>Stride:</p>
-<p>
-$$
-1
-$$
-</p>
+<div class="math-display">
+  $$1$$
+</div>
 <p>Padding:</p>
-<p>
-$$
-0.
-$$
-</p>
+<div class="math-display">
+  $$0.$$
+</div>
 <p>Then:</p>
-<p>
-$$
-H_{\text{out}}
+<div class="math-display">
+  $$H_{\text{out}}
 =
 \frac{28-3}{1}+1
 =
-26.
-$$
-</p>
-<p>So:</p>
-<p>
-$$
-\boxed{26\times26}
-$$
-</p>
-<p>is the spatial output.</p>
+26.$$
+</div>
+<p>So: $\boxed{26\times26}$ is the spatial output.</p>
 <p>If the layer has 32 filters:</p>
-<p>
-$$
-\boxed{26\times26\times32}.
-$$
-</p>
+<div class="math-display">
+  $$\boxed{26\times26\times32}.$$
+</div>
 <hr />
     </div>
   </section>
@@ -976,35 +876,19 @@ $$
       <button class="bookmark-btn" data-id="s-26-17" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose:</p>
-<p>
-$$
-H=28,\quad K=3,\quad S=1.
-$$
-</p>
-<p>With one-pixel padding:</p>
-<p>
-$$
-P=1.
-$$
-</p>
+      <p>Suppose: $H=28,\quad K=3,\quad S=1.$ With one-pixel padding:</p>
+<div class="math-display">
+  $$P=1.$$
+</div>
 <p>Then:</p>
-<p>
-$$
-H_{\text{out}}
+<div class="math-display">
+  $$H_{\text{out}}
 =
 \frac{28+2(1)-3}{1}+1
 =
-28.
-$$
-</p>
-<p>Thus:</p>
-<p>
-$$
-\boxed{28\times28}
-$$
-</p>
-<p>is preserved spatially.</p>
+28.$$
+</div>
+<p>Thus: $\boxed{28\times28}$ is preserved spatially.</p>
 <hr />
     </div>
   </section>
@@ -1020,11 +904,9 @@ $$
       <p>A convolution produces linear responses.</p>
 <p>CNNs introduce nonlinear activation functions.</p>
 <p>A common choice is ReLU:</p>
-<p>
-$$
-\operatorname{ReLU}(x)=\max(0,x).
-$$
-</p>
+<div class="math-display">
+  $$\operatorname{ReLU}(x)=\max(0,x).$$
+</div>
 <p>Therefore:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -1034,18 +916,10 @@ $$
   <pre><code>x &lt; 0 → 0
 x &gt; 0 → x</code></pre>
 </div></p>
-<p>Example:</p>
-<p>
-$$
-[-2,-1,0,2,5]
-$$
-</p>
-<p>becomes:</p>
-<p>
-$$
-[0,0,0,2,5].
-$$
-</p>
+<p>Example: $[-2,-1,0,2,5]$ becomes:</p>
+<div class="math-display">
+  $$[0,0,0,2,5].$$
+</div>
 <hr />
     </div>
   </section>
@@ -1098,11 +972,9 @@ $$
 3 4</code></pre>
 </div></p>
 <p>max pooling produces:</p>
-<p>
-$$
-7.
-$$
-</p>
+<div class="math-display">
+  $$7.$$
+</div>
 <p>For:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -1113,11 +985,9 @@ $$
 1 3</code></pre>
 </div></p>
 <p>it produces:</p>
-<p>
-$$
-5.
-$$
-</p>
+<div class="math-display">
+  $$5.$$
+</div>
 <hr />
     </div>
   </section>
@@ -1152,30 +1022,14 @@ $$
       <button class="bookmark-btn" data-id="s-26-22" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>For a 2×2 pool with stride 2:</p>
-<p>
-$$
-28\times28
-$$
-</p>
-<p>becomes approximately:</p>
-<p>
-$$
-14\times14.
-$$
-</p>
-<p>If there are 32 channels:</p>
-<p>
-$$
-28\times28\times32
-$$
-</p>
-<p>becomes:</p>
-<p>
-$$
-14\times14\times32.
-$$
-</p>
+      <p>For a 2×2 pool with stride 2: $28\times28$ becomes approximately:</p>
+<div class="math-display">
+  $$14\times14.$$
+</div>
+<p>If there are 32 channels: $28\times28\times32$ becomes:</p>
+<div class="math-display">
+  $$14\times14\times32.$$
+</div>
 <p>The number of channels stays the same under ordinary spatial pooling.</p>
 <hr />
     </div>
@@ -1202,13 +1056,11 @@ Conv 64:     14 × 14 × 64
 Pool 2×2:     7 ×  7 × 64</code></pre>
 </div></p>
 <p>Flattening gives:</p>
-<p>
-$$
-7\times7\times64
+<div class="math-display">
+  $$7\times7\times64
 =
-3136
-$$
-</p>
+3136$$
+</div>
 <p>features.</p>
 <p>This is the bridge into a dense classifier.</p>
 <p>Shape tracing is one of the most practical CNN debugging skills.</p>
@@ -1225,17 +1077,13 @@ $$
     </div>
     <div class="section-body">
       <p>Suppose the final convolutional representation is:</p>
-<p>
-$$
-7\times7\times64.
-$$
-</p>
+<div class="math-display">
+  $$7\times7\times64.$$
+</div>
 <p>Flattening converts it into one vector:</p>
-<p>
-$$
-\mathbf{x}\in\mathbb{R}^{3136}.
-$$
-</p>
+<div class="math-display">
+  $$\mathbf{x}\in\mathbb{R}^{3136}.$$
+</div>
 <p>The spatial grid is no longer represented as separate dimensions in that vector, but the values came from spatial feature maps.</p>
 <hr />
     </div>
@@ -1250,36 +1098,18 @@ $$
     </div>
     <div class="section-body">
       <p>A dense layer maps the flattened feature vector to class scores.</p>
-<p>For:</p>
-<p>
-$$
-3136
-$$
-</p>
-<p>inputs and:</p>
-<p>
-$$
-128
-$$
-</p>
-<p>neurons:</p>
-<p>
-$$
-3136\times128+128
-$$
-</p>
-<p>parameters.</p>
+<p>For: $3136$ inputs and:</p>
+<div class="math-display">
+  $$128$$
+</div>
+<p>neurons: $3136\times128+128$ parameters.</p>
 <p>Calculate:</p>
-<p>
-$$
-401{,}408+128
-$$
-</p>
-<p>
-$$
-=\boxed{401{,}536}.
-$$
-</p>
+<div class="math-display">
+  $$401{,}408+128$$
+</div>
+<div class="math-display">
+  $$=\boxed{401{,}536}.$$
+</div>
 <p>This can be much larger than an earlier convolution layer.</p>
 <hr />
     </div>
@@ -1299,11 +1129,9 @@ $$
 <h3>CNN</h3>
 <p>A filter sees a small local region and reuses the same weights across positions.</p>
 <p>This provides:</p>
-<p>
-$$
-\boxed{\text{local connectivity + parameter sharing}}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{\text{local connectivity + parameter sharing}}$$
+</div>
 <p>which is central to the CNN architecture.</p>
 <hr />
     </div>
@@ -1429,36 +1257,18 @@ class scores</code></pre>
     <div class="section-body">
       <p>For multiclass classification, cross-entropy is a common loss.</p>
 <p>For target class $y$:</p>
-<p>
-$$
-L=-\log(p_y).
-$$
-</p>
+<div class="math-display">
+  $$L=-\log(p_y).$$
+</div>
 <p>Example:</p>
-<p>If the correct class receives:</p>
-<p>
-$$
-p_y=0.9,
-$$
-</p>
-<p>then:</p>
-<p>
-$$
-L=-\log(0.9)\approx0.1053.
-$$
-</p>
-<p>If:</p>
-<p>
-$$
-p_y=0.1,
-$$
-</p>
-<p>then:</p>
-<p>
-$$
-L=-\log(0.1)\approx2.3026.
-$$
-</p>
+<p>If the correct class receives: $p_y=0.9,$ then:</p>
+<div class="math-display">
+  $$L=-\log(0.9)\approx0.1053.$$
+</div>
+<p>If $p_y=0.1,$, then:</p>
+<div class="math-display">
+  $$L=-\log(0.1)\approx2.3026.$$
+</div>
 <p>The network is penalized much more strongly when it assigns low probability to the correct class.</p>
 <hr />
     </div>
@@ -1472,38 +1282,20 @@ $$
       <button class="bookmark-btn" data-id="s-26-31" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Given logits:</p>
-<p>
-$$
-z_1,\ldots,z_K,
-$$
-</p>
-<p>softmax gives:</p>
-<p>
-$$
-p_i=
+      <p>Given logits: $z_1,\ldots,z_K,$ softmax gives:</p>
+<div class="math-display">
+  $$p_i=
 \frac{e^{z_i}}
-{\sum_{j=1}^{K}e^{z_j}}.
-$$
-</p>
-<p>The probabilities satisfy:</p>
-<p>
-$$
-p_i\ge0
-$$
-</p>
-<p>and:</p>
-<p>
-$$
-\sum_i p_i=1.
-$$
-</p>
+{\sum_{j=1}^{K}e^{z_j}}.$$
+</div>
+<p>The probabilities satisfy: $p_i\ge0$, and:</p>
+<div class="math-display">
+  $$\sum_i p_i=1.$$
+</div>
 <p>For MNIST:</p>
-<p>
-$$
-K=10.
-$$
-</p>
+<div class="math-display">
+  $$K=10.$$
+</div>
 <hr />
     </div>
   </section>
@@ -1516,27 +1308,13 @@ $$
       <button class="bookmark-btn" data-id="s-26-32" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Directly computing:</p>
-<p>
-$$
-e^{z_i}
-$$
-</p>
-<p>can overflow for large values.</p>
-<p>A common stable calculation subtracts:</p>
-<p>
-$$
-m=\max_i z_i
-$$
-</p>
-<p>before exponentiation:</p>
-<p>
-$$
-p_i=
+      <p>Directly computing: $e^{z_i}$ can overflow for large values.</p>
+<p>A common stable calculation subtracts: $m=\max_i z_i$ before exponentiation:</p>
+<div class="math-display">
+  $$p_i=
 \frac{e^{z_i-m}}
-{\sum_j e^{z_j-m}}.
-$$
-</p>
+{\sum_j e^{z_j-m}}.$$
+</div>
 <p>Subtracting the same value from every logit does not change the resulting softmax probabilities.</p>
 <p>This is an implementation detail worth knowing.</p>
 <hr />
@@ -1584,24 +1362,20 @@ parameter update</code></pre>
     <div class="section-body">
       <p>Backpropagation computes how the loss changes with respect to model parameters.</p>
 <p>For parameter $\theta$:</p>
-<p>
-$$
-\frac{\partial L}{\partial\theta}
-$$
-</p>
+<div class="math-display">
+  $$\frac{\partial L}{\partial\theta}$$
+</div>
 <p>is the gradient of the loss with respect to that parameter.</p>
 <p>An optimizer uses these gradients to update parameters.</p>
 <p>A simple gradient-descent update is:</p>
-<p>
-$$
-\theta_{\text{new}}
+<div class="math-display">
+  $$\theta_{\text{new}}
 =
 \theta_{\text{old}}
 -
 \eta
-\frac{\partial L}{\partial\theta}
-$$
-</p>
+\frac{\partial L}{\partial\theta}$$
+</div>
 <p>where $\eta$ is the learning rate.</p>
 <hr />
     </div>
@@ -1660,11 +1434,9 @@ batch size = 128</code></pre>
 </div></p>
 <p>means one epoch contains many batches.</p>
 <p>The exact number is approximately:</p>
-<p>
-$$
-\left\lceil\frac{60{,}000}{128}\right\rceil.
-$$
-</p>
+<div class="math-display">
+  $$\left\lceil\frac{60{,}000}{128}\right\rceil.$$
+</div>
 <hr />
     </div>
   </section>
@@ -2433,11 +2205,9 @@ Using the same filter weights at multiple spatial locations.</p>
     </div>
     <div class="section-body">
       <p>Input:</p>
-<p>
-$$
-32\times32\times3
-$$
-</p>
+<div class="math-display">
+  $$32\times32\times3$$
+</div>
 <p>Convolution:</p>
 <ul>
 <li>kernel $5\times5$</li>
@@ -2446,17 +2216,13 @@ $$
 <li>16 filters</li>
 </ul>
 <p>Spatial output:</p>
-<p>
-$$
-32-5+1=28.
-$$
-</p>
+<div class="math-display">
+  $$32-5+1=28.$$
+</div>
 <p>Therefore:</p>
-<p>
-$$
-\boxed{28\times28\times16}.
-$$
-</p>
+<div class="math-display">
+  $$\boxed{28\times28\times16}.$$
+</div>
 <hr />
     </div>
   </section>
@@ -2470,29 +2236,21 @@ $$
     </div>
     <div class="section-body">
       <p>For:</p>
-<p>
-$$
-3\times3,
+<div class="math-display">
+  $$3\times3,
 \quad C_{\text{in}}=3,
-\quad C_{\text{out}}=16
-$$
-</p>
+\quad C_{\text{out}}=16$$
+</div>
 <p>parameters:</p>
-<p>
-$$
-3\times3\times3\times16+16
-$$
-</p>
-<p>
-$$
-=432+16
-$$
-</p>
-<p>
-$$
-=\boxed{448}.
-$$
-</p>
+<div class="math-display">
+  $$3\times3\times3\times16+16$$
+</div>
+<div class="math-display">
+  $$=432+16$$
+</div>
+<div class="math-display">
+  $$=\boxed{448}.$$
+</div>
 <hr />
     </div>
   </section>
@@ -2506,35 +2264,25 @@ $$
     </div>
     <div class="section-body">
       <p>Input:</p>
-<p>
-$$
-28\times28\times32
-$$
-</p>
+<div class="math-display">
+  $$28\times28\times32$$
+</div>
 <p>2×2 max pooling, stride 2:</p>
-<p>
-$$
-14\times14\times32.
-$$
-</p>
+<div class="math-display">
+  $$14\times14\times32.$$
+</div>
 <p>Number of values before:</p>
-<p>
-$$
-28\times28\times32=25{,}088.
-$$
-</p>
+<div class="math-display">
+  $$28\times28\times32=25{,}088.$$
+</div>
 <p>After:</p>
-<p>
-$$
-14\times14\times32=6{,}272.
-$$
-</p>
+<div class="math-display">
+  $$14\times14\times32=6{,}272.$$
+</div>
 <p>So the number of spatial activation values is reduced by a factor of:</p>
-<p>
-$$
-\boxed{4}.
-$$
-</p>
+<div class="math-display">
+  $$\boxed{4}.$$
+</div>
 <hr />
     </div>
   </section>
@@ -2679,9 +2427,8 @@ $$
     </div>
     <div class="section-body">
       <p>A CNN replaces much of the manually designed image feature pipeline with a learned hierarchy:</p>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 \text{pixels}
 \rightarrow
 \text{learned local filters}
@@ -2691,25 +2438,18 @@ $$
 \text{hierarchical representation}
 \rightarrow
 \text{class decision}
-}
-$$
-</p>
+}$$
+</div>
 <p>The three concepts to remember most strongly are:</p>
-<p>
-$$
-\boxed{\text{local connectivity}}
-$$
-</p>
-<p>
-$$
-\boxed{\text{parameter sharing}}
-$$
-</p>
-<p>
-$$
-\boxed{\text{learned hierarchical features}}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{\text{local connectivity}}$$
+</div>
+<div class="math-display">
+  $$\boxed{\text{parameter sharing}}$$
+</div>
+<div class="math-display">
+  $$\boxed{\text{learned hierarchical features}}$$
+</div>
 <p>The practical requirement turns these ideas into a complete system:</p>
 <p><div class="code-block">
   <div class="code-header">

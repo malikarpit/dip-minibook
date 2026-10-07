@@ -22,7 +22,7 @@
       svg: { fontCache: 'global' }
     };
   </script>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script id="MathJax-script" async src="../assets/js/mathjax/tex-mml-chtml.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';"></script>
 </head>
 <body data-chapter-id="ch08-spatial-filtering">
   <div id="progress-bar"></div>
@@ -421,19 +421,15 @@ pixel + neighbourhood</code></pre>
     <div class="section-body">
       <p>A spatial filter computes an output value using image samples around a target location.</p>
 <p>General form:</p>
-<p>
-$$
-g(x,y)=\mathcal{F}\left\{f(x,y)\right\}
-$$
-</p>
+<div class="math-display">
+  $$g(x,y)=\mathcal{F}\left\{f(x,y)\right\}$$
+</div>
 <p>More specifically, for a linear filter:</p>
-<p>
-$$
-g(x,y)=
+<div class="math-display">
+  $$g(x,y)=
 \sum_s\sum_t
-w(s,t)f(x-s,y-t)
-$$
-</p>
+w(s,t)f(x-s,y-t)$$
+</div>
 <p>where:</p>
 <ul>
 <li>$f$ = input image,</li>
@@ -461,17 +457,15 @@ $$
 <li>filter.</li>
 </ul>
 <p>For example:</p>
-<p>
-$$
-H=
+<div class="math-display">
+  $$H=
 \frac{1}{9}
 \begin{bmatrix}
 1&1&1\\
 1&1&1\\
 1&1&1
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>This is a 3×3 averaging kernel.</p>
 <p>The kernel slides over the image.</p>
 <hr />
@@ -533,35 +527,29 @@ u v w x y
     </div>
     <div class="section-body">
       <p>For a 3×3 kernel:</p>
-<p>
-$$
-H=
+<div class="math-display">
+  $$H=
 \begin{bmatrix}
 h_{11}&h_{12}&h_{13}\\
 h_{21}&h_{22}&h_{23}\\
 h_{31}&h_{32}&h_{33}
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>and neighbourhood:</p>
-<p>
-$$
-P=
+<div class="math-display">
+  $$P=
 \begin{bmatrix}
 p_{11}&p_{12}&p_{13}\\
 p_{21}&p_{22}&p_{23}\\
 p_{31}&p_{32}&p_{33}
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>a basic filtering calculation is a weighted sum:</p>
-<p>
-$$
-g=
+<div class="math-display">
+  $$g=
 \sum_{i=1}^{3}\sum_{j=1}^{3}
-h_{ij}p_{ij}
-$$
-</p>
+h_{ij}p_{ij}$$
+</div>
 <p>for a correlation-style alignment.</p>
 <hr />
     </div>
@@ -576,53 +564,41 @@ $$
     </div>
     <div class="section-body">
       <p>Suppose the neighbourhood is:</p>
-<p>
-$$
-P=
+<div class="math-display">
+  $$P=
 \begin{bmatrix}
 10&20&30\\
 20&30&40\\
 30&40&50
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>and:</p>
-<p>
-$$
-H=
+<div class="math-display">
+  $$H=
 \frac19
 \begin{bmatrix}
 1&1&1\\
 1&1&1\\
 1&1&1
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>Then:</p>
-<p>
-$$
-g=
-\frac{10+20+30+20+30+40+30+40+50}{9}
-$$
-</p>
+<div class="math-display">
+  $$g=
+\frac{10+20+30+20+30+40+30+40+50}{9}$$
+</div>
 <p>Sum:</p>
-<p>
-$$
-270
-$$
-</p>
+<div class="math-display">
+  $$270$$
+</div>
 <p>Therefore:</p>
-<p>
-$$
-g=30
-$$
-</p>
+<div class="math-display">
+  $$g=30$$
+</div>
 <p>So the centre output becomes:</p>
-<p>
-$$
-\boxed{30}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{30}$$
+</div>
 <p>This is local averaging.</p>
 <hr />
     </div>
@@ -648,11 +624,9 @@ $$
 </div></p>
 <p>The centre value is a sharp isolated spike.</p>
 <p>A 3×3 mean filter produces:</p>
-<p>
-$$
-\frac{280}{9}\approx31.11
-$$
-</p>
+<div class="math-display">
+  $$\frac{280}{9}\approx31.11$$
+</div>
 <p>The 200 is pulled much closer to its neighbours.</p>
 <p>This reduces isolated fluctuations.</p>
 <p>However:</p>
@@ -711,21 +685,18 @@ $$
     </div>
     <div class="section-body">
       <p>A $3\times3$ mean kernel is:</p>
-<p>
-$$
-H=
+<div class="math-display">
+  $$H=
 \frac19
 \begin{bmatrix}
 1&1&1\\
 1&1&1\\
 1&1&1
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>For a $5\times5$ mean filter:</p>
-<p>
-$$
-H=
+<div class="math-display">
+  $$H=
 \frac1{25}
 \begin{bmatrix}
 1&1&1&1&1\\
@@ -733,9 +704,8 @@ H=
 1&1&1&1&1\\
 1&1&1&1&1\\
 1&1&1&1&1
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>As the kernel gets larger, the smoothing neighbourhood increases.</p>
 <hr />
     </div>
@@ -779,20 +749,12 @@ large kernel
     <div class="section-body">
       <p>A Gaussian kernel assigns larger weights near the centre and smaller weights farther away.</p>
 <p>A continuous 2-D Gaussian is:</p>
-<p>
-$$
-G(x,y)=
+<div class="math-display">
+  $$G(x,y)=
 \frac{1}{2\pi\sigma^2}
-e^{-\frac{x^2+y^2}{2\sigma^2}}
-$$
-</p>
-<p>where:</p>
-<p>
-$$
-\sigma
-$$
-</p>
-<p>controls the spread.</p>
+e^{-\frac{x^2+y^2}{2\sigma^2}}$$
+</div>
+<p>where: $\sigma$ controls the spread.</p>
 <p>A discrete kernel is obtained by sampling/discretizing the Gaussian and normalizing it as appropriate.</p>
 <hr />
     </div>
@@ -839,29 +801,19 @@ largest weight</code></pre>
     </div>
     <div class="section-body">
       <p>A commonly used conceptual 3×3 Gaussian-like kernel is:</p>
-<p>
-$$
-H=
+<div class="math-display">
+  $$H=
 \frac1{16}
 \begin{bmatrix}
 1&2&1\\
 2&4&2\\
 1&2&1
-\end{bmatrix}
-$$
-</p>
-<p>Check the normalization:</p>
-<p>
-$$
-1+2+1+2+4+2+1+2+1=16
-$$
-</p>
-<p>So the coefficients sum to:</p>
-<p>
-$$
-1
-$$
-</p>
+\end{bmatrix}$$
+</div>
+<p>Check the normalization: $1+2+1+2+4+2+1+2+1=16$ So the coefficients sum to:</p>
+<div class="math-display">
+  $$1$$
+</div>
 <p>A unit DC response is therefore obtained.</p>
 <hr />
     </div>
@@ -876,56 +828,42 @@ $$
     </div>
     <div class="section-body">
       <p>Using:</p>
-<p>
-$$
-P=
+<div class="math-display">
+  $$P=
 \begin{bmatrix}
 10&20&30\\
 20&30&40\\
 30&40&50
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>and:</p>
-<p>
-$$
-H=
+<div class="math-display">
+  $$H=
 \frac1{16}
 \begin{bmatrix}
 1&2&1\\
 2&4&2\\
 1&2&1
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>weighted sum:</p>
-<p>
-$$
-10(1)+20(2)+30(1)+20(2)+30(4)+40(2)+30(1)+40(2)+50(1)
-$$
-</p>
-<p>
-$$
-=10+40+30+40+120+80+30+80+50
-$$
-</p>
-<p>
-$$
-=480
-$$
-</p>
+<div class="math-display">
+  $$10(1)+20(2)+30(1)+20(2)+30(4)+40(2)+30(1)+40(2)+50(1)$$
+</div>
+<div class="math-display">
+  $$=10+40+30+40+120+80+30+80+50$$
+</div>
+<div class="math-display">
+  $$=480$$
+</div>
 <p>Thus:</p>
-<p>
-$$
-g=\frac{480}{16}=30
-$$
-</p>
+<div class="math-display">
+  $$g=\frac{480}{16}=30$$
+</div>
 <p>Again:</p>
-<p>
-$$
-\boxed{30}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{30}$$
+</div>
 <p>The same neighbourhood happens to produce the same centre value as the mean filter in this particular example.</p>
 <p>That is not generally true.</p>
 <hr />
@@ -977,18 +915,10 @@ frequency-domain low-pass filtering</code></pre>
     </div>
     <div class="section-body">
       <p>The median filter is nonlinear.</p>
-<p>For:</p>
-<p>
-$$
-[10,10,10,10,200]
-$$
-</p>
-<p>the median is:</p>
-<p>
-$$
-10
-$$
-</p>
+<p>For: $[10,10,10,10,200]$ the median is:</p>
+<div class="math-display">
+  $$10$$
+</div>
 <p>So a large isolated outlier is removed without averaging the values toward it.</p>
 <p>This makes median filtering especially useful for impulse-like “salt-and-pepper” noise.</p>
 <hr />
@@ -1004,23 +934,17 @@ $$
     </div>
     <div class="section-body">
       <p>Sort the values:</p>
-<p>
-$$
-[10,10,10,10,200]
-$$
-</p>
+<div class="math-display">
+  $$[10,10,10,10,200]$$
+</div>
 <p>The middle value is:</p>
-<p>
-$$
-\boxed{10}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{10}$$
+</div>
 <p>A mean would be:</p>
-<p>
-$$
-\frac{10+10+10+10+200}{5}=48
-$$
-</p>
+<div class="math-display">
+  $$\frac{10+10+10+10+200}{5}=48$$
+</div>
 <p>So the mean is strongly influenced by the outlier while the median is not.</p>
 <p>This illustrates why nonlinear filters can outperform linear averaging for certain noise types.</p>
 <hr />
@@ -1040,18 +964,10 @@ $$
 <p>The kernel is applied in its given orientation.</p>
 <h3>Convolution</h3>
 <p>The kernel is flipped before the weighted sum.</p>
-<p>For a 2-D kernel:</p>
-<p>
-$$
-h(m,n)
-$$
-</p>
-<p>convolution uses:</p>
-<p>
-$$
-h(-m,-n)
-$$
-</p>
+<p>For a 2-D kernel: $h(m,n)$ convolution uses:</p>
+<div class="math-display">
+  $$h(-m,-n)$$
+</div>
 <p>conceptually.</p>
 <hr />
     </div>
@@ -1065,13 +981,7 @@ $$
       <button class="bookmark-btn" data-id="s-08-20" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>If a kernel is symmetric:</p>
-<p>
-$$
-h(m,n)=h(-m,-n)
-$$
-</p>
-<p>then flipping it produces the same kernel.</p>
+      <p>If a kernel is symmetric: $h(m,n)=h(-m,-n)$ then flipping it produces the same kernel.</p>
 <p>Examples include many:</p>
 <ul>
 <li>mean filters,</li>
@@ -1091,22 +1001,18 @@ $$
     </div>
     <div class="section-body">
       <p>Consider a directional kernel such as:</p>
-<p>
-$$
-H=
+<div class="math-display">
+  $$H=
 \begin{bmatrix}
 -1&0&1
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>Flipping it gives:</p>
-<p>
-$$
-\begin{bmatrix}
+<div class="math-display">
+  $$\begin{bmatrix}
 1&0&-1
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>The sign changes.</p>
 <p>Therefore correlation and convolution can produce opposite signs.</p>
 <p>The magnitude may remain informative, but the direction/orientation interpretation can differ.</p>
@@ -1123,15 +1029,13 @@ $$
     </div>
     <div class="section-body">
       <p>A discrete 2-D convolution can be written:</p>
-<p>
-$$
-g[m,n]
+<div class="math-display">
+  $$g[m,n]
 =
 \sum_{k}\sum_{\ell}
 f[k,\ell]\,
-h[m-k,n-\ell]
-$$
-</p>
+h[m-k,n-\ell]$$
+</div>
 <p>Alternative equivalent indexing conventions exist.</p>
 <p>The key conceptual feature is:</p>
 <blockquote>
@@ -1185,11 +1089,9 @@ $$
     </div>
     <div class="section-body">
       <p>Outside the image, assume:</p>
-<p>
-$$
-f=0
-$$
-</p>
+<div class="math-display">
+  $$f=0$$
+</div>
 <p>Conceptually:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -1260,15 +1162,13 @@ aaaaa</code></pre>
     </div>
     <div class="section-body">
       <p>For an input dimension $N$, kernel dimension $K$, stride $S$, and padding $P$, a common output-size expression is:</p>
-<p>
-$$
-N_{\text{out}}
+<div class="math-display">
+  $$N_{\text{out}}
 =
 \left\lfloor
 \frac{N+2P-K}{S}
-\right\rfloor+1
-$$
-</p>
+\right\rfloor+1$$
+</div>
 <p>For the same formula applied separately to height and width.</p>
 <p>This expression is widely used in convolutional computational pipelines.</p>
 <hr />
@@ -1284,46 +1184,32 @@ $$
     </div>
     <div class="section-body">
       <p>Suppose:</p>
-<p>
-$$
-N=7
-$$
-</p>
-<p>
-$$
-K=3
-$$
-</p>
-<p>
-$$
-S=1
-$$
-</p>
-<p>
-$$
-P=0
-$$
-</p>
+<div class="math-display">
+  $$N=7$$
+</div>
+<div class="math-display">
+  $$K=3$$
+</div>
+<div class="math-display">
+  $$S=1$$
+</div>
+<div class="math-display">
+  $$P=0$$
+</div>
 <p>Then:</p>
-<p>
-$$
-N_{\text{out}}
+<div class="math-display">
+  $$N_{\text{out}}
 =
 \left\lfloor
 \frac{7-3}{1}
-\right\rfloor+1
-$$
-</p>
-<p>
-$$
-=4+1
-$$
-</p>
-<p>
-$$
-\boxed{5}
-$$
-</p>
+\right\rfloor+1$$
+</div>
+<div class="math-display">
+  $$=4+1$$
+</div>
+<div class="math-display">
+  $$\boxed{5}$$
+</div>
 <p>So a 7×7 input with a 3×3 kernel, stride 1 and no padding gives 5×5 output in this standard valid-convolution geometry.</p>
 <hr />
     </div>
@@ -1405,37 +1291,15 @@ sharpened image</code></pre>
       <button class="bookmark-btn" data-id="s-08-31" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Let:</p>
-<p>
-$$
-f
-$$
-</p>
-<p>be the original image.</p>
-<p>Let a low-pass filter produce:</p>
-<p>
-$$
-f_{\text{blur}}
-$$
-</p>
-<p>Then the detail mask is:</p>
-<p>
-$$
-m=f-f_{\text{blur}}
-$$
-</p>
-<p>A sharpened image can be:</p>
-<p>
-$$
-g=f+k\,m
-$$
-</p>
-<p>where:</p>
-<p>
-$$
-k>0
-$$
-</p>
+      <p>Let: $f$ be the original image.</p>
+<p>Let a low-pass filter produce: $f_{\text{blur}}$ Then the detail mask is:</p>
+<div class="math-display">
+  $$m=f-f_{\text{blur}}$$
+</div>
+<p>A sharpened image can be $g=f+k\,m$, where:</p>
+<div class="math-display">
+  $$k>0$$
+</div>
 <p>controls the sharpening strength.</p>
 <p>This is called unsharp masking even though it uses a blurred image to construct the “mask.”</p>
 <hr />
@@ -1450,29 +1314,17 @@ $$
       <button class="bookmark-btn" data-id="s-08-32" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Substitute:</p>
-<p>
-$$
-m=f-f_{\text{blur}}
-$$
-</p>
-<p>into:</p>
-<p>
-$$
-g=f+km
-$$
-</p>
+      <p>Substitute: $m=f-f_{\text{blur}}$ into:</p>
+<div class="math-display">
+  $$g=f+km$$
+</div>
 <p>to get:</p>
-<p>
-$$
-g=f+k(f-f_{\text{blur}})
-$$
-</p>
-<p>
-$$
-g=(1+k)f-kf_{\text{blur}}
-$$
-</p>
+<div class="math-display">
+  $$g=f+k(f-f_{\text{blur}})$$
+</div>
+<div class="math-display">
+  $$g=(1+k)f-kf_{\text{blur}}$$
+</div>
 <p>This makes the operation's linear-combination structure explicit.</p>
 <hr />
     </div>
@@ -1486,49 +1338,23 @@ $$
       <button class="bookmark-btn" data-id="s-08-33" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose at one pixel:</p>
-<p>
-$$
-f=120
-$$
-</p>
-<p>and the blurred value is:</p>
-<p>
-$$
-f_{\text{blur}}=100
-$$
-</p>
+      <p>Suppose at one pixel: $f=120$, and the blurred value is:</p>
+<div class="math-display">
+  $$f_{\text{blur}}=100$$
+</div>
 <p>Then:</p>
-<p>
-$$
-m=120-100=20
-$$
-</p>
+<div class="math-display">
+  $$m=120-100=20$$
+</div>
 <p>For:</p>
-<p>
-$$
-k=1
-$$
-</p>
-<p>we get:</p>
-<p>
-$$
-g=120+20=140
-$$
-</p>
-<p>So the local detail is emphasized.</p>
-<p>If instead:</p>
-<p>
-$$
-k=0.5
-$$
-</p>
-<p>then:</p>
-<p>
-$$
-g=120+0.5(20)=130
-$$
-</p>
+<div class="math-display">
+  $$k=1$$
+</div>
+<p>we get: $g=120+20=140$ So the local detail is emphasized.</p>
+<p>If instead: $k=0.5$ then:</p>
+<div class="math-display">
+  $$g=120+0.5(20)=130$$
+</div>
 <p>Thus $k$ controls the strength.</p>
 <hr />
     </div>
@@ -1542,18 +1368,10 @@ $$
       <button class="bookmark-btn" data-id="s-08-34" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>A stronger generalization is:</p>
-<p>
-$$
-g=A f-f_{\text{blur}}
-$$
-</p>
-<p>with:</p>
-<p>
-$$
-A>1
-$$
-</p>
+      <p>A stronger generalization is $g=A f-f_{\text{blur}}$ with:</p>
+<div class="math-display">
+  $$A>1$$
+</div>
 <p>When $A=1+k$, this can be related directly to the unsharp expression.</p>
 <p>High-boost filtering can increase fine detail more aggressively, but it can also amplify noise.</p>
 <hr />
@@ -1570,26 +1388,22 @@ $$
     <div class="section-body">
       <p>The Laplacian is a second-derivative operator.</p>
 <p>In continuous form:</p>
-<p>
-$$
-\nabla^2f
+<div class="math-display">
+  $$\nabla^2f
 =
 \frac{\partial^2f}{\partial x^2}
 +
-\frac{\partial^2f}{\partial y^2}
-$$
-</p>
+\frac{\partial^2f}{\partial y^2}$$
+</div>
 <p>A common discrete approximation is:</p>
-<p>
-$$
-H=
+<div class="math-display">
+  $$H=
 \begin{bmatrix}
 0&1&0\\
 1&-4&1\\
 0&1&0
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>or a sign-reversed version depending on convention.</p>
 <p>Different textbooks use different signs.</p>
 <p>The important thing is to keep the kernel and the sharpening formula consistent.</p>
@@ -1636,18 +1450,10 @@ edge / fine structure
       <button class="bookmark-btn" data-id="s-08-37" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Depending on sign convention:</p>
-<p>
-$$
-g=f-\nabla^2f
-$$
-</p>
-<p>or:</p>
-<p>
-$$
-g=f+\nabla^2f
-$$
-</p>
+      <p>Depending on sign convention: $g=f-\nabla^2f$, or:</p>
+<div class="math-display">
+  $$g=f+\nabla^2f$$
+</div>
 <p>may be used.</p>
 <p>The correct version depends on the chosen Laplacian kernel sign.</p>
 <blockquote>
@@ -1699,39 +1505,33 @@ $$
     </div>
     <div class="section-body">
       <p>For a continuous image:</p>
-<p>
-$$
-\nabla f=
+<div class="math-display">
+  $$\nabla f=
 \begin{bmatrix}
 \frac{\partial f}{\partial x}\\[4pt]
 \frac{\partial f}{\partial y}
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>The gradient magnitude is:</p>
-<p>
-$$
-|\nabla f|
+<div class="math-display">
+  $$|\nabla f|
 =
 \sqrt{
 \left(\frac{\partial f}{\partial x}\right)^2
 +
 \left(\frac{\partial f}{\partial y}\right)^2
-}
-$$
-</p>
+}$$
+</div>
 <p>The gradient direction is:</p>
-<p>
-$$
-\theta
+<div class="math-display">
+  $$\theta
 =
 \operatorname{atan2}
 \left(
 \frac{\partial f}{\partial y},
 \frac{\partial f}{\partial x}
-\right)
-$$
-</p>
+\right)$$
+</div>
 <p>These concepts are central to edge detection.</p>
 <hr />
     </div>
@@ -1746,24 +1546,20 @@ $$
     </div>
     <div class="section-body">
       <p>A very simple horizontal derivative approximation is:</p>
-<p>
-$$
-H_x=
+<div class="math-display">
+  $$H_x=
 \begin{bmatrix}
 -1&1
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>A vertical version is:</p>
-<p>
-$$
-H_y=
+<div class="math-display">
+  $$H_y=
 \begin{bmatrix}
 -1\\
 1
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>These approximate directional change.</p>
 <p>They are simple but highly noise-sensitive.</p>
 <hr />
@@ -1780,26 +1576,22 @@ $$
     <div class="section-body">
       <p>The Sobel operator combines differentiation with some smoothing.</p>
 <p>A common pair is:</p>
-<p>
-$$
-G_x=
+<div class="math-display">
+  $$G_x=
 \begin{bmatrix}
 -1&0&1\\
 -2&0&2\\
 -1&0&1
-\end{bmatrix}
-$$
-</p>
-<p>
-$$
-G_y=
+\end{bmatrix}$$
+</div>
+<div class="math-display">
+  $$G_y=
 \begin{bmatrix}
 -1&-2&-1\\
 0&0&0\\
 1&2&1
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>Different sign conventions also exist.</p>
 <p>The resulting responses estimate horizontal and vertical intensity derivatives.</p>
 <hr />
@@ -1814,25 +1606,15 @@ $$
       <button class="bookmark-btn" data-id="s-08-42" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>After computing:</p>
-<p>
-$$
-G_x,\quad G_y
-$$
-</p>
-<p>the exact magnitude is:</p>
-<p>
-$$
-G=
-\sqrt{G_x^2+G_y^2}
-$$
-</p>
+      <p>After computing: $G_x,\quad G_y$ the exact magnitude is:</p>
+<div class="math-display">
+  $$G=
+\sqrt{G_x^2+G_y^2}$$
+</div>
 <p>A cheaper approximation sometimes used is:</p>
-<p>
-$$
-G\approx|G_x|+|G_y|
-$$
-</p>
+<div class="math-display">
+  $$G\approx|G_x|+|G_y|$$
+</div>
 <p>The latter is computationally simpler but is not identical to the Euclidean magnitude.</p>
 <hr />
     </div>
@@ -1855,20 +1637,8 @@ $$
   <pre><code>dark | bright</code></pre>
 </div></p>
 <p>The intensity changes strongly from left to right.</p>
-<p>Therefore:</p>
-<p>
-$$
-|G_x|
-$$
-</p>
-<p>will tend to be large.</p>
-<p>The corresponding:</p>
-<p>
-$$
-|G_y|
-$$
-</p>
-<p>may be smaller.</p>
+<p>Therefore: $|G_x|$ will tend to be large.</p>
+<p>The corresponding: $|G_y|$ may be smaller.</p>
 <p>This tells us not only:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -1916,26 +1686,22 @@ edge orientation</code></pre>
     </div>
     <div class="section-body">
       <p>A common Prewitt pair is:</p>
-<p>
-$$
-G_x=
+<div class="math-display">
+  $$G_x=
 \begin{bmatrix}
 -1&0&1\\
 -1&0&1\\
 -1&0&1
-\end{bmatrix}
-$$
-</p>
-<p>
-$$
-G_y=
+\end{bmatrix}$$
+</div>
+<div class="math-display">
+  $$G_y=
 \begin{bmatrix}
 -1&-1&-1\\
 0&0&0\\
 1&1&1
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>Compared with Sobel, the weighting differs.</p>
 <p>Both are gradient-based edge operators.</p>
 <hr />
@@ -2096,9 +1862,8 @@ edge detection</code></pre>
 </blockquote>
 <p>Some 2-D kernels can be expressed as an outer product of two 1-D kernels.</p>
 <p>For the Gaussian-like kernel:</p>
-<p>
-$$
-\begin{bmatrix}
+<div class="math-display">
+  $$\begin{bmatrix}
 1\\2\\1
 \end{bmatrix}
 \begin{bmatrix}
@@ -2109,9 +1874,8 @@ $$
 1&2&1\\
 2&4&2\\
 1&2&1
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>Therefore a 2-D filtering operation can sometimes be implemented as:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -2136,20 +1900,8 @@ vertical 1-D filter</code></pre>
       <button class="bookmark-btn" data-id="s-08-50" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>For an image with $MN$ pixels and a $K\times K$ kernel, direct filtering is roughly proportional to:</p>
-<p>
-$$
-MNK^2
-$$
-</p>
-<p>multiply/add operations, ignoring implementation-specific optimizations.</p>
-<p>For a separable kernel, the work can be closer to:</p>
-<p>
-$$
-2MNK
-$$
-</p>
-<p>in the simple direct model.</p>
+      <p>For an image with $MN$ pixels and a $K\times K$ kernel, direct filtering is roughly proportional to: $MNK^2$ multiply/add operations, ignoring implementation-specific optimizations.</p>
+<p>For a separable kernel, the work can be closer to: $2MNK$ in the simple direct model.</p>
 <p>This is why separability matters in performance-sensitive image pipelines.</p>
 <hr />
     </div>
@@ -2165,22 +1917,18 @@ $$
     <div class="section-body">
       <p>Many practical derivative kernels have integer coefficients.</p>
 <p>For example:</p>
-<p>
-$$
-G_x=
+<div class="math-display">
+  $$G_x=
 \begin{bmatrix}
 -1&0&1\\
 -2&0&2\\
 -1&0&1
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>The output is not automatically in:</p>
-<p>
-$$
-0\ldots255
-$$
-</p>
+<div class="math-display">
+  $$0\ldots255$$
+</div>
 <p>It may contain:</p>
 <ul>
 <li>negative values,</li>
@@ -2212,11 +1960,9 @@ $$
     </div>
     <div class="section-body">
       <p>Suppose a derivative response is:</p>
-<p>
-$$
--120
-$$
-</p>
+<div class="math-display">
+  $$-120$$
+</div>
 <p>A direct unsigned conversion can produce unexpected behaviour depending on the conversion mechanism.</p>
 <p>The intended scientific quantity is not:</p>
 <p><div class="code-block">
@@ -2242,41 +1988,31 @@ $$
     </div>
     <div class="section-body">
       <p>Consider:</p>
-<p>
-$$
-I=
+<div class="math-display">
+  $$I=
 \begin{bmatrix}
 10&10&100\\
 10&10&100\\
 10&10&100
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>Apply a simple horizontal derivative:</p>
-<p>
-$$
-H=
+<div class="math-display">
+  $$H=
 \begin{bmatrix}
 -1&0&1
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>At the centre row:</p>
-<p>
-$$
-(-1)(10)+(0)(10)+(1)(100)
-$$
-</p>
-<p>
-$$
-=-10+100
-$$
-</p>
-<p>
-$$
-\boxed{90}
-$$
-</p>
+<div class="math-display">
+  $$(-1)(10)+(0)(10)+(1)(100)$$
+</div>
+<div class="math-display">
+  $$=-10+100$$
+</div>
+<div class="math-display">
+  $$\boxed{90}$$
+</div>
 <p>A strong positive response indicates a strong increase from left to right under this kernel convention.</p>
 <hr />
     </div>
@@ -2501,89 +2237,71 @@ datatype</code></pre>
     </div>
     <div class="section-body">
       <h3>Linear spatial filter</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 g(x,y)=
 \sum_s\sum_t
 w(s,t)f(x-s,y-t)
-}
-$$
-</p>
+}$$
+</div>
 <h3>2-D convolution</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 g[m,n]
 =
 \sum_k\sum_\ell
 f[k,\ell]h[m-k,n-\ell]
-}
-$$
-</p>
+}$$
+</div>
 <h3>Gradient</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 \nabla f=
 \left[
 f_x,\ f_y
 \right]^T
-}
-$$
-</p>
+}$$
+</div>
 <h3>Gradient magnitude</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 |\nabla f|=
 \sqrt{f_x^2+f_y^2}
-}
-$$
-</p>
+}$$
+</div>
 <h3>Gradient direction</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 \theta=\operatorname{atan2}(f_y,f_x)
-}
-$$
-</p>
+}$$
+</div>
 <h3>Unsharp mask</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 m=f-f_{\text{blur}}
-}
-$$
-</p>
-<p>
-$$
-\boxed{
+}$$
+</div>
+<div class="math-display">
+  $$\boxed{
 g=f+k\,m
-}
-$$
-</p>
+}$$
+</div>
 <h3>High-boost</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 g=Af-f_{\text{blur}},\quad A>1
-}
-$$
-</p>
+}$$
+</div>
 <h3>Output dimension</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 N_{\text{out}}
 =
 \left\lfloor
 \frac{N+2P-K}{S}
 \right\rfloor+1
-}
-$$
-</p>
+}$$
+</div>
 <hr />
     </div>
   </section>
@@ -2597,48 +2315,38 @@ $$
     </div>
     <div class="section-body">
       <p>Given:</p>
-<p>
-$$
-P=
+<div class="math-display">
+  $$P=
 \begin{bmatrix}
 2&4&6\\
 4&8&10\\
 6&10&12
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>and:</p>
-<p>
-$$
-H=
+<div class="math-display">
+  $$H=
 \frac19
 \begin{bmatrix}
 1&1&1\\
 1&1&1\\
 1&1&1
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>calculate the filtered centre value.</p>
 <h3>Solution</h3>
-<p>
-$$
-2+4+6+4+8+10+6+10+12
+<div class="math-display">
+  $$2+4+6+4+8+10+6+10+12
 =
-62
-$$
-</p>
+62$$
+</div>
 <p>Therefore:</p>
-<p>
-$$
-g=\frac{62}{9}
-$$
-</p>
-<p>
-$$
-\boxed{g\approx6.89}
-$$
-</p>
+<div class="math-display">
+  $$g=\frac{62}{9}$$
+</div>
+<div class="math-display">
+  $$\boxed{g\approx6.89}$$
+</div>
 <p>The output may then need rounding or floating-point preservation depending on the pipeline.</p>
 <hr />
     </div>
@@ -2652,49 +2360,31 @@ $$
       <button class="bookmark-btn" data-id="s-08-62" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose:</p>
-<p>
-$$
-G_x=6
-$$
-</p>
-<p>and:</p>
-<p>
-$$
-G_y=8
-$$
-</p>
+      <p>Suppose: $G_x=6$, and:</p>
+<div class="math-display">
+  $$G_y=8$$
+</div>
 <p>Then:</p>
-<p>
-$$
-|\nabla f|
+<div class="math-display">
+  $$|\nabla f|
 =
-\sqrt{6^2+8^2}
-$$
-</p>
-<p>
-$$
-=\sqrt{36+64}
-$$
-</p>
-<p>
-$$
-=\sqrt{100}
-$$
-</p>
-<p>
-$$
-\boxed{10}
-$$
-</p>
+\sqrt{6^2+8^2}$$
+</div>
+<div class="math-display">
+  $$=\sqrt{36+64}$$
+</div>
+<div class="math-display">
+  $$=\sqrt{100}$$
+</div>
+<div class="math-display">
+  $$\boxed{10}$$
+</div>
 <p>Gradient direction:</p>
-<p>
-$$
-\theta=
+<div class="math-display">
+  $$\theta=
 \operatorname{atan2}(8,6)
-\approx53.13^\circ
-$$
-</p>
+\approx53.13^\circ$$
+</div>
 <p>The edge orientation is approximately perpendicular to the gradient direction under the idealized local-edge interpretation.</p>
 <hr />
     </div>
@@ -2709,44 +2399,34 @@ $$
     </div>
     <div class="section-body">
       <p>Take:</p>
-<p>
-$$
-P=
+<div class="math-display">
+  $$P=
 \begin{bmatrix}
 10&10&10\\
 10&50&10\\
 10&10&10
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>and:</p>
-<p>
-$$
-H=
+<div class="math-display">
+  $$H=
 \begin{bmatrix}
 0&1&0\\
 1&-4&1\\
 0&1&0
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>Then:</p>
-<p>
-$$
-g=
-10+10-4(50)+10+10
-$$
-</p>
-<p>
-$$
-=40-200
-$$
-</p>
-<p>
-$$
-\boxed{-160}
-$$
-</p>
+<div class="math-display">
+  $$g=
+10+10-4(50)+10+10$$
+</div>
+<div class="math-display">
+  $$=40-200$$
+</div>
+<div class="math-display">
+  $$\boxed{-160}$$
+</div>
 <p>The strong signed response reflects strong second-order local variation.</p>
 <p>If this is used for sharpening, the sign convention must be combined correctly with the sharpening equation.</p>
 <hr />
@@ -3138,9 +2818,9 @@ $$\text{Total Separable Multiplications} = M \cdot N \cdot k + M \cdot N \cdot k
 </li>
 </ol>
 <h3>Speedup Ratio Formulation</h3>
-<p>
-$$\text{Speedup Factor } S = \frac{\text{Direct Ops}}{\text{Separable Ops}} = \frac{M \cdot N \cdot k^2}{2 \cdot M \cdot N \cdot k} = \frac{k}{2}$$
-</p>
+<div class="math-display">
+  $$\text{Speedup Factor } S = \frac{\text{Direct Ops}}{\text{Separable Ops}} = \frac{M \cdot N \cdot k^2}{2 \cdot M \cdot N \cdot k} = \frac{k}{2}$$
+</div>
 <div class="table-wrap">
   <table class="comparison-table">
     <thead>

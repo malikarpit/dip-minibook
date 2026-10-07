@@ -22,7 +22,7 @@
       svg: { fontCache: 'global' }
     };
   </script>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script id="MathJax-script" async src="../assets/js/mathjax/tex-mml-chtml.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';"></script>
 </head>
 <body data-chapter-id="ch18-mathematical-morphology">
   <div id="progress-bar"></div>
@@ -428,13 +428,7 @@ GEOMETRIC TRANSFORMATION</code></pre>
       <button class="bookmark-btn" data-id="s-18-3" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Let:</p>
-<p>
-$$
-A
-$$
-</p>
-<p>be the set of foreground pixel coordinates.</p>
+      <p>Let: $A$ be the set of foreground pixel coordinates.</p>
 <p>For example:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -446,16 +440,14 @@ $$
 1 1 0</code></pre>
 </div></p>
 <p>corresponds to:</p>
-<p>
-$$
-A=
+<div class="math-display">
+  $$A=
 \{
 (1,2),(1,3),
 (2,2),
 (3,1),(3,2)
-\}
-$$
-</p>
+\}$$
+</div>
 <p>assuming the stated coordinate convention.</p>
 <p>Morphological operations transform this set.</p>
 <hr />
@@ -472,28 +464,24 @@ $$
     <div class="section-body">
       <p>A <strong>structuring element (SE)</strong> is a small geometric pattern used to probe the image.</p>
 <p>Example:</p>
-<p>
-$$
-B=
+<div class="math-display">
+  $$B=
 \begin{bmatrix}
 0&1&0\\
 1&1&1\\
 0&1&0
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>This is a cross-shaped structuring element.</p>
 <p>Another common SE:</p>
-<p>
-$$
-B=
+<div class="math-display">
+  $$B=
 \begin{bmatrix}
 1&1&1\\
 1&1&1\\
 1&1&1
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>The SE's:</p>
 <ul>
 <li>shape,</li>
@@ -599,23 +587,15 @@ dilation
       <button class="bookmark-btn" data-id="s-18-7" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>For sets:</p>
-<p>
-$$
-A\oplus B
-$$
-</p>
-<p>is the dilation of $A$ by $B$.</p>
+      <p>For sets: $A\oplus B$ is the dilation of $A$ by $B$.</p>
 <p>A set-theoretic interpretation is:</p>
-<p>
-$$
-A\oplus B
+<div class="math-display">
+  $$A\oplus B
 =
 \{z\mid
 (B)_z\cap A\ne\varnothing
-\}
-$$
-</p>
+\}$$
+</div>
 <p>under the standard reflected/translated structuring-element convention.</p>
 <p>Equivalent textbook forms may differ in how reflection and origin are defined.</p>
 <hr />
@@ -654,39 +634,33 @@ overlaps foreground
     </div>
     <div class="section-body">
       <p>Input:</p>
-<p>
-$$
-A=
+<div class="math-display">
+  $$A=
 \begin{bmatrix}
 0&0&0\\
 0&1&0\\
 0&0&0
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>Use:</p>
-<p>
-$$
-B=
+<div class="math-display">
+  $$B=
 \begin{bmatrix}
 0&1&0\\
 1&1&1\\
 0&1&0
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>Then:</p>
-<p>
-$$
-A\oplus B
+<div class="math-display">
+  $$A\oplus B
 =
 \begin{bmatrix}
 0&1&0\\
 1&1&1\\
 0&1&0
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>A single foreground point expands into the SE shape.</p>
 <hr />
     </div>
@@ -735,22 +709,14 @@ erosion
       <button class="bookmark-btn" data-id="s-18-11" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>The erosion:</p>
-<p>
-$$
-A\ominus B
-$$
-</p>
-<p>can be defined as:</p>
-<p>
-$$
-A\ominus B
+      <p>The erosion: $A\ominus B$ can be defined as:</p>
+<div class="math-display">
+  $$A\ominus B
 =
 \{z\mid
 (B)_z\subseteq A
-\}
-$$
-</p>
+\}$$
+</div>
 <p>under the standard convention.</p>
 <p>Interpretation:</p>
 <blockquote>
@@ -769,38 +735,32 @@ $$
     </div>
     <div class="section-body">
       <p>Consider:</p>
-<p>
-$$
-A=
+<div class="math-display">
+  $$A=
 \begin{bmatrix}
 1&1&1\\
 1&1&1\\
 1&1&1
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>with:</p>
-<p>
-$$
-B=
+<div class="math-display">
+  $$B=
 \begin{bmatrix}
 1&1&1\\
 1&1&1\\
 1&1&1
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>Using a centred SE and valid binary erosion, only the centre location can support the full 3×3 SE.</p>
 <p>So the conceptual result is:</p>
-<p>
-$$
-\begin{bmatrix}
+<div class="math-display">
+  $$\begin{bmatrix}
 0&0&0\\
 0&1&0\\
 0&0&0
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>Boundary convention can change the full output canvas representation, so the example focuses on the morphological support relationship.</p>
 <hr />
     </div>
@@ -860,13 +820,11 @@ EROSION
     </div>
     <div class="section-body">
       <p>Opening is:</p>
-<p>
-$$
-A\circ B
+<div class="math-display">
+  $$A\circ B
 =
-(A\ominus B)\oplus B
-$$
-</p>
+(A\ominus B)\oplus B$$
+</div>
 <p>So:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -967,13 +925,11 @@ dilation
     </div>
     <div class="section-body">
       <p>Closing is:</p>
-<p>
-$$
-A\bullet B
+<div class="math-display">
+  $$A\bullet B
 =
-(A\oplus B)\ominus B
-$$
-</p>
+(A\oplus B)\ominus B$$
+</div>
 <p>So:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -1074,19 +1030,11 @@ CLOSING
       <button class="bookmark-btn" data-id="s-18-20" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>A powerful property:</p>
-<p>
-$$
-(A\circ B)\circ B=A\circ B
-$$
-</p>
-<p>for standard binary opening.</p>
+      <p>A powerful property: $(A\circ B)\circ B=A\circ B$ for standard binary opening.</p>
 <p>Similarly:</p>
-<p>
-$$
-(A\bullet B)\bullet B=A\bullet B
-$$
-</p>
+<div class="math-display">
+  $$(A\bullet B)\bullet B=A\bullet B$$
+</div>
 <p>for closing.</p>
 <p>This means:</p>
 <blockquote>
@@ -1105,18 +1053,10 @@ $$
       <button class="bookmark-btn" data-id="s-18-21" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>For suitable sets:</p>
-<p>
-$$
-A\subseteq C
-$$
-</p>
-<p>implies:</p>
-<p>
-$$
-A\oplus B\subseteq C\oplus B
-$$
-</p>
+      <p>For suitable sets: $A\subseteq C$ implies:</p>
+<div class="math-display">
+  $$A\oplus B\subseteq C\oplus B$$
+</div>
 <p>and similarly for erosion/opening/closing under the corresponding standard morphology properties.</p>
 <p>The intuition is:</p>
 <p><div class="code-block">
@@ -1154,13 +1094,7 @@ $$
       <button class="bookmark-btn" data-id="s-18-23" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>A boundary can be obtained from:</p>
-<p>
-$$
-\beta(A)=A-(A\ominus B)
-$$
-</p>
-<p>where subtraction indicates set difference for binary morphology.</p>
+      <p>A boundary can be obtained from $\beta(A)=A-(A\ominus B)$, where subtraction indicates set difference for binary morphology.</p>
 <p>Conceptually:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -1243,11 +1177,9 @@ boundary</code></pre>
     </div>
     <div class="section-body">
       <p>A common morphological gradient is:</p>
-<p>
-$$
-G_m=(A\oplus B)-(A\ominus B)
-$$
-</p>
+<div class="math-display">
+  $$G_m=(A\oplus B)-(A\ominus B)$$
+</div>
 <p>This highlights transition regions around objects.</p>
 <p>Conceptually:</p>
 <p><div class="code-block">
@@ -1351,21 +1283,17 @@ location matches</code></pre>
 <p>For a grayscale image $f$ and flat structuring element $B$:</p>
 <h3>Grayscale dilation</h3>
 <p>Conceptually:</p>
-<p>
-$$
-(f\oplus B)(x)
+<div class="math-display">
+  $$(f\oplus B)(x)
 =
-\max_{b\in B} f(x-b)
-$$
-</p>
+\max_{b\in B} f(x-b)$$
+</div>
 <h3>Grayscale erosion</h3>
-<p>
-$$
-(f\ominus B)(x)
+<div class="math-display">
+  $$(f\ominus B)(x)
 =
-\min_{b\in B} f(x+b)
-$$
-</p>
+\min_{b\in B} f(x+b)$$
+</div>
 <p>Exact indexing/sign convention depends on the chosen morphological definition.</p>
 <p>The key idea is:</p>
 <p><div class="code-block">
@@ -1391,12 +1319,10 @@ erosion
       <button class="bookmark-btn" data-id="s-18-29" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>
-$$
-f\circ B=
-(f\ominus B)\oplus B
-$$
-</p>
+      <div class="math-display">
+  $$f\circ B=
+(f\ominus B)\oplus B$$
+</div>
 <p>It can suppress bright structures smaller than the SE.</p>
 <p>Conversely, closing can suppress/fill dark structures of suitable size.</p>
 <p>This provides a powerful scale-based interpretation.</p>
@@ -1413,11 +1339,9 @@ $$
     </div>
     <div class="section-body">
       <p>White top-hat:</p>
-<p>
-$$
-T_W=f-(f\circ B)
-$$
-</p>
+<div class="math-display">
+  $$T_W=f-(f\circ B)$$
+</div>
 <p>It emphasizes bright structures that are smaller than the structuring element's effective scale.</p>
 <p>Conceptually:</p>
 <p><div class="code-block">
@@ -1444,11 +1368,9 @@ bright details</code></pre>
     </div>
     <div class="section-body">
       <p>Black-hat:</p>
-<p>
-$$
-T_B=(f\bullet B)-f
-$$
-</p>
+<div class="math-display">
+  $$T_B=(f\bullet B)-f$$
+</div>
 <p>It emphasizes dark structures relative to a locally closed background.</p>
 <p>These operations are useful for tasks such as:</p>
 <ul>
@@ -1479,13 +1401,7 @@ $$
 small bright dots</code></pre>
 </div></p>
 <p>Opening removes many small bright structures.</p>
-<p>Then:</p>
-<p>
-$$
-f-(f\circ B)
-$$
-</p>
-<p>leaves those bright structures emphasized.</p>
+<p>Then: $f-(f\circ B)$ leaves those bright structures emphasized.</p>
 <p>Thus white top-hat acts like a morphology-based small-bright-feature detector.</p>
 <hr />
     </div>
@@ -1500,26 +1416,12 @@ $$
     </div>
     <div class="section-body">
       <p>This is one of the most important morphology ideas.</p>
-<p>Suppose target object width is:</p>
-<p>
-$$
-3\text{ pixels}
-$$
-</p>
-<p>and the SE is:</p>
-<p>
-$$
-11\times11
-$$
-</p>
+<p>Suppose target object width is $3\text{ pixels}$, and the SE is:</p>
+<div class="math-display">
+  $$11\times11$$
+</div>
 <p>A morphology operation may treat the 3-pixel object as small relative to the chosen scale.</p>
-<p>Change the SE to:</p>
-<p>
-$$
-3\times3
-$$
-</p>
-<p>and the same object may survive.</p>
+<p>Change the SE to: $3\times3$, and the same object may survive.</p>
 <p>Therefore morphology is inherently scale-sensitive.</p>
 <hr />
     </div>
@@ -1853,11 +1755,9 @@ distance-like measures</code></pre>
 </blockquote>
 <p>A distance transform assigns each foreground pixel a distance to the nearest background pixel under a chosen metric.</p>
 <p>For example:</p>
-<p>
-$$
-D(p)=\min_{q\in\text{background}}d(p,q)
-$$
-</p>
+<div class="math-display">
+  $$D(p)=\min_{q\in\text{background}}d(p,q)$$
+</div>
 <p>A large value indicates a pixel deep inside the object.</p>
 <p>This can support:</p>
 <ul>
@@ -2047,19 +1947,15 @@ possibly different result</code></pre>
 <h2>Trap 3 — “Opening = dilation then erosion.”</h2>
 <p>False.</p>
 <p>Standard opening is:</p>
-<p>
-$$
-erosion\rightarrow dilation
-$$
-</p>
+<div class="math-display">
+  $$erosion\rightarrow dilation$$
+</div>
 <h2>Trap 4 — “Closing = erosion then dilation.”</h2>
 <p>False.</p>
 <p>Standard closing is:</p>
-<p>
-$$
-dilation\rightarrow erosion
-$$
-</p>
+<div class="math-display">
+  $$dilation\rightarrow erosion$$
+</div>
 <h2>Trap 5 — “Bigger SE is always better.”</h2>
 <p>False.</p>
 <p>It can eliminate genuine structures.</p>
@@ -2085,85 +1981,65 @@ $$
     </div>
     <div class="section-body">
       <h3>Dilation</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 A\oplus B
-}
-$$
-</p>
+}$$
+</div>
 <h3>Erosion</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 A\ominus B
-}
-$$
-</p>
+}$$
+</div>
 <h3>Opening</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 A\circ B=(A\ominus B)\oplus B
-}
-$$
-</p>
+}$$
+</div>
 <h3>Closing</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 A\bullet B=(A\oplus B)\ominus B
-}
-$$
-</p>
+}$$
+</div>
 <h3>Boundary extraction</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 \beta(A)=A-(A\ominus B)
-}
-$$
-</p>
+}$$
+</div>
 <h3>Morphological gradient</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 G_m=(A\oplus B)-(A\ominus B)
-}
-$$
-</p>
+}$$
+</div>
 <h3>White top-hat</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 T_W=f-(f\circ B)
-}
-$$
-</p>
+}$$
+</div>
 <h3>Black-hat</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 T_B=(f\bullet B)-f
-}
-$$
-</p>
+}$$
+</div>
 <h3>Grayscale dilation, conceptual flat-SE form</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 (f\oplus B)(x)=\max_{b\in B}f(x-b)
-}
-$$
-</p>
+}$$
+</div>
 <h3>Grayscale erosion, conceptual flat-SE form</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 (f\ominus B)(x)=\min_{b\in B}f(x+b)
-}
-$$
-</p>
+}$$
+</div>
 <hr />
     </div>
   </section>
@@ -2178,13 +2054,11 @@ $$
     <div class="section-body">
       <p>State the sequence for opening.</p>
 <p>Answer:</p>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 A\circ B=(A\ominus B)\oplus B
-}
-$$
-</p>
+}$$
+</div>
 <p>Therefore:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -2217,13 +2091,11 @@ smooth certain boundary protrusions</code></pre>
     </div>
     <div class="section-body">
       <p>State the sequence for closing.</p>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 A\bullet B=(A\oplus B)\ominus B
-}
-$$
-</p>
+}$$
+</div>
 <p>Therefore:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -2256,45 +2128,33 @@ fill small holes</code></pre>
     </div>
     <div class="section-body">
       <p>Given:</p>
-<p>
-$$
-A=
+<div class="math-display">
+  $$A=
 \begin{bmatrix}
 1&1&1\\
 1&1&1\\
 1&1&1
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>and erosion result:</p>
-<p>
-$$
-A\ominus B=
+<div class="math-display">
+  $$A\ominus B=
 \begin{bmatrix}
 0&0&0\\
 0&1&0\\
 0&0&0
-\end{bmatrix}
-$$
-</p>
-<p>Then:</p>
-<p>
-$$
-A-(A\ominus B)
-$$
-</p>
-<p>gives:</p>
-<p>
-$$
-\boxed{
+\end{bmatrix}$$
+</div>
+<p>Then: $A-(A\ominus B)$ gives:</p>
+<div class="math-display">
+  $$\boxed{
 \begin{bmatrix}
 1&1&1\\
 1&0&1\\
 1&1&1
 \end{bmatrix}
-}
-$$
-</p>
+}$$
+</div>
 <p>This extracts a boundary-like structure under the example convention.</p>
 <hr />
     </div>
@@ -2436,13 +2296,7 @@ fill holes</code></pre>
       <button class="bookmark-btn" data-id="s-18-58" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose the smallest valid object diameter is:</p>
-<p>
-$$
-d=8
-$$
-</p>
-<p>pixels.</p>
+      <p>Suppose the smallest valid object diameter is $d=8$ pixels.</p>
 <p>A 15×15 opening may remove that object.</p>
 <p>Therefore:</p>
 <blockquote>
@@ -2473,13 +2327,7 @@ vs
 ground truth</code></pre>
 </div></p>
 <p>Do not assume that a prettier mask is automatically more accurate.</p>
-<p>Measure:</p>
-<p>
-$$
-IoU,\quad Dice
-$$
-</p>
-<p>and inspect:</p>
+<p>Measure: $IoU,\quad Dice$, and inspect:</p>
 <p><div class="code-block">
   <div class="code-header">
     <span>text</span>

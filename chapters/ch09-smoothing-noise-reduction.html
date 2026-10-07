@@ -22,7 +22,7 @@
       svg: { fontCache: 'global' }
     };
   </script>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script id="MathJax-script" async src="../assets/js/mathjax/tex-mml-chtml.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';"></script>
 </head>
 <body data-chapter-id="ch09-smoothing-noise-reduction">
   <div id="progress-bar"></div>
@@ -396,13 +396,7 @@ filtered response</code></pre>
 <li>storage,</li>
 <li>processing.</li>
 </ul>
-<p>A simple additive model is:</p>
-<p>
-$$
-g(x,y)=f(x,y)+\eta(x,y)
-$$
-</p>
-<p>where:</p>
+<p>A simple additive model is $g(x,y)=f(x,y)+\eta(x,y)$, where:</p>
 <ul>
 <li>$f$ = ideal/original image,</li>
 <li>$\eta$ = noise,</li>
@@ -504,32 +498,22 @@ compression/processing</code></pre>
     <div class="section-body">
       <p>A common simplified model assumes noise values follow a Gaussian distribution.</p>
 <p>Its probability density function is:</p>
-<p>
-$$
-p(\eta)=
+<div class="math-display">
+  $$p(\eta)=
 \frac{1}{\sqrt{2\pi\sigma^2}}
-e^{-\frac{(\eta-\mu)^2}{2\sigma^2}}
-$$
-</p>
+e^{-\frac{(\eta-\mu)^2}{2\sigma^2}}$$
+</div>
 <p>where:</p>
 <ul>
 <li>$\mu$ = mean,</li>
 <li>$\sigma^2$ = variance.</li>
 </ul>
-<p>For zero-mean Gaussian noise:</p>
-<p>
-$$
-\mu=0
-$$
-</p>
-<p>and:</p>
-<p>
-$$
-p(\eta)=
+<p>For zero-mean Gaussian noise: $\mu=0$, and:</p>
+<div class="math-display">
+  $$p(\eta)=
 \frac{1}{\sqrt{2\pi\sigma^2}}
-e^{-\frac{\eta^2}{2\sigma^2}}
-$$
-</p>
+e^{-\frac{\eta^2}{2\sigma^2}}$$
+</div>
 <hr />
     </div>
   </section>
@@ -618,25 +602,19 @@ salt   → bright impulses</code></pre>
     </div>
     <div class="section-body">
       <p>Consider:</p>
-<p>
-$$
-[10,10,10,10,250]
-$$
-</p>
+<div class="math-display">
+  $$[10,10,10,10,250]$$
+</div>
 <p>Mean:</p>
-<p>
-$$
-\frac{10+10+10+10+250}{5}
+<div class="math-display">
+  $$\frac{10+10+10+10+250}{5}
 =
-58
-$$
-</p>
+58$$
+</div>
 <p>Median:</p>
-<p>
-$$
-10
-$$
-</p>
+<div class="math-display">
+  $$10$$
+</div>
 <p>The single extreme outlier moves the mean substantially.</p>
 <p>The median is much more resistant to that outlier.</p>
 <p>Therefore:</p>
@@ -662,22 +640,14 @@ $$
     </div>
     <div class="section-body">
       <p>A simplified uniform-noise model assumes equal probability within a finite interval.</p>
-<p>For:</p>
-<p>
-$$
-a\le\eta\le b
-$$
-</p>
-<p>the probability density is:</p>
-<p>
-$$
-p(\eta)=
+<p>For: $a\le\eta\le b$ the probability density is:</p>
+<div class="math-display">
+  $$p(\eta)=
 \begin{cases}
 \frac{1}{b-a},&a\le\eta\le b\\
 0,&\text{otherwise}
-\end{cases}
-$$
-</p>
+\end{cases}$$
+</div>
 <p>Uniform noise may be useful in simulation and analysis even when it is not a perfect physical model.</p>
 <hr />
     </div>
@@ -710,11 +680,9 @@ $$
 </div></p>
 <p>in structured directions.</p>
 <p>A useful model can be:</p>
-<p>
-$$
-\eta(x,y)=A\sin(2\pi(u_0x+v_0y)+\phi)
-$$
-</p>
+<div class="math-display">
+  $$\eta(x,y)=A\sin(2\pi(u_0x+v_0y)+\phi)$$
+</div>
 <p>where:</p>
 <ul>
 <li>$A$ = amplitude,</li>
@@ -735,21 +703,9 @@ $$
       <button class="bookmark-btn" data-id="s-09-11" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Some imaging systems are better described using a multiplicative model:</p>
-<p>
-$$
-g(x,y)=f(x,y)n(x,y)
-$$
-</p>
-<p>where $n$ is a multiplicative noise factor.</p>
+      <p>Some imaging systems are better described using a multiplicative model $g(x,y)=f(x,y)n(x,y)$, where $n$ is a multiplicative noise factor.</p>
 <p>This occurs in settings such as coherent imaging.</p>
-<p>A common extension is the logarithmic transformation:</p>
-<p>
-$$
-\ln g=\ln f+\ln n
-$$
-</p>
-<p>which turns multiplication into addition, making additive-noise tools potentially more applicable after suitable handling.</p>
+<p>A common extension is the logarithmic transformation: $\ln g=\ln f+\ln n$, which turns multiplication into addition, making additive-noise tools potentially more applicable after suitable handling.</p>
 <blockquote>
 <p><strong>EXTENSION:</strong> This transformation requires positive-valued data and careful range/zero handling.</p>
 </blockquote>
@@ -847,27 +803,23 @@ sensor/acquisition noise
     </div>
     <div class="section-body">
       <p>A useful quality concept is the signal-to-noise ratio:</p>
-<p>
-$$
-\mathrm{SNR}
+<div class="math-display">
+  $$\mathrm{SNR}
 =
 \frac{P_{\text{signal}}}
-{P_{\text{noise}}}
-$$
-</p>
+{P_{\text{noise}}}$$
+</div>
 <p>where $P$ denotes an appropriate power measure.</p>
 <p>In decibels:</p>
-<p>
-$$
-\mathrm{SNR}_{dB}
+<div class="math-display">
+  $$\mathrm{SNR}_{dB}
 =
 10\log_{10}
 \left(
 \frac{P_{\text{signal}}}
 {P_{\text{noise}}}
-\right)
-$$
-</p>
+\right)$$
+</div>
 <p>A higher SNR generally indicates a stronger signal relative to noise under the chosen measurement definition.</p>
 <hr />
     </div>
@@ -882,17 +834,15 @@ $$
     </div>
     <div class="section-body">
       <p>When RMS amplitudes rather than powers are used:</p>
-<p>
-$$
-\mathrm{SNR}_{dB}
+<div class="math-display">
+  $$\mathrm{SNR}_{dB}
 =
 20\log_{10}
 \left(
 \frac{A_{\text{signal}}}
 {A_{\text{noise}}}
-\right)
-$$
-</p>
+\right)$$
+</div>
 <p>This is mathematically consistent with the power form when power is proportional to squared amplitude.</p>
 <blockquote>
 <p><strong>Exam trap:</strong> Use 10 log for a power ratio and 20 log for an amplitude ratio.</p>
@@ -911,33 +861,27 @@ $$
     <div class="section-body">
       <p>For image restoration tasks, <strong>Peak Signal-to-Noise Ratio (PSNR)</strong> is often used.</p>
 <p>For maximum possible sample value $MAX_I$ and mean squared error $MSE$:</p>
-<p>
-$$
-\mathrm{PSNR}
+<div class="math-display">
+  $$\mathrm{PSNR}
 =
 10\log_{10}
 \left(
 \frac{MAX_I^2}{MSE}
-\right)
-$$
-</p>
+\right)$$
+</div>
 <p>If the image is an 8-bit representation with maximum value 255:</p>
-<p>
-$$
-MAX_I=255
-$$
-</p>
+<div class="math-display">
+  $$MAX_I=255$$
+</div>
 <p>Then:</p>
-<p>
-$$
-\mathrm{PSNR}
+<div class="math-display">
+  $$\mathrm{PSNR}
 =
 10\log_{10}
 \left(
 \frac{255^2}{MSE}
-\right)
-$$
-</p>
+\right)$$
+</div>
 <hr />
     </div>
   </section>
@@ -951,15 +895,13 @@ $$
     </div>
     <div class="section-body">
       <p>For two images $I$ and $K$:</p>
-<p>
-$$
-MSE=
+<div class="math-display">
+  $$MSE=
 \frac{1}{MN}
 \sum_{x=0}^{M-1}
 \sum_{y=0}^{N-1}
-[I(x,y)-K(x,y)]^2
-$$
-</p>
+[I(x,y)-K(x,y)]^2$$
+</div>
 <p>For colour images, the averaging convention must be stated because channels may be incorporated differently.</p>
 <hr />
     </div>
@@ -983,49 +925,35 @@ $$
 Output:     12 18 29 43</code></pre>
 </div></p>
 <p>Errors:</p>
-<p>
-$$
-2,-2,-1,3
-$$
-</p>
+<div class="math-display">
+  $$2,-2,-1,3$$
+</div>
 <p>Squared errors:</p>
-<p>
-$$
-4,4,1,9
-$$
-</p>
+<div class="math-display">
+  $$4,4,1,9$$
+</div>
 <p>Therefore:</p>
-<p>
-$$
-MSE=\frac{4+4+1+9}{4}
-$$
-</p>
-<p>
-$$
-=\frac{18}{4}
-$$
-</p>
-<p>
-$$
-\boxed{4.5}
-$$
-</p>
+<div class="math-display">
+  $$MSE=\frac{4+4+1+9}{4}$$
+</div>
+<div class="math-display">
+  $$=\frac{18}{4}$$
+</div>
+<div class="math-display">
+  $$\boxed{4.5}$$
+</div>
 <p>For an 8-bit image:</p>
-<p>
-$$
-PSNR=
+<div class="math-display">
+  $$PSNR=
 10\log_{10}
 \left(
 \frac{255^2}{4.5}
-\right)
-$$
-</p>
+\right)$$
+</div>
 <p>which is approximately:</p>
-<p>
-$$
-\boxed{41.6\text{ dB}}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{41.6\text{ dB}}$$
+</div>
 <hr />
     </div>
   </section>
@@ -1071,14 +999,12 @@ $$
     </div>
     <div class="section-body">
       <p>The $K\times K$ mean filter computes:</p>
-<p>
-$$
-g(x,y)
+<div class="math-display">
+  $$g(x,y)
 =
 \frac{1}{K^2}
-\sum_{s,t}f(x-s,y-t)
-$$
-</p>
+\sum_{s,t}f(x-s,y-t)$$
+</div>
 <p>under the chosen boundary convention.</p>
 <p>Its main effect is:</p>
 <p><div class="code-block">
@@ -1104,14 +1030,12 @@ $$
     <div class="section-body">
       <p>A Gaussian filter uses distance-dependent weights.</p>
 <p>Continuous Gaussian:</p>
-<p>
-$$
-G(x,y)
+<div class="math-display">
+  $$G(x,y)
 =
 \frac{1}{2\pi\sigma^2}
-e^{-\frac{x^2+y^2}{2\sigma^2}}
-$$
-</p>
+e^{-\frac{x^2+y^2}{2\sigma^2}}$$
+</div>
 <p>Higher $\sigma$ gives a wider kernel.</p>
 <p>Conceptually:</p>
 <p><div class="code-block">
@@ -1222,24 +1146,14 @@ large σ
     </div>
     <div class="section-body">
       <p>For an odd-sized neighbourhood, arrange the values in sorted order and select the middle value.</p>
-<p>For:</p>
-<p>
-$$
-[12,11,13,10,120]
-$$
-</p>
-<p>sorted:</p>
-<p>
-$$
-[10,11,12,13,120]
-$$
-</p>
+<p>For: $[12,11,13,10,120]$ sorted:</p>
+<div class="math-display">
+  $$[10,11,12,13,120]$$
+</div>
 <p>median:</p>
-<p>
-$$
-\boxed{12}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{12}$$
+</div>
 <p>The extreme outlier has much less effect than it would under averaging.</p>
 <hr />
     </div>
@@ -1279,13 +1193,7 @@ $$
       <button class="bookmark-btn" data-id="s-09-26" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>A common choice is:</p>
-<p>
-$$
-3\times3
-$$
-</p>
-<p>for mild impulse noise.</p>
+      <p>A common choice is $3\times3$ for mild impulse noise.</p>
 <p>Larger kernels:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -1318,26 +1226,20 @@ $$
       <p>The median belongs to a broader family.</p>
 <p>For values in a neighbourhood:</p>
 <h3>Minimum filter</h3>
-<p>
-$$
-g=\min\{f_i\}
-$$
-</p>
+<div class="math-display">
+  $$g=\min\{f_i\}$$
+</div>
 <p>Useful for emphasizing dark regions / suppressing bright impulses in some contexts.</p>
 <h3>Maximum filter</h3>
-<p>
-$$
-g=\max\{f_i\}
-$$
-</p>
+<div class="math-display">
+  $$g=\max\{f_i\}$$
+</div>
 <p>Useful for emphasizing bright regions / suppressing dark impulses in some contexts.</p>
 <h3>Midpoint filter</h3>
-<p>
-$$
-g=
-\frac{\min+\max}{2}
-$$
-</p>
+<div class="math-display">
+  $$g=
+\frac{\min+\max}{2}$$
+</div>
 <p>Can be useful for certain noise types but is sensitive to extremes.</p>
 <hr />
     </div>
@@ -1352,12 +1254,10 @@ $$
     </div>
     <div class="section-body">
       <p>The arithmetic mean is:</p>
-<p>
-$$
-g=
-\frac{1}{N}\sum_{i=1}^{N}x_i
-$$
-</p>
+<div class="math-display">
+  $$g=
+\frac{1}{N}\sum_{i=1}^{N}x_i$$
+</div>
 <p>It reduces random variation by averaging.</p>
 <p>But every sample participates equally.</p>
 <p>Thus extreme outliers can strongly influence the result.</p>
@@ -1374,14 +1274,12 @@ $$
     </div>
     <div class="section-body">
       <p>A geometric mean is:</p>
-<p>
-$$
-g=
+<div class="math-display">
+  $$g=
 \left(
 \prod_{i=1}^{N}x_i
-\right)^{1/N}
-$$
-</p>
+\right)^{1/N}$$
+</div>
 <p>This requires careful treatment when values are zero or negative.</p>
 <p>For typical nonnegative image data, it can behave differently from arithmetic averaging and can sometimes preserve detail better.</p>
 <blockquote>
@@ -1400,14 +1298,12 @@ $$
     </div>
     <div class="section-body">
       <p>The harmonic mean can be written:</p>
-<p>
-$$
-g=
+<div class="math-display">
+  $$g=
 \frac{N}{
 \sum_{i=1}^{N}\frac{1}{x_i}
-}
-$$
-</p>
+}$$
+</div>
 <p>It also requires nonzero values.</p>
 <p>It is particularly sensitive to small values.</p>
 <p>Its use is more specialized than the mean or median.</p>
@@ -1424,16 +1320,14 @@ $$
     </div>
     <div class="section-body">
       <p>A contraharmonic mean filter is:</p>
-<p>
-$$
-g=
+<div class="math-display">
+  $$g=
 \frac{
 \sum x_i^{Q+1}
 }{
 \sum x_i^Q
-}
-$$
-</p>
+}$$
+</div>
 <p>where $Q$ is the filter parameter.</p>
 <p>A commonly taught property is:</p>
 <p><div class="code-block">
@@ -1502,17 +1396,10 @@ Q &lt; 0
 <p><strong>EXTENSION</strong></p>
 </blockquote>
 <p>A fixed filter treats every neighbourhood similarly.</p>
-<p>An adaptive filter attempts to use local statistics:</p>
-<p>
-$$
-\mu_L,\qquad \sigma_L^2
-$$
-</p>
-<p>to decide how strongly to smooth.</p>
+<p>An adaptive filter attempts to use local statistics: $\mu_L,\qquad \sigma_L^2$ to decide how strongly to smooth.</p>
 <p>One common form is:</p>
-<p>
-$$
-\hat f(x,y)
+<div class="math-display">
+  $$\hat f(x,y)
 =
 g(x,y)
 -
@@ -1520,9 +1407,8 @@ g(x,y)
 {\sigma_L^2}
 \left[
 g(x,y)-\mu_L
-\right]
-$$
-</p>
+\right]$$
+</div>
 <p>when the local variance is treated as informative and under the assumptions of the particular model.</p>
 <p>Interpretation:</p>
 <p><div class="code-block">
@@ -2006,13 +1892,7 @@ wrap</code></pre>
       <button class="bookmark-btn" data-id="s-09-47" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>For a direct $K\times K$ linear filter:</p>
-<p>
-$$
-O(MNK^2)
-$$
-</p>
-<p>is a useful simple complexity estimate.</p>
+      <p>For a direct $K\times K$ linear filter: $O(MNK^2)$ is a useful simple complexity estimate.</p>
 <p>A separable Gaussian can reduce the direct work substantially.</p>
 <p>Median filtering has different computational behaviour because sorting/order statistics are involved.</p>
 <p>Modern implementations may use optimized algorithms, vectorization or specialized hardware.</p>
@@ -2110,78 +1990,62 @@ evaluate:
     </div>
     <div class="section-body">
       <h3>Additive noise</h3>
-<p>
-$$
-\boxed{g=f+\eta}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{g=f+\eta}$$
+</div>
 <h3>Gaussian PDF</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 p(\eta)=
 \frac{1}{\sqrt{2\pi\sigma^2}}
 e^{-\frac{(\eta-\mu)^2}{2\sigma^2}}
-}
-$$
-</p>
+}$$
+</div>
 <h3>Uniform PDF</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 p(\eta)=\frac1{b-a},
 \quad a\le\eta\le b
-}
-$$
-</p>
+}$$
+</div>
 <h3>SNR</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 SNR=\frac{P_s}{P_n}
-}
-$$
-</p>
+}$$
+</div>
 <h3>SNR in dB</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 SNR_{dB}
 =
 10\log_{10}\frac{P_s}{P_n}
-}
-$$
-</p>
+}$$
+</div>
 <h3>PSNR</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 PSNR
 =
 10\log_{10}
 \frac{MAX_I^2}{MSE}
-}
-$$
-</p>
+}$$
+</div>
 <h3>MSE</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 MSE=
 \frac1{MN}
 \sum
 (I-K)^2
-}
-$$
-</p>
+}$$
+</div>
 <h3>Median</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 g=\operatorname{median}\{f_i\}
-}
-$$
-</p>
+}$$
+</div>
 <hr />
     </div>
   </section>

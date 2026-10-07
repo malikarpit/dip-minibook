@@ -22,7 +22,7 @@
       svg: { fontCache: 'global' }
     };
   </script>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script id="MathJax-script" async src="../assets/js/mathjax/tex-mml-chtml.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';"></script>
 </head>
 <body data-chapter-id="ch24-wavelets-jpeg2000">
   <div id="progress-bar"></div>
@@ -444,13 +444,7 @@ JPEG bitstream</code></pre>
     </div>
     <div class="section-body">
       <p>Photographs are large numerical datasets.</p>
-<p>A raw 24-bit RGB image requires approximately:</p>
-<p>
-$$
-24\text{ bits/pixel}.
-$$
-</p>
-<p>For large images, that becomes expensive in:</p>
+<p>A raw 24-bit RGB image requires approximately: $24\text{ bits/pixel}.$ For large images, that becomes expensive in:</p>
 <ul>
 <li>storage;</li>
 <li>transmission;</li>
@@ -574,24 +568,18 @@ Cr  = red-difference chroma component</code></pre>
     </div>
     <div class="section-body">
       <p>A commonly encountered full-range conversion is conceptually represented by equations such as:</p>
-<p>
-$$
-Y=
-0.299R+0.587G+0.114B
-$$
-</p>
-<p>
-$$
-Cb=
--0.168736R-0.331264G+0.5B+128
-$$
-</p>
-<p>
-$$
-Cr=
-0.5R-0.418688G-0.081312B+128.
-$$
-</p>
+<div class="math-display">
+  $$Y=
+0.299R+0.587G+0.114B$$
+</div>
+<div class="math-display">
+  $$Cb=
+-0.168736R-0.331264G+0.5B+128$$
+</div>
+<div class="math-display">
+  $$Cr=
+0.5R-0.418688G-0.081312B+128.$$
+</div>
 <p>These equations are useful for understanding the separation of brightness and chroma.</p>
 <h3>Caveat</h3>
 <p>JPEG implementation details can involve specific range, offset, and sampling conventions. Different APIs may expose normalized or differently scaled variants.</p>
@@ -612,17 +600,13 @@ $$
     </div>
     <div class="section-body">
       <p>For a pure white pixel:</p>
-<p>
-$$
-R=G=B=255.
-$$
-</p>
+<div class="math-display">
+  $$R=G=B=255.$$
+</div>
 <p>Using the common full-range conceptual equations:</p>
-<p>
-$$
-Y=255.
-$$
-</p>
+<div class="math-display">
+  $$Y=255.$$
+</div>
 <p>The chroma channels are approximately centered near their neutral value.</p>
 <p>This is intuitively sensible:</p>
 <p><div class="code-block">
@@ -634,13 +618,7 @@ $$
 → maximum brightness
 → little colour difference</code></pre>
 </div></p>
-<p>For a grey pixel where:</p>
-<p>
-$$
-R=G=B,
-$$
-</p>
-<p>the chrominance difference is similarly near neutral.</p>
+<p>For a grey pixel where: $R=G=B,$ the chrominance difference is similarly near neutral.</p>
 <hr />
     </div>
   </section>
@@ -724,17 +702,13 @@ lower total rate</code></pre>
 <h1>12. 8×8 Block Partitioning</h1>
 <p>Each component is divided into small blocks.</p>
 <p>For baseline JPEG, the standard block size is:</p>
-<p>
-$$
-8\times8.
-$$
-</p>
+<div class="math-display">
+  $$8\times8.$$
+</div>
 <p>Thus each block has:</p>
-<p>
-$$
-64
-$$
-</p>
+<div class="math-display">
+  $$64$$
+</div>
 <p>samples.</p>
 <p>The transform is then applied block by block.</p>
 <p>Conceptually:</p>
@@ -797,11 +771,9 @@ $$
     <div class="section-body">
       <p>Image dimensions are not always multiples of 8.</p>
 <p>Suppose:</p>
-<p>
-$$
-W=1017,\qquad H=769.
-$$
-</p>
+<div class="math-display">
+  $$W=1017,\qquad H=769.$$
+</div>
 <p>Both dimensions require handling before forming complete 8×8 blocks.</p>
 <p>A teaching implementation may use padding.</p>
 <p>Possible policies include:</p>
@@ -829,17 +801,13 @@ $$
     </div>
     <div class="section-body">
       <p>For a typical 8-bit sample:</p>
-<p>
-$$
-0\le f\le255.
-$$
-</p>
+<div class="math-display">
+  $$0\le f\le255.$$
+</div>
 <p>The JPEG-style transform preparation centers the values:</p>
-<p>
-$$
-f'=f-128.
-$$
-</p>
+<div class="math-display">
+  $$f'=f-128.$$
+</div>
 <p>Therefore:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -884,9 +852,8 @@ $$
     </div>
     <div class="section-body">
       <p>For each 8×8 block:</p>
-<p>
-$$
-F(u,v)
+<div class="math-display">
+  $$F(u,v)
 =
 \alpha(u)\alpha(v)
 \sum_{x=0}^{7}
@@ -899,9 +866,8 @@ f'(x,y)
 \cos
 \left[
 \frac{(2y+1)v\pi}{16}
-\right].
-$$
-</p>
+\right].$$
+</div>
 <p>The resulting block still contains 64 coefficients.</p>
 <p>The number of values has not magically fallen.</p>
 <p>What has changed is the <strong>representation</strong>.</p>
@@ -932,13 +898,7 @@ $$
 │      higher frequencies    │
 └───────────────────────────┘</code></pre>
 </div></p>
-<p>The top-left coefficient:</p>
-<p>
-$$
-F(0,0)
-$$
-</p>
-<p>is the DC component.</p>
+<p>The top-left coefficient: $F(0,0)$ is the DC component.</p>
 <p>The remaining 63 are AC coefficients.</p>
 <hr />
     </div>
@@ -953,31 +913,21 @@ $$
     </div>
     <div class="section-body">
       <p>Now apply a quantization matrix $Q$:</p>
-<p>
-$$
-\hat F(u,v)
+<div class="math-display">
+  $$\hat F(u,v)
 =
 \operatorname{round}
 \left(
 \frac{F(u,v)}{Q(u,v)}
-\right).
-$$
-</p>
+\right).$$
+</div>
 <p>During decoding:</p>
-<p>
-$$
-F_{\text{recon}}(u,v)
+<div class="math-display">
+  $$F_{\text{recon}}(u,v)
 =
-\hat F(u,v)Q(u,v).
-$$
-</p>
-<p>Because of rounding:</p>
-<p>
-$$
-F_{\text{recon}}\neq F
-$$
-</p>
-<p>in general.</p>
+\hat F(u,v)Q(u,v).$$
+</div>
+<p>Because of rounding: $F_{\text{recon}}\neq F$ in general.</p>
 <p>This is why the usual baseline JPEG process is lossy.</p>
 <hr />
     </div>
@@ -992,57 +942,43 @@ $$
     </div>
     <div class="section-body">
       <p>Suppose:</p>
-<p>
-$$
-F=
+<div class="math-display">
+  $$F=
 \begin{bmatrix}
 400&40&12&5\\
 32&10&4&2\\
 15&5&2&1\\
 4&2&1&0
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>and for teaching we use:</p>
-<p>
-$$
-Q=
+<div class="math-display">
+  $$Q=
 \begin{bmatrix}
 10&10&16&20\\
 10&16&20&24\\
 16&20&24&28\\
 20&24&28&32
-\end{bmatrix}.
-$$
-</p>
+\end{bmatrix}.$$
+</div>
 <p>Then:</p>
-<p>
-$$
-\hat F=
-\operatorname{round}(F/Q).
-$$
-</p>
+<div class="math-display">
+  $$\hat F=
+\operatorname{round}(F/Q).$$
+</div>
 <p>Examples:</p>
-<p>
-$$
-400/10=40
-$$
-</p>
-<p>
-$$
-40/10=4
-$$
-</p>
-<p>
-$$
-12/16=0.75\rightarrow1
-$$
-</p>
-<p>
-$$
-5/20=0.25\rightarrow0.
-$$
-</p>
+<div class="math-display">
+  $$400/10=40$$
+</div>
+<div class="math-display">
+  $$40/10=4$$
+</div>
+<div class="math-display">
+  $$12/16=0.75\rightarrow1$$
+</div>
+<div class="math-display">
+  $$5/20=0.25\rightarrow0.$$
+</div>
 <p>Several small coefficients become zero.</p>
 <p>The exact JPEG tables are standardized examples of this broader idea.</p>
 <hr />
@@ -1113,11 +1049,9 @@ Entropy coding
 <p><strong>Where does JPEG lose information?</strong></p>
 </blockquote>
 <p>For the conventional lossy pipeline, the major intentional loss comes from:</p>
-<p>
-$$
-\boxed{\text{quantization}}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{\text{quantization}}$$
+</div>
 <p>There can also be information reduction from chroma subsampling when used.</p>
 <p>The following stages are primarily representational/coding operations:</p>
 <p><div class="code-block">
@@ -1176,15 +1110,13 @@ larger compressed size
 higher quality</code></pre>
 </div></p>
 <p>Thus:</p>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 \text{compression}
 \leftrightarrow
 \text{quality}
-}
-$$
-</p>
+}$$
+</div>
 <p>is not a fixed relationship; it is controlled by operating choices.</p>
 <hr />
     </div>
@@ -1208,11 +1140,9 @@ $$
   <pre><code>quality = 80</code></pre>
 </div></p>
 <p>as though it were universally:</p>
-<p>
-$$
-80\% \text{ of original image quality}.
-$$
-</p>
+<div class="math-display">
+  $$80\% \text{ of original image quality}.$$
+</div>
 <p>The parameter usually influences quantization tables or related encoder settings.</p>
 <p>Different encoders can map the same numerical quality setting differently.</p>
 <p>Therefore:</p>
@@ -1274,11 +1204,9 @@ high-frequency coefficients
 <p>Neighbouring image blocks often have similar DC values.</p>
 <p>Instead of independently coding every DC coefficient, JPEG can code differences between successive DC values.</p>
 <p>Conceptually:</p>
-<p>
-$$
-\Delta DC_i=DC_i-DC_{i-1}.
-$$
-</p>
+<div class="math-display">
+  $$\Delta DC_i=DC_i-DC_{i-1}.$$
+</div>
 <p>Example:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -1527,11 +1455,9 @@ reconstructed image</code></pre>
 </div></p>
 <p>The decoder does not recover information discarded during quantization.</p>
 <p>Therefore:</p>
-<p>
-$$
-\boxed{\text{decompression} \neq \text{restoration of the original}}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{\text{decompression} \neq \text{restoration of the original}}$$
+</div>
 <p>It reconstructs the best image represented by the stored compressed information.</p>
 <hr />
     </div>
@@ -1545,55 +1471,35 @@ $$
       <button class="bookmark-btn" data-id="s-24-32" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>If the quantized coefficient is:</p>
-<p>
-$$
-\hat F(u,v),
-$$
-</p>
-<p>the decoder estimates:</p>
-<p>
-$$
-F'(u,v)=
-\hat F(u,v)Q(u,v).
-$$
-</p>
+      <p>If the quantized coefficient is $\hat F(u,v),$ the decoder estimates:</p>
+<div class="math-display">
+  $$F'(u,v)=
+\hat F(u,v)Q(u,v).$$
+</div>
 <p>Example:</p>
 <p>Encoder:</p>
-<p>
-$$
-F=17,\quad Q=10
-$$
-</p>
-<p>
-$$
-\hat F=\operatorname{round}(1.7)=2.
-$$
-</p>
+<div class="math-display">
+  $$F=17,\quad Q=10$$
+</div>
+<div class="math-display">
+  $$\hat F=\operatorname{round}(1.7)=2.$$
+</div>
 <p>Decoder:</p>
-<p>
-$$
-F'=2(10)=20.
-$$
-</p>
+<div class="math-display">
+  $$F'=2(10)=20.$$
+</div>
 <p>Original:</p>
-<p>
-$$
-17.
-$$
-</p>
+<div class="math-display">
+  $$17.$$
+</div>
 <p>Reconstructed coefficient:</p>
-<p>
-$$
-20.
-$$
-</p>
+<div class="math-display">
+  $$20.$$
+</div>
 <p>The difference:</p>
-<p>
-$$
-20-17=3
-$$
-</p>
+<div class="math-display">
+  $$20-17=3$$
+</div>
 <p>cannot be recovered from the compressed representation.</p>
 <hr />
     </div>
@@ -1609,9 +1515,8 @@ $$
     <div class="section-body">
       <p>After dequantization, the inverse DCT reconstructs the block.</p>
 <p>Conceptually:</p>
-<p>
-$$
-f'(x,y)=
+<div class="math-display">
+  $$f'(x,y)=
 \sum_{u=0}^{7}
 \sum_{v=0}^{7}
 \alpha(u)\alpha(v)
@@ -1623,15 +1528,12 @@ F'(u,v)
 \cos
 \left[
 \frac{(2y+1)v\pi}{16}
-\right].
-$$
-</p>
+\right].$$
+</div>
 <p>After inverse transform, the level shift is undone:</p>
-<p>
-$$
-f(x,y)=f'(x,y)+128.
-$$
-</p>
+<div class="math-display">
+  $$f(x,y)=f'(x,y)+128.$$
+</div>
 <p>The exact implementation includes the relevant rounding/clipping rules.</p>
 <hr />
     </div>
@@ -1647,11 +1549,9 @@ $$
     <div class="section-body">
       <p>Numerical inverse operations can produce values outside the valid display range.</p>
 <p>For 8-bit samples, values are typically clipped/rounded back into:</p>
-<p>
-$$
-[0,255].
-$$
-</p>
+<div class="math-display">
+  $$[0,255].$$
+</div>
 <p>Conceptually:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -1747,46 +1647,28 @@ Low quality
       <button class="bookmark-btn" data-id="s-24-37" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose an uncompressed image occupies:</p>
-<p>
-$$
-8\text{ MB}
-$$
-</p>
-<p>and the JPEG is:</p>
-<p>
-$$
-1.6\text{ MB}.
-$$
-</p>
+      <p>Suppose an uncompressed image occupies: $8\text{ MB}$, and the JPEG is:</p>
+<div class="math-display">
+  $$1.6\text{ MB}.$$
+</div>
 <p>Compression ratio:</p>
-<p>
-$$
-CR=\frac{8}{1.6}=5.
-$$
-</p>
+<div class="math-display">
+  $$CR=\frac{8}{1.6}=5.$$
+</div>
 <p>Therefore:</p>
-<p>
-$$
-\boxed{5:1}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{5:1}$$
+</div>
 <p>Percentage reduction:</p>
-<p>
-$$
-\left(1-\frac{1.6}{8}\right)100
-$$
-</p>
-<p>
-$$
-=(1-0.2)100
-$$
-</p>
-<p>
-$$
-=\boxed{80\%}.
-$$
-</p>
+<div class="math-display">
+  $$\left(1-\frac{1.6}{8}\right)100$$
+</div>
+<div class="math-display">
+  $$=(1-0.2)100$$
+</div>
+<div class="math-display">
+  $$=\boxed{80\%}.$$
+</div>
 <hr />
     </div>
   </section>
@@ -2177,13 +2059,7 @@ disp(qcoeff);</code></pre>
       <button class="bookmark-btn" data-id="s-24-45" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>To inspect reconstruction error:</p>
-<p>
-$$
-D(x,y)=I(x,y)-\hat I(x,y).
-$$
-</p>
-<p>For visualization:</p>
+      <p>To inspect reconstruction error: $D(x,y)=I(x,y)-\hat I(x,y).$ For visualization:</p>
 <p><div class="code-block">
   <div class="code-header">
     <span>python</span>
@@ -2216,24 +2092,20 @@ original image</code></pre>
     </div>
     <div class="section-body">
       <p>Useful measurements include:</p>
-<p>
-$$
-MSE=
+<div class="math-display">
+  $$MSE=
 \frac{1}{MN}
 \sum_{x,y}
-(I-\hat I)^2
-$$
-</p>
+(I-\hat I)^2$$
+</div>
 <p>and:</p>
-<p>
-$$
-PSNR=
+<div class="math-display">
+  $$PSNR=
 10\log_{10}
 \left(
 \frac{255^2}{MSE}
-\right)
-$$
-</p>
+\right)$$
+</div>
 <p>for 8-bit images.</p>
 <p>A stronger practical evaluation compares:</p>
 <p><div class="code-block">
@@ -2523,17 +2395,13 @@ Information removed during lossy encoding cannot be recovered exactly.
 <p><strong>What is JPEG?</strong><br />
 A widely used image coding standard/family whose common baseline photographic workflow combines colour representation, 8×8 DCT, quantization, coefficient coding, and entropy coding.</p>
 <p><strong>What is the JPEG block size in baseline JPEG?</strong></p>
-<p>
-$$
-\boxed{8\times8}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{8\times8}$$
+</div>
 <p><strong>Where does the primary lossy operation occur?</strong></p>
-<p>
-$$
-\boxed{\text{Quantization}}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{\text{Quantization}}$$
+</div>
 <p><strong>What is zig-zag scanning used for?</strong><br />
 To order DCT coefficients so that low-frequency coefficients appear earlier and zero runs are concentrated toward the end.</p>
 <hr />
@@ -2596,51 +2464,33 @@ To order DCT coefficients so that low-frequency coefficients appear earlier and 
       <button class="bookmark-btn" data-id="s-24-51" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose one coefficient is:</p>
-<p>
-$$
-F=73
-$$
-</p>
-<p>and:</p>
-<p>
-$$
-Q=16.
-$$
-</p>
+      <p>Suppose one coefficient is $F=73$, and:</p>
+<div class="math-display">
+  $$Q=16.$$
+</div>
 <p>Quantized coefficient:</p>
-<p>
-$$
-\hat F=
+<div class="math-display">
+  $$\hat F=
 \operatorname{round}
 \left(
 \frac{73}{16}
-\right).
-$$
-</p>
-<p>
-$$
-73/16=4.5625
-$$
-</p>
+\right).$$
+</div>
+<div class="math-display">
+  $$73/16=4.5625$$
+</div>
 <p>so:</p>
-<p>
-$$
-\boxed{\hat F=5}.
-$$
-</p>
+<div class="math-display">
+  $$\boxed{\hat F=5}.$$
+</div>
 <p>Decoder estimate:</p>
-<p>
-$$
-F'=5\times16=80.
-$$
-</p>
+<div class="math-display">
+  $$F'=5\times16=80.$$
+</div>
 <p>Thus the coefficient error is:</p>
-<p>
-$$
-80-73=7.
-$$
-</p>
+<div class="math-display">
+  $$80-73=7.$$
+</div>
 <p>This tiny example captures the central mechanism of JPEG's lossy compression.</p>
 <hr />
     </div>
@@ -2798,13 +2648,7 @@ colour conversion
 <h3>Q4 — Practical</h3>
 <p>Why is merely calling a JPEG library function insufficient for the “manual JPEG compression steps” practical?</p>
 <h3>Q5 — Numerical</h3>
-<p>If an 8 MB raw image becomes a 1 MB JPEG, calculate:</p>
-<p>
-$$
-CR
-$$
-</p>
-<p>and percentage reduction.</p>
+<p>If an 8 MB raw image becomes a 1 MB JPEG, calculate: $CR$, and percentage reduction.</p>
 <h3>Q6 — Interpretation</h3>
 <p>Why can a JPEG with a much smaller file size still look acceptable?</p>
 <hr />
@@ -2932,9 +2776,8 @@ bitstream
     </div>
     <div class="section-body">
       <p>JPEG is best understood as a <strong>pipeline of cooperating operations</strong>:</p>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 \text{colour representation}
 \rightarrow
 \text{sampling}
@@ -2946,33 +2789,26 @@ $$
 \text{coefficient coding}
 \rightarrow
 \text{entropy coding}
-}
-$$
-</p>
+}$$
+</div>
 <p>The single most important fact is:</p>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 \text{Quantization is where the principal intentional coefficient information loss occurs}
-}
-$$
-</p>
+}$$
+</div>
 <p>The second most important fact is:</p>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 \text{DCT does not itself reduce the number of coefficients; it creates a representation that is easier to compress}
-}
-$$
-</p>
+}$$
+</div>
 <p>And the third is:</p>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 \text{JPEG compression is not one algorithmic step—it is a pipeline}
-}
-$$
-</p>
+}$$
+</div>
 <p>That pipeline connects everything learned in this part:</p>
 <p><div class="code-block">
   <div class="code-header">

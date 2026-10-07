@@ -22,7 +22,7 @@
       svg: { fontCache: 'global' }
     };
   </script>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script id="MathJax-script" async src="../assets/js/mathjax/tex-mml-chtml.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';"></script>
 </head>
 <body data-chapter-id="ch01-big-picture">
   <div id="progress-bar"></div>
@@ -386,20 +386,8 @@ A digital image is not merely a picture stored on a computer. It is a structured
 <p>The sensor does <strong>not</strong> receive “pixels.” The pixels are part of the digital representation produced after acquisition and discretisation.</p>
 <h3>3. The digital image</h3>
 <p>The computer stores the acquired information as numerical samples.</p>
-<p>For a grayscale image, a simple mathematical model is:</p>
-<p>
-$$
-f(x,y)
-$$
-</p>
-<p>where $x$ and $y$ describe spatial position and $f$ describes image intensity at that position.</p>
-<p>Once the image becomes digital, coordinates and intensity values are represented in discrete form, for example:</p>
-<p>
-$$
-f[m,n]
-$$
-</p>
-<p>or equivalently as a matrix.</p>
+<p>For a grayscale image, a simple mathematical model is $f(x,y)$, where $x$ and $y$ describe spatial position and $f$ describes image intensity at that position.</p>
+<p>Once the image becomes digital, coordinates and intensity values are represented in discrete form, for example $f[m,n]$, or equivalently as a matrix.</p>
 <h3>Mental model</h3>
 <p><div class="code-block">
   <div class="code-header">
@@ -611,42 +599,26 @@ Compressed representation</code></pre>
     <div class="section-body">
       <p>A grayscale image can be represented by a matrix.</p>
 <p>Consider:</p>
-<p>
-$$
-I=
+<div class="math-display">
+  $$I=
 \begin{bmatrix}
 12 & 18 & 25 & 31\\
 15 & 20 & 29 & 35\\
 22 & 28 & 41 & 48\\
 30 & 37 & 50 & 62
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>Each number represents the intensity associated with a pixel location.</p>
-<p>For a conventional 8-bit grayscale representation:</p>
-<p>
-$$
-0 \le I(i,j) \le 255
-$$
-</p>
-<p>with the common interpretation:</p>
+<p>For a conventional 8-bit grayscale representation: $0 \le I(i,j) \le 255$ with the common interpretation:</p>
 <ul>
 <li>lower values → darker intensities;</li>
 <li>higher values → brighter intensities.</li>
 </ul>
 <h3>Matrix notation versus image notation</h3>
-<p>The same information can be described in several ways:</p>
-<p>
-$$
-I(i,j)
-$$
-</p>
-<p>for a pixel at row $i$, column $j$, or</p>
-<p>
-$$
-f(x,y)
-$$
-</p>
+<p>The same information can be described in several ways $I(i,j)$ for a pixel at row $i$, column $j$, or</p>
+<div class="math-display">
+  $$f(x,y)$$
+</div>
 <p>for a mathematical spatial coordinate system.</p>
 <p>These notations are related, but they should not be casually treated as identical in every implementation.</p>
 <blockquote>
@@ -740,41 +712,25 @@ $$
     <div class="section-body">
       <h2>01.7.1 Grayscale image</h2>
 <p>A grayscale image contains one intensity value per pixel.</p>
-<p>Conceptually:</p>
-<p>
-$$
-I(i,j)\in\{0,1,\ldots,L-1\}
-$$
-</p>
-<p>where $L$ is the number of available intensity levels.</p>
-<p>For an 8-bit image:</p>
-<p>
-$$
-L=2^8=256
-$$
-</p>
-<p>So the available values are:</p>
-<p>
-$$
-0,1,2,\ldots,255
-$$
-</p>
+<p>Conceptually $I(i,j)\in\{0,1,\ldots,L-1\}$, where $L$ is the number of available intensity levels.</p>
+<p>For an 8-bit image: $L=2^8=256$ So the available values are:</p>
+<div class="math-display">
+  $$0,1,2,\ldots,255$$
+</div>
 <h3>What grayscale does not mean</h3>
 <p>It does not mean “black and white only.”</p>
 <p>That phrase is often used casually, but a grayscale image can contain many intensity levels between black and white.</p>
 <hr />
 <h2>01.7.2 RGB colour image</h2>
 <p>An RGB image represents colour using three channels:</p>
-<p>
-$$
-I(i,j)=
+<div class="math-display">
+  $$I(i,j)=
 \begin{bmatrix}
 R(i,j)\\
 G(i,j)\\
 B(i,j)
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>A colour image can therefore be thought of as three aligned grayscale-like planes.</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -795,13 +751,7 @@ $$
 <hr />
 <h2>01.7.3 Multispectral image</h2>
 <p>A multispectral image contains several bands beyond ordinary RGB.</p>
-<p>Conceptually:</p>
-<p>
-$$
-I(i,j,b)
-$$
-</p>
-<p>where $b$ denotes a spectral band.</p>
+<p>Conceptually $I(i,j,b)$, where $b$ denotes a spectral band.</p>
 <p>Such representations are common in fields such as remote sensing.</p>
 <p><strong>EXTENSION:</strong> The number and wavelength of bands depend on the sensor. Multispectral and hyperspectral imagery therefore should not be treated as merely “RGB with more colours.” They provide measurements across different portions of the electromagnetic spectrum.</p>
 <hr />
@@ -819,11 +769,9 @@ $$
       <p>A useful classification is to ask <strong>how much of the image an output value depends on</strong>.</p>
 <h2>Point operation</h2>
 <p>Each output pixel depends only on the corresponding input pixel:</p>
-<p>
-$$
-g(i,j)=T\left(I(i,j)\right)
-$$
-</p>
+<div class="math-display">
+  $$g(i,j)=T\left(I(i,j)\right)$$
+</div>
 <p>Examples:</p>
 <ul>
 <li>negative transformation;</li>
@@ -942,17 +890,13 @@ The transformation reverses the intensity scale.
 <h2>Transform-domain operation</h2>
 <p>Some problems become easier after representing the image in another mathematical domain.</p>
 <p>For Fourier processing:</p>
-<p>
-$$
-f(x,y)\xrightarrow{\mathcal{F}}F(u,v)
-$$
-</p>
+<div class="math-display">
+  $$f(x,y)\xrightarrow{\mathcal{F}}F(u,v)$$
+</div>
 <p>Processing is then performed in the transformed representation before returning to the spatial domain:</p>
-<p>
-$$
-F(u,v)\xrightarrow{\mathcal{F}^{-1}}g(x,y)
-$$
-</p>
+<div class="math-display">
+  $$F(u,v)\xrightarrow{\mathcal{F}^{-1}}g(x,y)$$
+</div>
 <p><strong>DEEP DIVE:</strong> The transform does not create new physical information by itself. It changes representation so particular structures—especially spatial frequency content—can be manipulated more conveniently.</p>
 <hr />
     </div>
@@ -1036,52 +980,34 @@ $$
       <button class="bookmark-btn" data-id="s-01-10" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose an image has dimensions:</p>
-<p>
-$$
-1920\times1080
-$$
-</p>
-<p>and is stored as an 8-bit grayscale image.</p>
+      <p>Suppose an image has dimensions $1920\times1080$, and is stored as an 8-bit grayscale image.</p>
 <h3>Step 1 — Number of pixels</h3>
-<p>
-$$
-N=1920\times1080=2,073,600\text{ pixels}
-$$
-</p>
+<div class="math-display">
+  $$N=1920\times1080=2,073,600\text{ pixels}$$
+</div>
 <h3>Step 2 — Bytes per pixel</h3>
 <p>For an 8-bit grayscale representation:</p>
-<p>
-$$
-8\text{ bits}=1\text{ byte}
-$$
-</p>
+<div class="math-display">
+  $$8\text{ bits}=1\text{ byte}$$
+</div>
 <h3>Step 3 — Raw storage</h3>
-<p>
-$$
-2,073,600\times1
-=2,073,600\text{ bytes}
-$$
-</p>
+<div class="math-display">
+  $$2,073,600\times1
+=2,073,600\text{ bytes}$$
+</div>
 <p>This is approximately:</p>
-<p>
-$$
-\frac{2,073,600}{1,048,576}\approx1.98\text{ MiB}
-$$
-</p>
+<div class="math-display">
+  $$\frac{2,073,600}{1,048,576}\approx1.98\text{ MiB}$$
+</div>
 <h3>What about RGB?</h3>
 <p>A three-channel 8-bit RGB representation uses three bytes per spatial location if stored without additional packing/compression:</p>
-<p>
-$$
-2,073,600\times3=6,220,800\text{ bytes}
-$$
-</p>
+<div class="math-display">
+  $$2,073,600\times3=6,220,800\text{ bytes}$$
+</div>
 <p>or approximately:</p>
-<p>
-$$
-5.93\text{ MiB}
-$$
-</p>
+<div class="math-display">
+  $$5.93\text{ MiB}$$
+</div>
 <h3>Important conclusion</h3>
 <p>The same spatial dimensions can correspond to very different amounts of image data depending on:</p>
 <ul>
@@ -1105,16 +1031,14 @@ $$
     </div>
     <div class="section-body">
       <p>Consider this 3×4 image matrix:</p>
-<p>
-$$
-I=
+<div class="math-display">
+  $$I=
 \begin{bmatrix}
 10&20&30&40\\
 50&60&70&80\\
 90&100&110&120
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>If we use matrix indexing, the centre value is easy to identify as the element in the second row and third column.</p>
 <p>But there are several conventions for naming spatial coordinates.</p>
 <h3>Safe engineering rule</h3>
@@ -1364,13 +1288,7 @@ Decision</code></pre>
       <h3>1. “Every pixel stores a colour.”</h3>
 <p>False for grayscale images. A grayscale pixel stores one intensity value.</p>
 <h3>2. “8-bit means eight intensity levels.”</h3>
-<p>False.</p>
-<p>
-$$
-2^8=256
-$$
-</p>
-<p>possible code values.</p>
+<p>False. $2^8=256$ possible code values.</p>
 <h3>3. “Resolution and bit depth are the same.”</h3>
 <p>False. Spatial sampling and intensity precision describe different dimensions of image representation.</p>
 <h3>4. “JPEG always changes image dimensions.”</h3>
@@ -1471,37 +1389,27 @@ $$
     <div class="section-body">
       <h2>Intensity levels</h2>
 <p>For $k$ bits per channel:</p>
-<p>
-$$
-L=2^k
-$$
-</p>
+<div class="math-display">
+  $$L=2^k$$
+</div>
 <h2>Point transformation</h2>
-<p>
-$$
-g(i,j)=T(I(i,j))
-$$
-</p>
+<div class="math-display">
+  $$g(i,j)=T(I(i,j))$$
+</div>
 <h2>8-bit negative transform</h2>
-<p>
-$$
-g=255-f
-$$
-</p>
+<div class="math-display">
+  $$g=255-f$$
+</div>
 <h2>Raw image sample count</h2>
 <p>For width $W$, height $H$, and $C$ channels:</p>
-<p>
-$$
-N=WHC
-$$
-</p>
+<div class="math-display">
+  $$N=WHC$$
+</div>
 <h2>Approximate raw bytes</h2>
 <p>For $b$ bits per stored sample:</p>
-<p>
-$$
-\text{bytes}=WHC\frac{b}{8}
-$$
-</p>
+<div class="math-display">
+  $$\text{bytes}=WHC\frac{b}{8}$$
+</div>
 <p>This simple formula assumes the stated representation is directly stored without extra packing or compression.</p>
 <hr />
     </div>
@@ -1674,15 +1582,13 @@ Which colour-space convention is being used?</p>
     <div class="section-body">
       <p>Many classical spatial filters operate on a neighbourhood.</p>
 <p>For a 3×3 neighbourhood:</p>
-<p>
-$$
-\begin{bmatrix}
+<div class="math-display">
+  $$\begin{bmatrix}
 a&b&c\\
 d&e&f\\
 g&h&i
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>the output associated with the centre often depends on all nine values.</p>
 <p>This is why later topics require:</p>
 <ul>
@@ -1705,30 +1611,14 @@ $$
       <button class="bookmark-btn" data-id="s-01-26" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose an 8-bit grayscale pixel has:</p>
-<p>
-$$
-r=80
-$$
-</p>
-<p>and we apply the negative transformation:</p>
-<p>
-$$
-s=(L-1)-r
-$$
-</p>
-<p>For an 8-bit image:</p>
-<p>
-$$
-L=256
-$$
-</p>
-<p>therefore:</p>
-<p>
-$$
-s=255-80=175
-$$
-</p>
+      <p>Suppose an 8-bit grayscale pixel has $r=80$, and we apply the negative transformation:</p>
+<div class="math-display">
+  $$s=(L-1)-r$$
+</div>
+<p>For an 8-bit image (where $L = 256$):</p>
+<div class="math-display">
+  $$s=255-80=175$$
+</div>
 <h3>Interpretation</h3>
 <p>The original pixel intensity was relatively dark compared with the maximum intensity.</p>
 <p>The negative transformation maps it to a relatively bright value.</p>
@@ -1745,19 +1635,11 @@ $$
       <button class="bookmark-btn" data-id="s-01-27" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>If a transformation is pointwise:</p>
-<p>
-$$
-s[m,n]=T(I[m,n])
-$$
-</p>
-<p>then each pixel can be processed independently.</p>
+      <p>If a transformation is pointwise $s[m,n]=T(I[m,n])$ then each pixel can be processed independently.</p>
 <p>If the operation is local:</p>
-<p>
-$$
-s[m,n]=\Phi(\text{neighbourhood around }I[m,n])
-$$
-</p>
+<div class="math-display">
+  $$s[m,n]=\Phi(\text{neighbourhood around }I[m,n])$$
+</div>
 <p>then nearby pixels influence the output.</p>
 <p>If the operation is global:</p>
 <p><div class="code-block">

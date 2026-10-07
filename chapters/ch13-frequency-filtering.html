@@ -22,7 +22,7 @@
       svg: { fontCache: 'global' }
     };
   </script>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script id="MathJax-script" async src="../assets/js/mathjax/tex-mml-chtml.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';"></script>
 </head>
 <body data-chapter-id="ch13-frequency-filtering">
   <div id="progress-bar"></div>
@@ -377,24 +377,16 @@ Once an image has been represented in the frequency domain, filtering becomes th
 <blockquote>
 <p>Which frequencies should remain?</p>
 </blockquote>
-<p>The core equation is:</p>
-<p>
-$$
-G(u,v)=H(u,v)F(u,v)
-$$
-</p>
-<p>where:</p>
+<p>The core equation is $G(u,v)=H(u,v)F(u,v)$, where:</p>
 <ul>
 <li>$F(u,v)$ = input spectrum,</li>
 <li>$H(u,v)$ = filter/transfer function,</li>
 <li>$G(u,v)$ = filtered spectrum.</li>
 </ul>
 <p>Then:</p>
-<p>
-$$
-g(x,y)=\mathcal{F}^{-1}\{G(u,v)\}
-$$
-</p>
+<div class="math-display">
+  $$g(x,y)=\mathcal{F}^{-1}\{G(u,v)\}$$
+</div>
 <p>So the full operation is:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -469,13 +461,7 @@ H = 0
       <button class="bookmark-btn" data-id="s-13-3" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>The function:</p>
-<p>
-$$
-H(u,v)
-$$
-</p>
-<p>is called a frequency response or transfer function in this context.</p>
+      <p>The function: $H(u,v)$ is called a frequency response or transfer function in this context.</p>
 <p>It describes the filter's gain at each frequency coordinate.</p>
 <p>For a real symmetric low-pass filter:</p>
 <p><div class="code-block">
@@ -514,13 +500,7 @@ farther from centre
       <button class="bookmark-btn" data-id="s-13-4" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Before frequency centering, the zero-frequency component is at the DFT origin:</p>
-<p>
-$$
-(0,0)
-$$
-</p>
-<p>For visualization and many filter constructions, we shift it to the centre:</p>
+      <p>Before frequency centering, the zero-frequency component is at the DFT origin: $(0,0)$ For visualization and many filter constructions, we shift it to the centre:</p>
 <p><div class="code-block">
   <div class="code-header">
     <span>text</span>
@@ -532,20 +512,12 @@ FFT shift
         ↓
 DC at centre</code></pre>
 </div></p>
-<p>Let the centered frequency origin be:</p>
-<p>
-$$
-(u_0,v_0)
-$$
-</p>
-<p>Then a radial distance can be defined as:</p>
-<p>
-$$
-D(u,v)
+<p>Let the centered frequency origin be: $(u_0,v_0)$ Then a radial distance can be defined as:</p>
+<div class="math-display">
+  $$D(u,v)
 =
-\sqrt{(u-u_0)^2+(v-v_0)^2}
-$$
-</p>
+\sqrt{(u-u_0)^2+(v-v_0)^2}$$
+</div>
 <p>This single quantity is used to construct many radially symmetric filters.</p>
 <hr />
     </div>
@@ -568,13 +540,7 @@ $$
   <pre><code>same distance from DC
 → same response</code></pre>
 </div></p>
-<p>So the filter depends only on:</p>
-<p>
-$$
-D
-$$
-</p>
-<p>rather than independently on $u$ and $v$.</p>
+<p>So the filter depends only on: $D$ rather than independently on $u$ and $v$.</p>
 <p>Conceptually:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -603,15 +569,13 @@ $$
     </div>
     <div class="section-body">
       <p>The simplest low-pass filter is the ideal low-pass.</p>
-<p>
-$$
-H(u,v)=
+<div class="math-display">
+  $$H(u,v)=
 \begin{cases}
 1,&D(u,v)\le D_0\\
 0,&D(u,v)>D_0
-\end{cases}
-$$
-</p>
+\end{cases}$$
+</div>
 <p>where $D_0$ is the cutoff frequency.</p>
 <p>Graphically:</p>
 <p><div class="code-block">
@@ -701,14 +665,12 @@ $$
     </div>
     <div class="section-body">
       <p>A common Butterworth low-pass form is:</p>
-<p>
-$$
-H(u,v)
+<div class="math-display">
+  $$H(u,v)
 =
 \frac{1}
-{1+\left(\frac{D(u,v)}{D_0}\right)^{2n}}
-$$
-</p>
+{1+\left(\frac{D(u,v)}{D_0}\right)^{2n}}$$
+</div>
 <p>where:</p>
 <ul>
 <li>$D_0$ = cutoff parameter,</li>
@@ -778,13 +740,11 @@ higher order
     </div>
     <div class="section-body">
       <p>A common Gaussian low-pass response is:</p>
-<p>
-$$
-H(u,v)
+<div class="math-display">
+  $$H(u,v)
 =
-e^{-\frac{D(u,v)^2}{2D_0^2}}
-$$
-</p>
+e^{-\frac{D(u,v)^2}{2D_0^2}}$$
+</div>
 <p>This gives a smooth, monotonic response.</p>
 <p>There is no abrupt cutoff.</p>
 <hr />
@@ -853,48 +813,26 @@ $$
       <button class="bookmark-btn" data-id="s-13-13" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose:</p>
-<p>
-$$
-D_0=10
-$$
-</p>
-<p>and:</p>
-<p>
-$$
-D=5
-$$
-</p>
-<p>Then:</p>
-<p>
-$$
-H=e^{-25/(2\cdot100)}
-$$
-</p>
-<p>
-$$
-=e^{-0.125}
-$$
-</p>
-<p>
-$$
-\approx0.882
-$$
-</p>
+      <p>Suppose $D_0=10$ and $D=5$. Then:</p>
+<div class="math-display">
+  $$H=e^{-25/(2\cdot100)}$$
+</div>
+<div class="math-display">
+  $$=e^{-0.125}$$
+</div>
+<div class="math-display">
+  $$\approx0.882$$
+</div>
 <p>So this frequency is attenuated only modestly.</p>
 <p>For:</p>
-<p>
-$$
-D=20
-$$
-</p>
-<p>
-$$
-H=e^{-400/200}
+<div class="math-display">
+  $$D=20$$
+</div>
+<div class="math-display">
+  $$H=e^{-400/200}
 =e^{-2}
-\approx0.135
-$$
-</p>
+\approx0.135$$
+</div>
 <p>The farther frequency is strongly attenuated.</p>
 <hr />
     </div>
@@ -909,13 +847,7 @@ $$
     </div>
     <div class="section-body">
       <p>A high-pass filter suppresses the low-frequency region and preserves higher frequencies.</p>
-<p>One simple complement is:</p>
-<p>
-$$
-H_{HP}(u,v)=1-H_{LP}(u,v)
-$$
-</p>
-<p>for a matching low-pass filter.</p>
+<p>One simple complement is $H_{HP}(u,v)=1-H_{LP}(u,v)$ for a matching low-pass filter.</p>
 <p>Conceptually:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -947,15 +879,13 @@ high frequency
       <button class="bookmark-btn" data-id="s-13-15" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>
-$$
-H(u,v)=
+      <div class="math-display">
+  $$H(u,v)=
 \begin{cases}
 0,&D(u,v)\le D_0\\
 1,&D(u,v)>D_0
-\end{cases}
-$$
-</p>
+\end{cases}$$
+</div>
 <p>This is the complement of the ideal low-pass.</p>
 <p>The same sharp-cutoff issue remains:</p>
 <p><div class="code-block">
@@ -979,14 +909,12 @@ $$
     </div>
     <div class="section-body">
       <p>A common Butterworth high-pass can be written:</p>
-<p>
-$$
-H(u,v)
+<div class="math-display">
+  $$H(u,v)
 =
 \frac{1}
-{1+\left(\frac{D_0}{D(u,v)}\right)^{2n}}
-$$
-</p>
+{1+\left(\frac{D_0}{D(u,v)}\right)^{2n}}$$
+</div>
 <p>for $D(u,v)\ne0$, with the DC point handled appropriately.</p>
 <p>This is mathematically complementary to the corresponding Butterworth low-pass form.</p>
 <hr />
@@ -1002,31 +930,19 @@ $$
     </div>
     <div class="section-body">
       <p>A common Gaussian high-pass is:</p>
-<p>
-$$
-H_{HP}(u,v)
+<div class="math-display">
+  $$H_{HP}(u,v)
 =
-1-e^{-D^2/(2D_0^2)}
-$$
-</p>
-<p>At:</p>
-<p>
-$$
-D=0
-$$
-</p>
-<p>the response is:</p>
-<p>
-$$
-H_{HP}=0
-$$
-</p>
+1-e^{-D^2/(2D_0^2)}$$
+</div>
+<p>At: $D=0$ the response is:</p>
+<div class="math-display">
+  $$H_{HP}=0$$
+</div>
 <p>and as $D$ increases:</p>
-<p>
-$$
-H_{HP}\rightarrow1
-$$
-</p>
+<div class="math-display">
+  $$H_{HP}\rightarrow1$$
+</div>
 <hr />
     </div>
   </section>
@@ -1105,20 +1021,16 @@ $$
     </div>
     <div class="section-body">
       <p>A general high-frequency emphasis filter can be written conceptually as:</p>
-<p>
-$$
-H_{HFE}(u,v)
+<div class="math-display">
+  $$H_{HFE}(u,v)
 =
-a+bH_{HP}(u,v)
-$$
-</p>
+a+bH_{HP}(u,v)$$
+</div>
 <p>where parameters determine how much original/low-frequency content remains.</p>
 <p>A related high-boost interpretation is:</p>
-<p>
-$$
-g=Af-f_{\text{blur}}
-$$
-</p>
+<div class="math-display">
+  $$g=Af-f_{\text{blur}}$$
+</div>
 <p>This can be expressed in frequency-domain form as a suitable transfer function.</p>
 <hr />
     </div>
@@ -1148,21 +1060,17 @@ high frequencies
 → reject</code></pre>
 </div></p>
 <p>A simple ideal annular band-pass can be written:</p>
-<p>
-$$
-H(u,v)=
+<div class="math-display">
+  $$H(u,v)=
 \begin{cases}
 1,&D_1\le D(u,v)\le D_2\\
 0,&\text{otherwise}
-\end{cases}
-$$
-</p>
+\end{cases}$$
+</div>
 <p>where:</p>
-<p>
-$$
-D_1\lt D_2
-$$
-</p>
+<div class="math-display">
+  $$D_1\lt D_2$$
+</div>
 <hr />
     </div>
   </section>
@@ -1302,18 +1210,10 @@ high
       <button class="bookmark-btn" data-id="s-13-26" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>If desired spectral locations are:</p>
-<p>
-$$
-(u_k,v_k)
-$$
-</p>
-<p>and symmetric counterparts:</p>
-<p>
-$$
-(-u_k,-v_k)
-$$
-</p>
+      <p>If desired spectral locations are: $(u_k,v_k)$, and symmetric counterparts:</p>
+<div class="math-display">
+  $$(-u_k,-v_k)$$
+</div>
 <p>we can construct local rejection regions around them.</p>
 <p>The exact transfer function can be:</p>
 <ul>
@@ -1368,13 +1268,7 @@ and the conjugate peak near
       <button class="bookmark-btn" data-id="s-13-28" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Choosing:</p>
-<p>
-$$
-D_0
-$$
-</p>
-<p>is a design problem.</p>
+      <p>Choosing: $D_0$ is a design problem.</p>
 <p>Small cutoff:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -1513,18 +1407,10 @@ spatial artifacts</code></pre>
       <button class="bookmark-btn" data-id="s-13-32" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>If:</p>
-<p>
-$$
-g=f*h
-$$
-</p>
-<p>then:</p>
-<p>
-$$
-G=FH
-$$
-</p>
+      <p>If $g=f*h$, then:</p>
+<div class="math-display">
+  $$G=FH$$
+</div>
 <p>under the corresponding transform convention.</p>
 <p>This means frequency-domain filtering is not a completely separate world.</p>
 <p>It is another implementation/analysis view of convolution.</p>
@@ -1738,38 +1624,20 @@ wrong phase</code></pre>
       <button class="bookmark-btn" data-id="s-13-39" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose:</p>
-<p>
-$$
-D_0=15
-$$
-</p>
-<p>and two frequency points are:</p>
-<p>
-$$
-D=5,\quad D=30
-$$
-</p>
-<p>Using:</p>
-<p>
-$$
-H=e^{-D^2/(2D_0^2)}
-$$
-</p>
-<p>For $D=5$:</p>
-<p>
-$$
-H=e^{-25/450}
+      <p>Suppose: $D_0=15$, and two frequency points are:</p>
+<div class="math-display">
+  $$D=5,\quad D=30$$
+</div>
+<p>Using: $H=e^{-D^2/(2D_0^2)}$ For $D=5$:</p>
+<div class="math-display">
+  $$H=e^{-25/450}
 \approx e^{-0.0556}
-\approx0.946
-$$
-</p>
+\approx0.946$$
+</div>
 <p>For $D=30$:</p>
-<p>
-$$
-H=e^{-900/450}=e^{-2}\approx0.135
-$$
-</p>
+<div class="math-display">
+  $$H=e^{-900/450}=e^{-2}\approx0.135$$
+</div>
 <p>So the lower frequency passes almost unchanged while the higher frequency is strongly attenuated.</p>
 <hr />
     </div>
@@ -1784,59 +1652,41 @@ $$
     </div>
     <div class="section-body">
       <p>Let:</p>
-<p>
-$$
-D_0=10,\qquad n=2
-$$
-</p>
+<div class="math-display">
+  $$D_0=10,\qquad n=2$$
+</div>
 <p>At:</p>
-<p>
-$$
-D=5
-$$
-</p>
-<p>
-$$
-H=
+<div class="math-display">
+  $$D=5$$
+</div>
+<div class="math-display">
+  $$H=
 \frac{1}
-{1+(5/10)^4}
-$$
-</p>
-<p>
-$$
-=
-\frac{1}{1+0.0625}
-$$
-</p>
-<p>
-$$
-\approx0.941
-$$
-</p>
+{1+(5/10)^4}$$
+</div>
+<div class="math-display">
+  $$=
+\frac{1}{1+0.0625}$$
+</div>
+<div class="math-display">
+  $$\approx0.941$$
+</div>
 <p>At:</p>
-<p>
-$$
-D=20
-$$
-</p>
-<p>
-$$
-H=
+<div class="math-display">
+  $$D=20$$
+</div>
+<div class="math-display">
+  $$H=
 \frac{1}
-{1+(2)^4}
-$$
-</p>
-<p>
-$$
-=
-\frac1{17}
-$$
-</p>
-<p>
-$$
-\approx0.0588
-$$
-</p>
+{1+(2)^4}$$
+</div>
+<div class="math-display">
+  $$=
+\frac1{17}$$
+</div>
+<div class="math-display">
+  $$\approx0.0588$$
+</div>
 <p>The filter strongly attenuates the higher frequency.</p>
 <hr />
     </div>
@@ -1850,13 +1700,7 @@ $$
       <button class="bookmark-btn" data-id="s-13-41" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Using:</p>
-<p>
-$$
-D_0=10
-$$
-</p>
-<p>different families produce different responses at the same $D$.</p>
+      <p>Using: $D_0=10$ different families produce different responses at the same $D$.</p>
 <p>Therefore:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -1882,22 +1726,14 @@ does not fully define filter behaviour</code></pre>
     </div>
     <div class="section-body">
       <p>A high-pass component can be added to the original spectrum.</p>
-<p>Conceptually:</p>
-<p>
-$$
-G=(1+kH_{HP})F
-$$
-</p>
-<p>so:</p>
-<p>
-$$
-g=
+<p>Conceptually $G=(1+kH_{HP})F$ so:</p>
+<div class="math-display">
+  $$g=
 \mathcal{F}^{-1}
 \left\{
 (1+kH_{HP})F
-\right\}
-$$
-</p>
+\right\}$$
+</div>
 <p>This produces frequency-selective detail enhancement.</p>
 <p>It can be more controlled than using a crude ideal high-pass.</p>
 <hr />
@@ -1912,46 +1748,30 @@ $$
       <button class="bookmark-btn" data-id="s-13-43" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose:</p>
-<p>
-$$
-H_{LP}
-$$
-</p>
-<p>is a low-pass filter.</p>
+      <p>Suppose: $H_{LP}$ is a low-pass filter.</p>
 <p>Then:</p>
-<p>
-$$
-H_{HP}=1-H_{LP}
-$$
-</p>
+<div class="math-display">
+  $$H_{HP}=1-H_{LP}$$
+</div>
 <p>An unsharp/high-boost style filter can therefore be expressed as:</p>
-<p>
-$$
-H_{sharp}
+<div class="math-display">
+  $$H_{sharp}
 =
-1+kH_{HP}
-$$
-</p>
+1+kH_{HP}$$
+</div>
 <p>or:</p>
-<p>
-$$
-H_{sharp}
+<div class="math-display">
+  $$H_{sharp}
 =
-1+k(1-H_{LP})
-$$
-</p>
-<p>
-$$
-=(1+k)-kH_{LP}
-$$
-</p>
+1+k(1-H_{LP})$$
+</div>
+<div class="math-display">
+  $$=(1+k)-kH_{LP}$$
+</div>
 <p>This mirrors the spatial-domain formula:</p>
-<p>
-$$
-g=(1+k)f-kf_{\text{blur}}
-$$
-</p>
+<div class="math-display">
+  $$g=(1+k)f-kf_{\text{blur}}$$
+</div>
 <p>The duality is now explicit.</p>
 <hr />
     </div>
@@ -2324,25 +2144,15 @@ output scaling</code></pre>
     </div>
     <div class="section-body">
       <p>Keep the spectrum complex:</p>
-<p>
-$$
-F(u,v)\in\mathbb{C}
-$$
-</p>
+<div class="math-display">
+  $$F(u,v)\in\mathbb{C}$$
+</div>
 <p>Do not discard phase by using only:</p>
-<p>
-$$
-|F|
-$$
-</p>
+<div class="math-display">
+  $$|F|$$
+</div>
 <p>for filtering.</p>
-<p>The correct operation is:</p>
-<p>
-$$
-G=HF
-$$
-</p>
-<p>using the complex spectrum.</p>
+<p>The correct operation is $G=HF$ using the complex spectrum.</p>
 <p>Magnitude is primarily for inspection.</p>
 <hr />
     </div>
@@ -2393,13 +2203,7 @@ $$
       <button class="bookmark-btn" data-id="s-13-57" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>The visualization:</p>
-<p>
-$$
-\log(1+|F|)
-$$
-</p>
-<p>is not the spectrum used directly for inverse reconstruction.</p>
+      <p>The visualization: $\log(1+|F|)$ is not the spectrum used directly for inverse reconstruction.</p>
 <p>Do not confuse:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -2527,89 +2331,71 @@ convert for display/storage</code></pre>
     </div>
     <div class="section-body">
       <h3>Frequency-domain filtering</h3>
-<p>
-$$
-\boxed{G(u,v)=H(u,v)F(u,v)}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{G(u,v)=H(u,v)F(u,v)}$$
+</div>
 <h3>Radial frequency distance</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 D(u,v)=
 \sqrt{(u-u_0)^2+(v-v_0)^2}
-}
-$$
-</p>
+}$$
+</div>
 <h3>Ideal LPF</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 H=
 \begin{cases}
 1,&D\le D_0\\
 0,&D>D_0
 \end{cases}
-}
-$$
-</p>
+}$$
+</div>
 <h3>Butterworth LPF</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 H=
 \frac1{1+(D/D_0)^{2n}}
-}
-$$
-</p>
+}$$
+</div>
 <h3>Gaussian LPF</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 H=e^{-D^2/(2D_0^2)}
-}
-$$
-</p>
+}$$
+</div>
 <h3>Ideal HPF</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 H=
 \begin{cases}
 0,&D\le D_0\\
 1,&D>D_0
 \end{cases}
-}
-$$
-</p>
+}$$
+</div>
 <h3>Gaussian HPF</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 H_{HP}=1-e^{-D^2/(2D_0^2)}
-}
-$$
-</p>
+}$$
+</div>
 <h3>Ideal band-pass</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 H=
 \begin{cases}
 1,&D_1\le D\le D_2\\
 0,&\text{otherwise}
 \end{cases}
-}
-$$
-</p>
+}$$
+</div>
 <h3>High-frequency emphasis</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 H_{HFE}=1+kH_{HP}
-}
-$$
-</p>
+}$$
+</div>
 <p>for one common conceptual form.</p>
 <hr />
     </div>
@@ -2623,30 +2409,14 @@ $$
       <button class="bookmark-btn" data-id="s-13-62" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>A frequency point has:</p>
-<p>
-$$
-D=12
-$$
-</p>
-<p>and:</p>
-<p>
-$$
-D_0=10
-$$
-</p>
-<p>For an ideal low-pass:</p>
-<p>
-$$
-D>D_0
-$$
-</p>
-<p>therefore:</p>
-<p>
-$$
-\boxed{H=0}
-$$
-</p>
+      <p>A frequency point has $D=12$, and:</p>
+<div class="math-display">
+  $$D_0=10$$
+</div>
+<p>For an ideal low-pass: $D>D_0$ therefore:</p>
+<div class="math-display">
+  $$\boxed{H=0}$$
+</div>
 <p>The frequency is rejected.</p>
 <hr />
     </div>
@@ -2661,34 +2431,24 @@ $$
     </div>
     <div class="section-body">
       <p>Given:</p>
-<p>
-$$
-D_0=20,\quad n=2,\quad D=10
-$$
-</p>
-<p>
-$$
-H=
-\frac1{1+(10/20)^4}
-$$
-</p>
-<p>
-$$
-=
-\frac1{1+1/16}
-$$
-</p>
-<p>
-$$
-=
-\frac{16}{17}
-$$
-</p>
-<p>
-$$
-\boxed{H\approx0.9412}
-$$
-</p>
+<div class="math-display">
+  $$D_0=20,\quad n=2,\quad D=10$$
+</div>
+<div class="math-display">
+  $$H=
+\frac1{1+(10/20)^4}$$
+</div>
+<div class="math-display">
+  $$=
+\frac1{1+1/16}$$
+</div>
+<div class="math-display">
+  $$=
+\frac{16}{17}$$
+</div>
+<div class="math-display">
+  $$\boxed{H\approx0.9412}$$
+</div>
 <p>So roughly 94.1% of the amplitude is retained at that frequency under this transfer-function interpretation.</p>
 <hr />
     </div>
@@ -2703,22 +2463,16 @@ $$
     </div>
     <div class="section-body">
       <p>Given:</p>
-<p>
-$$
-D_0=10,\quad D=10
-$$
-</p>
-<p>
-$$
-H=e^{-100/200}
-=e^{-0.5}
-$$
-</p>
-<p>
-$$
-\boxed{H\approx0.6065}
-$$
-</p>
+<div class="math-display">
+  $$D_0=10,\quad D=10$$
+</div>
+<div class="math-display">
+  $$H=e^{-100/200}
+=e^{-0.5}$$
+</div>
+<div class="math-display">
+  $$\boxed{H\approx0.6065}$$
+</div>
 <p>At $D=D_0$, the Gaussian response is about 0.6065 for this parameterization.</p>
 <hr />
     </div>
@@ -2733,28 +2487,20 @@ $$
     </div>
     <div class="section-body">
       <p>Suppose:</p>
-<p>
-$$
-H_{LP}=0.8
-$$
-</p>
+<div class="math-display">
+  $$H_{LP}=0.8$$
+</div>
 <p>Using:</p>
-<p>
-$$
-H_{HP}=1-H_{LP}
-$$
-</p>
+<div class="math-display">
+  $$H_{HP}=1-H_{LP}$$
+</div>
 <p>we get:</p>
-<p>
-$$
-H_{HP}=1-0.8
-$$
-</p>
-<p>
-$$
-\boxed{0.2}
-$$
-</p>
+<div class="math-display">
+  $$H_{HP}=1-0.8$$
+</div>
+<div class="math-display">
+  $$\boxed{0.2}$$
+</div>
 <p>So the high-pass counterpart attenuates this low-frequency location strongly.</p>
 <hr />
     </div>

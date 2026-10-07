@@ -22,7 +22,7 @@
       svg: { fontCache: 'global' }
     };
   </script>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script id="MathJax-script" async src="../assets/js/mathjax/tex-mml-chtml.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';"></script>
 </head>
 <body data-chapter-id="ch28-object-detection-yolo">
   <div id="progress-bar"></div>
@@ -441,11 +441,9 @@ car    → box
 bicycle → box</code></pre>
 </div></p>
 <p>So:</p>
-<p>
-$$
-\boxed{\text{Detection}=\text{classification}+\text{localization}}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{\text{Detection}=\text{classification}+\text{localization}}$$
+</div>
 <p>This is an introductory mental model, not a claim that every detector is literally composed of two independent algorithms.</p>
 <hr />
     </div>
@@ -495,35 +493,23 @@ confidence = 0.94</code></pre>
       <button class="bookmark-btn" data-id="s-28-5" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>A common rectangular bounding box uses:</p>
-<p>
-$$
-(x_1,y_1,x_2,y_2)
-$$
-</p>
-<p>where:</p>
+      <p>A common rectangular bounding box uses $(x_1,y_1,x_2,y_2)$, where:</p>
 <ul>
 <li>$(x_1,y_1)$ = top-left;</li>
 <li>$(x_2,y_2)$ = bottom-right.</li>
 </ul>
 <p>Width:</p>
-<p>
-$$
-w=x_2-x_1.
-$$
-</p>
+<div class="math-display">
+  $$w=x_2-x_1.$$
+</div>
 <p>Height:</p>
-<p>
-$$
-h=y_2-y_1.
-$$
-</p>
+<div class="math-display">
+  $$h=y_2-y_1.$$
+</div>
 <p>Area:</p>
-<p>
-$$
-A=wh.
-$$
-</p>
+<div class="math-display">
+  $$A=wh.$$
+</div>
 <hr />
     </div>
   </section>
@@ -536,37 +522,19 @@ $$
       <button class="bookmark-btn" data-id="s-28-6" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose:</p>
-<p>
-$$
-(x_1,y_1)=(100,50)
-$$
-</p>
-<p>and:</p>
-<p>
-$$
-(x_2,y_2)=(300,250).
-$$
-</p>
-<p>Then:</p>
-<p>
-$$
-w=300-100=200
-$$
-</p>
-<p>
-$$
-h=250-50=200.
-$$
-</p>
+      <p>Suppose $(x_1,y_1)=(100,50)$ and $(x_2,y_2)=(300,250).$. Then:</p>
+<div class="math-display">
+  $$w=300-100=200$$
+</div>
+<div class="math-display">
+  $$h=250-50=200.$$
+</div>
 <p>Area:</p>
-<p>
-$$
-A=200\times200
+<div class="math-display">
+  $$A=200\times200
 =
-\boxed{40{,}000}.
-$$
-</p>
+\boxed{40{,}000}.$$
+</div>
 <hr />
     </div>
   </section>
@@ -579,38 +547,24 @@ $$
       <button class="bookmark-btn" data-id="s-28-7" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Some models/APIs use:</p>
-<p>
-$$
-(x_c,y_c,w,h)
-$$
-</p>
-<p>where:</p>
+      <p>Some models/APIs use $(x_c,y_c,w,h)$, where:</p>
 <ul>
 <li>$x_c,y_c$ = center;</li>
 <li>$w,h$ = width and height.</li>
 </ul>
 <p>Conversions:</p>
-<p>
-$$
-x_1=x_c-\frac{w}{2}
-$$
-</p>
-<p>
-$$
-y_1=y_c-\frac{h}{2}
-$$
-</p>
-<p>
-$$
-x_2=x_c+\frac{w}{2}
-$$
-</p>
-<p>
-$$
-y_2=y_c+\frac{h}{2}.
-$$
-</p>
+<div class="math-display">
+  $$x_1=x_c-\frac{w}{2}$$
+</div>
+<div class="math-display">
+  $$y_1=y_c-\frac{h}{2}$$
+</div>
+<div class="math-display">
+  $$x_2=x_c+\frac{w}{2}$$
+</div>
+<div class="math-display">
+  $$y_2=y_c+\frac{h}{2}.$$
+</div>
 <p>This is important when reading annotation formats.</p>
 <hr />
     </div>
@@ -653,11 +607,9 @@ low confidence
     <div class="section-body">
       <p>A practical detector commonly applies a confidence threshold.</p>
 <p>For example:</p>
-<p>
-$$
-t=0.50.
-$$
-</p>
+<div class="math-display">
+  $$t=0.50.$$
+</div>
 <p>Then:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -741,33 +693,27 @@ confidence = ...</code></pre>
     </div>
     <div class="section-body">
       <p>IoU measures overlap between two boxes:</p>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 IoU=
 \frac{\text{intersection area}}
 {\text{union area}}
-}
-$$
-</p>
+}$$
+</div>
 <p>where:</p>
-<p>
-$$
-\text{union}
+<div class="math-display">
+  $$\text{union}
 =
 A_{\text{pred}}
 +
 A_{\text{gt}}
 -
-A_{\text{intersection}}.
-$$
-</p>
+A_{\text{intersection}}.$$
+</div>
 <p>IoU ranges from:</p>
-<p>
-$$
-0\le IoU\le1.
-$$
-</p>
+<div class="math-display">
+  $$0\le IoU\le1.$$
+</div>
 <p>Interpretation:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -800,24 +746,18 @@ Predicted box area     = 900
 Intersection area      = 700</code></pre>
 </div></p>
 <p>Union:</p>
-<p>
-$$
-1000+900-700=1200.
-$$
-</p>
+<div class="math-display">
+  $$1000+900-700=1200.$$
+</div>
 <p>Therefore:</p>
-<p>
-$$
-IoU=\frac{700}{1200}
-\approx0.5833.
-$$
-</p>
+<div class="math-display">
+  $$IoU=\frac{700}{1200}
+\approx0.5833.$$
+</div>
 <p>So:</p>
-<p>
-$$
-\boxed{IoU\approx0.583}.
-$$
-</p>
+<div class="math-display">
+  $$\boxed{IoU\approx0.583}.$$
+</div>
 <hr />
     </div>
   </section>
@@ -832,29 +772,21 @@ $$
     <div class="section-body">
       <p>Suppose:</p>
 <p>Ground truth:</p>
-<p>
-$$
-(10,10,50,50)
-$$
-</p>
+<div class="math-display">
+  $$(10,10,50,50)$$
+</div>
 <p>Prediction:</p>
-<p>
-$$
-(20,20,60,60).
-$$
-</p>
+<div class="math-display">
+  $$(20,20,60,60).$$
+</div>
 <p>Ground-truth area:</p>
-<p>
-$$
-40\times40=1600.
-$$
-</p>
+<div class="math-display">
+  $$40\times40=1600.$$
+</div>
 <p>Prediction area:</p>
-<p>
-$$
-40\times40=1600.
-$$
-</p>
+<div class="math-display">
+  $$40\times40=1600.$$
+</div>
 <p>Intersection:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -865,24 +797,18 @@ $$
 y overlap = 20 to 50 → 30</code></pre>
 </div></p>
 <p>so:</p>
-<p>
-$$
-A_{\cap}=30\times30=900.
-$$
-</p>
+<div class="math-display">
+  $$A_{\cap}=30\times30=900.$$
+</div>
 <p>Union:</p>
-<p>
-$$
-1600+1600-900=2300.
-$$
-</p>
+<div class="math-display">
+  $$1600+1600-900=2300.$$
+</div>
 <p>Thus:</p>
-<p>
-$$
-IoU=\frac{900}{2300}
-\approx0.391.
-$$
-</p>
+<div class="math-display">
+  $$IoU=\frac{900}{2300}
+\approx0.391.$$
+</div>
 <hr />
     </div>
   </section>
@@ -1208,11 +1134,9 @@ visualized output</code></pre>
 └───────────────────────────┘</code></pre>
 </div></p>
 <p>The output combines:</p>
-<p>
-$$
-\boxed{\text{what}+\text{where}+\text{score}}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{\text{what}+\text{where}+\text{score}}$$
+</div>
 <hr />
     </div>
   </section>
@@ -1284,20 +1208,16 @@ IoU exceeds chosen criterion</code></pre>
     </div>
     <div class="section-body">
       <p>Conceptually:</p>
-<p>
-$$
-\text{Precision}
+<div class="math-display">
+  $$\text{Precision}
 =
-\frac{TP}{TP+FP}
-$$
-</p>
-<p>
-$$
-\text{Recall}
+\frac{TP}{TP+FP}$$
+</div>
+<div class="math-display">
+  $$\text{Recall}
 =
-\frac{TP}{TP+FN}.
-$$
-</p>
+\frac{TP}{TP+FN}.$$
+</div>
 <h3>High precision</h3>
 <p>Few false alarms.</p>
 <h3>High recall</h3>
@@ -1839,11 +1759,9 @@ resize + pad
 </div></p>
 <p>The higher threshold removes weaker detections but may also remove real objects.</p>
 <p>Thus:</p>
-<p>
-$$
-\boxed{\text{threshold selection is an application decision}}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{\text{threshold selection is an application decision}}$$
+</div>
 <hr />
     </div>
   </section>
@@ -1856,13 +1774,7 @@ $$
       <button class="bookmark-btn" data-id="s-28-40" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose a person occupies only:</p>
-<p>
-$$
-12\times18
-$$
-</p>
-<p>pixels of a high-resolution frame.</p>
+      <p>Suppose a person occupies only: $12\times18$ pixels of a high-resolution frame.</p>
 <p>After resizing into a model input, the object may contain very little detail.</p>
 <p>This can make detection difficult.</p>
 <p>Possible engineering responses include:</p>
@@ -1913,20 +1825,16 @@ person B behind A
     </div>
     <div class="section-body">
       <p>Frame rate depends on:</p>
-<p>
-$$
-FPS
+<div class="math-display">
+  $$FPS
 =
 \frac{\text{processed frames}}
-{\text{time}}.
-$$
-</p>
+{\text{time}}.$$
+</div>
 <p>For example, if a system processes 150 frames in 5 seconds:</p>
-<p>
-$$
-FPS=\frac{150}{5}=30.
-$$
-</p>
+<div class="math-display">
+  $$FPS=\frac{150}{5}=30.$$
+</div>
 <p>This is an average throughput measure.</p>
 <p>It does not guarantee uniform frame latency.</p>
 <hr />
@@ -2048,12 +1956,10 @@ boxes + class scores</code></pre>
 <p><strong>Define object detection.</strong><br />
 The task of identifying object classes and locating object instances in an image, commonly using bounding boxes.</p>
 <p><strong>What is IoU?</strong></p>
-<p>
-$$
-IoU=
-\frac{A_{\cap}}{A_{\cup}}.
-$$
-</p>
+<div class="math-display">
+  $$IoU=
+\frac{A_{\cap}}{A_{\cup}}.$$
+</div>
 <p><strong>What is NMS?</strong><br />
 A postprocessing method that suppresses redundant overlapping detections.</p>
 <p><strong>Expand YOLO.</strong><br />
@@ -2109,17 +2015,13 @@ object detection
     </div>
     <div class="section-body">
       <p>Ground truth:</p>
-<p>
-$$
-(0,0,100,100)
-$$
-</p>
+<div class="math-display">
+  $$(0,0,100,100)$$
+</div>
 <p>Prediction:</p>
-<p>
-$$
-(50,50,150,150).
-$$
-</p>
+<div class="math-display">
+  $$(50,50,150,150).$$
+</div>
 <p>Calculate:</p>
 <ol>
 <li>intersection area;</li>
@@ -2127,34 +2029,26 @@ $$
 <li>IoU.</li>
 </ol>
 <p>Intersection:</p>
-<p>
-$$
-50\times50=2500.
-$$
-</p>
+<div class="math-display">
+  $$50\times50=2500.$$
+</div>
 <p>Each box area:</p>
-<p>
-$$
-100\times100=10{,}000.
-$$
-</p>
+<div class="math-display">
+  $$100\times100=10{,}000.$$
+</div>
 <p>Union:</p>
-<p>
-$$
-10{,}000+10{,}000-2500
+<div class="math-display">
+  $$10{,}000+10{,}000-2500
 =
-17{,}500.
-$$
-</p>
+17{,}500.$$
+</div>
 <p>Therefore:</p>
-<p>
-$$
-IoU=
+<div class="math-display">
+  $$IoU=
 \frac{2500}{17{,}500}
 =
-\boxed{0.142857\ldots}.
-$$
-</p>
+\boxed{0.142857\ldots}.$$
+</div>
 <hr />
     </div>
   </section>
@@ -2167,27 +2061,17 @@ $$
       <button class="bookmark-btn" data-id="s-28-49" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>A detector processes:</p>
-<p>
-$$
-240
-$$
-</p>
-<p>frames in:</p>
-<p>
-$$
-8
-$$
-</p>
+      <p>A detector processes: $240$ frames in:</p>
+<div class="math-display">
+  $$8$$
+</div>
 <p>seconds.</p>
 <p>Then:</p>
-<p>
-$$
-FPS=\frac{240}{8}
+<div class="math-display">
+  $$FPS=\frac{240}{8}
 =
-\boxed{30}.
-$$
-</p>
+\boxed{30}.$$
+</div>
 <hr />
     </div>
   </section>
@@ -2331,33 +2215,27 @@ $$
     </div>
     <div class="section-body">
       <p>The key transformation from classification to detection is:</p>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 \text{What?}
 \rightarrow
 \text{What + Where?}
-}
-$$
-</p>
+}$$
+</div>
 <p>A typical detection output contains:</p>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 \text{class}+\text{box}+\text{confidence}
-}
-$$
-</p>
+}$$
+</div>
 <p>The central geometric evaluation concept is:</p>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 IoU=
 \frac{\text{intersection}}
 {\text{union}}
-}
-$$
-</p>
+}$$
+</div>
 <p>The practical YOLO pipeline is:</p>
 <p><div class="code-block">
   <div class="code-header">

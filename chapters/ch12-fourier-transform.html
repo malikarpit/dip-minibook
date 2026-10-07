@@ -22,7 +22,7 @@
       svg: { fontCache: 'global' }
     };
   </script>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script id="MathJax-script" async src="../assets/js/mathjax/tex-mml-chtml.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';"></script>
 </head>
 <body data-chapter-id="ch12-fourier-transform">
   <div id="progress-bar"></div>
@@ -478,14 +478,12 @@ high spatial frequency
     </div>
     <div class="section-body">
       <p>For a continuous 1-D signal:</p>
-<p>
-$$
-F(u)
+<div class="math-display">
+  $$F(u)
 =
 \int_{-\infty}^{\infty}
-f(x)e^{-i2\pi ux}\,dx
-$$
-</p>
+f(x)e^{-i2\pi ux}\,dx$$
+</div>
 <p>where:</p>
 <ul>
 <li>$f(x)$ = spatial-domain signal,</li>
@@ -493,14 +491,12 @@ $$
 <li>$i=\sqrt{-1}$.</li>
 </ul>
 <p>The inverse transform is:</p>
-<p>
-$$
-f(x)
+<div class="math-display">
+  $$f(x)
 =
 \int_{-\infty}^{\infty}
-F(u)e^{i2\pi ux}\,du
-$$
-</p>
+F(u)e^{i2\pi ux}\,du$$
+</div>
 <p>The transform is therefore a change of representation, not necessarily a loss of information.</p>
 <hr />
     </div>
@@ -515,13 +511,11 @@ $$
     </div>
     <div class="section-body">
       <p>Fourier analysis uses:</p>
-<p>
-$$
-e^{i\theta}
+<div class="math-display">
+  $$e^{i\theta}
 =
-\cos\theta+i\sin\theta
-$$
-</p>
+\cos\theta+i\sin\theta$$
+</div>
 <p>via Euler's formula.</p>
 <p>So Fourier coefficients are generally complex.</p>
 <p>A coefficient contains:</p>
@@ -547,28 +541,18 @@ phase</code></pre>
       <button class="bookmark-btn" data-id="s-12-5" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>For a complex spectrum:</p>
-<p>
-$$
-F(u)=A(u)+iB(u)
-$$
-</p>
-<p>the magnitude is:</p>
-<p>
-$$
-|F(u)|
+      <p>For a complex spectrum: $F(u)=A(u)+iB(u)$ the magnitude is:</p>
+<div class="math-display">
+  $$|F(u)|
 =
-\sqrt{A(u)^2+B(u)^2}
-$$
-</p>
+\sqrt{A(u)^2+B(u)^2}$$
+</div>
 <p>The phase is:</p>
-<p>
-$$
-\phi(u)
+<div class="math-display">
+  $$\phi(u)
 =
-\operatorname{atan2}(B(u),A(u))
-$$
-</p>
+\operatorname{atan2}(B(u),A(u))$$
+</div>
 <p>Therefore:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -593,27 +577,23 @@ $$
     </div>
     <div class="section-body">
       <p>A continuous 2-D Fourier transform can be written:</p>
-<p>
-$$
-F(u,v)
+<div class="math-display">
+  $$F(u,v)
 =
 \int\int
 f(x,y)
 e^{-i2\pi(ux+vy)}
-\,dx\,dy
-$$
-</p>
+\,dx\,dy$$
+</div>
 <p>The inverse is:</p>
-<p>
-$$
-f(x,y)
+<div class="math-display">
+  $$f(x,y)
 =
 \int\int
 F(u,v)
 e^{i2\pi(ux+vy)}
-\,du\,dv
-$$
-</p>
+\,du\,dv$$
+</div>
 <p>For digital images, we use the discrete version.</p>
 <hr />
     </div>
@@ -628,9 +608,8 @@ $$
     </div>
     <div class="section-body">
       <p>For an $M\times N$ image:</p>
-<p>
-$$
-F(u,v)
+<div class="math-display">
+  $$F(u,v)
 =
 \sum_{x=0}^{M-1}
 \sum_{y=0}^{N-1}
@@ -640,20 +619,15 @@ e^{-i2\pi
 \frac{ux}{M}
 +
 \frac{vy}{N}
-\right)}
-$$
-</p>
+\right)}$$
+</div>
 <p>for:</p>
-<p>
-$$
-u=0,\ldots,M-1
-$$
-</p>
-<p>
-$$
-v=0,\ldots,N-1
-$$
-</p>
+<div class="math-display">
+  $$u=0,\ldots,M-1$$
+</div>
+<div class="math-display">
+  $$v=0,\ldots,N-1$$
+</div>
 <p>This is the <strong>2-D Discrete Fourier Transform (DFT)</strong>.</p>
 <hr />
     </div>
@@ -668,9 +642,8 @@ $$
     </div>
     <div class="section-body">
       <p>The inverse is:</p>
-<p>
-$$
-f(x,y)
+<div class="math-display">
+  $$f(x,y)
 =
 \frac{1}{MN}
 \sum_{u=0}^{M-1}
@@ -681,15 +654,12 @@ e^{i2\pi
 \frac{ux}{M}
 +
 \frac{vy}{N}
-\right)}
-$$
-</p>
+\right)}$$
+</div>
 <p>The factor:</p>
-<p>
-$$
-\frac1{MN}
-$$
-</p>
+<div class="math-display">
+  $$\frac1{MN}$$
+</div>
 <p>appears in this common convention.</p>
 <blockquote>
 <p><strong>Convention note:</strong> Some software/discussions distribute normalization factors differently between forward and inverse transforms. Always follow the chosen convention consistently.</p>
@@ -706,13 +676,7 @@ $$
       <button class="bookmark-btn" data-id="s-12-9" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>The pair:</p>
-<p>
-$$
-(u,v)
-$$
-</p>
-<p>describes a spatial-frequency component.</p>
+      <p>The pair: $(u,v)$ describes a spatial-frequency component.</p>
 <p>Conceptually:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -740,11 +704,9 @@ large |u|, |v|
     <div class="section-body">
       <p>A raw spectrum often has very large values near the origin.</p>
 <p>A common visualization uses:</p>
-<p>
-$$
-D(u,v)=\log\left(1+|F(u,v)|\right)
-$$
-</p>
+<div class="math-display">
+  $$D(u,v)=\log\left(1+|F(u,v)|\right)$$
+</div>
 <p>This compresses the dynamic range of spectral magnitudes for display.</p>
 <p>It is a visualization transformation.</p>
 <p>It does not mean that the Fourier spectrum itself has been logarithmically altered in the filtering algorithm.</p>
@@ -761,26 +723,20 @@ $$
     </div>
     <div class="section-body">
       <p>The zero-frequency component is:</p>
-<p>
-$$
-F(0,0)
-$$
-</p>
+<div class="math-display">
+  $$F(0,0)$$
+</div>
 <p>It represents the image's average/constant component under the chosen DFT convention.</p>
 <p>For an image:</p>
-<p>
-$$
-F(0,0)
+<div class="math-display">
+  $$F(0,0)
 =
-\sum_x\sum_y f(x,y)
-$$
-</p>
+\sum_x\sum_y f(x,y)$$
+</div>
 <p>Therefore:</p>
-<p>
-$$
-\frac{F(0,0)}{MN}
-$$
-</p>
+<div class="math-display">
+  $$\frac{F(0,0)}{MN}$$
+</div>
 <p>is the mean image value under this convention.</p>
 <hr />
     </div>
@@ -795,39 +751,31 @@ $$
     </div>
     <div class="section-body">
       <p>Consider:</p>
-<p>
-$$
-I=
+<div class="math-display">
+  $$I=
 \begin{bmatrix}
 10&20\\
 30&40
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>Then:</p>
-<p>
-$$
-F(0,0)
+<div class="math-display">
+  $$F(0,0)
 =
 10+20+30+40
 =
-100
-$$
-</p>
+100$$
+</div>
 <p>Image mean:</p>
-<p>
-$$
-\mu=\frac{100}{4}=25
-$$
-</p>
+<div class="math-display">
+  $$\mu=\frac{100}{4}=25$$
+</div>
 <p>Therefore:</p>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 \frac{F(0,0)}{4}=25
-}
-$$
-</p>
+}$$
+</div>
 <hr />
     </div>
   </section>
@@ -840,13 +788,7 @@ $$
       <button class="bookmark-btn" data-id="s-12-13" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose:</p>
-<p>
-$$
-f(x,y)=C
-$$
-</p>
-<p>for every pixel.</p>
+      <p>Suppose: $f(x,y)=C$ for every pixel.</p>
 <p>This image contains only a DC/zero-frequency component in the ideal discrete periodic representation.</p>
 <p>Conceptually:</p>
 <p><div class="code-block">
@@ -979,11 +921,9 @@ columns
     <div class="section-body">
       <h3>DFT</h3>
 <p>The mathematical transform:</p>
-<p>
-$$
-F(u,v)
-$$
-</p>
+<div class="math-display">
+  $$F(u,v)$$
+</div>
 <h3>FFT</h3>
 <p>A family of algorithms for computing the DFT efficiently.</p>
 <p>Therefore:</p>
@@ -1002,20 +942,8 @@ $$
       <button class="bookmark-btn" data-id="s-12-19" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>A direct 1-D DFT is roughly:</p>
-<p>
-$$
-O(N^2)
-$$
-</p>
-<p>for $N$ samples.</p>
-<p>A typical FFT algorithm can reduce this to approximately:</p>
-<p>
-$$
-O(N\log N)
-$$
-</p>
-<p>under its applicable structure.</p>
+      <p>A direct 1-D DFT is roughly: $O(N^2)$ for $N$ samples.</p>
+<p>A typical FFT algorithm can reduce this to approximately: $O(N\log N)$ under its applicable structure.</p>
 <p>For 2-D images, separability plus efficient 1-D FFTs makes large transforms practical.</p>
 <p>This is why frequency-domain image processing is computationally feasible.</p>
 <hr />
@@ -1030,78 +958,44 @@ $$
       <button class="bookmark-btn" data-id="s-12-20" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Consider:</p>
-<p>
-$$
-f=[1,0,1,0]
-$$
-</p>
-<p>For the 4-point DFT:</p>
-<p>
-$$
-F(k)=\sum_{n=0}^{3}f[n]e^{-i2\pi kn/4}
-$$
-</p>
+      <p>Consider: $f=[1,0,1,0]$ For the 4-point DFT:</p>
+<div class="math-display">
+  $$F(k)=\sum_{n=0}^{3}f[n]e^{-i2\pi kn/4}$$
+</div>
 <h3>$k=0$</h3>
-<p>
-$$
-F(0)=1+0+1+0=2
-$$
-</p>
+<div class="math-display">
+  $$F(0)=1+0+1+0=2$$
+</div>
 <h3>$k=1$</h3>
-<p>
-$$
-F(1)
+<div class="math-display">
+  $$F(1)
 =
-1+1e^{-i\pi}
-$$
-</p>
+1+1e^{-i\pi}$$
+</div>
 <p>because the other terms are multiplied by zero.</p>
-<p>Since:</p>
-<p>
-$$
-e^{-i\pi}=-1
-$$
-</p>
-<p>we get:</p>
-<p>
-$$
-F(1)=1-1=0
-$$
-</p>
+<p>Since: $e^{-i\pi}=-1$ we get:</p>
+<div class="math-display">
+  $$F(1)=1-1=0$$
+</div>
 <h3>$k=2$</h3>
-<p>
-$$
-F(2)
+<div class="math-display">
+  $$F(2)
 =
-1+1e^{-i2\pi}
-$$
-</p>
-<p>and:</p>
-<p>
-$$
-e^{-i2\pi}=1
-$$
-</p>
-<p>so:</p>
-<p>
-$$
-F(2)=2
-$$
-</p>
+1+1e^{-i2\pi}$$
+</div>
+<p>and: $e^{-i2\pi}=1$ so:</p>
+<div class="math-display">
+  $$F(2)=2$$
+</div>
 <h3>$k=3$</h3>
 <p>Similarly:</p>
-<p>
-$$
-F(3)=0
-$$
-</p>
+<div class="math-display">
+  $$F(3)=0$$
+</div>
 <p>Therefore:</p>
-<p>
-$$
-\boxed{F=[2,0,2,0]}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{F=[2,0,2,0]}$$
+</div>
 <p>This makes sense because the original sequence contains a strong alternating pattern.</p>
 <hr />
     </div>
@@ -1115,21 +1009,13 @@ $$
       <button class="bookmark-btn" data-id="s-12-21" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>The image is real-valued, but the basis functions contain:</p>
-<p>
-$$
-e^{-i\theta}
-$$
-</p>
-<p>Therefore the transform is generally complex.</p>
+      <p>The image is real-valued, but the basis functions contain: $e^{-i\theta}$ Therefore the transform is generally complex.</p>
 <p>For real images, the DFT exhibits conjugate symmetry:</p>
-<p>
-$$
-F(u,v)
+<div class="math-display">
+  $$F(u,v)
 =
-F^*((-u)\bmod M,(-v)\bmod N)
-$$
-</p>
+F^*((-u)\bmod M,(-v)\bmod N)$$
+</div>
 <p>under the standard DFT indexing convention.</p>
 <p>This means positive/negative frequency components are not independent in the same way they are for arbitrary complex-valued signals.</p>
 <hr />
@@ -1178,15 +1064,13 @@ centered display
     </div>
     <div class="section-body">
       <p>A radial frequency measure can be written:</p>
-<p>
-$$
-D(u,v)
+<div class="math-display">
+  $$D(u,v)
 =
 \sqrt{
 (u-u_0)^2+(v-v_0)^2
-}
-$$
-</p>
+}$$
+</div>
 <p>where $(u_0,v_0)$ is the chosen spectral centre.</p>
 <p>This is useful for defining circular filters:</p>
 <p><div class="code-block">
@@ -1213,17 +1097,13 @@ large D
     </div>
     <div class="section-body">
       <p>A frequency-domain filter is represented by a transfer function:</p>
-<p>
-$$
-H(u,v)
-$$
-</p>
+<div class="math-display">
+  $$H(u,v)$$
+</div>
 <p>The filtered spectrum is:</p>
-<p>
-$$
-G(u,v)=H(u,v)F(u,v)
-$$
-</p>
+<div class="math-display">
+  $$G(u,v)=H(u,v)F(u,v)$$
+</div>
 <p>A low-pass filter preserves low frequencies and suppresses high frequencies.</p>
 <p>Conceptually:</p>
 <p><div class="code-block">
@@ -1350,11 +1230,9 @@ display / evaluation</code></pre>
     </div>
     <div class="section-body">
       <p>The central operation is:</p>
-<p>
-$$
-G(u,v)=H(u,v)F(u,v)
-$$
-</p>
+<div class="math-display">
+  $$G(u,v)=H(u,v)F(u,v)$$
+</div>
 <p>This is powerful because:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -1380,13 +1258,11 @@ frequency multiplication</code></pre>
     </div>
     <div class="section-body">
       <p>The convolution theorem states, under standard transform conventions:</p>
-<p>
-$$
-f*h
+<div class="math-display">
+  $$f*h
 \quad\Longleftrightarrow\quad
-FH
-$$
-</p>
+FH$$
+</div>
 <p>That is:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -1488,16 +1364,14 @@ smooth low-pass spectrum</code></pre>
     <div class="section-body">
       <p>Differentiation has a simple Fourier-domain relationship.</p>
 <p>For a 1-D signal:</p>
-<p>
-$$
-\mathcal{F}
+<div class="math-display">
+  $$\mathcal{F}
 \left\{
 \frac{df}{dx}
 \right\}
 =
-i2\pi uF(u)
-$$
-</p>
+i2\pi uF(u)$$
+</div>
 <p>under the continuous Fourier-transform convention used here.</p>
 <p>Therefore:</p>
 <p><div class="code-block">
@@ -1522,30 +1396,14 @@ $$
       <button class="bookmark-btn" data-id="s-12-34" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose two spectral components have frequencies:</p>
-<p>
-$$
-u_1=1
-$$
-</p>
-<p>and:</p>
-<p>
-$$
-u_2=10
-$$
-</p>
-<p>Derivative magnitude weighting is proportional to:</p>
-<p>
-$$
-|u|
-$$
-</p>
-<p>Therefore the second component receives approximately:</p>
-<p>
-$$
-\frac{10}{1}=10
-$$
-</p>
+      <p>Suppose two spectral components have frequencies: $u_1=1$, and:</p>
+<div class="math-display">
+  $$u_2=10$$
+</div>
+<p>Derivative magnitude weighting is proportional to: $|u|$ Therefore the second component receives approximately:</p>
+<div class="math-display">
+  $$\frac{10}{1}=10$$
+</div>
 <p>times the derivative weighting of the first component, all else equal.</p>
 <p>This explains why high-frequency noise can become prominent after differentiation.</p>
 <hr />
@@ -1649,22 +1507,14 @@ spatial ringing</code></pre>
     </div>
     <div class="section-body">
       <p>A simple ideal low-pass transfer function is:</p>
-<p>
-$$
-H(u,v)=
+<div class="math-display">
+  $$H(u,v)=
 \begin{cases}
 1,&D(u,v)\le D_0\\
 0,&D(u,v)>D_0
-\end{cases}
-$$
-</p>
-<p>where:</p>
-<p>
-$$
-D_0
-$$
-</p>
-<p>is the cutoff frequency.</p>
+\end{cases}$$
+</div>
+<p>where: $D_0$ is the cutoff frequency.</p>
 <p>It preserves a circular region around the frequency origin.</p>
 <hr />
     </div>
@@ -1704,15 +1554,13 @@ extended/ringing spatial response</code></pre>
     </div>
     <div class="section-body">
       <p>A common form is:</p>
-<p>
-$$
-H(u,v)
+<div class="math-display">
+  $$H(u,v)
 =
 \frac{1}{
 1+\left(\frac{D(u,v)}{D_0}\right)^{2n}
-}
-$$
-</p>
+}$$
+</div>
 <p>where:</p>
 <ul>
 <li>$D_0$ = cutoff,</li>
@@ -1732,13 +1580,11 @@ $$
     </div>
     <div class="section-body">
       <p>A common form is:</p>
-<p>
-$$
-H(u,v)
+<div class="math-display">
+  $$H(u,v)
 =
-e^{-\frac{D(u,v)^2}{2D_0^2}}
-$$
-</p>
+e^{-\frac{D(u,v)^2}{2D_0^2}}$$
+</div>
 <p>This provides a smooth frequency response.</p>
 <p>It is closely related to Gaussian spatial smoothing.</p>
 <hr />
@@ -1754,13 +1600,11 @@ $$
     </div>
     <div class="section-body">
       <p>A simple high-pass complement is:</p>
-<p>
-$$
-H_{HP}(u,v)
+<div class="math-display">
+  $$H_{HP}(u,v)
 =
-1-H_{LP}(u,v)
-$$
-</p>
+1-H_{LP}(u,v)$$
+</div>
 <p>for the corresponding low-pass filter.</p>
 <p>This is a conceptual construction.</p>
 <p>For some applications, high-boost or other specialized filters are preferable.</p>
@@ -1776,42 +1620,18 @@ $$
       <button class="bookmark-btn" data-id="s-12-43" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose:</p>
-<p>
-$$
-D_0=10
-$$
-</p>
-<p>and a frequency location has:</p>
-<p>
-$$
-D=5
-$$
-</p>
-<p>For the ideal low-pass:</p>
-<p>
-$$
-D\le D_0
-$$
-</p>
-<p>so:</p>
-<p>
-$$
-H=1
-$$
-</p>
-<p>For another point:</p>
-<p>
-$$
-D=15
-$$
-</p>
-<p>then:</p>
-<p>
-$$
-H=0
-$$
-</p>
+      <p>Suppose: $D_0=10$, and a frequency location has:</p>
+<div class="math-display">
+  $$D=5$$
+</div>
+<p>For the ideal low-pass: $D\le D_0$ so:</p>
+<div class="math-display">
+  $$H=1$$
+</div>
+<p>For another point: $D=15$ then:</p>
+<div class="math-display">
+  $$H=0$$
+</div>
 <p>Thus the ideal filter makes an abrupt decision.</p>
 <hr />
     </div>
@@ -1933,11 +1753,9 @@ phase
     </div>
     <div class="section-body">
       <p>Due to numerical floating-point effects, inverse FFT of a theoretically real image may contain tiny imaginary components:</p>
-<p>
-$$
-2\times10^{-15}i
-$$
-</p>
+<div class="math-display">
+  $$2\times10^{-15}i$$
+</div>
 <p>These can be safely treated as numerical residuals when appropriate.</p>
 <p>But large imaginary components are a warning that something may be wrong with:</p>
 <ul>
@@ -2181,13 +1999,7 @@ downsample</code></pre>
       <button class="bookmark-btn" data-id="s-12-54" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>For a band-limited continuous signal:</p>
-<p>
-$$
-f_s>2f_{\max}
-$$
-</p>
-<p>is the classical ideal sampling condition.</p>
+      <p>For a band-limited continuous signal: $f_s>2f_{\max}$ is the classical ideal sampling condition.</p>
 <p>In the frequency domain, sampling creates spectral replicas separated by the sampling frequency.</p>
 <p>Conceptually:</p>
 <p><div class="code-block">
@@ -2283,11 +2095,9 @@ separated replicas</code></pre>
     </div>
     <div class="section-body">
       <p>For a 1-D sampled signal with $N$ samples and sampling frequency $f_s$, the frequency-bin spacing is:</p>
-<p>
-$$
-\Delta f=\frac{f_s}{N}
-$$
-</p>
+<div class="math-display">
+  $$\Delta f=\frac{f_s}{N}$$
+</div>
 <p>under the standard DFT frequency-grid interpretation.</p>
 <p>Therefore increasing $N$, for a fixed $f_s$, gives finer frequency-bin spacing.</p>
 <hr />
@@ -2302,29 +2112,13 @@ $$
       <button class="bookmark-btn" data-id="s-12-58" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose:</p>
-<p>
-$$
-f_s=1000\text{ Hz}
-$$
-</p>
-<p>and:</p>
-<p>
-$$
-N=500
-$$
-</p>
-<p>Then:</p>
-<p>
-$$
-\Delta f=\frac{1000}{500}
-$$
-</p>
-<p>
-$$
-\boxed{\Delta f=2\text{ Hz}}
-$$
-</p>
+      <p>Suppose $f_s=1000\text{ Hz}$ and $N=500$. Then:</p>
+<div class="math-display">
+  $$\Delta f=\frac{1000}{500}$$
+</div>
+<div class="math-display">
+  $$\boxed{\Delta f=2\text{ Hz}}$$
+</div>
 <p>This means adjacent DFT frequency bins are separated by 2 Hz under the chosen interpretation.</p>
 <hr />
     </div>
@@ -2346,13 +2140,7 @@ $$
 <li>normalized spatial frequency.</li>
 </ul>
 <p>The unit matters.</p>
-<p>A statement such as:</p>
-<p>
-$$
-0.2\text{ cycles/pixel}
-$$
-</p>
-<p>describes a digital spatial frequency.</p>
+<p>A statement such as: $0.2\text{ cycles/pixel}$ describes a digital spatial frequency.</p>
 <p>Physical units require knowledge of the physical sampling scale.</p>
 <hr />
     </div>
@@ -2367,13 +2155,7 @@ $$
     </div>
     <div class="section-body">
       <p>Whether the DC term is displayed at the corner or centre depends on the visualization/index arrangement.</p>
-<p>The underlying zero-frequency component is still:</p>
-<p>
-$$
-F(0,0)
-$$
-</p>
-<p>before shifting.</p>
+<p>The underlying zero-frequency component is still: $F(0,0)$ before shifting.</p>
 <p>This matters when writing code that constructs filters.</p>
 <hr />
     </div>
@@ -2422,9 +2204,8 @@ $$
     </div>
     <div class="section-body">
       <h3>2-D DFT</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 F(u,v)
 =
 \sum_{x=0}^{M-1}
@@ -2436,13 +2217,11 @@ e^{-i2\pi
 +
 \frac{vy}{N}
 \right)}
-}
-$$
-</p>
+}$$
+</div>
 <h3>Inverse DFT</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 f(x,y)
 =
 \frac1{MN}
@@ -2454,73 +2233,58 @@ e^{i2\pi
 +
 \frac{vy}{N}
 \right)}
-}
-$$
-</p>
+}$$
+</div>
 <h3>Magnitude</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 |F|=\sqrt{\Re(F)^2+\Im(F)^2}
-}
-$$
-</p>
+}$$
+</div>
 <h3>Phase</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 \phi=\operatorname{atan2}
 (\Im F,\Re F)
-}
-$$
-</p>
+}$$
+</div>
 <h3>Frequency-domain filtering</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 G=HF
-}
-$$
-</p>
+}$$
+</div>
 <h3>Ideal low-pass</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 H=
 \begin{cases}
 1,&D\le D_0\\
 0,&D>D_0
 \end{cases}
-}
-$$
-</p>
+}$$
+</div>
 <h3>Butterworth low-pass</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 H=
 \frac{1}{
 1+(D/D_0)^{2n}
 }
-}
-$$
-</p>
+}$$
+</div>
 <h3>Gaussian low-pass</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 H=e^{-D^2/(2D_0^2)}
-}
-$$
-</p>
+}$$
+</div>
 <h3>Frequency-bin spacing</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 \Delta f=\frac{f_s}{N}
-}
-$$
-</p>
+}$$
+</div>
 <hr />
     </div>
   </section>
@@ -2534,33 +2298,25 @@ $$
     </div>
     <div class="section-body">
       <p>Given:</p>
-<p>
-$$
-I=
+<div class="math-display">
+  $$I=
 \begin{bmatrix}
 2&4\\
 6&8
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>find $F(0,0)$ and the mean.</p>
-<p>
-$$
-F(0,0)=2+4+6+8=20
-$$
-</p>
+<div class="math-display">
+  $$F(0,0)=2+4+6+8=20$$
+</div>
 <p>Mean:</p>
-<p>
-$$
-\mu=\frac{20}{4}=5
-$$
-</p>
+<div class="math-display">
+  $$\mu=\frac{20}{4}=5$$
+</div>
 <p>Therefore:</p>
-<p>
-$$
-\boxed{F(0,0)=20,\quad\mu=5}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{F(0,0)=20,\quad\mu=5}$$
+</div>
 <hr />
     </div>
   </section>
@@ -2574,33 +2330,23 @@ $$
     </div>
     <div class="section-body">
       <p>Suppose:</p>
-<p>
-$$
-D_0=15
-$$
-</p>
+<div class="math-display">
+  $$D_0=15$$
+</div>
 <p>For:</p>
-<p>
-$$
-D=8
-$$
-</p>
-<p>
-$$
-H=1
-$$
-</p>
+<div class="math-display">
+  $$D=8$$
+</div>
+<div class="math-display">
+  $$H=1$$
+</div>
 <p>For:</p>
-<p>
-$$
-D=20
-$$
-</p>
-<p>
-$$
-H=0
-$$
-</p>
+<div class="math-display">
+  $$D=20$$
+</div>
+<div class="math-display">
+  $$H=0$$
+</div>
 <p>Therefore the ideal filter passes the first frequency location and rejects the second.</p>
 <hr />
     </div>
@@ -2614,30 +2360,18 @@ $$
       <button class="bookmark-btn" data-id="s-12-65" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>A 1-D signal is sampled at:</p>
-<p>
-$$
-f_s=800\text{ Hz}
-$$
-</p>
-<p>with:</p>
-<p>
-$$
-N=400
-$$
-</p>
+      <p>A 1-D signal is sampled at: $f_s=800\text{ Hz}$ with:</p>
+<div class="math-display">
+  $$N=400$$
+</div>
 <p>Then:</p>
-<p>
-$$
-\Delta f=\frac{800}{400}=2\text{ Hz}
-$$
-</p>
+<div class="math-display">
+  $$\Delta f=\frac{800}{400}=2\text{ Hz}$$
+</div>
 <p>So:</p>
-<p>
-$$
-\boxed{2\text{ Hz}}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{2\text{ Hz}}$$
+</div>
 <hr />
     </div>
   </section>

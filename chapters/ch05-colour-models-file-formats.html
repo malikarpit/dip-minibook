@@ -22,7 +22,7 @@
       svg: { fontCache: 'global' }
     };
   </script>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script id="MathJax-script" async src="../assets/js/mathjax/tex-mml-chtml.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';"></script>
 </head>
 <body data-chapter-id="ch05-colour-models-file-formats">
   <div id="progress-bar"></div>
@@ -375,30 +375,16 @@ TIFF</code></pre>
     </div>
     <div class="section-body">
       <p>A digital colour image usually associates multiple channel values with one spatial location.</p>
-<p>Conceptually:</p>
-<p>
-$$
-I(x,y)=(c_1,c_2,\ldots,c_K)
-$$
-</p>
-<p>For ordinary RGB imagery:</p>
-<p>
-$$
-I(x,y)=(R,G,B)
-$$
-</p>
+<p>Conceptually $I(x,y)=(c_1,c_2,\ldots,c_K)$ For ordinary RGB imagery:</p>
+<div class="math-display">
+  $$I(x,y)=(R,G,B)$$
+</div>
 <p>The three values together define a colour under the specified colour-space conventions.</p>
 <p>This immediately gives an important rule:</p>
 <blockquote>
 <p>Never interpret a colour triplet without knowing what the channels mean.</p>
 </blockquote>
-<p>For example, the triplet:</p>
-<p>
-$$
-(255,0,0)
-$$
-</p>
-<p>means saturated red under a conventional 8-bit RGB interpretation.</p>
+<p>For example, the triplet: $(255,0,0)$ means saturated red under a conventional 8-bit RGB interpretation.</p>
 <p>But a three-number vector in another colour model can mean something entirely different.</p>
 <hr />
     </div>
@@ -461,17 +447,13 @@ G = Green
 B = Blue</code></pre>
 </div></p>
 <p>A pixel is represented as:</p>
-<p>
-$$
-(R,G,B)
-$$
-</p>
+<div class="math-display">
+  $$(R,G,B)$$
+</div>
 <p>Under a common 8-bit-per-channel representation:</p>
-<p>
-$$
-0\le R,G,B\le255
-$$
-</p>
+<div class="math-display">
+  $$0\le R,G,B\le255$$
+</div>
 <p>Examples:</p>
 <div class="table-wrap"><table class="comparison-table">
 <thead>
@@ -550,11 +532,9 @@ $$
             G</code></pre>
 </div></p>
 <p>Each colour is a point in a 3-D coordinate space:</p>
-<p>
-$$
-(R,G,B)
-$$
-</p>
+<div class="math-display">
+  $$(R,G,B)$$
+</div>
 <p>This geometric interpretation is useful for understanding:</p>
 <ul>
 <li>colour distance,</li>
@@ -574,18 +554,10 @@ $$
       <button class="bookmark-btn" data-id="s-05-5" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Take:</p>
-<p>
-$$
-R=200,\quad G=120,\quad B=40
-$$
-</p>
-<p>Then the pixel is:</p>
-<p>
-$$
-(200,120,40)
-$$
-</p>
+      <p>Take $R=200,\quad G=120,\quad B=40$ Then the pixel is:</p>
+<div class="math-display">
+  $$(200,120,40)$$
+</div>
 <p>Relative comparison:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -768,55 +740,37 @@ H &lt; 10°</code></pre>
       <button class="bookmark-btn" data-id="s-05-10" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>For normalized RGB:</p>
-<p>
-$$
-r,g,b\in[0,1]
-$$
-</p>
-<p>define:</p>
-<p>
-$$
-C_{\max}=\max(r,g,b)
-$$
-</p>
-<p>
-$$
-C_{\min}=\min(r,g,b)
-$$
-</p>
-<p>
-$$
-\Delta=C_{\max}-C_{\min}
-$$
-</p>
+      <p>For normalized RGB: $r,g,b\in[0,1]$ define:</p>
+<div class="math-display">
+  $$C_{\max}=\max(r,g,b)$$
+</div>
+<div class="math-display">
+  $$C_{\min}=\min(r,g,b)$$
+</div>
+<div class="math-display">
+  $$\Delta=C_{\max}-C_{\min}$$
+</div>
 <p>Then the HSV values are derived according to which channel is maximal.</p>
 <p>For example, when $C_{\max}=r$:</p>
-<p>
-$$
-H'=60^\circ
+<div class="math-display">
+  $$H'=60^\circ
 \left(
 \frac{g-b}{\Delta}
-\right)
-$$
-</p>
+\right)$$
+</div>
 <p>with appropriate wrap-around adjustment.</p>
 <p>Then:</p>
-<p>
-$$
-S=
+<div class="math-display">
+  $$S=
 \begin{cases}
 0,&C_{\max}=0\\[4pt]
 \frac{\Delta}{C_{\max}},&C_{\max}\ne0
-\end{cases}
-$$
-</p>
+\end{cases}$$
+</div>
 <p>and:</p>
-<p>
-$$
-V=C_{\max}
-$$
-</p>
+<div class="math-display">
+  $$V=C_{\max}$$
+</div>
 <blockquote>
 <p><strong>EXAM NOTE:</strong> The exact hue formula has separate cases for max-$R$, max-$G$, max-$B$. Do not memorize only one branch as the complete conversion.</p>
 </blockquote>
@@ -833,58 +787,40 @@ $$
     </div>
     <div class="section-body">
       <p>Take normalized RGB:</p>
-<p>
-$$
-(r,g,b)=(1,0,0)
-$$
-</p>
+<div class="math-display">
+  $$(r,g,b)=(1,0,0)$$
+</div>
 <p>Then:</p>
-<p>
-$$
-C_{\max}=1
-$$
-</p>
-<p>
-$$
-C_{\min}=0
-$$
-</p>
-<p>
-$$
-\Delta=1
-$$
-</p>
+<div class="math-display">
+  $$C_{\max}=1$$
+</div>
+<div class="math-display">
+  $$C_{\min}=0$$
+</div>
+<div class="math-display">
+  $$\Delta=1$$
+</div>
 <p>Since $R$ is maximum:</p>
-<p>
-$$
-H'= \frac{0-0}{1}=0
-$$
-</p>
+<div class="math-display">
+  $$H'= \frac{0-0}{1}=0$$
+</div>
 <p>so:</p>
-<p>
-$$
-H=0^\circ
-$$
-</p>
+<div class="math-display">
+  $$H=0^\circ$$
+</div>
 <p>and:</p>
-<p>
-$$
-S=\frac{1}{1}=1
-$$
-</p>
-<p>
-$$
-V=1
-$$
-</p>
+<div class="math-display">
+  $$S=\frac{1}{1}=1$$
+</div>
+<div class="math-display">
+  $$V=1$$
+</div>
 <p>Therefore:</p>
-<p>
-$$
-(R,G,B)=(1,0,0)
+<div class="math-display">
+  $$(R,G,B)=(1,0,0)
 \rightarrow
-(H,S,V)=(0^\circ,1,1)
-$$
-</p>
+(H,S,V)=(0^\circ,1,1)$$
+</div>
 <hr />
     </div>
   </section>
@@ -908,21 +844,15 @@ M = Magenta
 Y = Yellow</code></pre>
 </div></p>
 <p>For normalized components under the basic complement relationship:</p>
-<p>
-$$
-C=1-R
-$$
-</p>
-<p>
-$$
-M=1-G
-$$
-</p>
-<p>
-$$
-Y=1-B
-$$
-</p>
+<div class="math-display">
+  $$C=1-R$$
+</div>
+<div class="math-display">
+  $$M=1-G$$
+</div>
+<div class="math-display">
+  $$Y=1-B$$
+</div>
 <p>This describes the conceptual inverse relation between normalized RGB and CMY.</p>
 <hr />
     </div>
@@ -937,33 +867,23 @@ $$
     </div>
     <div class="section-body">
       <p>Take:</p>
-<p>
-$$
-(R,G,B)=(1,0.4,0.2)
-$$
-</p>
+<div class="math-display">
+  $$(R,G,B)=(1,0.4,0.2)$$
+</div>
 <p>Then:</p>
-<p>
-$$
-C=1-1=0
-$$
-</p>
-<p>
-$$
-M=1-0.4=0.6
-$$
-</p>
-<p>
-$$
-Y=1-0.2=0.8
-$$
-</p>
+<div class="math-display">
+  $$C=1-1=0$$
+</div>
+<div class="math-display">
+  $$M=1-0.4=0.6$$
+</div>
+<div class="math-display">
+  $$Y=1-0.2=0.8$$
+</div>
 <p>Therefore:</p>
-<p>
-$$
-(C,M,Y)=(0,0.6,0.8)
-$$
-</p>
+<div class="math-display">
+  $$(C,M,Y)=(0,0.6,0.8)$$
+</div>
 <p>This is useful for understanding the relationship between additive RGB and subtractive CMY.</p>
 <hr />
     </div>
@@ -1332,13 +1252,11 @@ file organization</code></pre>
     <div class="section-body">
       <p>PNG is designed for <strong>lossless</strong> image compression.</p>
 <p>That means, after decoding:</p>
-<p>
-$$
-\text{decoded image data}
+<div class="math-display">
+  $$\text{decoded image data}
 =
-\text{original encoded image data}
-$$
-</p>
+\text{original encoded image data}$$
+</div>
 <p>for the data covered by the compression process.</p>
 <p>PNG is especially useful when exact pixel preservation matters, such as:</p>
 <ul>

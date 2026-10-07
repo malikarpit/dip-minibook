@@ -22,7 +22,7 @@
       svg: { fontCache: 'global' }
     };
   </script>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script id="MathJax-script" async src="../assets/js/mathjax/tex-mml-chtml.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';"></script>
 </head>
 <body data-chapter-id="ch23-lossy-dct-jpeg">
   <div id="progress-bar"></div>
@@ -439,18 +439,10 @@ frequency-like coefficient block</code></pre>
     <div class="section-body">
       <p>This is a common misconception.</p>
 <p>A transform can be invertible.</p>
-<p>If:</p>
-<p>
-$$
-Y=T(X)
-$$
-</p>
-<p>and:</p>
-<p>
-$$
-X=T^{-1}(Y),
-$$
-</p>
+<p>If $Y=T(X)$, and:</p>
+<div class="math-display">
+  $$X=T^{-1}(Y),$$
+</div>
 <p>then no information has necessarily been discarded.</p>
 <p>For an ideal exact transform:</p>
 <p><div class="code-block">
@@ -484,25 +476,15 @@ Inverse transform
  ↓
 X&#x27;</code></pre>
 </div></p>
-<p>where:</p>
-<p>
-$$
-X'\neq X
-$$
-</p>
-<p>in general.</p>
+<p>where: $X'\neq X$ in general.</p>
 <p>Thus:</p>
-<p>
-$$
-\boxed{\text{Transform} \neq \text{information loss}}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{\text{Transform} \neq \text{information loss}}$$
+</div>
 <p>and:</p>
-<p>
-$$
-\boxed{\text{Quantization can introduce the loss}}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{\text{Quantization can introduce the loss}}$$
+</div>
 <hr />
     </div>
   </section>
@@ -516,13 +498,7 @@ $$
     </div>
     <div class="section-body">
       <p>JPEG uses small image blocks rather than applying one giant transform to the entire image.</p>
-<p>For baseline JPEG, the spatial image is processed using:</p>
-<p>
-$$
-8\times8
-$$
-</p>
-<p>blocks.</p>
+<p>For baseline JPEG, the spatial image is processed using: $8\times8$ blocks.</p>
 <p>Why is block processing attractive?</p>
 <h3>Local structure</h3>
 <p>A small region can often be approximated effectively by a limited set of basis patterns.</p>
@@ -652,28 +628,24 @@ higher frequency:
 <hr />
 <h1>9. 1-D DCT</h1>
 <p>For an input sequence $f(x)$ of length $N$, one common orthonormal DCT-II form is:</p>
-<p>
-$$
-F(u)=
+<div class="math-display">
+  $$F(u)=
 \alpha(u)
 \sum_{x=0}^{N-1}
 f(x)
 \cos
 \left[
 \frac{\pi(2x+1)u}{2N}
-\right]
-$$
-</p>
+\right]$$
+</div>
 <p>where:</p>
-<p>
-$$
-\alpha(u)=
+<div class="math-display">
+  $$\alpha(u)=
 \begin{cases}
 \sqrt{\frac{1}{N}}, & u=0,\\[4pt]
 \sqrt{\frac{2}{N}}, & u>0.
-\end{cases}
-$$
-</p>
+\end{cases}$$
+</div>
 <p>Different books and implementations may use equivalent scaling conventions.</p>
 <p>That changes coefficient magnitudes but not the fundamental concept.</p>
 <blockquote>
@@ -682,9 +654,8 @@ $$
 <hr />
 <h1>10. 2-D DCT</h1>
 <p>For an $N\times N$ image block:</p>
-<p>
-$$
-F(u,v)=
+<div class="math-display">
+  $$F(u,v)=
 \alpha(u)\alpha(v)
 \sum_{x=0}^{N-1}
 \sum_{y=0}^{N-1}
@@ -696,19 +667,15 @@ f(x,y)
 \cos
 \left[
 \frac{\pi(2y+1)v}{2N}
-\right].
-$$
-</p>
+\right].$$
+</div>
 <p>For the JPEG block:</p>
-<p>
-$$
-N=8.
-$$
-</p>
+<div class="math-display">
+  $$N=8.$$
+</div>
 <p>Thus:</p>
-<p>
-$$
-F(u,v)
+<div class="math-display">
+  $$F(u,v)
 =
 \alpha(u)\alpha(v)
 \sum_{x=0}^{7}
@@ -721,9 +688,8 @@ f(x,y)
 \cos
 \left[
 \frac{\pi(2y+1)v}{16}
-\right].
-$$
-</p>
+\right].$$
+</div>
 <hr />
     </div>
   </section>
@@ -737,22 +703,18 @@ $$
     </div>
     <div class="section-body">
       <p>In:</p>
-<p>
-$$
-F(u,v)
-$$
-</p>
+<div class="math-display">
+  $$F(u,v)$$
+</div>
 <ul>
 <li>$u$ indexes one spatial frequency direction;</li>
 <li>$v$ indexes the other spatial frequency direction.</li>
 </ul>
 <p>The pair $(u,v)$ identifies a particular 2-D cosine basis.</p>
 <p>The DC component is:</p>
-<p>
-$$
-F(0,0).
-$$
-</p>
+<div class="math-display">
+  $$F(0,0).$$
+</div>
 <p>Large $u$, $v$ values correspond to higher-frequency variations along those directions.</p>
 <hr />
     </div>
@@ -766,25 +728,13 @@ $$
       <button class="bookmark-btn" data-id="s-23-10" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>A compact way to express a 2-D DCT is:</p>
-<p>
-$$
-F=CXC^T
-$$
-</p>
-<p>where:</p>
+      <p>A compact way to express a 2-D DCT is $F=CXC^T$, where:</p>
 <ul>
 <li>$X$ = spatial-domain block;</li>
 <li>$C$ = DCT transform matrix;</li>
 <li>$F$ = coefficient matrix.</li>
 </ul>
-<p>The inverse is:</p>
-<p>
-$$
-X=C^TFC
-$$
-</p>
-<p>for the orthonormal convention.</p>
+<p>The inverse is $X=C^TFC$ for the orthonormal convention.</p>
 <p>This form is extremely useful because it makes the connection to linear algebra explicit.</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -812,15 +762,13 @@ F</code></pre>
     </div>
     <div class="section-body">
       <p>To make the mathematics manageable, consider:</p>
-<p>
-$$
-X=
+<div class="math-display">
+  $$X=
 \begin{bmatrix}
 10 & 10\\
 10 & 10
-\end{bmatrix}.
-$$
-</p>
+\end{bmatrix}.$$
+</div>
 <p>This block is constant.</p>
 <p>Therefore, intuitively:</p>
 <p><div class="code-block">
@@ -833,26 +781,21 @@ variation           → absent</code></pre>
 </div></p>
 <p>So the DC coefficient is nonzero, while AC coefficients are zero under an orthonormal DCT.</p>
 <p>Using:</p>
-<p>
-$$
-C=
+<div class="math-display">
+  $$C=
 \frac{1}{\sqrt2}
 \begin{bmatrix}
 1&1\\
 1&-1
-\end{bmatrix},
-$$
-</p>
+\end{bmatrix},$$
+</div>
 <p>we have:</p>
-<p>
-$$
-F=CXC^T.
-$$
-</p>
+<div class="math-display">
+  $$F=CXC^T.$$
+</div>
 <p>First:</p>
-<p>
-$$
-CX
+<div class="math-display">
+  $$CX
 =
 \frac{1}{\sqrt2}
 \begin{bmatrix}
@@ -862,23 +805,19 @@ CX
 \begin{bmatrix}
 10&10\\
 10&10
-\end{bmatrix}
-$$
-</p>
-<p>
-$$
-=
+\end{bmatrix}$$
+</div>
+<div class="math-display">
+  $$=
 \frac{1}{\sqrt2}
 \begin{bmatrix}
 20&20\\
 0&0
-\end{bmatrix}.
-$$
-</p>
+\end{bmatrix}.$$
+</div>
 <p>Then:</p>
-<p>
-$$
-F=
+<div class="math-display">
+  $$F=
 \frac{1}{\sqrt2}
 \begin{bmatrix}
 20&20\\
@@ -888,21 +827,18 @@ F=
 \begin{bmatrix}
 1&1\\
 1&-1
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>which gives:</p>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 F=
 \begin{bmatrix}
 20&0\\
 0&0
 \end{bmatrix}
-}
-$$
-</p>
+}$$
+</div>
 <p>This is an ideal demonstration of energy concentration:</p>
 <blockquote>
 <p>A constant image block needs only the DC component.</p>
@@ -920,15 +856,13 @@ $$
     </div>
     <div class="section-body">
       <p>Consider:</p>
-<p>
-$$
-X=
+<div class="math-display">
+  $$X=
 \begin{bmatrix}
 10&20\\
 10&20
-\end{bmatrix}.
-$$
-</p>
+\end{bmatrix}.$$
+</div>
 <p>There is:</p>
 <ul>
 <li>an average brightness;</li>
@@ -1040,13 +974,7 @@ large energy concentrated near DC/low frequencies
       <button class="bookmark-btn" data-id="s-23-15" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>A common beginner mistake is to interpret:</p>
-<p>
-$$
-F(u,v)
-$$
-</p>
-<p>as though it were another image with ordinary pixel values.</p>
+      <p>A common beginner mistake is to interpret: $F(u,v)$ as though it were another image with ordinary pixel values.</p>
 <p>It is not.</p>
 <p>A coefficient represents the strength of a particular basis function.</p>
 <p>Thus:</p>
@@ -1107,24 +1035,20 @@ DCT matrix
 </div></p>
 <p>We can divide coefficients by a quantization table and round.</p>
 <p>Conceptually:</p>
-<p>
-$$
-\hat F(u,v)
+<div class="math-display">
+  $$\hat F(u,v)
 =
 \operatorname{round}
 \left(
 \frac{F(u,v)}{Q(u,v)}
-\right).
-$$
-</p>
+\right).$$
+</div>
 <p>Then reconstruction uses:</p>
-<p>
-$$
-F'(u,v)
+<div class="math-display">
+  $$F'(u,v)
 =
-\hat F(u,v)Q(u,v).
-$$
-</p>
+\hat F(u,v)Q(u,v).$$
+</div>
 <p>Because rounding is not generally reversible, this stage can lose information.</p>
 <hr />
     </div>
@@ -1138,36 +1062,14 @@ $$
       <button class="bookmark-btn" data-id="s-23-18" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose:</p>
-<p>
-$$
-F=7
-$$
-</p>
-<p>and:</p>
-<p>
-$$
-Q=10.
-$$
-</p>
-<p>Then:</p>
-<p>
-$$
-\operatorname{round}(7/10)=1.
-$$
-</p>
-<p>Suppose:</p>
-<p>
-$$
-F=2,\quad Q=10.
-$$
-</p>
-<p>Then:</p>
-<p>
-$$
-\operatorname{round}(2/10)=0.
-$$
-</p>
+      <p>Suppose $F=7$ and $Q=10.$. Then:</p>
+<div class="math-display">
+  $$\operatorname{round}(7/10)=1.$$
+</div>
+<p>Suppose $F=2,\quad Q=10.$, then:</p>
+<div class="math-display">
+  $$\operatorname{round}(2/10)=0.$$
+</div>
 <p>Small coefficients can therefore disappear.</p>
 <p>This is enormously useful for compression because a coefficient matrix containing many zeros is easier to encode efficiently.</p>
 <hr />
@@ -1183,64 +1085,50 @@ $$
     </div>
     <div class="section-body">
       <p>Suppose a coefficient block is:</p>
-<p>
-$$
-F=
+<div class="math-display">
+  $$F=
 \begin{bmatrix}
 80 & 17 & 5\\
 11 & 3 & 2\\
 4 & 2 & 1
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>and a simplified quantization matrix is:</p>
-<p>
-$$
-Q=
+<div class="math-display">
+  $$Q=
 \begin{bmatrix}
 8 & 10 & 16\\
 10 & 16 & 20\\
 16 & 20 & 24
-\end{bmatrix}.
-$$
-</p>
+\end{bmatrix}.$$
+</div>
 <p>Then:</p>
-<p>
-$$
-\hat F=
-\operatorname{round}(F/Q).
-$$
-</p>
+<div class="math-display">
+  $$\hat F=
+\operatorname{round}(F/Q).$$
+</div>
 <p>Element-wise:</p>
-<p>
-$$
-80/8=10
-$$
-</p>
-<p>
-$$
-17/10=1.7\rightarrow2
-$$
-</p>
-<p>
-$$
-5/16=0.3125\rightarrow0
-$$
-</p>
+<div class="math-display">
+  $$80/8=10$$
+</div>
+<div class="math-display">
+  $$17/10=1.7\rightarrow2$$
+</div>
+<div class="math-display">
+  $$5/16=0.3125\rightarrow0$$
+</div>
 <p>and so on.</p>
 <p>A possible result is:</p>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 \hat F=
 \begin{bmatrix}
 10&2&0\\
 1&0&0\\
 0&0&0
 \end{bmatrix}
-}
-$$
-</p>
+}$$
+</div>
 <p>Many coefficients have become zero.</p>
 <p>This illustrates the mechanism without reproducing the full JPEG standard quantization tables.</p>
 <hr />
@@ -1688,11 +1576,9 @@ next 8×8 block</code></pre>
     <div class="section-body">
       <p>JPEG encoding commonly shifts 8-bit sample values before the DCT so that an unsigned range centered around 128 becomes approximately symmetric around zero.</p>
 <p>For an 8-bit sample $f$:</p>
-<p>
-$$
-f_{\text{shifted}}=f-128.
-$$
-</p>
+<div class="math-display">
+  $$f_{\text{shifted}}=f-128.$$
+</div>
 <p>Thus:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -1797,19 +1683,11 @@ reconstructed block</code></pre>
 </div></p>
 <p>With floating-point arithmetic, expect very small numerical differences due to finite precision.</p>
 <p>Define:</p>
-<p>
-$$
-e=\max |X-\hat X|.
-$$
-</p>
+<div class="math-display">
+  $$e=\max |X-\hat X|.$$
+</div>
 <p>If $e$ is close to numerical tolerance, the transform implementation is behaving as expected.</p>
-<p>After quantization:</p>
-<p>
-$$
-e
-$$
-</p>
-<p>will generally become nonzero by design.</p>
+<p>After quantization: $e$ will generally become nonzero by design.</p>
 <hr />
     </div>
   </section>
@@ -1874,13 +1752,11 @@ longer zero region later</code></pre>
 <h3>Step 5 — Entropy coding</h3>
 <p>The resulting symbols receive efficient variable-length codes.</p>
 <p>Thus:</p>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 \text{DCT enables a representation that later stages can compress efficiently}
-}
-$$
-</p>
+}$$
+</div>
 <hr />
     </div>
   </section>
@@ -1934,13 +1810,7 @@ Compressed bitstream</code></pre>
 → inverse DCT
 → reconstructed image</code></pre>
 </div></p>
-<p>The key loss location is:</p>
-<p>
-$$
-\boxed{\text{quantization}}
-$$
-</p>
-<p>for the usual lossy JPEG pipeline.</p>
+<p>The key loss location is $\boxed{\text{quantization}}$ for the usual lossy JPEG pipeline.</p>
 <hr />
     </div>
   </section>
@@ -2007,15 +1877,13 @@ The coefficient representing the zero-frequency/average component of a block und
     <div class="section-body">
       <p>For exams, be prepared for small matrices.</p>
 <p>A problem may provide:</p>
-<p>
-$$
-X=
+<div class="math-display">
+  $$X=
 \begin{bmatrix}
 x_{00}&x_{01}\\
 x_{10}&x_{11}
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>and ask for a small DCT.</p>
 <p>The safe procedure is:</p>
 <p><div class="code-block">
@@ -2046,15 +1914,13 @@ $$
 <p>Why does transforming an image help compression if the transform itself can be reversible?</p>
 <h3>Mathematics</h3>
 <p>For:</p>
-<p>
-$$
-X=
+<div class="math-display">
+  $$X=
 \begin{bmatrix}
 10&10\\
 10&10
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>under the orthonormal 2×2 DCT, determine the nonzero coefficient.</p>
 <h3>Compression reasoning</h3>
 <p>Why does quantizing small high-frequency coefficients often create many zeros?</p>
@@ -2187,9 +2053,8 @@ RLE</code></pre>
     </div>
     <div class="section-body">
       <p>The core sequence is:</p>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 \text{correlated pixels}
 \rightarrow
 \text{DCT}
@@ -2201,9 +2066,8 @@ $$
 \text{zeros/sparse coefficients}
 \rightarrow
 \text{efficient coding}
-}
-$$
-</p>
+}$$
+</div>
 <p>The most important conceptual distinction is:</p>
 <blockquote>
 <p><strong>DCT changes the representation; quantization is where controlled information loss enters the JPEG-style lossy pipeline.</strong></p>

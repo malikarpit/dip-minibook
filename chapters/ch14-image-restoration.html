@@ -22,7 +22,7 @@
       svg: { fontCache: 'global' }
     };
   </script>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script id="MathJax-script" async src="../assets/js/mathjax/tex-mml-chtml.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';"></script>
 </head>
 <body data-chapter-id="ch14-image-restoration">
   <div id="progress-bar"></div>
@@ -389,11 +389,9 @@ restored image</code></pre>
     </div>
     <div class="section-body">
       <p>A classical degradation model is:</p>
-<p>
-$$
-g(x,y)=h(x,y)*f(x,y)+\eta(x,y)
-$$
-</p>
+<div class="math-display">
+  $$g(x,y)=h(x,y)*f(x,y)+\eta(x,y)$$
+</div>
 <p>where:</p>
 <ul>
 <li>$f(x,y)$ = original image,</li>
@@ -429,18 +427,10 @@ OBSERVED IMAGE g</code></pre>
       <button class="bookmark-btn" data-id="s-14-3" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>If:</p>
-<p>
-$$
-g=h*f+\eta
-$$
-</p>
-<p>we would like:</p>
-<p>
-$$
-f\approx ?
-$$
-</p>
+      <p>If $g=h*f+\eta$ we would like:</p>
+<div class="math-display">
+  $$f\approx ?$$
+</div>
 <p>The difficulty is that:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -470,24 +460,14 @@ some frequency components
     </div>
     <div class="section-body">
       <p>Taking Fourier transforms:</p>
-<p>
-$$
-G(u,v)=H(u,v)F(u,v)+N(u,v)
-$$
-</p>
+<div class="math-display">
+  $$G(u,v)=H(u,v)F(u,v)+N(u,v)$$
+</div>
 <p>This is a powerful simplification.</p>
-<p>Instead of spatial convolution:</p>
-<p>
-$$
-h*f
-$$
-</p>
-<p>we have multiplication:</p>
-<p>
-$$
-HF
-$$
-</p>
+<p>Instead of spatial convolution: $h*f$ we have multiplication:</p>
+<div class="math-display">
+  $$HF$$
+</div>
 <p>The restoration problem becomes:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -499,11 +479,9 @@ $$
 HF + N</code></pre>
 </div></p>
 <p>and we want to estimate:</p>
-<p>
-$$
-F
-$$
-</p>
+<div class="math-display">
+  $$F$$
+</div>
 <hr />
     </div>
   </section>
@@ -517,24 +495,18 @@ $$
     </div>
     <div class="section-body">
       <p>Ignoring noise for a moment:</p>
-<p>
-$$
-G=HF
-$$
-</p>
+<div class="math-display">
+  $$G=HF$$
+</div>
 <p>Therefore:</p>
-<p>
-$$
-F=\frac{G}{H}
-$$
-</p>
+<div class="math-display">
+  $$F=\frac{G}{H}$$
+</div>
 <p>This suggests the inverse filter:</p>
-<p>
-$$
-\hat F=
-\frac{G}{H}
-$$
-</p>
+<div class="math-display">
+  $$\hat F=
+\frac{G}{H}$$
+</div>
 <p>where $H\ne0$.</p>
 <p>This seems perfect mathematically.</p>
 <p>It is not robust in practice.</p>
@@ -550,43 +522,19 @@ $$
       <button class="bookmark-btn" data-id="s-14-6" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose:</p>
-<p>
-$$
-|H|=0.1
-$$
-</p>
-<p>Then:</p>
-<p>
-$$
-\frac1{|H|}=10
-$$
-</p>
-<p>A noise component of magnitude:</p>
-<p>
-$$
-0.02
-$$
-</p>
-<p>can become:</p>
-<p>
-$$
-0.02\times10=0.2
-$$
-</p>
+      <p>Suppose $|H|=0.1$, then:</p>
+<div class="math-display">
+  $$\frac1{|H|}=10$$
+</div>
+<p>A noise component of magnitude: $0.02$ can become:</p>
+<div class="math-display">
+  $$0.02\times10=0.2$$
+</div>
 <p>after inversion.</p>
-<p>If:</p>
-<p>
-$$
-|H|=0.001
-$$
-</p>
-<p>then:</p>
-<p>
-$$
-\frac1{|H|}=1000
-$$
-</p>
+<p>If $|H|=0.001$, then:</p>
+<div class="math-display">
+  $$\frac1{|H|}=1000$$
+</div>
 <p>and even tiny noise can become enormous.</p>
 <p>Therefore:</p>
 <blockquote>
@@ -604,42 +552,22 @@ $$
       <button class="bookmark-btn" data-id="s-14-7" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose one frequency component has:</p>
-<p>
-$$
-G=0.52
-$$
-</p>
-<p>and:</p>
-<p>
-$$
-H=0.8
-$$
-</p>
+      <p>Suppose one frequency component has $G=0.52$, and:</p>
+<div class="math-display">
+  $$H=0.8$$
+</div>
 <p>Ignoring noise:</p>
-<p>
-$$
-\hat F=
-\frac{0.52}{0.8}
-$$
-</p>
-<p>
-$$
-\boxed{\hat F=0.65}
-$$
-</p>
-<p>Now suppose:</p>
-<p>
-$$
-H=0.02
-$$
-</p>
-<p>with the same observed value:</p>
-<p>
-$$
-\hat F=\frac{0.52}{0.02}=26
-$$
-</p>
+<div class="math-display">
+  $$\hat F=
+\frac{0.52}{0.8}$$
+</div>
+<div class="math-display">
+  $$\boxed{\hat F=0.65}$$
+</div>
+<p>Now suppose: $H=0.02$ with the same observed value:</p>
+<div class="math-display">
+  $$\hat F=\frac{0.52}{0.02}=26$$
+</div>
 <p>The estimate becomes extremely large.</p>
 <p>This is the instability problem.</p>
 <hr />
@@ -654,18 +582,10 @@ $$
       <button class="bookmark-btn" data-id="s-14-8" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>If:</p>
-<p>
-$$
-H(u,v)=0
-$$
-</p>
-<p>then:</p>
-<p>
-$$
-\frac{1}{H}
-$$
-</p>
+      <p>If $H(u,v)=0$, then:</p>
+<div class="math-display">
+  $$\frac{1}{H}$$
+</div>
 <p>is undefined.</p>
 <p>That means the degradation has completely removed that frequency in the model.</p>
 <p>No inverse filter can recover information that is mathematically absent from the observed signal without additional prior information.</p>
@@ -709,11 +629,9 @@ small observation error
     </div>
     <div class="section-body">
       <p>The blur function:</p>
-<p>
-$$
-h(x,y)
-$$
-</p>
+<div class="math-display">
+  $$h(x,y)$$
+</div>
 <p>is often called the <strong>point-spread function (PSF)</strong>.</p>
 <p>Conceptually:</p>
 <p><div class="code-block">
@@ -851,25 +769,21 @@ blurred point
       <p>A classical approach balances inversion against noise amplification.</p>
 <p>The Wiener filter minimizes mean-square estimation error under the assumptions of the model.</p>
 <p>A common frequency-domain form is:</p>
-<p>
-$$
-\hat F(u,v)
+<div class="math-display">
+  $$\hat F(u,v)
 =
 \frac{H^*(u,v)}
 {|H(u,v)|^2+K(u,v)}
-G(u,v)
-$$
-</p>
+G(u,v)$$
+</div>
 <p>A commonly taught simplified form uses a constant:</p>
-<p>
-$$
-\hat F(u,v)
+<div class="math-display">
+  $$\hat F(u,v)
 =
 \frac{H^*(u,v)}
 {|H(u,v)|^2+K}
-G(u,v)
-$$
-</p>
+G(u,v)$$
+</div>
 <p>where:</p>
 <ul>
 <li>$H^*$ = complex conjugate of $H$,</li>
@@ -889,31 +803,15 @@ $$
     <div class="section-body">
       <p>Compare:</p>
 <h3>Inverse</h3>
-<p>
-$$
-\frac{1}{H}
-$$
-</p>
+<div class="math-display">
+  $$\frac{1}{H}$$
+</div>
 <h3>Wiener-like</h3>
-<p>
-$$
-\frac{H^*}{|H|^2+K}
-$$
-</p>
-<p>When:</p>
-<p>
-$$
-|H|\rightarrow0
-$$
-</p>
-<p>the inverse filter becomes unstable.</p>
-<p>But if:</p>
-<p>
-$$
-K>0
-$$
-</p>
-<p>the denominator remains nonzero.</p>
+<div class="math-display">
+  $$\frac{H^*}{|H|^2+K}$$
+</div>
+<p>When: $|H|\rightarrow0$ the inverse filter becomes unstable.</p>
+<p>But if $K>0$ the denominator remains nonzero.</p>
 <p>So the Wiener approach prevents unlimited amplification of weak spectral regions.</p>
 <hr />
     </div>
@@ -927,52 +825,32 @@ $$
       <button class="bookmark-btn" data-id="s-14-17" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose:</p>
-<p>
-$$
-H=0.1
-$$
-</p>
-<p>and:</p>
-<p>
-$$
-K=0.01
-$$
-</p>
+      <p>Suppose: $H=0.1$, and:</p>
+<div class="math-display">
+  $$K=0.01$$
+</div>
 <p>Assume real $H$ for simplicity.</p>
 <p>Then:</p>
-<p>
-$$
-H^*=0.1
-$$
-</p>
-<p>
-$$
-|H|^2=0.01
-$$
-</p>
+<div class="math-display">
+  $$H^*=0.1$$
+</div>
+<div class="math-display">
+  $$|H|^2=0.01$$
+</div>
 <p>Therefore the filter gain is:</p>
-<p>
-$$
-\frac{0.1}{0.01+0.01}
-$$
-</p>
-<p>
-$$
-=\frac{0.1}{0.02}
-$$
-</p>
-<p>
-$$
-\boxed{5}
-$$
-</p>
+<div class="math-display">
+  $$\frac{0.1}{0.01+0.01}$$
+</div>
+<div class="math-display">
+  $$=\frac{0.1}{0.02}$$
+</div>
+<div class="math-display">
+  $$\boxed{5}$$
+</div>
 <p>The direct inverse gain would be:</p>
-<p>
-$$
-\frac1{0.1}=10
-$$
-</p>
+<div class="math-display">
+  $$\frac1{0.1}=10$$
+</div>
 <p>Thus the Wiener-style regularization reduces the amplification in this example.</p>
 <hr />
     </div>
@@ -986,13 +864,7 @@ $$
       <button class="bookmark-btn" data-id="s-14-18" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>The denominator:</p>
-<p>
-$$
-|H|^2+K
-$$
-</p>
-<p>creates a compromise:</p>
+      <p>The denominator: $|H|^2+K$ creates a compromise:</p>
 <p><div class="code-block">
   <div class="code-header">
     <span>text</span>
@@ -1018,13 +890,11 @@ weakly transmitted / noisy frequency
     </div>
     <div class="section-body">
       <p>More generally, restoration can be viewed as:</p>
-<p>
-$$
-\text{data fidelity}
+<div class="math-display">
+  $$\text{data fidelity}
 +
-\lambda\cdot\text{prior/regularization}
-$$
-</p>
+\lambda\cdot\text{prior/regularization}$$
+</div>
 <p>The first term says:</p>
 <blockquote>
 <p>stay consistent with the observed image.</p>
@@ -1050,18 +920,16 @@ $$
 <p><strong>EXTENSION</strong></p>
 </blockquote>
 <p>A common formulation is:</p>
-<p>
-$$
-\hat f
+<div class="math-display">
+  $$\hat f
 =
 \arg\min_f
 \left[
 \|Hf-g\|_2^2
 +
 \lambda\|Lf\|_2^2
-\right]
-$$
-</p>
+\right]$$
+</div>
 <p>where:</p>
 <ul>
 <li>$Hf$ models degradation,</li>
@@ -1112,11 +980,9 @@ avoid implausibly unstable solution</code></pre>
 → but useful detail may be suppressed</code></pre>
 </div></p>
 <p>Therefore:</p>
-<p>
-$$
-\text{regularization strength}
-$$
-</p>
+<div class="math-display">
+  $$\text{regularization strength}$$
+</div>
 <p>is itself a model-selection parameter.</p>
 <hr />
     </div>
@@ -1131,21 +997,9 @@ $$
     </div>
     <div class="section-body">
       <h3>Noise-free</h3>
-<p>If:</p>
-<p>
-$$
-\eta=0
-$$
-</p>
-<p>the inverse problem is simpler.</p>
+<p>If $\eta=0$ the inverse problem is simpler.</p>
 <h3>Noisy</h3>
-<p>If:</p>
-<p>
-$$
-\eta\ne0
-$$
-</p>
-<p>then direct inversion can amplify noise.</p>
+<p>If $\eta\ne0$ then direct inversion can amplify noise.</p>
 <p>This is why restoration methods must explicitly account for noise assumptions.</p>
 <hr />
     </div>
@@ -1176,11 +1030,9 @@ $$
   <pre><code>adds uncertainty/variation</code></pre>
 </div></p>
 <p>A good restoration model may need both:</p>
-<p>
-$$
-g=h*f+\eta
-$$
-</p>
+<div class="math-display">
+  $$g=h*f+\eta$$
+</div>
 <p>Ignoring one component can lead to poor recovery.</p>
 <hr />
     </div>
@@ -1394,22 +1246,18 @@ evaluate against reference or task</code></pre>
     <div class="section-body">
       <p>When a clean reference exists:</p>
 <h3>MSE</h3>
-<p>
-$$
-MSE=
-\frac1{MN}\sum(I-\hat I)^2
-$$
-</p>
+<div class="math-display">
+  $$MSE=
+\frac1{MN}\sum(I-\hat I)^2$$
+</div>
 <h3>PSNR</h3>
-<p>
-$$
-PSNR=
+<div class="math-display">
+  $$PSNR=
 10\log_{10}
 \left(
 \frac{MAX_I^2}{MSE}
-\right)
-$$
-</p>
+\right)$$
+</div>
 <p>But also inspect:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -1440,62 +1288,36 @@ noise</code></pre>
       <button class="bookmark-btn" data-id="s-14-31" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose one frequency satisfies:</p>
-<p>
-$$
-G=0.42
-$$
-</p>
-<p>and:</p>
-<p>
-$$
-H=0.7
-$$
-</p>
+      <p>Suppose one frequency satisfies: $G=0.42$, and:</p>
+<div class="math-display">
+  $$H=0.7$$
+</div>
 <p>Ignoring noise:</p>
-<p>
-$$
-\hat F=\frac{0.42}{0.7}
-$$
-</p>
-<p>
-$$
-\boxed{\hat F=0.6}
-$$
-</p>
-<p>Now assume:</p>
-<p>
-$$
-K=0.04
-$$
-</p>
-<p>in a simplified Wiener expression.</p>
+<div class="math-display">
+  $$\hat F=\frac{0.42}{0.7}$$
+</div>
+<div class="math-display">
+  $$\boxed{\hat F=0.6}$$
+</div>
+<p>Now assume: $K=0.04$ in a simplified Wiener expression.</p>
 <p>Then:</p>
-<p>
-$$
-\hat F_W=
+<div class="math-display">
+  $$\hat F_W=
 \frac{0.7}
 {0.7^2+0.04}
-(0.42)
-$$
-</p>
-<p>
-$$
-=
-\frac{0.7}{0.49+0.04}\times0.42
-$$
-</p>
-<p>
-$$
-=
-\frac{0.7}{0.53}\times0.42
-$$
-</p>
-<p>
-$$
-\approx0.555
-$$
-</p>
+(0.42)$$
+</div>
+<div class="math-display">
+  $$=
+\frac{0.7}{0.49+0.04}\times0.42$$
+</div>
+<div class="math-display">
+  $$=
+\frac{0.7}{0.53}\times0.42$$
+</div>
+<div class="math-display">
+  $$\approx0.555$$
+</div>
 <p>The regularized estimate is smaller than the direct inverse estimate.</p>
 <p>This is the intended stabilizing behaviour.</p>
 <hr />
@@ -1511,23 +1333,19 @@ $$
     </div>
     <div class="section-body">
       <p>The forward process is:</p>
-<p>
-$$
-f
+<div class="math-display">
+  $$f
 \xrightarrow{h}
 h*f
 \xrightarrow{+\eta}
-g
-$$
-</p>
+g$$
+</div>
 <p>Restoration reverses this:</p>
-<p>
-$$
-g
+<div class="math-display">
+  $$g
 \xrightarrow{\text{model}}
-\hat f
-$$
-</p>
+\hat f$$
+</div>
 <p>But the reverse is not exact because:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -1555,17 +1373,13 @@ unknown parameters</code></pre>
     </div>
     <div class="section-body">
       <p>Suppose a degradation completely suppresses a frequency:</p>
-<p>
-$$
-H(u,v)=0
-$$
-</p>
+<div class="math-display">
+  $$H(u,v)=0$$
+</div>
 <p>Then:</p>
-<p>
-$$
-G(u,v)=N(u,v)
-$$
-</p>
+<div class="math-display">
+  $$G(u,v)=N(u,v)$$
+</div>
 <p>at that location.</p>
 <p>The original signal component cannot be recovered from the data alone.</p>
 <p>Any estimate must come from:</p>
@@ -1791,13 +1605,11 @@ inverse
 → also boosted</code></pre>
 </div></p>
 <p>Therefore restoration is fundamentally a tradeoff:</p>
-<p>
-$$
-\text{sharpness}
+<div class="math-display">
+  $$\text{sharpness}
 \leftrightarrow
-\text{noise amplification}
-$$
-</p>
+\text{noise amplification}$$
+</div>
 <hr />
     </div>
   </section>
@@ -2081,73 +1893,59 @@ evaluation</code></pre>
     </div>
     <div class="section-body">
       <h3>Degradation model</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 g=h*f+\eta
-}
-$$
-</p>
+}$$
+</div>
 <h3>Frequency-domain degradation</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 G=HF+N
-}
-$$
-</p>
+}$$
+</div>
 <h3>Inverse filter</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 \hat F=\frac{G}{H}
-}
-$$
-</p>
+}$$
+</div>
 <p>when $H\ne0$ and the model permits it.</p>
 <h3>Wiener-style filter</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 \hat F=
 \frac{H^*}{|H|^2+K}G
-}
-$$
-</p>
+}$$
+</div>
 <p>for the simplified common formulation.</p>
 <h3>MSE</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 MSE=
 \frac1{MN}
 \sum(I-\hat I)^2
-}
-$$
-</p>
+}$$
+</div>
 <h3>PSNR</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 PSNR=
 10\log_{10}
 \frac{MAX_I^2}{MSE}
-}
-$$
-</p>
+}$$
+</div>
 <h3>Regularized inverse-problem form</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 \hat f=
 \arg\min_f
 \left[
 \|Hf-g\|_2^2+
 \lambda\|Lf\|_2^2
 \right]
-}
-$$
-</p>
+}$$
+</div>
 <hr />
     </div>
   </section>
@@ -2161,22 +1959,16 @@ $$
     </div>
     <div class="section-body">
       <p>Given:</p>
-<p>
-$$
-G=0.8,\qquad H=0.4
-$$
-</p>
+<div class="math-display">
+  $$G=0.8,\qquad H=0.4$$
+</div>
 <p>Ignoring noise:</p>
-<p>
-$$
-\hat F=\frac{0.8}{0.4}
-$$
-</p>
-<p>
-$$
-\boxed{\hat F=2}
-$$
-</p>
+<div class="math-display">
+  $$\hat F=\frac{0.8}{0.4}$$
+</div>
+<div class="math-display">
+  $$\boxed{\hat F=2}$$
+</div>
 <p>The value can exceed the observed magnitude because the system attenuation is being inverted.</p>
 <hr />
     </div>
@@ -2190,30 +1982,18 @@ $$
       <button class="bookmark-btn" data-id="s-14-49" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose:</p>
-<p>
-$$
-H=0.01
-$$
-</p>
-<p>and noise magnitude is:</p>
-<p>
-$$
-N=0.03
-$$
-</p>
+      <p>Suppose: $H=0.01$, and noise magnitude is:</p>
+<div class="math-display">
+  $$N=0.03$$
+</div>
 <p>The inverse gain is:</p>
-<p>
-$$
-\frac1H=100
-$$
-</p>
+<div class="math-display">
+  $$\frac1H=100$$
+</div>
 <p>Therefore the noise contribution after inversion can be approximately:</p>
-<p>
-$$
-0.03\times100=3
-$$
-</p>
+<div class="math-display">
+  $$0.03\times100=3$$
+</div>
 <p>The noise becomes much larger.</p>
 <p>This demonstrates why direct inverse filtering can be unstable.</p>
 <hr />
@@ -2229,38 +2009,24 @@ $$
     </div>
     <div class="section-body">
       <p>Given:</p>
-<p>
-$$
-H=0.5,\qquad K=0.1
-$$
-</p>
+<div class="math-display">
+  $$H=0.5,\qquad K=0.1$$
+</div>
 <p>Assume $H$ is real.</p>
 <p>Then:</p>
-<p>
-$$
-\frac{H^*}{|H|^2+K}
+<div class="math-display">
+  $$\frac{H^*}{|H|^2+K}
 =
-\frac{0.5}{0.25+0.1}
-$$
-</p>
-<p>
-$$
-=
-\frac{0.5}{0.35}
-$$
-</p>
-<p>
-$$
-\boxed{\approx1.429}
-$$
-</p>
-<p>The corresponding direct inverse gain would be:</p>
-<p>
-$$
-2
-$$
-</p>
-<p>so the Wiener form is less aggressive under this parameter choice.</p>
+\frac{0.5}{0.25+0.1}$$
+</div>
+<div class="math-display">
+  $$=
+\frac{0.5}{0.35}$$
+</div>
+<div class="math-display">
+  $$\boxed{\approx1.429}$$
+</div>
+<p>The corresponding direct inverse gain would be: $2$ so the Wiener form is less aggressive under this parameter choice.</p>
 <hr />
     </div>
   </section>

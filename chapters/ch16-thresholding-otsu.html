@@ -22,7 +22,7 @@
       svg: { fontCache: 'global' }
     };
   </script>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script id="MathJax-script" async src="../assets/js/mathjax/tex-mml-chtml.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';"></script>
 </head>
 <body data-chapter-id="ch16-thresholding-otsu">
   <div id="progress-bar"></div>
@@ -351,27 +351,21 @@ interpretable
 easy to implement</code></pre>
 </div></p>
 <p>The core operation is:</p>
-<p>
-$$
-f(x,y)\xrightarrow{\text{threshold}}\text{label}
-$$
-</p>
+<div class="math-display">
+  $$f(x,y)\xrightarrow{\text{threshold}}\text{label}$$
+</div>
 <p>For a binary mask:</p>
-<p>
-$$
-M(x,y)=
+<div class="math-display">
+  $$M(x,y)=
 \begin{cases}
 1,&f(x,y)\ge T\\
 0,&f(x,y)\lt T
-\end{cases}
-$$
-</p>
+\end{cases}$$
+</div>
 <p>But the hard problem is:</p>
-<p>
-$$
-\boxed{\text{How do we choose }T?}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{\text{How do we choose }T?}$$
+</div>
 <hr />
     </div>
   </section>
@@ -415,46 +409,28 @@ foreground / background</code></pre>
     </div>
     <div class="section-body">
       <p>Given:</p>
-<p>
-$$
-I=
+<div class="math-display">
+  $$I=
 \begin{bmatrix}
 20&30&40\\
 100&120&150\\
 180&200&220
-\end{bmatrix}
-$$
-</p>
-<p>Use:</p>
-<p>
-$$
-T=100
-$$
-</p>
-<p>with foreground defined as:</p>
-<p>
-$$
-I\ge100
-$$
-</p>
+\end{bmatrix}$$
+</div>
+<p>Use: $T=100$ with foreground defined as:</p>
+<div class="math-display">
+  $$I\ge100$$
+</div>
 <p>Then:</p>
-<p>
-$$
-M=
+<div class="math-display">
+  $$M=
 \begin{bmatrix}
 0&0&0\\
 1&1&1\\
 1&1&1
-\end{bmatrix}
-$$
-</p>
-<p>Foreground area:</p>
-<p>
-$$
-6
-$$
-</p>
-<p>pixels.</p>
+\end{bmatrix}$$
+</div>
+<p>Foreground area: $6$ pixels.</p>
 <p>This is a direct pixel-level decision.</p>
 <hr />
     </div>
@@ -469,15 +445,13 @@ $$
     </div>
     <div class="section-body">
       <p>The segmentation can instead be:</p>
-<p>
-$$
-M(x,y)=
+<div class="math-display">
+  $$M(x,y)=
 \begin{cases}
 1,&f(x,y)\lt T\\
 0,&f(x,y)\ge T
-\end{cases}
-$$
-</p>
+\end{cases}$$
+</div>
 <p>This is useful when the foreground is darker than the background.</p>
 <p>Therefore:</p>
 <p><div class="code-block">
@@ -504,25 +478,19 @@ THRESHOLD POLARITY</code></pre>
     <div class="section-body">
       <h3>Binary threshold</h3>
 <p>One threshold:</p>
-<p>
-$$
-T
-$$
-</p>
+<div class="math-display">
+  $$T$$
+</div>
 <h3>Multi-level thresholding</h3>
 <p>Multiple thresholds:</p>
-<p>
-$$
-T_1\lt T_2\lt \cdots\lt T_K
-$$
-</p>
+<div class="math-display">
+  $$T_1\lt T_2\lt \cdots\lt T_K$$
+</div>
 <h3>Range threshold</h3>
 <p>Accept values within:</p>
-<p>
-$$
-T_{\min}\le f\lt T_{\max}
-$$
-</p>
+<div class="math-display">
+  $$T_{\min}\le f\lt T_{\max}$$
+</div>
 <p>Range thresholding is especially useful when the desired class occupies a middle intensity band.</p>
 <hr />
     </div>
@@ -536,35 +504,25 @@ $$
       <button class="bookmark-btn" data-id="s-16-6" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose:</p>
-<p>
-$$
-40\le f\lt 80
-$$
-</p>
-<p>is the target range.</p>
+      <p>Suppose: $40\le f\lt 80$ is the target range.</p>
 <p>For:</p>
-<p>
-$$
-I=
+<div class="math-display">
+  $$I=
 \begin{bmatrix}
 20&50&90\\
 45&70&100\\
 30&60&85
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>the mask is:</p>
-<p>
-$$
-M=
+<div class="math-display">
+  $$M=
 \begin{bmatrix}
 0&1&0\\
 1&1&0\\
 0&1&0
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>This selects a middle intensity band rather than everything above a single threshold.</p>
 <hr />
     </div>
@@ -689,13 +647,11 @@ update T
 repeat until stable</code></pre>
 </div></p>
 <p>A common update is:</p>
-<p>
-$$
-T_{\text{new}}
+<div class="math-display">
+  $$T_{\text{new}}
 =
-\frac{\mu_1+\mu_2}{2}
-$$
-</p>
+\frac{\mu_1+\mu_2}{2}$$
+</div>
 <p>where $\mu_1,\mu_2$ are the means of the two classes induced by the current threshold.</p>
 <hr />
     </div>
@@ -709,28 +665,18 @@ $$
       <button class="bookmark-btn" data-id="s-16-11" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose current threshold produces two groups with means:</p>
-<p>
-$$
-\mu_1=50
-$$
-</p>
-<p>and:</p>
-<p>
-$$
-\mu_2=150
-$$
-</p>
+      <p>Suppose current threshold produces two groups with means: $\mu_1=50$, and:</p>
+<div class="math-display">
+  $$\mu_2=150$$
+</div>
 <p>Then:</p>
-<p>
-$$
-T_{\text{new}}
+<div class="math-display">
+  $$T_{\text{new}}
 =
 \frac{50+150}{2}
 =
-\boxed{100}
-$$
-</p>
+\boxed{100}$$
+</div>
 <p>Reapply at $T=100$, recompute the class means and continue until the threshold stabilizes.</p>
 <p>This is one form of iterative thresholding.</p>
 <hr />
@@ -746,44 +692,30 @@ $$
     </div>
     <div class="section-body">
       <p>Otsu's method chooses a threshold by maximizing the separation between two classes in terms of between-class variance.</p>
-<p>For a threshold $t$, define:</p>
-<p>
-$$
-w_0(t),\quad w_1(t)
-$$
-</p>
-<p>as class probabilities.</p>
+<p>For a threshold $t$, define: $w_0(t),\quad w_1(t)$ as class probabilities.</p>
 <p>Class means:</p>
-<p>
-$$
-\mu_0(t),\quad\mu_1(t)
-$$
-</p>
+<div class="math-display">
+  $$\mu_0(t),\quad\mu_1(t)$$
+</div>
 <p>Overall mean:</p>
-<p>
-$$
-\mu_T
-$$
-</p>
+<div class="math-display">
+  $$\mu_T$$
+</div>
 <p>The between-class variance is:</p>
-<p>
-$$
-\sigma_B^2(t)
+<div class="math-display">
+  $$\sigma_B^2(t)
 =
 w_0(t)w_1(t)
-[\mu_0(t)-\mu_1(t)]^2
-$$
-</p>
+[\mu_0(t)-\mu_1(t)]^2$$
+</div>
 <p>Otsu selects:</p>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 t^*=
 \arg\max_t
 \sigma_B^2(t)
-}
-$$
-</p>
+}$$
+</div>
 <hr />
     </div>
   </section>
@@ -891,16 +823,12 @@ large separation between group means</code></pre>
   </div>
   <pre><code>0,1</code></pre>
 </div></p>
-<p>
-$$
-w_0=0.5
-$$
-</p>
-<p>
-$$
-\mu_0=\frac{0(0.25)+1(0.25)}{0.5}=0.5
-$$
-</p>
+<div class="math-display">
+  $$w_0=0.5$$
+</div>
+<div class="math-display">
+  $$\mu_0=\frac{0(0.25)+1(0.25)}{0.5}=0.5$$
+</div>
 <p>Class 1:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -909,35 +837,25 @@ $$
   </div>
   <pre><code>2,3</code></pre>
 </div></p>
-<p>
-$$
-w_1=0.5
-$$
-</p>
-<p>
-$$
-\mu_1=\frac{2(0.25)+3(0.25)}{0.5}=2.5
-$$
-</p>
+<div class="math-display">
+  $$w_1=0.5$$
+</div>
+<div class="math-display">
+  $$\mu_1=\frac{2(0.25)+3(0.25)}{0.5}=2.5$$
+</div>
 <p>Then:</p>
-<p>
-$$
-\sigma_B^2
+<div class="math-display">
+  $$\sigma_B^2
 =
-(0.5)(0.5)(0.5-2.5)^2
-$$
-</p>
-<p>
-$$
-=
-0.25(4)
-$$
-</p>
-<p>
-$$
-\boxed{1}
-$$
-</p>
+(0.5)(0.5)(0.5-2.5)^2$$
+</div>
+<div class="math-display">
+  $$=
+0.25(4)$$
+</div>
+<div class="math-display">
+  $$\boxed{1}$$
+</div>
 <p>This is a candidate score. Other thresholds can be evaluated and compared.</p>
 <hr />
     </div>
@@ -980,13 +898,7 @@ $$
 <p><strong>EXTENSION</strong></p>
 </blockquote>
 <p>Otsu's idea can be extended to multiple classes using multiple thresholds.</p>
-<p>For:</p>
-<p>
-$$
-T_1\lt T_2
-$$
-</p>
-<p>we can create:</p>
+<p>For: $T_1\lt T_2$ we can create:</p>
 <p><div class="code-block">
   <div class="code-header">
     <span>text</span>
@@ -1018,21 +930,17 @@ class 2: f ≥ T2</code></pre>
   <pre><code>one T works everywhere</code></pre>
 </div></p>
 <p>Adaptive thresholding instead computes a local threshold:</p>
-<p>
-$$
-T(x,y)
-$$
-</p>
+<div class="math-display">
+  $$T(x,y)$$
+</div>
 <p>The decision becomes:</p>
-<p>
-$$
-M(x,y)=
+<div class="math-display">
+  $$M(x,y)=
 \begin{cases}
 1,&f(x,y)\ge T(x,y)\\
 0,&f(x,y)\lt T(x,y)
-\end{cases}
-$$
-</p>
+\end{cases}$$
+</div>
 <p>This is useful when illumination varies across the image.</p>
 <hr />
     </div>
@@ -1046,18 +954,10 @@ $$
       <button class="bookmark-btn" data-id="s-16-19" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>A simple adaptive method computes a local mean:</p>
-<p>
-$$
-\mu_L(x,y)
-$$
-</p>
-<p>and defines:</p>
-<p>
-$$
-T(x,y)=\mu_L(x,y)-C
-$$
-</p>
+      <p>A simple adaptive method computes a local mean: $\mu_L(x,y)$, and defines:</p>
+<div class="math-display">
+  $$T(x,y)=\mu_L(x,y)-C$$
+</div>
 <p>where $C$ is an offset.</p>
 <p>The exact sign and formula vary by implementation.</p>
 <p>The key idea is:</p>
@@ -1080,42 +980,18 @@ $$
       <button class="bookmark-btn" data-id="s-16-20" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose a local 3×3 neighbourhood has mean:</p>
-<p>
-$$
-\mu_L=120
-$$
-</p>
-<p>and:</p>
-<p>
-$$
-C=10
-$$
-</p>
-<p>Then:</p>
-<p>
-$$
-T=120-10=110
-$$
-</p>
-<p>For a pixel with:</p>
-<p>
-$$
-f=115
-$$
-</p>
-<p>the pixel is classified as foreground under:</p>
-<p>
-$$
-f\ge T
-$$
-</p>
-<p>because:</p>
-<p>
-$$
-115\ge110
-$$
-</p>
+      <p>Suppose a local 3×3 neighbourhood has mean: $\mu_L=120$, and:</p>
+<div class="math-display">
+  $$C=10$$
+</div>
+<p>Then: $T=120-10=110$ For a pixel with:</p>
+<div class="math-display">
+  $$f=115$$
+</div>
+<p>the pixel is classified as foreground under: $f\ge T$ because:</p>
+<div class="math-display">
+  $$115\ge110$$
+</div>
 <hr />
     </div>
   </section>
@@ -1129,25 +1005,19 @@ $$
     </div>
     <div class="section-body">
       <p>Instead of an equally weighted local mean, we can use a Gaussian-weighted average:</p>
-<p>
-$$
-\mu_G(x,y)
+<div class="math-display">
+  $$\mu_G(x,y)
 =
-\sum_{s,t}w_G(s,t)f(x-s,y-t)
-$$
-</p>
+\sum_{s,t}w_G(s,t)f(x-s,y-t)$$
+</div>
 <p>with:</p>
-<p>
-$$
-\sum_{s,t}w_G(s,t)=1
-$$
-</p>
+<div class="math-display">
+  $$\sum_{s,t}w_G(s,t)=1$$
+</div>
 <p>Then:</p>
-<p>
-$$
-T(x,y)=\mu_G(x,y)-C
-$$
-</p>
+<div class="math-display">
+  $$T(x,y)=\mu_G(x,y)-C$$
+</div>
 <p>This gives nearby pixels greater influence.</p>
 <hr />
     </div>
@@ -1322,9 +1192,8 @@ noise scale</code></pre>
 </blockquote>
 <p>Document binarization often uses local mean and local standard deviation.</p>
 <p>A representative formula is:</p>
-<p>
-$$
-T(x,y)
+<div class="math-display">
+  $$T(x,y)
 =
 m(x,y)
 \left[
@@ -1332,9 +1201,8 @@ m(x,y)
 \left(
 \frac{s(x,y)}{R}-1
 \right)
-\right]
-$$
-</p>
+\right]$$
+</div>
 <p>where:</p>
 <ul>
 <li>$m$ = local mean,</li>
@@ -1421,25 +1289,11 @@ colour distance</code></pre>
       <button class="bookmark-btn" data-id="s-16-29" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose a target object has hue around:</p>
-<p>
-$$
-H\in[350^\circ,10^\circ]
-$$
-</p>
-<p>because hue wraps around.</p>
-<p>A correct red mask needs two intervals:</p>
-<p>
-$$
-H\ge350^\circ
-$$
-</p>
-<p>or:</p>
-<p>
-$$
-H\le10^\circ
-$$
-</p>
+      <p>Suppose a target object has hue around: $H\in[350^\circ,10^\circ]$ because hue wraps around.</p>
+<p>A correct red mask needs two intervals: $H\ge350^\circ$, or:</p>
+<div class="math-display">
+  $$H\le10^\circ$$
+</div>
 <p>This is a classic thresholding edge case.</p>
 <hr />
     </div>
@@ -1499,11 +1353,9 @@ threshold</code></pre>
     </div>
     <div class="section-body">
       <p>Canny uses two thresholds:</p>
-<p>
-$$
-T_L\lt T_H
-$$
-</p>
+<div class="math-display">
+  $$T_L\lt T_H$$
+</div>
 <p>Pixels are categorized as:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -1559,23 +1411,15 @@ possible foreground</code></pre>
       <button class="bookmark-btn" data-id="s-16-33" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>For:</p>
-<p>
-$$
-T_1\lt T_2
-$$
-</p>
-<p>define:</p>
-<p>
-$$
-M(x,y)=
+      <p>For: $T_1\lt T_2$ define:</p>
+<div class="math-display">
+  $$M(x,y)=
 \begin{cases}
 0,&f\lt T_1\\
 1,&T_1\le f\lt T_2\\
 2,&f\ge T_2
-\end{cases}
-$$
-</p>
+\end{cases}$$
+</div>
 <p>This partitions an image into three intensity classes.</p>
 <p>Applications include:</p>
 <ul>
@@ -1635,20 +1479,12 @@ foreground = 5%</code></pre>
     </div>
     <div class="section-body">
       <p>A general thresholding formulation is:</p>
-<p>
-$$
-T^*=
+<div class="math-display">
+  $$T^*=
 \arg\max_T
-J(T)
-$$
-</p>
-<p>where:</p>
-<p>
-$$
-J(T)
-$$
-</p>
-<p>is a separation criterion.</p>
+J(T)$$
+</div>
+<p>where: $J(T)$ is a separation criterion.</p>
 <p>Examples:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -1871,13 +1707,11 @@ correct image
 global threshold</code></pre>
 </div></p>
 <p>For example:</p>
-<p>
-$$
-f_{\text{corrected}}
+<div class="math-display">
+  $$f_{\text{corrected}}
 =
-\frac{f}{i}
-$$
-</p>
+\frac{f}{i}$$
+</div>
 <p>under a suitable multiplicative illumination model and with safe handling of zero/near-zero values.</p>
 <p>Thus adaptive thresholding is not the only solution to uneven illumination.</p>
 <hr />
@@ -1893,11 +1727,9 @@ $$
     </div>
     <div class="section-body">
       <p>A useful experiment is to sweep:</p>
-<p>
-$$
-T-10,\quad T-5,\quad T,\quad T+5,\quad T+10
-$$
-</p>
+<div class="math-display">
+  $$T-10,\quad T-5,\quad T,\quad T+5,\quad T+10$$
+</div>
 <p>and compare masks.</p>
 <p>If a tiny threshold change produces huge object changes:</p>
 <p><div class="code-block">
@@ -2067,67 +1899,55 @@ choose threshold with best objective</code></pre>
     </div>
     <div class="section-body">
       <h3>Global threshold</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 M(x,y)=
 \begin{cases}
 1,&f(x,y)\ge T\\
 0,&f(x,y)\lt T
 \end{cases}
-}
-$$
-</p>
+}$$
+</div>
 <h3>Range threshold</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 M=
 1
 \quad\text{if}\quad
 T_{\min}\le f\lt T_{\max}
-}
-$$
-</p>
+}$$
+</div>
 <h3>Otsu between-class variance</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 \sigma_B^2(t)
 =
 w_0(t)w_1(t)
 [\mu_0(t)-\mu_1(t)]^2
-}
-$$
-</p>
+}$$
+</div>
 <h3>Otsu threshold</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 t^*=\arg\max_t\sigma_B^2(t)
-}
-$$
-</p>
+}$$
+</div>
 <h3>Adaptive threshold</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 M(x,y)=
 \begin{cases}
 1,&f(x,y)\ge T(x,y)\\
 0,&f(x,y)\lt T(x,y)
 \end{cases}
-}
-$$
-</p>
+}$$
+</div>
 <h3>Local-mean form</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 T(x,y)=\mu_L(x,y)-C
-}
-$$
-</p>
+}$$
+</div>
 <hr />
     </div>
   </section>
@@ -2140,43 +1960,27 @@ $$
       <button class="bookmark-btn" data-id="s-16-48" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose a threshold divides the image into:</p>
-<p>
-$$
-w_0=0.4,\qquad w_1=0.6
-$$
-</p>
-<p>with:</p>
-<p>
-$$
-\mu_0=40,\qquad\mu_1=160
-$$
-</p>
+      <p>Suppose a threshold divides the image into: $w_0=0.4,\qquad w_1=0.6$ with:</p>
+<div class="math-display">
+  $$\mu_0=40,\qquad\mu_1=160$$
+</div>
 <p>Then:</p>
-<p>
-$$
-\sigma_B^2
+<div class="math-display">
+  $$\sigma_B^2
 =
-(0.4)(0.6)(40-160)^2
-$$
-</p>
-<p>
-$$
-=
-0.24(120^2)
-$$
-</p>
-<p>
-$$
-=
-0.24(14400)
-$$
-</p>
-<p>
-$$
-\boxed{3456}
-$$
-</p>
+(0.4)(0.6)(40-160)^2$$
+</div>
+<div class="math-display">
+  $$=
+0.24(120^2)$$
+</div>
+<div class="math-display">
+  $$=
+0.24(14400)$$
+</div>
+<div class="math-display">
+  $$\boxed{3456}$$
+</div>
 <p>This is the between-class variance score for that threshold.</p>
 <hr />
     </div>
@@ -2190,47 +1994,25 @@ $$
       <button class="bookmark-btn" data-id="s-16-49" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Local mean:</p>
-<p>
-$$
-\mu_L=150
-$$
-</p>
-<p>and:</p>
-<p>
-$$
-C=20
-$$
-</p>
+      <p>Local mean: $\mu_L=150$, and:</p>
+<div class="math-display">
+  $$C=20$$
+</div>
 <p>Then:</p>
-<p>
-$$
-T=150-20
-$$
-</p>
-<p>
-$$
-\boxed{130}
-$$
-</p>
-<p>For pixel:</p>
-<p>
-$$
-f=140
-$$
-</p>
-<p>the pixel becomes foreground under:</p>
-<p>
-$$
-f\ge T
-$$
-</p>
+<div class="math-display">
+  $$T=150-20$$
+</div>
+<div class="math-display">
+  $$\boxed{130}$$
+</div>
+<p>For pixel: $f=140$ the pixel becomes foreground under:</p>
+<div class="math-display">
+  $$f\ge T$$
+</div>
 <p>because:</p>
-<p>
-$$
-140\ge130
-$$
-</p>
+<div class="math-display">
+  $$140\ge130$$
+</div>
 <hr />
     </div>
   </section>
@@ -2243,25 +2025,11 @@ $$
       <button class="bookmark-btn" data-id="s-16-50" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Let:</p>
-<p>
-$$
-T_1=50,\qquad T_2=100
-$$
-</p>
-<p>For a pixel:</p>
-<p>
-$$
-f=75
-$$
-</p>
-<p>it belongs to:</p>
-<p>
-$$
-50\le f\lt 100
-$$
-</p>
-<p>and therefore receives the middle class label.</p>
+      <p>Let: $T_1=50,\qquad T_2=100$ For a pixel:</p>
+<div class="math-display">
+  $$f=75$$
+</div>
+<p>it belongs to: $50\le f\lt 100$, and therefore receives the middle class label.</p>
 <hr />
     </div>
   </section>

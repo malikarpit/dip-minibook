@@ -22,7 +22,7 @@
       svg: { fontCache: 'global' }
     };
   </script>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script id="MathJax-script" async src="../assets/js/mathjax/tex-mml-chtml.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';"></script>
 </head>
 <body data-chapter-id="ch04-image-representation">
   <div id="progress-bar"></div>
@@ -414,21 +414,9 @@ WHAT VALUE</code></pre>
       <button class="bookmark-btn" data-id="s-04-2" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Let a grayscale image be:</p>
-<p>
-$$
-I[m,n]
-$$
-</p>
-<p>where $m$ and $n$ are discrete spatial indices.</p>
+      <p>Let a grayscale image be $I[m,n]$, where $m$ and $n$ are discrete spatial indices.</p>
 <p>The exact starting index depends on notation and software.</p>
-<p>A mathematical description may use:</p>
-<p>
-$$
-m,n\in\{0,\ldots,M-1\}
-$$
-</p>
-<p>while some software environments use one-based indexing.</p>
+<p>A mathematical description may use: $m,n\in\{0,\ldots,M-1\}$ while some software environments use one-based indexing.</p>
 <blockquote>
 <p><strong>WARNING:</strong> Do not mix mathematical zero-based indexing with a programming language's indexing convention without explicitly translating it.</p>
 </blockquote>
@@ -445,31 +433,17 @@ $$
     </div>
     <div class="section-body">
       <p>Consider:</p>
-<p>
-$$
-I=
+<div class="math-display">
+  $$I=
 \begin{bmatrix}
 10&12&13&15\\
 11&18&21&16\\
 12&25&30&17\\
 10&15&20&14
-\end{bmatrix}
-$$
-</p>
-<p>This is a:</p>
-<p>
-$$
-4\times4
-$$
-</p>
-<p>grayscale image.</p>
-<p>It contains:</p>
-<p>
-$$
-4\times4=16
-$$
-</p>
-<p>spatial samples.</p>
+\end{bmatrix}$$
+</div>
+<p>This is a: $4\times4$ grayscale image.</p>
+<p>It contains: $4\times4=16$ spatial samples.</p>
 <p>Each number represents one grayscale sample under the stated intensity convention.</p>
 <hr />
     </div>
@@ -484,17 +458,15 @@ $$
     </div>
     <div class="section-body">
       <p>Suppose:</p>
-<p>
-$$
-I=
+<div class="math-display">
+  $$I=
 \begin{bmatrix}
 10&10&10&10\\
 10&80&80&10\\
 10&80&120&10\\
 10&10&10&10
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>We can describe it conceptually as:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -530,22 +502,14 @@ very bright centre</code></pre>
     <div class="section-body">
       <p>A pixel is often processed together with nearby pixels.</p>
 <p>For a 3×3 neighbourhood around a centre sample:</p>
-<p>
-$$
-\begin{bmatrix}
+<div class="math-display">
+  $$\begin{bmatrix}
 a&b&c\\
 d&e&f\\
 g&h&i
-\end{bmatrix}
-$$
-</p>
-<p>the centre is:</p>
-<p>
-$$
-e
-$$
-</p>
-<p>and the surrounding values form its local neighbourhood.</p>
+\end{bmatrix}$$
+</div>
+<p>the centre is $e$, and the surrounding values form its local neighbourhood.</p>
 <p>This becomes fundamental for:</p>
 <ul>
 <li>smoothing,</li>
@@ -568,39 +532,25 @@ $$
     </div>
     <div class="section-body">
       <p>If an image has:</p>
-<p>
-$$
-M\text{ rows}\times N\text{ columns}
-$$
-</p>
+<div class="math-display">
+  $$M\text{ rows}\times N\text{ columns}$$
+</div>
 <p>then it contains:</p>
-<p>
-$$
-MN
-$$
-</p>
+<div class="math-display">
+  $$MN$$
+</div>
 <p>spatial positions for a single-channel representation.</p>
 <h3>Example</h3>
-<p>For:</p>
-<p>
-$$
-1920\times1080
-$$
-</p>
-<p>the number of spatial samples is:</p>
-<p>
-$$
-1920\times1080=2{,}073{,}600
-$$
-</p>
+<p>For: $1920\times1080$ the number of spatial samples is:</p>
+<div class="math-display">
+  $$1920\times1080=2{,}073{,}600$$
+</div>
 <p>For RGB with three stored channels:</p>
-<p>
-$$
-2{,}073{,}600\times3
+<div class="math-display">
+  $$2{,}073{,}600\times3
 =
-6{,}220{,}800
-$$
-</p>
+6{,}220{,}800$$
+</div>
 <p>channel samples.</p>
 <hr />
     </div>
@@ -615,13 +565,7 @@ $$
     </div>
     <div class="section-body">
       <p>A grayscale image normally uses one channel representing intensity-related information.</p>
-<p>A common conceptual structure is:</p>
-<p>
-$$
-H\times W
-$$
-</p>
-<p>For example:</p>
+<p>A common conceptual structure is $H\times W$ For example:</p>
 <p><div class="code-block">
   <div class="code-header">
     <span>text</span>
@@ -629,13 +573,7 @@ $$
   </div>
   <pre><code>256 × 256 grayscale</code></pre>
 </div></p>
-<p>contains:</p>
-<p>
-$$
-256^2=65{,}536
-$$
-</p>
-<p>spatial samples.</p>
+<p>contains: $256^2=65{,}536$ spatial samples.</p>
 <h3>Why one channel?</h3>
 <p>Because the representation has one scalar value per spatial location.</p>
 <p>This is often sufficient for operations based on intensity structure.</p>
@@ -661,37 +599,15 @@ $$
 Green
 Blue</code></pre>
 </div></p>
-<p>Conceptually:</p>
-<p>
-$$
-I[m,n,c]
-$$
-</p>
-<p>with:</p>
-<p>
-$$
-c\in\{R,G,B\}
-$$
-</p>
-<p>The array shape may be represented as:</p>
-<p>
-$$
-H\times W\times3
-$$
-</p>
-<p>in one common convention.</p>
-<p>A pixel may therefore be written conceptually as:</p>
-<p>
-$$
-(R,G,B)
-$$
-</p>
-<p>For example:</p>
-<p>
-$$
-(255,0,0)
-$$
-</p>
+<p>Conceptually $I[m,n,c]$ with:</p>
+<div class="math-display">
+  $$c\in\{R,G,B\}$$
+</div>
+<p>The array shape may be represented as: $H\times W\times3$ in one common convention.</p>
+<p>A pixel may therefore be written conceptually as: $(R,G,B)$ For example:</p>
+<div class="math-display">
+  $$(255,0,0)$$
+</div>
 <p>represents a saturated red under the conventional 8-bit RGB interpretation.</p>
 <hr />
     </div>
@@ -742,11 +658,9 @@ $$
     </div>
     <div class="section-body">
       <p>Suppose one pixel is:</p>
-<p>
-$$
-(R,G,B)=(30,140,220)
-$$
-</p>
+<div class="math-display">
+  $$(R,G,B)=(30,140,220)$$
+</div>
 <p>Under an 8-bit RGB convention:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -775,13 +689,7 @@ B = 220</code></pre>
     </div>
     <div class="section-body">
       <p>A multispectral image contains multiple image channels corresponding to selected spectral bands.</p>
-<p>Conceptually:</p>
-<p>
-$$
-H\times W\times C
-$$
-</p>
-<p>where $C$ is the number of bands/channels.</p>
+<p>Conceptually $H\times W\times C$, where $C$ is the number of bands/channels.</p>
 <p>For example:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -874,18 +782,10 @@ Band C</code></pre>
     </div>
     <div class="section-body">
       <p>Bit depth describes how many bits are used to encode a sample under a particular representation.</p>
-<p>If:</p>
-<p>
-$$
-k=\text{bits/sample}
-$$
-</p>
-<p>then:</p>
-<p>
-$$
-L=2^k
-$$
-</p>
+<p>If $k=\text{bits/sample}$, then:</p>
+<div class="math-display">
+  $$L=2^k$$
+</div>
 <p>possible binary codes exist.</p>
 <p>Examples:</p>
 <p><div class="code-block">
@@ -929,27 +829,21 @@ RGB
 8-bit per stored channel sample</code></pre>
 </div></p>
 <p>Then:</p>
-<p>
-$$
-1920\times1080\times3
+<div class="math-display">
+  $$1920\times1080\times3
 =
-6{,}220{,}800
-$$
-</p>
+6{,}220{,}800$$
+</div>
 <p>channel samples.</p>
 <p>Since 8 bits = 1 byte:</p>
-<p>
-$$
-6{,}220{,}800\text{ bytes}
-$$
-</p>
+<div class="math-display">
+  $$6{,}220{,}800\text{ bytes}$$
+</div>
 <p>This is approximately:</p>
-<p>
-$$
-\frac{6{,}220{,}800}{1024^2}
-\approx5.93\text{ MiB}
-$$
-</p>
+<div class="math-display">
+  $$\frac{6{,}220{,}800}{1024^2}
+\approx5.93\text{ MiB}$$
+</div>
 <h3>Interpretation</h3>
 <p>This is an estimate for the raw channel array.</p>
 <p>It is <strong>not</strong> a guarantee that the corresponding JPEG/PNG/TIFF file will occupy 5.93 MiB.</p>
@@ -1034,11 +928,9 @@ float
     </div>
     <div class="section-body">
       <p>Suppose an operation produces:</p>
-<p>
-$$
-280
-$$
-</p>
+<div class="math-display">
+  $$280$$
+</div>
 <p>If the destination representation is an 8-bit unsigned integer with the conventional 0–255 range, 280 cannot be represented directly.</p>
 <p>A pipeline may therefore:</p>
 <ul>
@@ -1116,11 +1008,9 @@ Dynamic range
 <p>How finely spatial detail is represented or, depending on context, the system's ability to distinguish nearby spatial structures.</p>
 <h3>Image dimensions</h3>
 <p>The number of stored pixels/samples:</p>
-<p>
-$$
-H\times W
-$$
-</p>
+<div class="math-display">
+  $$H\times W$$
+</div>
 <h3>Radiometric resolution</h3>
 <p>Ability to distinguish intensity/signal differences.</p>
 <h3>Temporal resolution</h3>
@@ -1138,13 +1028,7 @@ $$
       <button class="bookmark-btn" data-id="s-04-20" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Two images can both have:</p>
-<p>
-$$
-1920\times1080
-$$
-</p>
-<p>yet have different effective image quality because their acquisition systems may differ in:</p>
+      <p>Two images can both have: $1920\times1080$ yet have different effective image quality because their acquisition systems may differ in:</p>
 <ul>
 <li>optical sharpness,</li>
 <li>sensor quality,</li>
@@ -1213,23 +1097,17 @@ strong defocus blur</code></pre>
 <p>In modern computer vision, an image is often represented as a tensor.</p>
 <p>Examples:</p>
 <h3>Grayscale</h3>
-<p>
-$$
-H\times W
-$$
-</p>
+<div class="math-display">
+  $$H\times W$$
+</div>
 <h3>RGB</h3>
-<p>
-$$
-H\times W\times3
-$$
-</p>
+<div class="math-display">
+  $$H\times W\times3$$
+</div>
 <h3>Batch of RGB images</h3>
-<p>
-$$
-B\times H\times W\times3
-$$
-</p>
+<div class="math-display">
+  $$B\times H\times W\times3$$
+</div>
 <p>where:</p>
 <ul>
 <li>$B$ = batch size,</li>
@@ -1237,11 +1115,9 @@ $$
 <li>$W$ = width.</li>
 </ul>
 <p>Some frameworks use channel-first layout:</p>
-<p>
-$$
-B\times3\times H\times W
-$$
-</p>
+<div class="math-display">
+  $$B\times3\times H\times W$$
+</div>
 <p>The numerical information may be the same, but the memory/processing layout differs.</p>
 <hr />
     </div>
@@ -1257,17 +1133,13 @@ $$
     <div class="section-body">
       <p>These are representation conventions.</p>
 <h3>Channel-last</h3>
-<p>
-$$
-H\times W\times C
-$$
-</p>
+<div class="math-display">
+  $$H\times W\times C$$
+</div>
 <h3>Channel-first</h3>
-<p>
-$$
-C\times H\times W
-$$
-</p>
+<div class="math-display">
+  $$C\times H\times W$$
+</div>
 <p>For a batch:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -1305,27 +1177,21 @@ B × C × H × W</code></pre>
 224 × 224</code></pre>
 </div></p>
 <p>Then channel-last batch shape is:</p>
-<p>
-$$
-32\times224\times224\times3
-$$
-</p>
+<div class="math-display">
+  $$32\times224\times224\times3$$
+</div>
 <p>Number of stored channel samples:</p>
-<p>
-$$
-32\times224\times224\times3
+<div class="math-display">
+  $$32\times224\times224\times3
 =
-4{,}816{,}128
-$$
-</p>
+4{,}816{,}128$$
+</div>
 <p>If values are float32, each takes 4 bytes in the usual representation, so raw array storage is approximately:</p>
-<p>
-$$
-4{,}816{,}128\times4
+<div class="math-display">
+  $$4{,}816{,}128\times4
 =
-19{,}264{,}512\text{ bytes}
-$$
-</p>
+19{,}264{,}512\text{ bytes}$$
+</div>
 <p>before additional framework overhead.</p>
 <hr />
     </div>
@@ -1349,25 +1215,15 @@ $$
   <pre><code>uint8:
 0 → 255</code></pre>
 </div></p>
-<p>may be mapped to:</p>
-<p>
-$$
-[0,1]
-$$
-</p>
-<p>using:</p>
-<p>
-$$
-x_{\text{norm}}=\frac{x}{255}
-$$
-</p>
+<p>may be mapped to: $[0,1]$ using:</p>
+<div class="math-display">
+  $$x_{\text{norm}}=\frac{x}{255}$$
+</div>
 <p>under this specific convention.</p>
 <p>Thus:</p>
-<p>
-$$
-128\rightarrow\frac{128}{255}\approx0.502
-$$
-</p>
+<div class="math-display">
+  $$128\rightarrow\frac{128}{255}\approx0.502$$
+</div>
 <div class="trap-box"><div class="trap-title"><span>⚠️</span> WARNING</div>
 
 Not every system uses $[0,1]$.
@@ -1644,13 +1500,7 @@ JPEG file</code></pre>
 <p>A single intensity-related channel may simplify the computation.</p>
 <p>Suppose you want to feed an image into a CNN.</p>
 <h3>Tensor</h3>
-<p>A shape such as:</p>
-<p>
-$$
-B\times H\times W\times C
-$$
-</p>
-<p>may be required.</p>
+<p>A shape such as: $B\times H\times W\times C$ may be required.</p>
 <p>The representation should therefore follow the task.</p>
 <hr />
     </div>
@@ -1749,44 +1599,32 @@ Prepare definitions and comparisons for pixel, grayscale, RGB, multispectral ima
     </div>
     <div class="section-body">
       <h3>Grayscale</h3>
-<p>
-$$
-H\times W
-$$
-</p>
+<div class="math-display">
+  $$H\times W$$
+</div>
 <h3>RGB</h3>
-<p>
-$$
-H\times W\times3
-$$
-</p>
+<div class="math-display">
+  $$H\times W\times3$$
+</div>
 <h3>Multispectral</h3>
-<p>
-$$
-H\times W\times C
-$$
-</p>
+<div class="math-display">
+  $$H\times W\times C$$
+</div>
 <h3>Batch of RGB images — one common layout</h3>
-<p>
-$$
-B\times H\times W\times3
-$$
-</p>
+<div class="math-display">
+  $$B\times H\times W\times3$$
+</div>
 <h3>Levels from $k$ bits</h3>
-<p>
-$$
-L=2^k
-$$
-</p>
+<div class="math-display">
+  $$L=2^k$$
+</div>
 <h3>Raw storage estimate</h3>
-<p>
-$$
-\text{bytes}
+<div class="math-display">
+  $$\text{bytes}
 =
 HWC\times
-\frac{\text{bits/sample}}{8}
-$$
-</p>
+\frac{\text{bits/sample}}{8}$$
+</div>
 <p>for a simple uncompressed channel array.</p>
 <hr />
     </div>
@@ -1836,37 +1674,19 @@ $$
 RGB
 8-bit/channel</code></pre>
 </div></p>
-<p>spatial samples:</p>
-<p>
-$$
-1024\times1024=1{,}048{,}576
-$$
-</p>
-<p>channel samples:</p>
-<p>
-$$
-1{,}048{,}576\times3=3{,}145{,}728
-$$
-</p>
+<p>spatial samples: $1024\times1024=1{,}048{,}576$ channel samples:</p>
+<div class="math-display">
+  $$1{,}048{,}576\times3=3{,}145{,}728$$
+</div>
 <p>bytes:</p>
-<p>
-$$
-3{,}145{,}728
-$$
-</p>
+<div class="math-display">
+  $$3{,}145{,}728$$
+</div>
 <p>Approximate MiB:</p>
-<p>
-$$
-\frac{3{,}145{,}728}{1024^2}=3.00\text{ MiB}
-$$
-</p>
-<p>So a raw 8-bit RGB array of this size requires approximately:</p>
-<p>
-$$
-\boxed{3.00\text{ MiB}}
-$$
-</p>
-<p>excluding extra metadata or program overhead.</p>
+<div class="math-display">
+  $$\frac{3{,}145{,}728}{1024^2}=3.00\text{ MiB}$$
+</div>
+<p>So a raw 8-bit RGB array of this size requires approximately: $\boxed{3.00\text{ MiB}}$ excluding extra metadata or program overhead.</p>
 <hr />
     </div>
   </section>

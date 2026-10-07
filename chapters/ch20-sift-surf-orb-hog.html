@@ -22,7 +22,7 @@
       svg: { fontCache: 'global' }
     };
   </script>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script id="MathJax-script" async src="../assets/js/mathjax/tex-mml-chtml.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';"></script>
 </head>
 <body data-chapter-id="ch20-sift-surf-orb-hog">
   <div id="progress-bar"></div>
@@ -502,22 +502,18 @@ descriptor normalization
     </div>
     <div class="section-body">
       <p>The Gaussian-smoothed image at scale $\sigma$:</p>
-<p>
-$$
-L(x,y,\sigma)
+<div class="math-display">
+  $$L(x,y,\sigma)
 =
-G(x,y,\sigma)*I(x,y)
-$$
-</p>
+G(x,y,\sigma)*I(x,y)$$
+</div>
 <p>with:</p>
-<p>
-$$
-G(x,y,\sigma)
+<div class="math-display">
+  $$G(x,y,\sigma)
 =
 \frac{1}{2\pi\sigma^2}
-e^{-\frac{x^2+y^2}{2\sigma^2}}
-$$
-</p>
+e^{-\frac{x^2+y^2}{2\sigma^2}}$$
+</div>
 <p>As $\sigma$ increases:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -540,13 +536,11 @@ $$
     </div>
     <div class="section-body">
       <p>SIFT forms:</p>
-<p>
-$$
-D(x,y,\sigma)
+<div class="math-display">
+  $$D(x,y,\sigma)
 =
-L(x,y,k\sigma)-L(x,y,\sigma)
-$$
-</p>
+L(x,y,k\sigma)-L(x,y,\sigma)$$
+</div>
 <p>This approximates scale-normalized Laplacian behaviour and allows efficient detection of extrema across space and scale.</p>
 <p>The important conceptual role is:</p>
 <p><div class="code-block">
@@ -673,19 +667,15 @@ weak/noisy structure
     <div class="section-body">
       <p>For each keypoint, compute local gradients.</p>
 <p>Magnitude:</p>
-<p>
-$$
-m=
-\sqrt{G_x^2+G_y^2}
-$$
-</p>
+<div class="math-display">
+  $$m=
+\sqrt{G_x^2+G_y^2}$$
+</div>
 <p>Orientation:</p>
-<p>
-$$
-\theta=
-\operatorname{atan2}(G_y,G_x)
-$$
-</p>
+<div class="math-display">
+  $$\theta=
+\operatorname{atan2}(G_y,G_x)$$
+</div>
 <p>Nearby gradients vote into an orientation histogram.</p>
 <p>The dominant orientation becomes the keypoint's local reference direction.</p>
 <hr />
@@ -736,13 +726,7 @@ $$
         ↓
 8 orientation bins</code></pre>
 </div></p>
-<p>So:</p>
-<p>
-$$
-4\times4\times8=128
-$$
-</p>
-<p>dimensions.</p>
+<p>So: $4\times4\times8=128$ dimensions.</p>
 <p>Each cell stores a histogram of gradient orientations weighted by gradient magnitude and spatial contribution.</p>
 <hr />
     </div>
@@ -790,22 +774,14 @@ local noise</code></pre>
       <button class="bookmark-btn" data-id="s-20-14" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Let:</p>
-<p>
-$$
-d_i
-$$
-</p>
-<p>be descriptor components.</p>
+      <p>Let: $d_i$ be descriptor components.</p>
 <p>L2 normalization:</p>
-<p>
-$$
-\hat{\mathbf d}
+<div class="math-display">
+  $$\hat{\mathbf d}
 =
 \frac{\mathbf d}
-{\sqrt{\sum_i d_i^2}}
-$$
-</p>
+{\sqrt{\sum_i d_i^2}}$$
+</div>
 <p>The original SIFT pipeline also clips unusually large values and renormalizes, reducing sensitivity to illumination-related changes.</p>
 <hr />
     </div>
@@ -819,26 +795,16 @@ $$
       <button class="bookmark-btn" data-id="s-20-15" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Given:</p>
-<p>
-$$
-d_A,d_B
-$$
-</p>
-<p>use Euclidean distance:</p>
-<p>
-$$
-d_E=
-\sqrt{\sum_i(d_{A,i}-d_{B,i})^2}
-$$
-</p>
+      <p>Given: $d_A,d_B$ use Euclidean distance:</p>
+<div class="math-display">
+  $$d_E=
+\sqrt{\sum_i(d_{A,i}-d_{B,i})^2}$$
+</div>
 <p>The nearest neighbour is a candidate match.</p>
 <p>Then use a ratio test:</p>
-<p>
-$$
-\frac{d_1}{d_2}\lt r
-$$
-</p>
+<div class="math-display">
+  $$\frac{d_1}{d_2}\lt r$$
+</div>
 <p>to reject ambiguous matches.</p>
 <hr />
     </div>
@@ -934,23 +900,19 @@ matching</code></pre>
     </div>
     <div class="section-body">
       <p>At point $(x,y)$:</p>
-<p>
-$$
-H(x,y,\sigma)=
+<div class="math-display">
+  $$H(x,y,\sigma)=
 \begin{bmatrix}
 L_{xx}&L_{xy}\\
 L_{xy}&L_{yy}
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>The determinant:</p>
-<p>
-$$
-\det(H)
+<div class="math-display">
+  $$\det(H)
 =
-L_{xx}L_{yy}-L_{xy}^2
-$$
-</p>
+L_{xx}L_{yy}-L_{xy}^2$$
+</div>
 <p>is used as a blob-like interest response.</p>
 <hr />
     </div>
@@ -1015,15 +977,13 @@ cross-term controlled
     </div>
     <div class="section-body">
       <p>For grayscale image $I$:</p>
-<p>
-$$
-S(x,y)
+<div class="math-display">
+  $$S(x,y)
 =
 \sum_{i=0}^{x}
 \sum_{j=0}^{y}
-I(i,j)
-$$
-</p>
+I(i,j)$$
+</div>
 <p>For a rectangle:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -1036,13 +996,7 @@ $$
 │       │
 C ───── D</code></pre>
 </div></p>
-<p>the sum can be computed from four integral-image values:</p>
-<p>
-$$
-S(D)-S(B)-S(C)+S(A)
-$$
-</p>
-<p>with coordinate indexing adjusted appropriately.</p>
+<p>the sum can be computed from four integral-image values: $S(D)-S(B)-S(C)+S(A)$ with coordinate indexing adjusted appropriately.</p>
 <hr />
     </div>
   </section>
@@ -1117,13 +1071,7 @@ Haar y response
       <button class="bookmark-btn" data-id="s-20-26" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Because the descriptor is floating-point:</p>
-<p>
-$$
-L_2
-$$
-</p>
-<p>distance is a natural comparison metric.</p>
+      <p>Because the descriptor is floating-point: $L_2$ distance is a natural comparison metric.</p>
 <p>The same general matching workflow can be used:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -1340,28 +1288,22 @@ corner decision</code></pre>
     </div>
     <div class="section-body">
       <p>For sampled points $p,q$:</p>
-<p>
-$$
-\tau(p,q)=
+<div class="math-display">
+  $$\tau(p,q)=
 \begin{cases}
 1,&I(p)\lt I(q)\\
 0,&I(p)\ge I(q)
-\end{cases}
-$$
-</p>
+\end{cases}$$
+</div>
 <p>Repeat for many pairs:</p>
-<p>
-$$
-\mathbf b=
-[\tau_1,\tau_2,\ldots,\tau_N]
-$$
-</p>
+<div class="math-display">
+  $$\mathbf b=
+[\tau_1,\tau_2,\ldots,\tau_N]$$
+</div>
 <p>The descriptor is:</p>
-<p>
-$$
-\boxed{\mathbf b\in\{0,1\}^N}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{\mathbf b\in\{0,1\}^N}$$
+</div>
 <hr />
     </div>
   </section>
@@ -1403,35 +1345,25 @@ Hamming distance</code></pre>
     </div>
     <div class="section-body">
       <p>A:</p>
-<p>
-$$
-10110010
-$$
-</p>
+<div class="math-display">
+  $$10110010$$
+</div>
 <p>B:</p>
-<p>
-$$
-10011011
-$$
-</p>
+<div class="math-display">
+  $$10011011$$
+</div>
 <p>XOR:</p>
-<p>
-$$
-00101001
-$$
-</p>
+<div class="math-display">
+  $$00101001$$
+</div>
 <p>Number of ones:</p>
-<p>
-$$
-3
-$$
-</p>
+<div class="math-display">
+  $$3$$
+</div>
 <p>Therefore:</p>
-<p>
-$$
-\boxed{d_H=3}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{d_H=3}$$
+</div>
 <p>This demonstrates the computational simplicity of binary matching.</p>
 <hr />
     </div>
@@ -1553,26 +1485,16 @@ feature vector</code></pre>
       <button class="bookmark-btn" data-id="s-20-40" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Given:</p>
-<p>
-$$
-G_x,\quad G_y
-$$
-</p>
-<p>compute:</p>
-<p>
-$$
-m=
-\sqrt{G_x^2+G_y^2}
-$$
-</p>
+      <p>Given: $G_x,\quad G_y$ compute:</p>
+<div class="math-display">
+  $$m=
+\sqrt{G_x^2+G_y^2}$$
+</div>
 <p>and:</p>
-<p>
-$$
-\theta=
-\operatorname{atan2}(G_y,G_x)
-$$
-</p>
+<div class="math-display">
+  $$\theta=
+\operatorname{atan2}(G_y,G_x)$$
+</div>
 <p>The magnitude supplies the vote weight.</p>
 <p>The orientation determines the histogram bin.</p>
 <hr />
@@ -1587,13 +1509,7 @@ $$
       <button class="bookmark-btn" data-id="s-20-41" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose the descriptor uses:</p>
-<p>
-$$
-9
-$$
-</p>
-<p>orientation bins over a chosen angular range.</p>
+      <p>Suppose the descriptor uses: $9$, orientation bins over a chosen angular range.</p>
 <p>Each pixel contributes to nearby bins according to its orientation and magnitude.</p>
 <p>Some implementations use interpolation between bins.</p>
 <p>The exact binning convention should be documented.</p>
@@ -1657,13 +1573,11 @@ $$
     </div>
     <div class="section-body">
       <p>For vector $v$, an L2-type normalization can be:</p>
-<p>
-$$
-v'=
+<div class="math-display">
+  $$v'=
 \frac{v}
-{\sqrt{\|v\|_2^2+\epsilon^2}}
-$$
-</p>
+{\sqrt{\|v\|_2^2+\epsilon^2}}$$
+</div>
 <p>This reduces sensitivity to local illumination/contrast changes.</p>
 <p>Other normalization choices exist.</p>
 <hr />
@@ -2020,11 +1934,9 @@ class / detection</code></pre>
     </div>
     <div class="section-body">
       <p>For descriptor matching, a threshold can be applied:</p>
-<p>
-$$
-d\lt \tau
-$$
-</p>
+<div class="math-display">
+  $$d\lt \tau$$
+</div>
 <p>But a raw distance threshold is sensitive to:</p>
 <ul>
 <li>descriptor normalization,</li>
@@ -2045,11 +1957,9 @@ $$
     </div>
     <div class="section-body">
       <p>Suppose we have matches:</p>
-<p>
-$$
-(p_i,p_i')
-$$
-</p>
+<div class="math-display">
+  $$(p_i,p_i')$$
+</div>
 <p>Estimate transformation $T$.</p>
 <p>RANSAC chooses:</p>
 <p><div class="code-block">
@@ -2062,13 +1972,7 @@ $$
 → count inliers
 → repeat</code></pre>
 </div></p>
-<p>A match is an inlier if:</p>
-<p>
-$$
-\|p_i'-T(p_i)\|\lt \epsilon
-$$
-</p>
-<p>under the chosen geometric model and error metric.</p>
+<p>A match is an inlier if $\|p_i'-T(p_i)\|\lt \epsilon$ under the chosen geometric model and error metric.</p>
 <hr />
     </div>
   </section>
@@ -2081,42 +1985,18 @@ $$
       <button class="bookmark-btn" data-id="s-20-55" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose:</p>
-<p>
-$$
-e_i=2.4
-$$
-</p>
-<p>and:</p>
-<p>
-$$
-\epsilon=3
-$$
-</p>
-<p>Then:</p>
-<p>
-$$
-2.4\lt 3
-$$
-</p>
+      <p>Suppose $e_i=2.4$ and $\epsilon=3$. Then:</p>
+<div class="math-display">
+  $$2.4\lt 3$$
+</div>
 <p>so:</p>
-<p>
-$$
-\boxed{\text{inlier}}
-$$
-</p>
-<p>If:</p>
-<p>
-$$
-e_i=7
-$$
-</p>
-<p>then:</p>
-<p>
-$$
-\boxed{\text{outlier}}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{\text{inlier}}$$
+</div>
+<p>If $e_i=7$, then:</p>
+<div class="math-display">
+  $$\boxed{\text{outlier}}$$
+</div>
 <p>under this criterion.</p>
 <hr />
     </div>
@@ -2139,13 +2019,7 @@ $$
   <pre><code>N descriptors in A
 M descriptors in B</code></pre>
 </div></p>
-<p>A naive all-pairs comparison requires approximately:</p>
-<p>
-$$
-O(NM)
-$$
-</p>
-<p>distance calculations.</p>
+<p>A naive all-pairs comparison requires approximately: $O(NM)$ distance calculations.</p>
 <p>This can become expensive.</p>
 <p>Therefore practical systems use:</p>
 <p><div class="code-block">
@@ -2518,83 +2392,65 @@ confusion matrix</code></pre>
     </div>
     <div class="section-body">
       <h3>Gaussian scale space</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 L(x,y,\sigma)=G(x,y,\sigma)*I(x,y)
-}
-$$
-</p>
+}$$
+</div>
 <h3>DoG</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 D(x,y,\sigma)=
 L(x,y,k\sigma)-L(x,y,\sigma)
-}
-$$
-</p>
+}$$
+</div>
 <h3>Gradient magnitude</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 m=
 \sqrt{G_x^2+G_y^2}
-}
-$$
-</p>
+}$$
+</div>
 <h3>Gradient orientation</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 \theta=
 \operatorname{atan2}(G_y,G_x)
-}
-$$
-</p>
+}$$
+</div>
 <h3>Hessian determinant</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 \det(H)=L_{xx}L_{yy}-L_{xy}^2
-}
-$$
-</p>
+}$$
+</div>
 <h3>Hamming distance</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 d_H=
 \sum_i
 \mathbf1[a_i\ne b_i]
-}
-$$
-</p>
+}$$
+</div>
 <h3>L2 distance</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 d_2=
 \sqrt{\sum_i(a_i-b_i)^2}
-}
-$$
-</p>
+}$$
+</div>
 <h3>Ratio test</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 d_1/d_2\lt r
-}
-$$
-</p>
+}$$
+</div>
 <h3>Reprojection error</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 e=\|p'-T(p)\|
-}
-$$
-</p>
+}$$
+</div>
 <hr />
     </div>
   </section>
@@ -2607,29 +2463,13 @@ $$
       <button class="bookmark-btn" data-id="s-20-66" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose:</p>
-<p>
-$$
-L(x,y,\sigma)=40
-$$
-</p>
-<p>and:</p>
-<p>
-$$
-L(x,y,k\sigma)=55
-$$
-</p>
-<p>Then:</p>
-<p>
-$$
-D=55-40
-$$
-</p>
-<p>
-$$
-\boxed{15}
-$$
-</p>
+      <p>Suppose $L(x,y,\sigma)=40$ and $L(x,y,k\sigma)=55$. Then:</p>
+<div class="math-display">
+  $$D=55-40$$
+</div>
+<div class="math-display">
+  $$\boxed{15}$$
+</div>
 <p>The positive DoG response indicates a stronger response at the larger scale under the chosen ordering.</p>
 <hr />
     </div>
@@ -2644,39 +2484,27 @@ $$
     </div>
     <div class="section-body">
       <p>Given:</p>
-<p>
-$$
-L_{xx}=5
-$$
-</p>
-<p>
-$$
-L_{yy}=4
-$$
-</p>
-<p>
-$$
-L_{xy}=1
-$$
-</p>
+<div class="math-display">
+  $$L_{xx}=5$$
+</div>
+<div class="math-display">
+  $$L_{yy}=4$$
+</div>
+<div class="math-display">
+  $$L_{xy}=1$$
+</div>
 <p>Then:</p>
-<p>
-$$
-\det(H)
+<div class="math-display">
+  $$\det(H)
 =
-(5)(4)-(1)^2
-$$
-</p>
-<p>
-$$
-=20-1
-$$
-</p>
-<p>
-$$
-\boxed{19}
-$$
-</p>
+(5)(4)-(1)^2$$
+</div>
+<div class="math-display">
+  $$=20-1$$
+</div>
+<div class="math-display">
+  $$\boxed{19}$$
+</div>
 <hr />
     </div>
   </section>
@@ -2690,17 +2518,13 @@ $$
     </div>
     <div class="section-body">
       <p>Descriptor A:</p>
-<p>
-$$
-10101010
-$$
-</p>
+<div class="math-display">
+  $$10101010$$
+</div>
 <p>Descriptor B:</p>
-<p>
-$$
-11100011
-$$
-</p>
+<div class="math-display">
+  $$11100011$$
+</div>
 <p>Compare bits.</p>
 <p>Differences occur at positions:</p>
 <p><div class="code-block">
@@ -2714,11 +2538,9 @@ $$
 7</code></pre>
 </div></p>
 <p>Therefore:</p>
-<p>
-$$
-\boxed{d_H=4}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{d_H=4}$$
+</div>
 <hr />
     </div>
   </section>
@@ -2732,36 +2554,22 @@ $$
     </div>
     <div class="section-body">
       <p>Best:</p>
-<p>
-$$
-d_1=12
-$$
-</p>
+<div class="math-display">
+  $$d_1=12$$
+</div>
 <p>Second best:</p>
-<p>
-$$
-d_2=30
-$$
-</p>
+<div class="math-display">
+  $$d_2=30$$
+</div>
 <p>Ratio threshold:</p>
-<p>
-$$
-r=0.5
-$$
-</p>
+<div class="math-display">
+  $$r=0.5$$
+</div>
 <p>Then:</p>
-<p>
-$$
-\frac{12}{30}=0.4
-$$
-</p>
-<p>Since:</p>
-<p>
-$$
-0.4\lt 0.5
-$$
-</p>
-<p>the match passes.</p>
+<div class="math-display">
+  $$\frac{12}{30}=0.4$$
+</div>
+<p>Since: $0.4\lt 0.5$ the match passes.</p>
 <hr />
     </div>
   </section>

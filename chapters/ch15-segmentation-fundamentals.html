@@ -22,7 +22,7 @@
       svg: { fontCache: 'global' }
     };
   </script>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script id="MathJax-script" async src="../assets/js/mathjax/tex-mml-chtml.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';"></script>
 </head>
 <body data-chapter-id="ch15-segmentation-fundamentals">
   <div id="progress-bar"></div>
@@ -475,22 +475,14 @@ segmentation
   <pre><code>foreground
 background</code></pre>
 </div></p>
-<p>A binary mask can be written:</p>
-<p>
-$$
-M(x,y)\in\{0,1\}
-$$
-</p>
-<p>For example:</p>
-<p>
-$$
-M(x,y)=
+<p>A binary mask can be written: $M(x,y)\in\{0,1\}$ For example:</p>
+<div class="math-display">
+  $$M(x,y)=
 \begin{cases}
 1,&\text{foreground}\\
 0,&\text{background}
-\end{cases}
-$$
-</p>
+\end{cases}$$
+</div>
 <p>The mask is not necessarily the final image.</p>
 <p>It is a representation of a selected region.</p>
 <hr />
@@ -505,13 +497,7 @@ $$
       <button class="bookmark-btn" data-id="s-15-5" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>A multi-class segmentation may assign:</p>
-<p>
-$$
-M(x,y)\in\{0,1,\ldots,K-1\}
-$$
-</p>
-<p>where each label corresponds to a class or region.</p>
+      <p>A multi-class segmentation may assign $M(x,y)\in\{0,1,\ldots,K-1\}$, where each label corresponds to a class or region.</p>
 <p>Example:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -684,28 +670,24 @@ FEATURE / CLUSTER-BASED</code></pre>
     </div>
     <div class="section-body">
       <p>For a simple intensity segmentation:</p>
-<p>
-$$
-M(x,y)=
+<div class="math-display">
+  $$M(x,y)=
 \begin{cases}
 1,&f(x,y)\ge T\\
 0,&f(x,y)\lt T
-\end{cases}
-$$
-</p>
+\end{cases}$$
+</div>
 <p>This is a classifier operating at the pixel level.</p>
 <p>For a richer segmentation:</p>
-<p>
-$$
-M(x,y)=g(
+<div class="math-display">
+  $$M(x,y)=g(
 f(x,y),
 \mathcal N(x,y),
 \text{colour},
 \text{texture},
 \text{context}
-)
-$$
-</p>
+)$$
+</div>
 <p>where $\mathcal N$ denotes neighbourhood information.</p>
 <p>The complexity of $g$ determines how much context the segmentation uses.</p>
 <hr />
@@ -771,13 +753,7 @@ A1 | A2 | B1 | B2 | C</code></pre>
 similar colour
 similar texture</code></pre>
 </div></p>
-<p>A generic homogeneity measure can be represented as:</p>
-<p>
-$$
-H(R)
-$$
-</p>
-<p>where low or high values indicate suitability depending on the chosen metric.</p>
+<p>A generic homogeneity measure can be represented as $H(R)$, where low or high values indicate suitability depending on the chosen metric.</p>
 <p>There is no universal homogeneity function.</p>
 <p>The engineering task is to choose one appropriate to the image and objective.</p>
 <hr />
@@ -912,11 +888,9 @@ SW S SE</code></pre>
     <div class="section-body">
       <p>A segmentation system can output:</p>
 <h3>Binary mask</h3>
-<p>
-$$
-M\in\{0,1\}
-$$
-</p>
+<div class="math-display">
+  $$M\in\{0,1\}$$
+</div>
 <h3>Label image</h3>
 <p><div class="code-block">
   <div class="code-header">
@@ -926,11 +900,9 @@ $$
   <pre><code>0,1,2,...,K</code></pre>
 </div></p>
 <h3>Probability map</h3>
-<p>
-$$
-P_k(x,y)
-$$
-</p>
+<div class="math-display">
+  $$P_k(x,y)$$
+</div>
 <h3>Contours</h3>
 <p><div class="code-block">
   <div class="code-header">
@@ -965,19 +937,11 @@ features</code></pre>
     <div class="section-body">
       <h3>Hard</h3>
 <p>Each pixel gets one definite label.</p>
-<p>
-$$
-M(x,y)=k
-$$
-</p>
+<div class="math-display">
+  $$M(x,y)=k$$
+</div>
 <h3>Soft</h3>
-<p>A pixel can have class probabilities:</p>
-<p>
-$$
-P(k\mid x,y)
-$$
-</p>
-<p>For example:</p>
+<p>A pixel can have class probabilities: $P(k\mid x,y)$ For example:</p>
 <p><div class="code-block">
   <div class="code-header">
     <span>text</span>
@@ -1066,18 +1030,10 @@ background = dark</code></pre>
       <button class="bookmark-btn" data-id="s-15-19" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose foreground intensity is:</p>
-<p>
-$$
-120\text{–}130
-$$
-</p>
-<p>and background intensity is:</p>
-<p>
-$$
-100\text{–}105
-$$
-</p>
+      <p>Suppose foreground intensity is $120\text{–}130$, and background intensity is:</p>
+<div class="math-display">
+  $$100\text{–}105$$
+</div>
 <p>The classes overlap little but are close numerically.</p>
 <p>Contrast enhancement may increase separation.</p>
 <p>However, a transformation can also change the noise distribution.</p>
@@ -1173,13 +1129,7 @@ expand region
  ↓
 repeat</code></pre>
 </div></p>
-<p>The similarity rule may depend on:</p>
-<p>
-$$
-|f(x,y)-\mu_R|\lt \tau
-$$
-</p>
-<p>where:</p>
+<p>The similarity rule may depend on $|f(x,y)-\mu_R|\lt \tau$, where:</p>
 <ul>
 <li>$\mu_R$ = current region mean,</li>
 <li>$\tau$ = tolerance.</li>
@@ -1198,25 +1148,17 @@ $$
     </div>
     <div class="section-body">
       <p>Consider:</p>
-<p>
-$$
-I=
+<div class="math-display">
+  $$I=
 \begin{bmatrix}
 10&11&12&90\\
 10&12&13&92\\
 11&12&14&91\\
 80&82&84&90
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>Suppose the seed is the top-left 10.</p>
-<p>A tolerance of:</p>
-<p>
-$$
-\tau=5
-$$
-</p>
-<p>could grow through:</p>
+<p>A tolerance of: $\tau=5$ could grow through:</p>
 <p><div class="code-block">
   <div class="code-header">
     <span>text</span>
@@ -1283,13 +1225,7 @@ multiple seeds
     </div>
     <div class="section-body">
       <p>An edge can serve as a boundary cue.</p>
-<p>For example:</p>
-<p>
-$$
-|\nabla f|
-$$
-</p>
-<p>can be used to discourage region growth across strong boundaries.</p>
+<p>For example $|\nabla f|$ can be used to discourage region growth across strong boundaries.</p>
 <p>A region-growing criterion might therefore combine:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -1315,26 +1251,12 @@ connectivity</code></pre>
       <button class="bookmark-btn" data-id="s-15-26" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>For colour images:</p>
-<p>
-$$
-I(x,y)=(R,G,B)
-$$
-</p>
-<p>or another colour representation can be used.</p>
-<p>A segmentation criterion can operate on:</p>
-<p>
-$$
-\mathbf c(x,y)
-$$
-</p>
-<p>rather than a scalar intensity.</p>
+      <p>For colour images: $I(x,y)=(R,G,B)$, or another colour representation can be used.</p>
+<p>A segmentation criterion can operate on: $\mathbf c(x,y)$ rather than a scalar intensity.</p>
 <p>For example:</p>
-<p>
-$$
-\|\mathbf c-\mathbf c_0\|\lt \tau
-$$
-</p>
+<div class="math-display">
+  $$\|\mathbf c-\mathbf c_0\|\lt \tau$$
+</div>
 <p>can represent distance from a target colour.</p>
 <p>The choice of colour-space affects the usefulness of that distance.</p>
 <hr />
@@ -1349,54 +1271,32 @@ $$
       <button class="bookmark-btn" data-id="s-15-27" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose target colour:</p>
-<p>
-$$
-\mathbf c_0=(200,50,30)
-$$
-</p>
-<p>and pixel:</p>
-<p>
-$$
-\mathbf c=(190,55,40)
-$$
-</p>
+      <p>Suppose target colour: $\mathbf c_0=(200,50,30)$, and pixel:</p>
+<div class="math-display">
+  $$\mathbf c=(190,55,40)$$
+</div>
 <p>Euclidean RGB distance:</p>
-<p>
-$$
-d=
+<div class="math-display">
+  $$d=
 \sqrt{
 (190-200)^2
 +
 (55-50)^2
 +
 (40-30)^2
-}
-$$
-</p>
-<p>
-$$
-=
-\sqrt{100+25+100}
-$$
-</p>
-<p>
-$$
-=\sqrt{225}
-$$
-</p>
-<p>
-$$
-\boxed{15}
-$$
-</p>
-<p>A threshold such as:</p>
-<p>
-$$
-d\lt 20
-$$
-</p>
-<p>would accept this pixel under the stated criterion.</p>
+}$$
+</div>
+<div class="math-display">
+  $$=
+\sqrt{100+25+100}$$
+</div>
+<div class="math-display">
+  $$=\sqrt{225}$$
+</div>
+<div class="math-display">
+  $$\boxed{15}$$
+</div>
+<p>A threshold such as: $d\lt 20$ would accept this pixel under the stated criterion.</p>
 <hr />
     </div>
   </section>
@@ -1623,23 +1523,13 @@ classifier</code></pre>
     </div>
     <div class="section-body">
       <p>For a binary region containing $N$ foreground pixels with coordinates $(x_i,y_i)$:</p>
-<p>
-$$
-\bar x=\frac1N\sum_{i=1}^{N}x_i
-$$
-</p>
-<p>
-$$
-\bar y=\frac1N\sum_{i=1}^{N}y_i
-$$
-</p>
-<p>The pair:</p>
-<p>
-$$
-(\bar x,\bar y)
-$$
-</p>
-<p>is the region centroid under the equal-weight pixel model.</p>
+<div class="math-display">
+  $$\bar x=\frac1N\sum_{i=1}^{N}x_i$$
+</div>
+<div class="math-display">
+  $$\bar y=\frac1N\sum_{i=1}^{N}y_i$$
+</div>
+<p>The pair: $(\bar x,\bar y)$ is the region centroid under the equal-weight pixel model.</p>
 <hr />
     </div>
   </section>
@@ -1653,30 +1543,22 @@ $$
     </div>
     <div class="section-body">
       <p>Suppose foreground pixels are:</p>
-<p>
-$$
-(1,1),\ (2,1),\ (1,2),\ (2,2)
-$$
-</p>
+<div class="math-display">
+  $$(1,1),\ (2,1),\ (1,2),\ (2,2)$$
+</div>
 <p>Then:</p>
-<p>
-$$
-\bar x=\frac{1+2+1+2}{4}
-=1.5
-$$
-</p>
-<p>
-$$
-\bar y=\frac{1+1+2+2}{4}
-=1.5
-$$
-</p>
+<div class="math-display">
+  $$\bar x=\frac{1+2+1+2}{4}
+=1.5$$
+</div>
+<div class="math-display">
+  $$\bar y=\frac{1+1+2+2}{4}
+=1.5$$
+</div>
 <p>Therefore:</p>
-<p>
-$$
-\boxed{(1.5,1.5)}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{(1.5,1.5)}$$
+</div>
 <p>This illustrates how segmentation converts pixels into geometric objects that can be measured.</p>
 <hr />
     </div>
@@ -1737,21 +1619,17 @@ ground-truth mask</code></pre>
 </div></p>
 <p>Common overlap measures include:</p>
 <h3>Intersection over Union</h3>
-<p>
-$$
-IoU=
+<div class="math-display">
+  $$IoU=
 \frac{|A\cap B|}
-{|A\cup B|}
-$$
-</p>
+{|A\cup B|}$$
+</div>
 <h3>Dice coefficient</h3>
-<p>
-$$
-Dice=
+<div class="math-display">
+  $$Dice=
 \frac{2|A\cap B|}
-{|A|+|B|}
-$$
-</p>
+{|A|+|B|}$$
+</div>
 <p>These are highly useful metrics for segmentation.</p>
 <hr />
     </div>
@@ -1765,36 +1643,14 @@ $$
       <button class="bookmark-btn" data-id="s-15-38" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>Suppose:</p>
-<p>
-$$
-|A\cap B|=80
-$$
-</p>
-<p>and:</p>
-<p>
-$$
-|A\cup B|=100
-$$
-</p>
-<p>Then:</p>
-<p>
-$$
-IoU=\frac{80}{100}
-$$
-</p>
-<p>
-$$
-\boxed{0.8}
-$$
-</p>
-<p>or:</p>
-<p>
-$$
-80\%
-$$
-</p>
-<p>overlap.</p>
+      <p>Suppose $|A\cap B|=80$ and $|A\cup B|=100$. Then:</p>
+<div class="math-display">
+  $$IoU=\frac{80}{100}$$
+</div>
+<div class="math-display">
+  $$\boxed{0.8}$$
+</div>
+<p>or: $80\%$ overlap.</p>
 <hr />
     </div>
   </section>
@@ -1808,41 +1664,29 @@ $$
     </div>
     <div class="section-body">
       <p>Suppose:</p>
-<p>
-$$
-|A|=90
-$$
-</p>
-<p>
-$$
-|B|=100
-$$
-</p>
+<div class="math-display">
+  $$|A|=90$$
+</div>
+<div class="math-display">
+  $$|B|=100$$
+</div>
 <p>and:</p>
-<p>
-$$
-|A\cap B|=80
-$$
-</p>
+<div class="math-display">
+  $$|A\cap B|=80$$
+</div>
 <p>Then:</p>
-<p>
-$$
-Dice=
+<div class="math-display">
+  $$Dice=
 \frac{2(80)}
-{90+100}
-$$
-</p>
-<p>
-$$
-=
-\frac{160}{190}
-$$
-</p>
-<p>
-$$
-\boxed{\approx0.8421}
-$$
-</p>
+{90+100}$$
+</div>
+<div class="math-display">
+  $$=
+\frac{160}{190}$$
+</div>
+<div class="math-display">
+  $$\boxed{\approx0.8421}$$
+</div>
 <hr />
     </div>
   </section>
@@ -1857,18 +1701,14 @@ $$
     <div class="section-body">
       <p>Treat foreground detection as a binary classification.</p>
 <p>Then:</p>
-<p>
-$$
-Precision=
-\frac{TP}{TP+FP}
-$$
-</p>
-<p>
-$$
-Recall=
-\frac{TP}{TP+FN}
-$$
-</p>
+<div class="math-display">
+  $$Precision=
+\frac{TP}{TP+FP}$$
+</div>
+<div class="math-display">
+  $$Recall=
+\frac{TP}{TP+FN}$$
+</div>
 <p>This distinguishes:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -2261,25 +2101,21 @@ visual observations</code></pre>
     </div>
     <div class="section-body">
       <h3>Binary segmentation</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 M(x,y)=
 \begin{cases}
 1,&f(x,y)\ge T\\
 0,&f(x,y)\lt T
 \end{cases}
-}
-$$
-</p>
+}$$
+</div>
 <h3>Region similarity example</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 |f(x,y)-\mu_R|\lt \tau
-}
-$$
-</p>
+}$$
+</div>
 <h3>Connectivity</h3>
 <p><div class="code-block">
   <div class="code-header">
@@ -2290,50 +2126,40 @@ $$
 8-neighbour</code></pre>
 </div></p>
 <h3>Centroid</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 \bar x=\frac1N\sum_i x_i,\quad
 \bar y=\frac1N\sum_i y_i
-}
-$$
-</p>
+}$$
+</div>
 <h3>IoU</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 IoU=
 \frac{|A\cap B|}
 {|A\cup B|}
-}
-$$
-</p>
+}$$
+</div>
 <h3>Dice</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 Dice=
 \frac{2|A\cap B|}
 {|A|+|B|}
-}
-$$
-</p>
+}$$
+</div>
 <h3>Precision</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 Precision=\frac{TP}{TP+FP}
-}
-$$
-</p>
+}$$
+</div>
 <h3>Recall</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 Recall=\frac{TP}{TP+FN}
-}
-$$
-</p>
+}$$
+</div>
 <hr />
     </div>
   </section>
@@ -2347,45 +2173,31 @@ $$
     </div>
     <div class="section-body">
       <p>Given:</p>
-<p>
-$$
-I=
+<div class="math-display">
+  $$I=
 \begin{bmatrix}
 10&40&80\\
 20&70&90\\
 30&60&100
-\end{bmatrix}
-$$
-</p>
-<p>Use:</p>
-<p>
-$$
-T=60
-$$
-</p>
-<p>with:</p>
-<p>
-$$
-M=1\quad\text{if }I\ge60
-$$
-</p>
+\end{bmatrix}$$
+</div>
+<p>Use: $T=60$ with:</p>
+<div class="math-display">
+  $$M=1\quad\text{if }I\ge60$$
+</div>
 <p>Then:</p>
-<p>
-$$
-M=
+<div class="math-display">
+  $$M=
 \begin{bmatrix}
 0&0&1\\
 0&1&1\\
 0&1&1
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>Foreground area:</p>
-<p>
-$$
-\boxed{4\text{ pixels}}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{4\text{ pixels}}$$
+</div>
 <hr />
     </div>
   </section>
@@ -2428,13 +2240,11 @@ $$
 </div></p>
 <p>all five foreground pixels form one connected component.</p>
 <p>Thus:</p>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 \text{connectivity changes the segmentation interpretation}
-}
-$$
-</p>
+}$$
+</div>
 <hr />
     </div>
   </section>
@@ -2448,45 +2258,33 @@ $$
     </div>
     <div class="section-body">
       <p>Prediction:</p>
-<p>
-$$
-|A|=90
-$$
-</p>
+<div class="math-display">
+  $$|A|=90$$
+</div>
 <p>Ground truth:</p>
-<p>
-$$
-|B|=100
-$$
-</p>
+<div class="math-display">
+  $$|B|=100$$
+</div>
 <p>Intersection:</p>
-<p>
-$$
-|A\cap B|=80
-$$
-</p>
+<div class="math-display">
+  $$|A\cap B|=80$$
+</div>
 <p>Union:</p>
-<p>
-$$
-|A\cup B|
+<div class="math-display">
+  $$|A\cup B|
 =
 90+100-80
 =
-110
-$$
-</p>
+110$$
+</div>
 <p>Therefore:</p>
-<p>
-$$
-IoU=
-\frac{80}{110}
-$$
-</p>
-<p>
-$$
-\boxed{\approx0.7273}
-$$
-</p>
+<div class="math-display">
+  $$IoU=
+\frac{80}{110}$$
+</div>
+<div class="math-display">
+  $$\boxed{\approx0.7273}$$
+</div>
 <hr />
     </div>
   </section>

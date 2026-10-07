@@ -22,7 +22,7 @@
       svg: { fontCache: 'global' }
     };
   </script>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script id="MathJax-script" async src="../assets/js/mathjax/tex-mml-chtml.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';"></script>
 </head>
 <body data-chapter-id="ch27-modern-vision-architectures">
   <div id="progress-bar"></div>
@@ -602,21 +602,13 @@ effective 5×5 after two layers</code></pre>
     </div>
     <div class="section-body">
       <p>Suppose one input channel and one output channel for simplicity.</p>
-<p>A 5×5 kernel requires:</p>
-<p>
-$$
-5\times5=25
-$$
-</p>
-<p>weights.</p>
+<p>A 5×5 kernel requires: $5\times5=25$ weights.</p>
 <p>Two 3×3 kernels require:</p>
-<p>
-$$
-3\times3 + 3\times3
+<div class="math-display">
+  $$3\times3 + 3\times3
 =
-18
-$$
-</p>
+18$$
+</div>
 <p>weights, ignoring biases and intermediate channels.</p>
 <p>The comparison becomes architecture-dependent when channels are included, but the basic lesson is:</p>
 <blockquote>
@@ -1028,24 +1020,14 @@ new classifier / fine-tuning</code></pre>
 <p>How can we make very deep networks easier to optimize?</p>
 </blockquote>
 <p>ResNet introduced <strong>residual learning</strong>.</p>
-<p>Instead of forcing stacked layers to directly learn:</p>
-<p>
-$$
-H(x),
-$$
-</p>
-<p>the block learns a residual:</p>
-<p>
-$$
-F(x)=H(x)-x.
-$$
-</p>
+<p>Instead of forcing stacked layers to directly learn: $H(x),$ the block learns a residual:</p>
+<div class="math-display">
+  $$F(x)=H(x)-x.$$
+</div>
 <p>The block output becomes:</p>
-<p>
-$$
-\boxed{y=F(x)+x}.
-$$
-</p>
+<div class="math-display">
+  $$\boxed{y=F(x)+x}.$$
+</div>
 <p>The $x$ path is the <strong>shortcut</strong> or <strong>skip connection</strong>.</p>
 <hr />
     </div>
@@ -1077,11 +1059,9 @@ x ────────────┼─────────────
                         y</code></pre>
 </div></p>
 <p>Mathematically:</p>
-<p>
-$$
-y=F(x)+x.
-$$
-</p>
+<div class="math-display">
+  $$y=F(x)+x.$$
+</div>
 <p>The network learns the residual correction $F(x)$ rather than the entire mapping directly.</p>
 <hr />
     </div>
@@ -1096,31 +1076,23 @@ $$
     </div>
     <div class="section-body">
       <p>In the simplest residual block:</p>
-<p>
-$$
-\operatorname{shortcut}(x)=x.
-$$
-</p>
+<div class="math-display">
+  $$\operatorname{shortcut}(x)=x.$$
+</div>
 <p>The shortcut performs an identity mapping.</p>
 <p>This gives information a direct path through the network.</p>
 <p>The output is:</p>
-<p>
-$$
-y=F(x)+x.
-$$
-</p>
+<div class="math-display">
+  $$y=F(x)+x.$$
+</div>
 <p>If the residual branch learns values close to zero:</p>
-<p>
-$$
-F(x)\approx0,
-$$
-</p>
+<div class="math-display">
+  $$F(x)\approx0,$$
+</div>
 <p>then:</p>
-<p>
-$$
-y\approx x.
-$$
-</p>
+<div class="math-display">
+  $$y\approx x.$$
+</div>
 <p>This makes the block capable of behaving approximately like an identity mapping.</p>
 <hr />
     </div>
@@ -1136,29 +1108,17 @@ $$
     <div class="section-body">
       <p>Consider a deeper network trying to preserve a useful representation.</p>
 <p>A plain stack has to learn:</p>
-<p>
-$$
-H(x).
-$$
-</p>
+<div class="math-display">
+  $$H(x).$$
+</div>
 <p>A residual block can instead learn:</p>
-<p>
-$$
-F(x)=H(x)-x.
-$$
-</p>
-<p>If the desired mapping is close to identity, learning:</p>
-<p>
-$$
-F(x)\approx0
-$$
-</p>
-<p>may be easier than learning:</p>
-<p>
-$$
-H(x)\approx x
-$$
-</p>
+<div class="math-display">
+  $$F(x)=H(x)-x.$$
+</div>
+<p>If the desired mapping is close to identity, learning: $F(x)\approx0$ may be easier than learning:</p>
+<div class="math-display">
+  $$H(x)\approx x$$
+</div>
 <p>from scratch through a sequence of nonlinear transformations.</p>
 <p>This is the core intuition behind residual learning.</p>
 <hr />
@@ -1174,50 +1134,40 @@ $$
     </div>
     <div class="section-body">
       <p>Suppose:</p>
-<p>
-$$
-x=
+<div class="math-display">
+  $$x=
 \begin{bmatrix}
 1\\2\\3
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>and the residual branch produces:</p>
-<p>
-$$
-F(x)=
+<div class="math-display">
+  $$F(x)=
 \begin{bmatrix}
 0.5\\-1\\2
-\end{bmatrix}.
-$$
-</p>
+\end{bmatrix}.$$
+</div>
 <p>Then:</p>
-<p>
-$$
-y=F(x)+x.
-$$
-</p>
+<div class="math-display">
+  $$y=F(x)+x.$$
+</div>
 <p>Therefore:</p>
-<p>
-$$
-y=
+<div class="math-display">
+  $$y=
 \begin{bmatrix}
 0.5+1\\
 -1+2\\
 2+3
-\end{bmatrix}
-$$
-</p>
-<p>
-$$
-=
+\end{bmatrix}$$
+</div>
+<div class="math-display">
+  $$=
 \boxed{
 \begin{bmatrix}
 1.5\\1\\5
 \end{bmatrix}
-}.
-$$
-</p>
+}.$$
+</div>
 <p>This is the essential arithmetic of a residual block.</p>
 <hr />
     </div>
@@ -1231,13 +1181,7 @@ $$
       <button class="bookmark-btn" data-id="s-27-25" title="Bookmark this section" aria-label="Bookmark section">📌</button>
     </div>
     <div class="section-body">
-      <p>The addition:</p>
-<p>
-$$
-F(x)+x
-$$
-</p>
-<p>requires compatible shapes.</p>
+      <p>The addition: $F(x)+x$ requires compatible shapes.</p>
 <p>If:</p>
 <p><div class="code-block">
   <div class="code-header">
@@ -1286,13 +1230,7 @@ matching shape
  ↓
 add with F(x)</code></pre>
 </div></p>
-<p>Conceptually:</p>
-<p>
-$$
-y=F(x)+W_sx.
-$$
-</p>
-<p>where $W_s$ is the shortcut projection.</p>
+<p>Conceptually $y=F(x)+W_sx.$, where $W_s$ is the shortcut projection.</p>
 <p>The 1×1 convolution can change channel count and, with stride, spatial dimensions.</p>
 <hr />
     </div>
@@ -1349,11 +1287,9 @@ x ──────────────┼──── 1×1 projection ─�
                               y</code></pre>
 </div></p>
 <p>Again:</p>
-<p>
-$$
-y=F(x)+W_sx.
-$$
-</p>
+<div class="math-display">
+  $$y=F(x)+W_sx.$$
+</div>
 <hr />
     </div>
   </section>
@@ -1770,23 +1706,17 @@ BGR
     </div>
     <div class="section-body">
       <p>A typical channels-last input batch could be:</p>
-<p>
-$$
-B\times224\times224\times3.
-$$
-</p>
+<div class="math-display">
+  $$B\times224\times224\times3.$$
+</div>
 <p>For:</p>
-<p>
-$$
-B=8,
-$$
-</p>
+<div class="math-display">
+  $$B=8,$$
+</div>
 <p>the tensor is:</p>
-<p>
-$$
-\boxed{8\times224\times224\times3}.
-$$
-</p>
+<div class="math-display">
+  $$\boxed{8\times224\times224\times3}.$$
+</div>
 <p>The exact expected input resolution can vary among model variants and implementations.</p>
 <p>Always inspect the specific model API.</p>
 <hr />
@@ -1811,11 +1741,9 @@ $$
 <p>You need real-time object detection.</p>
 <p>A classification backbone alone is not enough.</p>
 <p>That leads to:</p>
-<p>
-$$
-\boxed{\text{C28 — Object Detection and YOLO}}
-$$
-</p>
+<div class="math-display">
+  $$\boxed{\text{C28 — Object Detection and YOLO}}$$
+</div>
 <hr />
     </div>
   </section>
@@ -2019,11 +1947,9 @@ A CNN architecture family characterized by systematic stacking of small convolut
 <p><strong>What is ResNet?</strong><br />
 A CNN architecture family that uses residual/skip connections to facilitate optimization of deep networks.</p>
 <p><strong>What is a residual connection?</strong></p>
-<p>
-$$
-y=F(x)+x
-$$
-</p>
+<div class="math-display">
+  $$y=F(x)+x$$
+</div>
 <p>in the identity-shortcut case.</p>
 <p><strong>What is transfer learning?</strong><br />
 Reusing knowledge/parameters learned on one task or dataset for another related task.</p>
@@ -2080,40 +2006,32 @@ ResNet
     </div>
     <div class="section-body">
       <p>Given:</p>
-<p>
-$$
-x=
+<div class="math-display">
+  $$x=
 \begin{bmatrix}
 2\\3\\5\\
-\end{bmatrix}
-$$
-</p>
+\end{bmatrix}$$
+</div>
 <p>and:</p>
-<p>
-$$
-F(x)=
+<div class="math-display">
+  $$F(x)=
 \begin{bmatrix}
 -1\\2\\0
-\end{bmatrix},
-$$
-</p>
+\end{bmatrix},$$
+</div>
 <p>find:</p>
-<p>
-$$
-y=F(x)+x.
-$$
-</p>
+<div class="math-display">
+  $$y=F(x)+x.$$
+</div>
 <p>Answer:</p>
-<p>
-$$
-y=
+<div class="math-display">
+  $$y=
 \boxed{
 \begin{bmatrix}
 1\\5\\5
 \end{bmatrix}
-}.
-$$
-</p>
+}.$$
+</div>
 <p>The arithmetic is simple; the important understanding is <strong>why addition is possible</strong>.</p>
 <hr />
     </div>
@@ -2134,21 +2052,15 @@ $$
 <li>128 output channels.</li>
 </ul>
 <p>Parameter count:</p>
-<p>
-$$
-3\times3\times64\times128+128.
-$$
-</p>
-<p>
-$$
-=73{,}728+128
-$$
-</p>
-<p>
-$$
-=\boxed{73{,}856}.
-$$
-</p>
+<div class="math-display">
+  $$3\times3\times64\times128+128.$$
+</div>
+<div class="math-display">
+  $$=73{,}728+128$$
+</div>
+<div class="math-display">
+  $$=\boxed{73{,}856}.$$
+</div>
 <p>This illustrates why channel count becomes a major computational factor in deep CNNs.</p>
 <hr />
     </div>
@@ -2290,33 +2202,21 @@ pretrained model
     <div class="section-body">
       <p>The two architecture families answer different engineering questions.</p>
 <h3>VGG</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 \text{Build depth using a simple repeated stack of small convolutions}
-}
-$$
-</p>
+}$$
+</div>
 <h3>ResNet</h3>
-<p>
-$$
-\boxed{
+<div class="math-display">
+  $$\boxed{
 \text{Make deep learning easier to optimize through residual paths}
-}
-$$
-</p>
-<p>The key ResNet equation is:</p>
-<p>
-$$
-\boxed{y=F(x)+x}
-$$
-</p>
-<p>and when shapes differ:</p>
-<p>
-$$
-\boxed{y=F(x)+W_sx}.
-$$
-</p>
+}$$
+</div>
+<p>The key ResNet equation is $\boxed{y=F(x)+x}$, and when shapes differ:</p>
+<div class="math-display">
+  $$\boxed{y=F(x)+W_sx}.$$
+</div>
 <p>The broader Unit IV journey is now:</p>
 <p><div class="code-block">
   <div class="code-header">
